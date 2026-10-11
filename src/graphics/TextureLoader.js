@@ -1,0 +1,25 @@
+import * as THREE from 'three';
+
+const loader = new THREE.TextureLoader();
+
+/** Loads a local texture and leaves the supplied fallback material intact on error. */
+export function cargarTextura(nombre, onLoad, { color = true } = {}) {
+  loader.load(
+    `/textures/${nombre}`,
+    texture => {
+      texture.colorSpace = color ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+      texture.anisotropy = 4;
+      onLoad(texture);
+    },
+    undefined,
+    error => console.warn(`No se pudo cargar /textures/${nombre}; se conserva el material de respaldo.`, error)
+  );
+}
+
+export function aplicarMapaColor(material, nombre) {
+  cargarTextura(nombre, texture => {
+    material.map = texture;
+    material.color.set(0xffffff);
+    material.needsUpdate = true;
+  });
+}

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#030406" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>Simulador de Sondas Espaciales · Sistema Solar</title>
+</head>
+<body>
+  <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-orbit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(-28 12 12)"/><circle cx="19.5" cy="8.3" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2" fill="#0c0e12"/><circle cx="16" cy="17" r="2" fill="#0c0e12"/></symbol>
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="icon-arrow-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></symbol>
+    <symbol id="icon-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+    <symbol id="icon-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v3m0 16v3M1 12h3m16 0h3"/></symbol>
+    <symbol id="icon-reset" viewBox="0 0 24 24"><path d="M4 11a8 8 0 1 1 2 6M4 5v6h6"/></symbol>
+    <symbol id="icon-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+    <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4m0 3h.01"/></symbol>
+  </svg>
+
+  <div id="app">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-mark"><svg class="icon"><use href="#icon-orbit"></use></svg></span>
+        <div>
+          <span class="eyebrow">EXPLORADOR ESPACIAL</span>
+          <h1>Simulador de Sondas Espaciales</h1>
+        </div>
+      </div>
+      <details class="source-menu hud-secondary" id="source-menu">
+        <summary><span class="status-dot"></span> NASA / JPL <svg class="icon"><use href="#icon-chevron"></use></svg></summary>
+        <div class="source-body">
+          <span class="menu-heading">Fuente y escala</span>
+          <p id="data-status" role="status">Esperando datos…</p>
+          <button id="retry-button" type="button" hidden>Reintentar carga</button>
+          <p>Muestras diarias a las 00:00 TDB. Posiciones proporcionales en AU; tamaños de los cuerpos ampliados para visualización. Las órbitas son referencias ilustrativas.</p>
+        </div>
+      </details>
+    </header>
+
+    <main class="workspace">
+      <section class="scene-panel" aria-label="Visualización interactiva del Sistema Solar">
+        <div id="solar-system"></div>
+
+        <div class="scene-topbar hud-secondary">
+          <div class="scene-heading">
+            <span id="view-mode-label" class="eyebrow">VISTA CIENTÍFICA <span class="heading-divider">/</span> 01</span>
+            <strong id="scene-title">Sistema Solar</strong>
+            <span id="scene-date" class="sr-only">Cargando fecha…</span>
+            <span id="observed-body" hidden></span>
+          </div>
+
+          <div class="scene-view-actions">
+            <button id="perspective-button" class="perspective-button" type="button" aria-pressed="false" aria-label="Activar vista cinematográfica">
+              <svg class="icon"><use href="#icon-orbit"></use></svg>
+              <span class="perspective-full">Vista cinematográfica</span><span class="perspective-short">Cine</span>
+            </button>
+            <details class="view-menu" id="view-menu">
+            <summary aria-label="Capas y ajustes de vista" title="Capas y ajustes de vista"><svg class="icon"><use href="#icon-settings"></use></svg><span class="control-label">Capas</span></summary>
+            <div class="view-menu-body">
+              <span class="menu-heading">Capas de visualización</span>
+              <label class="switch-row"><input id="show-orbits" type="checkbox" checked /><span>Órbitas ilustrativas<small>No son trayectorias calculadas</small></span></label>
+              <label class="switch-row"><input id="show-labels" type="checkbox" checked /><span>Etiquetas planetarias</span></label>
+              <label class="switch-row"><input id="show-stars" type="checkbox" checked /><span>Campo estelar</span></label>
+              <div class="menu-actions">
+                <button id="options-overview-button" type="button">Vista general</button>
+              </div>
+            </div>
+            </details>
+          </div>
+        </div>
+
+        <details class="destination-panel hud-secondary" id="destination-menu">
+          <summary><svg class="icon"><use href="#icon-target"></use></svg><span id="destination-current">Explorar destinos</span><svg class="icon disclosure-icon"><use href="#icon-chevron"></use></svg></summary>
+          <div class="destination-body">
+          <label class="eyebrow" for="planet-select">DESTINO</label>
+          <select id="planet-select" disabled><option value="">Elige un planeta</option></select>
+          <p id="selected-planet" role="status">Ningún planeta seleccionado</p>
+          <div class="destination-actions">
+            <button id="explore-button" class="button-primary" type="button" disabled><svg class="icon"><use href="#icon-target"></use></svg> Explorar</button>
+            <button id="overview-button" type="button">Vista general</button>
+          </div>
+          </div>
+        </details>
+
+        <details class="info-panel hud-secondary" id="planet-info" open hidden>
+          <summary><span><small>FICHA ASTRONÓMICA</small><strong id="info-title">Planeta</strong></span><span class="collapse-hint">Contraer</span><svg class="icon disclosure-icon"><use href="#icon-chevron"></use></svg></summary>
+          <div class="info-content">
+            <p class="data-provenance">Vectores de NASA/JPL Horizons · distancia y rapidez derivadas</p>
+            <div class="hero-metric"><span>Distancia heliocéntrica</span><strong id="info-distance-au">—</strong><small>Magnitud del vector de posición</small></div>
+            <dl class="metrics">
+              <div><dt>Equivalente</dt><dd id="info-distance-km">—</dd></div>
+              <div><dt>Rapidez</dt><dd id="info-speed">—</dd><small id="info-speed-au">—</small></div>
+            </dl>
+            <div class="coordinates"><h2>Posición heliocéntrica <span>AU</span></h2><dl><div><dt>X</dt><dd id="info-pos-x">—</dd></div><div><dt>Y</dt><dd id="info-pos-y">—</dd></div><div><dt>Z</dt><dd id="info-pos-z">—</dd></div></dl></div>
+            <dl class="info-footnotes"><div><dt>Muestra</dt><dd id="info-date">—</dd></div><div><dt>Referencia</dt><dd id="info-reference">—</dd></div></dl>
+          </div>
+        </details>
+
+        <p class="scene-hint hud-secondary">Arrastra para orbitar <span>·</span> Doble clic para viajar</p>
+
+        <div class="camera-tools hud-secondary" aria-label="Herramientas de cámara">
+          <button id="reset-button" class="icon-button" type="button" aria-label="Restablecer cámara" title="Restablecer cámara"><svg class="icon"><use href="#icon-reset"></use></svg></button>
+          <details id="camera-help" class="camera-help">
+            <summary aria-label="Ayuda de navegación" title="Ayuda de navegación"><svg class="icon"><use href="#icon-help"></use></svg></summary>
+            <div class="help-body"><span class="menu-heading">Navegación</span><p>Arrastra para orbitar. Usa la rueda o pellizca para acercarte.</p><p>Un clic selecciona. Doble clic inicia el viaje.</p><p><kbd>I</kbd> Modo inmersivo <br><kbd>Esc</kbd> Recuperar controles</p></div>
+          </details>
+        </div>
+        <button id="immersive-button" class="immersive-button" type="button" aria-pressed="false" aria-label="Activar modo inmersivo" title="Modo inmersivo (I)"><svg class="icon"><use href="#icon-expand"></use></svg><span id="immersive-label">Modo inmersivo</span><kbd>I</kbd></button>
+        <span id="hud-announcement" class="sr-only" role="status"></span>
+
+        <section class="timeline-panel hud-secondary" aria-label="Controles de fecha astronómica">
+        <div class="timeline-heading">
+          <div><span class="eyebrow">TIEMPO · TDB</span><strong id="timeline-date" class="sr-only">—</strong></div>
+          <span id="playback-status" class="playback-status" role="status">Pausado</span>
+        </div>
+        <div class="timeline-controls">
+          <button id="previous-button" class="icon-button" type="button" aria-label="Día anterior" disabled><svg class="icon"><use href="#icon-arrow-left"></use></svg></button>
+          <button id="play-button" class="play-button" type="button" disabled><svg id="play-icon" class="icon"><use href="#icon-play"></use></svg><span id="play-label" class="sr-only">Reproducir</span></button>
+          <button id="next-button" class="icon-button" type="button" aria-label="Día siguiente" disabled><svg class="icon"><use href="#icon-arrow-right"></use></svg></button>
+          <label class="date-field" for="date-input"><span class="sr-only">Fecha TDB</span><input id="date-input" type="date" value="2026-10-10" min="2026-10-01" max="2026-11-01" disabled /><span class="tdb-label" aria-hidden="true">TDB</span></label>
+        </div>
+        <label class="speed-field" for="playback-speed"><span>Velocidad</span><select id="playback-speed" disabled><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+        <div class="range-row"><span>01 OCT 2026</span><input id="timeline-range" type="range" min="0" max="31" step="1" value="9" aria-label="Desplazarse entre muestras diarias TDB" disabled /><span>01 NOV 2026</span></div>
+        </section>
+      </section>
+
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
