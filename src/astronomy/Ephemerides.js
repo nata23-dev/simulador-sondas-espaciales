@@ -11,7 +11,7 @@ export const PLANETAS = [
 ];
 
 export async function cargarEfemerides() {
-  const respuesta = await fetch('/data/efemerides-2026.json');
+  const respuesta = await fetch(`${import.meta.env.BASE_URL}data/efemerides-2026.json`);
 
   if (!respuesta.ok) {
     throw new Error('No se pudo cargar el archivo de efemerides.');
