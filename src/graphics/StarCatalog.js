@@ -4,7 +4,7 @@ const OBLICUIDAD_J2000 = THREE.MathUtils.degToRad(84381.448 / 3600);
 const COS_OBLICUIDAD = Math.cos(OBLICUIDAD_J2000);
 const SIN_OBLICUIDAD = Math.sin(OBLICUIDAD_J2000);
 
-// ICRS -> eclíptica J2000 -> ejes visuales de SolarSystem.js (x, z, -y).
+// Convierte ICRS a la eclíptica J2000 y luego a los ejes visuales (x, z, -y).
 export function direccionICRSEscena(ascensionRecta, declinacion) {
   const ra = THREE.MathUtils.degToRad(ascensionRecta);
   const dec = THREE.MathUtils.degToRad(declinacion);

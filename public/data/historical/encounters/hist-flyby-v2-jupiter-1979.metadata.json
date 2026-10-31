@@ -1,0 +1,138 @@
+{
+  "datasetId": "hist-flyby-v2-jupiter-1979",
+  "configSha256": "ba76c118a931d181d8b466ec9ff0e0d556d63f104decb60c82c47c5882ba7fd6",
+  "sha256": "67cbe45338e684a283bbb9a80dc4a104526237122e2ee2c0f9b83d1ae420ec9a",
+  "catalogEntry": {
+    "id": "hist-flyby-v2-jupiter-1979",
+    "file": "data/historical/encounters/hist-flyby-v2-jupiter-1979.json",
+    "format": "horizons-compact-v1",
+    "formatVersion": 1,
+    "bodyIds": [
+      "-32",
+      "599",
+      "501"
+    ],
+    "coverage": {
+      "startJdTdb": 2444059.5,
+      "endJdTdb": 2444068.5
+    },
+    "bodyCoverage": {
+      "501": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      },
+      "599": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      },
+      "-32": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      }
+    },
+    "cadenceSeconds": 1800,
+    "frameId": "ICRF_ECLIPTIC_J2000",
+    "origin": "SUN_CENTER",
+    "fileUnits": {
+      "position": "km",
+      "velocity": "km/s"
+    },
+    "source": "NASA/JPL Horizons",
+    "sourceVersion": "1.2"
+  },
+  "apiVersion": "1.2",
+  "solutionIds": [
+    {
+      "bodyId": "-32",
+      "solutionId": "Voyager_2_ST+refit2022_m"
+    },
+    {
+      "bodyId": "599",
+      "solutionId": "jup365_merged"
+    },
+    {
+      "bodyId": "501",
+      "solutionId": "jup365_merged"
+    }
+  ],
+  "responses": [
+    {
+      "bodyId": "-32",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'-32'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1979-07-05 00:00'",
+        "STOP_TIME": "'1979-07-14 00:00'",
+        "STEP_SIZE": "'30 m'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:38:39.614Z",
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "6ed2cc927a76e94e7d1a5057a46022d2d79cb68e783ca6171a26de6d303ba179"
+    },
+    {
+      "bodyId": "599",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'599'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1979-07-05 00:00'",
+        "STOP_TIME": "'1979-07-14 00:00'",
+        "STEP_SIZE": "'30 m'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:38:41.061Z",
+      "apiVersion": "1.2",
+      "solutionId": "jup365_merged",
+      "responseSha256": "5199db1335b4e9b3d41d490b04e1e1342cdb0c7c0c027839ab68ad794e6cb0b5"
+    },
+    {
+      "bodyId": "501",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'501'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1979-07-05 00:00'",
+        "STOP_TIME": "'1979-07-14 00:00'",
+        "STEP_SIZE": "'30 m'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:38:42.515Z",
+      "apiVersion": "1.2",
+      "solutionId": "jup365_merged",
+      "responseSha256": "f5428b927df42340660709239aa4fb67de550b477903d11d6e3b96321bd43f5c"
+    }
+  ]
+}

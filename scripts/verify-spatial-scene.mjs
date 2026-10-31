@@ -1,4 +1,4 @@
-// Run Vite and a dedicated headless Chrome with remote debugging on port 9340.
+// Ejecutar con Vite y Chrome sin interfaz, con depuración remota en el puerto 9340.
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 
@@ -139,8 +139,8 @@ try {
   await check('restablecer vista científica', `document.querySelector('#planet-info').hidden && document.querySelector('#perspective-button').getAttribute('aria-pressed') === 'false'`);
   await screenshot('despues-regreso-general-1366');
 
-  // Hit the actual rendered Jupiter disk from its label. A single canvas
-  // pointer click selects; the next click at the same point starts the trip.
+  // Busca el disco visible de Júpiter a partir de su etiqueta. El primer clic
+  // sobre el lienzo lo selecciona y el segundo, en el mismo punto, inicia el viaje.
   const label = await evaluate(`(() => {const e=[...document.querySelectorAll('.planet-label')].find(x=>x.textContent==='Júpiter');return {x:parseFloat(e.style.left),y:parseFloat(e.style.top)};})()`);
   let clickedPlanet = false;
   for (const offset of [10, 14, 18, 22, 26, 30]) {

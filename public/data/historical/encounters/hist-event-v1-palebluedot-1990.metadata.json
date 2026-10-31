@@ -1,0 +1,348 @@
+{
+  "datasetId": "hist-event-v1-palebluedot-1990",
+  "configSha256": "71da4da20f21714239d3048c8b6d3c2de1e8720ab845dde8d23829abd26eed55",
+  "sha256": "d1c22bba9ae96aa32e35b5ca95c48683b9b915014c0aadd32fc841cc54ab9702",
+  "catalogEntry": {
+    "id": "hist-event-v1-palebluedot-1990",
+    "file": "data/historical/encounters/hist-event-v1-palebluedot-1990.json",
+    "format": "horizons-compact-v1",
+    "formatVersion": 1,
+    "bodyIds": [
+      "-31",
+      "199",
+      "299",
+      "399",
+      "499",
+      "599",
+      "699",
+      "799",
+      "899"
+    ],
+    "coverage": {
+      "startJdTdb": 2447935.5,
+      "endJdTdb": 2447937.5
+    },
+    "bodyCoverage": {
+      "199": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "299": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "399": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "499": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "599": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "699": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "799": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "899": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "-31": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      }
+    },
+    "cadenceSeconds": 3600,
+    "frameId": "ICRF_ECLIPTIC_J2000",
+    "origin": "SUN_CENTER",
+    "fileUnits": {
+      "position": "km",
+      "velocity": "km/s"
+    },
+    "source": "NASA/JPL Horizons",
+    "sourceVersion": "1.2"
+  },
+  "apiVersion": "1.2",
+  "solutionIds": [
+    {
+      "bodyId": "-31",
+      "solutionId": "Voyager_1_ST+refit2022_m"
+    },
+    {
+      "bodyId": "199",
+      "solutionId": "DE441"
+    },
+    {
+      "bodyId": "299",
+      "solutionId": "DE441"
+    },
+    {
+      "bodyId": "399",
+      "solutionId": "DE441"
+    },
+    {
+      "bodyId": "499",
+      "solutionId": "mar099"
+    },
+    {
+      "bodyId": "599",
+      "solutionId": "jup365_merged"
+    },
+    {
+      "bodyId": "699",
+      "solutionId": "sat441l"
+    },
+    {
+      "bodyId": "799",
+      "solutionId": "ura184_merged"
+    },
+    {
+      "bodyId": "899",
+      "solutionId": "nep098_merged"
+    }
+  ],
+  "responses": [
+    {
+      "bodyId": "-31",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'-31'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1990-02-13 00:00'",
+        "STOP_TIME": "'1990-02-15 00:00'",
+        "STEP_SIZE": "'1 h'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:00.653Z",
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_1_ST+refit2022_m",
+      "responseSha256": "647bef8adfe4766b781ea88bce2fa27361289bd777639c9120777d1293032bc5"
+    },
+    {
+      "bodyId": "199",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'199'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1990-02-13 00:00'",
+        "STOP_TIME": "'1990-02-15 00:00'",
+        "STEP_SIZE": "'1 h'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:02.058Z",
+      "apiVersion": "1.2",
+      "solutionId": "DE441",
+      "responseSha256": "33c7673dc1aabec7c01f1c09f2532eeb92d68e6cda8084d85d67ac100931cb59"
+    },
+    {
+      "bodyId": "299",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'299'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1990-02-13 00:00'",
+        "STOP_TIME": "'1990-02-15 00:00'",
+        "STEP_SIZE": "'1 h'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:03.436Z",
+      "apiVersion": "1.2",
+      "solutionId": "DE441",
+      "responseSha256": "c5ffa64b3f6471b907a5be4b42d87643810e6fe5e273f11732d9efe2ee846c6a"
+    },
+    {
+      "bodyId": "399",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'399'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1990-02-13 00:00'",
+        "STOP_TIME": "'1990-02-15 00:00'",
+        "STEP_SIZE": "'1 h'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:04.812Z",
+      "apiVersion": "1.2",
+      "solutionId": "DE441",
+      "responseSha256": "dffcfe4a6800b05f406134062bc1da5d743df18a45ab09a00304560775e24b91"
+    },
+    {
+      "bodyId": "499",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'499'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1990-02-13 00:00'",
+        "STOP_TIME": "'1990-02-15 00:00'",
+        "STEP_SIZE": "'1 h'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:06.230Z",
+      "apiVersion": "1.2",
+      "solutionId": "mar099",
+      "responseSha256": "ef924f64812badbd6b1546c4a86791a86a398439c2dce635e80fe26baf3656f4"
+    },
+    {
+      "bodyId": "599",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'599'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1990-02-13 00:00'",
+        "STOP_TIME": "'1990-02-15 00:00'",
+        "STEP_SIZE": "'1 h'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:07.619Z",
+      "apiVersion": "1.2",
+      "solutionId": "jup365_merged",
+      "responseSha256": "feabf75b9d1a69445e50552f73cd0044d6ada4ed5a7af1b858beb440eccd7430"
+    },
+    {
+      "bodyId": "699",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'699'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1990-02-13 00:00'",
+        "STOP_TIME": "'1990-02-15 00:00'",
+        "STEP_SIZE": "'1 h'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:09.029Z",
+      "apiVersion": "1.2",
+      "solutionId": "sat441l",
+      "responseSha256": "729d3e5a77ba0a2f4de7b603a03d63bcf239047a041c1ef4255e576c227862b6"
+    },
+    {
+      "bodyId": "799",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'799'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1990-02-13 00:00'",
+        "STOP_TIME": "'1990-02-15 00:00'",
+        "STEP_SIZE": "'1 h'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:10.410Z",
+      "apiVersion": "1.2",
+      "solutionId": "ura184_merged",
+      "responseSha256": "062ce81338430b0ea59f5e55364a97e6ab23bcc18c07b025eba64217f1871b91"
+    },
+    {
+      "bodyId": "899",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'899'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1990-02-13 00:00'",
+        "STOP_TIME": "'1990-02-15 00:00'",
+        "STEP_SIZE": "'1 h'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:11.814Z",
+      "apiVersion": "1.2",
+      "solutionId": "nep098_merged",
+      "responseSha256": "fcfd3f1ac91f60367fc6bc46efe2eae8fb94a2323a8b0ca43fc4da0759982a6f"
+    }
+  ]
+}

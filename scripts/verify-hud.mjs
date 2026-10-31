@@ -1,5 +1,5 @@
-// Run Vite and a dedicated Chrome instance with --remote-debugging-port=9338.
-// Uses Chrome DevTools Protocol; no browser automation dependency is required.
+// Ejecutar con Vite y una instancia de Chrome en el puerto de depuración 9338.
+// Usa el protocolo de herramientas de desarrollo de Chrome sin otra dependencia.
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 
@@ -57,7 +57,7 @@ async function change(selector, value, event = 'change') {
   await evaluate(`(() => { const e = document.querySelector(${JSON.stringify(selector)}); e.value = ${JSON.stringify(value)}; e.dispatchEvent(new Event(${JSON.stringify(event)}, { bubbles: true })); })()`);
 }
 async function check(name, expression) {
-  // Software WebGL can delay a CSS transition; wait for the observable state.
+  // WebGL por software puede retrasar la transición; espera el estado observable.
   let value = false;
   for (let i = 0; i < 15; i++) {
     value = await evaluate(expression);

@@ -1,0 +1,68 @@
+{
+  "datasetId": "hist-cruise-v1-2011-2026",
+  "configSha256": "ae7d6c72914d9a0ca845da4038cdba469a6dd5d9c343e91972dc9ddcf33a6f2e",
+  "sha256": "95ad2822fedfad7b33214685145616dcbe046d3184bcd098251ec6e2909fb5aa",
+  "catalogEntry": {
+    "id": "hist-cruise-v1-2011-2026",
+    "file": "data/historical/probes/hist-cruise-v1-2011-2026.json",
+    "format": "horizons-compact-v1",
+    "formatVersion": 1,
+    "bodyIds": [
+      "-31"
+    ],
+    "coverage": {
+      "startJdTdb": 2455766.5,
+      "endJdTdb": 2461346.5
+    },
+    "bodyCoverage": {
+      "-31": {
+        "startJdTdb": 2455766.5,
+        "endJdTdb": 2461346.5
+      }
+    },
+    "cadenceSeconds": 432000,
+    "frameId": "ICRF_ECLIPTIC_J2000",
+    "origin": "SUN_CENTER",
+    "fileUnits": {
+      "position": "km",
+      "velocity": "km/s"
+    },
+    "source": "NASA/JPL Horizons",
+    "sourceVersion": "1.2"
+  },
+  "apiVersion": "1.2",
+  "solutionIds": [
+    {
+      "bodyId": "-31",
+      "solutionId": "Voyager_1_ST+refit2022_m"
+    }
+  ],
+  "responses": [
+    {
+      "bodyId": "-31",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'-31'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'2011-07-24'",
+        "STOP_TIME": "'2026-11-02'",
+        "STEP_SIZE": "'5 d'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:20.931Z",
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_1_ST+refit2022_m",
+      "responseSha256": "4a47876ded2ce6e55565f151671e5e9887733d0c4d1ebe829f962f9ee48a0603"
+    }
+  ]
+}

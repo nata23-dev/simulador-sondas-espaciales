@@ -1,22 +1,41 @@
-// Presentation state only: selection, camera travel and time stay in their modules.
+// Este módulo solo cambia la presentación; la selección, el viaje y la fecha tienen sus propios controladores.
 export function crearControlesHUD() {
   const app = document.querySelector('#app');
   const boton = document.querySelector('#immersive-button');
   const etiqueta = document.querySelector('#immersive-label');
   const anuncio = document.querySelector('#hud-announcement');
   const destino = document.querySelector('#destination-menu');
+  const mision = document.querySelector('#mission-panel');
   const info = document.querySelector('#planet-info');
   const cuerpo = document.querySelector('#observed-body');
   const instrumentos = [...document.querySelectorAll('.hud-secondary')];
-  const menus = [...document.querySelectorAll('#destination-menu, #view-menu, #source-menu, #camera-help')];
+  const menus = [...document.querySelectorAll('#destination-menu, #distance-menu, #view-menu, #source-menu, #camera-help')];
   let inmersivo = false;
   let focoAnterior = null;
+  let planetaActual = null;
+  let sondaActiva = false;
+  let nombreSondaActual = 'Sonda Experimental 01';
+
+  function actualizarObservacion() {
+    const etiquetaPlaneta = planetaActual === 'Jupiter' ? 'Júpiter' : planetaActual;
+    const observando = Boolean(etiquetaPlaneta) || sondaActiva;
+    app.classList.toggle('is-observing', observando);
+    cuerpo.hidden = !observando;
+    if (etiquetaPlaneta) {
+      cuerpo.textContent = `Observando · ${etiquetaPlaneta}`;
+    } else if (sondaActiva) {
+      cuerpo.textContent = `Observando · ${nombreSondaActual}`;
+    } else {
+      cuerpo.textContent = '';
+    }
+  }
 
   function establecerInmersivo(valor) {
     if (inmersivo === valor) return;
     inmersivo = valor;
     if (valor) focoAnterior = document.activeElement;
     app.classList.toggle('is-immersive', valor);
+    // Los controles ocultos tampoco deben recibir foco con el teclado.
     for (const instrumento of instrumentos) instrumento.inert = valor;
     boton.setAttribute('aria-pressed', String(valor));
     boton.setAttribute('aria-label', valor ? 'Mostrar controles' : 'Activar modo inmersivo');
@@ -39,6 +58,14 @@ export function crearControlesHUD() {
   info.addEventListener('toggle', () => {
     info.querySelector('.collapse-hint').textContent = info.open ? 'Contraer' : 'Ver datos';
   });
+  if (mision) {
+    destino.addEventListener('toggle', () => {
+      if (destino.open) mision.open = false;
+    });
+    mision.addEventListener('toggle', () => {
+      if (mision.open) destino.open = false;
+    });
+  }
   document.addEventListener('keydown', event => {
     const editando = event.target.closest('input, select, textarea, [contenteditable="true"]');
     if (event.key === 'Escape') {
@@ -66,16 +93,23 @@ export function crearControlesHUD() {
   });
 
   function actualizarSeleccion(nombre) {
+    planetaActual = nombre;
+    if (nombre) sondaActiva = false;
     const etiquetaNombre = nombre === 'Jupiter' ? 'Júpiter' : nombre;
-    app.classList.toggle('is-observing', Boolean(nombre));
     document.querySelector('#destination-current').textContent = etiquetaNombre ?? 'Explorar destinos';
-    cuerpo.hidden = !nombre;
-    cuerpo.textContent = nombre ? `Observando · ${etiquetaNombre}` : '';
+    actualizarObservacion();
     if (destino.contains(document.activeElement)) destino.querySelector('summary').focus();
     destino.open = false;
-    // Mobile uses a sheet handle; the canvas remains available above it.
+    // En móviles la ficha empieza contraída para dejar libre la escena.
     if (nombre) info.open = !window.matchMedia('(max-width: 760px)').matches;
   }
 
-  return { actualizarSeleccion };
+  function actualizarSeleccionSonda(activa, nombreSonda = 'Sonda Experimental 01') {
+    sondaActiva = Boolean(activa);
+    nombreSondaActual = nombreSonda;
+    if (sondaActiva) planetaActual = null;
+    actualizarObservacion();
+  }
+
+  return { actualizarSeleccion, actualizarSeleccionSonda };
 }

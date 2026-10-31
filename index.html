@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#030406" />
   <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
-  <title>Simulador de Sondas Espaciales · Sistema Solar</title>
+  <title>Simulador de Sondas Espaciales · Sistema Solar y Misiones Voyager</title>
 </head>
 <body>
   <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -20,24 +20,46 @@
     <symbol id="icon-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
     <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
     <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4m0 3h.01"/></symbol>
+    <symbol id="icon-scale" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="17" cy="12" r="4.5"/><path d="M8.5 12h2.5"/></symbol>
+    <symbol id="icon-ruler" viewBox="0 0 24 24"><path d="M4 18 18 4m-9 3 2 2m2-5 2 2m-8 5 2 2"/><circle cx="4" cy="18" r="1.8"/><circle cx="18" cy="4" r="1.8"/></symbol>
+    <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2.2 12s3.5-6.5 9.8-6.5 9.8 6.5 9.8 6.5-3.5 6.5-9.8 6.5S2.2 12 2.2 12z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+    <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M4 7.5h3l1.6-2h6.8l1.6 2h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5z"/><circle cx="12" cy="13.2" r="3.3"/></symbol>
+    <symbol id="icon-skip-back" viewBox="0 0 24 24"><path d="M6 6v12M18 6l-9 6 9 6z"/></symbol>
+    <symbol id="icon-skip-forward" viewBox="0 0 24 24"><path d="M18 6v12M6 6l9 6-9 6z"/></symbol>
+    <symbol id="icon-reverse" viewBox="0 0 24 24"><path d="m12 6-8 6 8 6zM20 6l-8 6 8 6z"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   </svg>
 
-  <div id="app">
+  <!-- La escena ocupa el área de trabajo; los paneles se colocan encima del lienzo. -->
+  <div id="app" data-app-mode="exploracion">
     <header class="app-header">
       <div class="brand">
         <span class="brand-mark"><svg class="icon"><use href="#icon-orbit"></use></svg></span>
         <div>
-          <span class="eyebrow">EXPLORADOR ESPACIAL</span>
+          <span id="brand-eyebrow" class="eyebrow">EXPLORADOR ESPACIAL</span>
           <h1>Simulador de Sondas Espaciales</h1>
         </div>
       </div>
+
+      <nav class="mode-switcher hud-secondary" id="app-mode-switcher" aria-label="Modo de operación del simulador">
+        <button type="button" data-mode-btn="exploracion" aria-pressed="true" title="Exploración del Sistema Solar (efemérides 2026)">
+          <span class="mode-label-full">Sistema Solar</span><span class="mode-label-short">Sistema</span>
+        </button>
+        <button type="button" data-mode-btn="historico" aria-pressed="false" title="Misiones históricas reales Voyager 1 y Voyager 2 (1977–2026)">
+          <span class="mode-label-full">Misiones históricas</span><span class="mode-label-short">Voyager 77–26</span>
+        </button>
+        <button type="button" data-mode-btn="experimental" aria-pressed="false" title="Simulación orbital experimental (Sonda Experimental 01 · DOPRI54)">
+          <span class="mode-label-full">Experimental</span><span class="mode-label-short">Exp.</span>
+        </button>
+      </nav>
+
       <details class="source-menu hud-secondary" id="source-menu">
         <summary><span class="status-dot"></span> NASA / JPL <svg class="icon"><use href="#icon-chevron"></use></svg></summary>
         <div class="source-body">
           <span class="menu-heading">Fuente y escala</span>
           <p id="data-status" role="status">Esperando datos…</p>
           <button id="retry-button" type="button" hidden>Reintentar carga</button>
-          <p>Muestras diarias a las 00:00 TDB. Posiciones proporcionales en AU; tamaños de los cuerpos ampliados para visualización. Las órbitas son referencias ilustrativas.</p>
+          <p id="source-description">Vectores heliocéntricos NASA/JPL Horizons (ICRF Eclíptico J2000, tiempo TDB). Admite Escala científica 1:1 y Escala exploratoria. Las órbitas planetarias son referencias ilustrativas.</p>
         </div>
       </details>
     </header>
@@ -48,13 +70,68 @@
 
         <div class="scene-topbar hud-secondary">
           <div class="scene-heading">
-            <span id="view-mode-label" class="eyebrow">VISTA CIENTÍFICA <span class="heading-divider">/</span> 01</span>
+            <div class="scene-eyebrow-row">
+              <span id="view-mode-label" class="eyebrow">VISTA CIENTÍFICA <span class="heading-divider">/</span> 01</span>
+              <span id="scale-mode-badge" class="scale-badge" role="status">ESCALA CIENTÍFICA · 1:1</span>
+            </div>
             <strong id="scene-title">Sistema Solar</strong>
             <span id="scene-date" class="sr-only">Cargando fecha…</span>
             <span id="observed-body" hidden></span>
           </div>
 
           <div class="scene-view-actions">
+            <button id="scale-mode-button" class="scale-mode-button" type="button" aria-pressed="true" aria-label="Cambiar a escala exploratoria" title="Alternar entre Escala científica 1:1 y Escala exploratoria">
+              <svg class="icon"><use href="#icon-scale"></use></svg>
+              <span id="scale-mode-button-label" class="control-label">Escala 1:1</span>
+            </button>
+            <details class="distance-menu" id="distance-menu">
+              <summary aria-label="Medición científica de distancias 3D" title="Medir distancia 3D entre cuerpos"><svg class="icon"><use href="#icon-ruler"></use></svg><span class="control-label">Distancias</span></summary>
+              <div class="distance-menu-body">
+                <div class="distance-header-row">
+                  <span class="menu-heading">Medición 3D · km / AU</span>
+                  <button id="distance-swap-button" class="distance-swap-button" type="button" title="Intercambiar Objeto A y Objeto B" aria-label="Intercambiar cuerpos">⇄ Invertir</button>
+                </div>
+                <div class="distance-selectors">
+                  <label for="distance-body-a">
+                    <span class="eyebrow">OBJETO A</span>
+                    <select id="distance-body-a"></select>
+                  </label>
+                  <label for="distance-body-b">
+                    <span class="eyebrow">OBJETO B</span>
+                    <select id="distance-body-b"></select>
+                  </label>
+                </div>
+                <p id="distance-status-msg" class="distance-status-msg" role="status" hidden></p>
+                <div id="distance-results" class="distance-results">
+                  <div class="distance-primary-metric">
+                    <span>Separación espacial 3D</span>
+                    <strong id="distance-value-au">—</strong>
+                    <small id="distance-value-km">—</small>
+                  </div>
+                  <dl class="distance-meta">
+                    <div>
+                      <dt>Tiempo luz</dt>
+                      <dd id="distance-light-time">—</dd>
+                    </div>
+                    <div>
+                      <dt>Instante TDB</dt>
+                      <dd id="distance-epoch">—</dd>
+                    </div>
+                    <div class="distance-meta-full">
+                      <dt>Referencia y fuente</dt>
+                      <dd id="distance-source">—</dd>
+                    </div>
+                  </dl>
+                </div>
+                <div class="distance-line-controls">
+                  <label class="switch-row distance-switch" for="distance-show-line">
+                    <input id="distance-show-line" type="checkbox" checked />
+                    <span>Vector 3D en escena<small>Une centros físicos reales</small></span>
+                  </label>
+                  <button id="distance-pin-button" class="distance-pin-button" type="button" aria-pressed="false" title="Mantener el vector 3D visible al cerrar este panel">Fijar</button>
+                </div>
+              </div>
+            </details>
             <button id="perspective-button" class="perspective-button" type="button" aria-pressed="false" aria-label="Activar vista cinematográfica">
               <svg class="icon"><use href="#icon-orbit"></use></svg>
               <span class="perspective-full">Vista cinematográfica</span><span class="perspective-short">Cine</span>
@@ -66,7 +143,15 @@
               <label class="switch-row"><input id="show-orbits" type="checkbox" checked /><span>Órbitas ilustrativas<small>No son trayectorias calculadas</small></span></label>
               <label class="switch-row"><input id="show-labels" type="checkbox" checked /><span>Etiquetas planetarias</span></label>
               <label class="switch-row"><input id="show-stars" type="checkbox" checked /><span>Campo estelar</span></label>
-              <div class="menu-actions">
+              <div class="menu-section">
+                <span class="menu-heading">Escala y encuadre</span>
+                <div class="menu-pill-group" role="group" aria-label="Modo de escala visual">
+                  <button id="scale-scientific-option" type="button" aria-pressed="true">Científica 1:1</button>
+                  <button id="scale-exploratory-option" type="button" aria-pressed="false">Exploratoria</button>
+                </div>
+              </div>
+              <div class="menu-actions menu-actions-grid">
+                <button id="region-inner-button" type="button">Sistema interior</button>
                 <button id="options-overview-button" type="button">Vista general</button>
               </div>
             </div>
@@ -74,6 +159,95 @@
           </div>
         </div>
 
+        <!-- BARRA SUPERIOR EXCLUSIVA DEL MODO HISTÓRICO VOYAGER 1 Y VOYAGER 2 -->
+        <div class="historical-topbar hud-secondary" id="historical-topbar" hidden>
+          <div class="hist-toolbar-row">
+            <div class="hist-pill-bar" role="group" aria-label="Misiones Voyager visibles">
+              <span class="hist-bar-tag">SONDAS</span>
+              <button type="button" data-hist-vis="both" aria-pressed="true">Ambas</button>
+              <button type="button" data-hist-vis="voyager-1" aria-pressed="false"><span class="v-dot v-dot--v1"></span>Voyager 1</button>
+              <button type="button" data-hist-vis="voyager-2" aria-pressed="false"><span class="v-dot v-dot--v2"></span>Voyager 2</button>
+            </div>
+
+            <div class="hist-pill-bar" role="group" aria-label="Modo de cámara histórica">
+              <span class="hist-bar-tag">CÁMARA</span>
+              <button type="button" id="hist-cam-exterior-btn" aria-pressed="true" title="Cámara exterior alrededor de las naves o planetas">Exterior</button>
+              <button type="button" id="hist-cam-fp-btn" aria-pressed="false" title="Situar cámara en la posición histórica exacta de Voyager (escala angular 1:1)">
+                <svg class="icon"><use href="#icon-eye"></use></svg>Primera persona
+              </button>
+            </div>
+
+            <div class="hist-pill-bar" id="hist-exterior-focus-bar" role="group" aria-label="Seguimiento exterior">
+              <button type="button" id="hist-follow-v1-btn" aria-pressed="false" title="Seguir Voyager 1 en cámara exterior">Seguir V1</button>
+              <button type="button" id="hist-follow-v2-btn" aria-pressed="false" title="Seguir Voyager 2 en cámara exterior">Seguir V2</button>
+              <button type="button" id="hist-compare-btn" title="Encuadrar simultáneamente ambas Voyager y el Sistema Solar">Comparativa</button>
+            </div>
+
+            <div class="hist-pill-bar" role="group" aria-label="Capas históricas">
+              <button type="button" id="hist-toggle-traj-btn" aria-pressed="true" title="Mostrar u ocultar polilíneas de trayectoria histórica JPL Horizons">Trayectorias</button>
+              <button type="button" id="hist-toggle-helio-btn" aria-pressed="false" title="Mostrar heliosfera conceptual asimétrica (ilustrativa) y marcadores reales de cruce">Heliosfera</button>
+            </div>
+          </div>
+
+          <!-- Sub-barra prioritaria cuando está activa la Cámara en Primera Persona o Recreación Fotográfica -->
+          <div class="first-person-bar" id="first-person-bar" hidden>
+            <div class="fp-row">
+              <div class="fp-group" role="group" aria-label="Sonda observadora en primera persona">
+                <span class="eyebrow">DESDE</span>
+                <button type="button" data-fp-probe="voyager-1" aria-pressed="false"><span class="v-dot v-dot--v1"></span>Voyager 1 (-31)</button>
+                <button type="button" data-fp-probe="voyager-2" aria-pressed="true"><span class="v-dot v-dot--v2"></span>Voyager 2 (-32)</button>
+              </div>
+
+              <div class="fp-group fp-targets" role="group" aria-label="Apuntar cámara en primera persona hacia cuerpo celeste">
+                <span class="eyebrow">MIRAR A</span>
+                <button type="button" data-fp-target="Tierra" aria-pressed="true">Tierra</button>
+                <button type="button" data-fp-target="Sol" aria-pressed="false">Sol</button>
+                <button type="button" data-fp-target="Jupiter" aria-pressed="false">Júpiter</button>
+                <button type="button" data-fp-target="Saturno" aria-pressed="false">Saturno</button>
+                <button type="button" data-fp-target="Urano" aria-pressed="false">Urano</button>
+                <button type="button" data-fp-target="Neptuno" aria-pressed="false">Neptuno</button>
+                <select id="fp-extra-target" aria-label="Otros cuerpos disponibles desde Voyager">
+                  <option value="">Más cuerpos…</option>
+                  <option value="Mercurio">Mercurio</option>
+                  <option value="Venus">Venus</option>
+                  <option value="Marte">Marte</option>
+                  <option value="Io">Ío (en encuentro)</option>
+                  <option value="Titan">Titán (en encuentro)</option>
+                  <option value="Triton">Tritón (en encuentro)</option>
+                  <option value="voyager-1">Voyager 1 (-31)</option>
+                  <option value="voyager-2">Voyager 2 (-32)</option>
+                </select>
+              </div>
+
+              <div class="fp-group fp-fov-group" role="group" aria-label="Campo visual angular (FOV)">
+                <span class="eyebrow" id="fp-fov-readout">FOV 45,0°</span>
+                <button type="button" data-fp-fov="0.424" title="Campo de visión cámara ISS ángulo estrecho (0,424°)">ISS 0,42°</button>
+                <button type="button" data-fp-fov="3.18" title="Campo de visión cámara ISS gran angular (3,18°)">WAC 3,2°</button>
+                <button type="button" data-fp-fov="18" title="Campo intermedio (18°)">18°</button>
+                <button type="button" data-fp-fov="45" title="Campo panorámico humano (45°)">45°</button>
+              </div>
+            </div>
+            <div class="fp-disclosure-row">
+              <span id="fp-fidelity-badge" class="fp-fidelity-badge">Posición real del observador (NASA/JPL Horizons) · Escala angular física 1:1 · Apuntado geométrico al centro del cuerpo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TARJETA DISCRETA DE PRESENTACIÓN DE LANZAMIENTO 1977 -->
+        <aside class="historical-launch-card hud-secondary" id="historical-launch-card" aria-live="polite" hidden>
+          <div class="launch-card-header">
+            <span class="eyebrow" id="launch-card-eyebrow">PRESENTACIÓN HISTÓRICA DE LANZAMIENTO · 1977</span>
+            <button type="button" id="launch-card-close" class="launch-close-btn" aria-label="Ocultar aviso de lanzamiento"><svg class="icon"><use href="#icon-close"></use></svg></button>
+          </div>
+          <strong id="launch-card-title">Salida desde la Tierra · Cabo Cañaveral SLC-41</strong>
+          <p id="launch-card-body">Despegue a bordo del vehículo Titan IIIE-Centaur.</p>
+          <p class="launch-card-honesty" id="launch-card-honesty">Nota de rigor: Voyager.glb representa la sonda espacial, no el cohete Titan IIIE-Centaur. Esta introducción visual en la órbita terrestre precede al primer vector heliocéntrico verificado de NASA/JPL Horizons.</p>
+          <div class="launch-card-actions">
+            <button type="button" id="launch-jump-first-spk-btn" class="button-primary">Ir al 1.er vector Horizons</button>
+          </div>
+        </aside>
+
+        <!-- PANELES IZQUIERDOS DEL MODO EXPLORACIÓN Y EXPERIMENTAL (EXISTENTES) -->
         <details class="destination-panel hud-secondary" id="destination-menu">
           <summary><svg class="icon"><use href="#icon-target"></use></svg><span id="destination-current">Explorar destinos</span><svg class="icon disclosure-icon"><use href="#icon-chevron"></use></svg></summary>
           <div class="destination-body">
@@ -84,6 +258,217 @@
             <button id="explore-button" class="button-primary" type="button" disabled><svg class="icon"><use href="#icon-target"></use></svg> Explorar</button>
             <button id="overview-button" type="button">Vista general</button>
           </div>
+          <div class="destination-regions">
+            <button id="dest-inner-button" type="button">Sistema interior (2 AU)</button>
+          </div>
+          </div>
+        </details>
+
+        <details class="mission-panel hud-secondary" id="mission-panel" open hidden>
+          <summary>
+            <span class="mission-dot" id="mission-dot"></span>
+            <span class="mission-summary-text">
+              <small>SONDA · EXPERIMENTAL</small>
+              <strong id="mission-probe-name">Sonda Experimental 01</strong>
+            </span>
+            <svg class="icon disclosure-icon"><use href="#icon-chevron"></use></svg>
+          </summary>
+          <div class="mission-body">
+            <div class="mission-status-row">
+              <span class="eyebrow">MISIÓN FICTICIA · PRUEBA</span>
+              <span id="mission-status" class="mission-status" role="status">Cargando…</span>
+            </div>
+            <div class="mission-actions">
+              <button id="mission-play-button" class="button-primary" type="button" disabled>
+                <svg id="mission-play-icon" class="icon"><use href="#icon-play"></use></svg>
+                <span id="mission-play-label">Iniciar</span>
+              </button>
+              <button id="mission-reset-button" type="button" disabled title="Reiniciar desde estado inicial" aria-label="Reiniciar misión">
+                <svg class="icon"><use href="#icon-reset"></use></svg>
+                <span>Reiniciar</span>
+              </button>
+              <button id="mission-focus-button" type="button" disabled aria-pressed="false" title="Seleccionar y enfocar sonda">
+                <svg class="icon"><use href="#icon-target"></use></svg>
+                <span id="mission-focus-label">Enfocar</span>
+              </button>
+            </div>
+            <label class="switch-row mission-switch" for="show-probe-trajectory">
+              <input id="show-probe-trajectory" type="checkbox" checked />
+              <span>Mostrar trayectoria<small>Propagada numéricamente (DOPRI54)</small></span>
+            </label>
+            <div class="mission-visual-selector">
+              <label class="eyebrow" for="probe-visual-select">APARIENCIA 3D (SOLO VISUAL)</label>
+              <select id="probe-visual-select">
+                <option value="voyager" selected>Voyager 3D · Oficial NASA VTAD</option>
+                <option value="procedural">Bus procedural · Respaldo</option>
+              </select>
+              <small id="probe-visual-note" class="probe-visual-note">Cargando geometría oficial Voyager (NASA/JPL-Caltech/VTAD)…</small>
+            </div>
+            <dl class="mission-metrics">
+              <div>
+                <dt>Tiempo transcurrido</dt>
+                <dd id="mission-elapsed">T+00d 00:00:00</dd>
+                <small id="mission-epoch">2026-10-10 · 00:00:00 TDB</small>
+              </div>
+              <div>
+                <dt>Rapidez</dt>
+                <dd id="mission-speed">—</dd>
+                <small id="mission-frame">Heliocéntrica · Eclíptica J2000</small>
+              </div>
+              <div>
+                <dt>Distancia al Sol</dt>
+                <dd id="mission-distance-au">—</dd>
+                <small id="mission-distance-km">—</small>
+              </div>
+              <div>
+                <dt>Posición (X, Y, Z)</dt>
+                <dd id="mission-position">—</dd>
+                <small>km · origen Sol</small>
+              </div>
+            </dl>
+            <div class="mission-model-note">
+              <span class="eyebrow">MODELO FÍSICO ACTIVO</span>
+              <p id="mission-model">Inicializando motor de dinámica orbital…</p>
+            </div>
+          </div>
+        </details>
+
+        <!-- COLUMNA IZQUIERDA DEL MODO HISTÓRICO: ACONTECIMIENTOS + FOTOGRAFÍAS DE LA MISIÓN -->
+        <div class="historical-left-stack hud-secondary" id="historical-left-stack" hidden>
+          <details class="hist-side-card" id="historical-events-panel" open>
+            <summary>
+              <span class="mission-summary-text">
+                <small>HITOS VERIFICADOS · 1977–2018</small>
+                <strong>Acontecimientos históricos</strong>
+              </span>
+              <svg class="icon disclosure-icon"><use href="#icon-chevron"></use></svg>
+            </summary>
+            <div class="hist-card-body">
+              <div class="hist-event-picker-row">
+                <select id="historical-event-select" aria-label="Seleccionar acontecimiento histórico Voyager"></select>
+                <button type="button" id="historical-event-go-btn" class="button-primary">Ir</button>
+              </div>
+              <article class="hist-event-detail" id="historical-event-detail">
+                <div class="hist-event-badges">
+                  <span class="hist-probe-tag" id="hist-ev-probe">Voyager 2</span>
+                  <span class="hist-kind-tag" id="hist-ev-kind">Lanzamiento oficial</span>
+                </div>
+                <h3 id="hist-ev-title">—</h3>
+                <div class="hist-ev-dates">
+                  <span id="hist-ev-date">—</span>
+                  <small id="hist-ev-periapse" hidden></small>
+                </div>
+                <p id="hist-ev-desc">—</p>
+                <a id="hist-ev-source" class="hist-source-link" href="https://science.nasa.gov/mission/voyager/" target="_blank" rel="noopener noreferrer">Fuente oficial NASA</a>
+                <div class="hist-ev-actions">
+                  <button type="button" id="hist-ev-focus-btn">Enfocar escena</button>
+                  <button type="button" id="hist-ev-fp-btn">Vista 1.ª persona</button>
+                  <button type="button" id="hist-ev-photo-btn" hidden>Comparar foto NASA</button>
+                </div>
+              </article>
+            </div>
+          </details>
+
+          <details class="hist-side-card" id="historical-photos-panel">
+            <summary>
+              <span class="mission-summary-text">
+                <small>ARCHIVO NASA / JPL / PDS ISS</small>
+                <strong>Fotografías de la misión</strong>
+              </span>
+              <svg class="icon disclosure-icon"><use href="#icon-chevron"></use></svg>
+            </summary>
+            <div class="hist-card-body">
+              <div class="hist-photo-date-status" id="hist-photo-date-status" role="status"></div>
+              <div class="hist-photo-shutdown-note" id="hist-photo-shutdown-note" hidden></div>
+              <div class="hist-photo-list" id="hist-photo-list" role="list"></div>
+            </div>
+          </details>
+        </div>
+
+        <!-- PANEL DERECHO DEL MODO HISTÓRICO: FICHA CIENTÍFICA DE VOYAGER 1 Y VOYAGER 2 -->
+        <details class="voyager-science-panel hud-secondary" id="voyager-science-panel" open hidden>
+          <summary>
+            <span class="mission-summary-text">
+              <small>FICHA CIENTÍFICA · NASA / JPL HORIZONS</small>
+              <strong id="voyager-card-heading">Voyager 1 · NAIF -31</strong>
+            </span>
+            <svg class="icon disclosure-icon"><use href="#icon-chevron"></use></svg>
+          </summary>
+          <div class="voyager-card-body">
+            <div class="voyager-card-tabs" role="tablist" aria-label="Seleccionar ficha de sonda Voyager">
+              <button type="button" role="tab" data-voyager-tab="voyager-1" aria-selected="true"><span class="v-dot v-dot--v1"></span>Voyager 1 (-31)</button>
+              <button type="button" role="tab" data-voyager-tab="voyager-2" aria-selected="false"><span class="v-dot v-dot--v2"></span>Voyager 2 (-32)</button>
+            </div>
+
+            <div class="voyager-data-badge-row">
+              <span id="voyager-data-status-badge" class="voyager-status-badge">Cargando efemérides…</span>
+              <span id="voyager-phase-label" class="voyager-phase-label">—</span>
+            </div>
+
+            <dl class="voyager-telemetry-grid">
+              <div class="v-metric-wide">
+                <dt>Instante seleccionado (UTC / TDB)</dt>
+                <dd id="v-card-epoch-utc">—</dd>
+                <small id="v-card-epoch-tdb">—</small>
+              </div>
+              <div>
+                <dt>Tiempo desde lanzamiento</dt>
+                <dd id="v-card-elapsed">—</dd>
+                <small id="v-card-launch-ref">—</small>
+              </div>
+              <div>
+                <dt>Tiempo luz a la Tierra</dt>
+                <dd id="v-card-light-time">—</dd>
+                <small>Un sentido (c = 299 792,458 km/s)</small>
+              </div>
+              <div>
+                <dt>Distancia al Sol</dt>
+                <dd id="v-card-dist-sun-au">—</dd>
+                <small id="v-card-dist-sun-km">—</small>
+              </div>
+              <div>
+                <dt>Distancia a la Tierra</dt>
+                <dd id="v-card-dist-earth-au">—</dd>
+                <small id="v-card-dist-earth-km">—</small>
+              </div>
+              <div>
+                <dt>Distancia Voyager 1 ↔ 2</dt>
+                <dd id="v-card-dist-mutual-au">—</dd>
+                <small id="v-card-dist-mutual-km">—</small>
+              </div>
+              <div>
+                <dt>Rapidez heliocéntrica</dt>
+                <dd id="v-card-speed-helio">—</dd>
+                <small>Respecto al Sol · Eclíptica J2000</small>
+              </div>
+              <div class="v-metric-wide">
+                <dt>Posición heliocéntrica 3D (X, Y, Z)</dt>
+                <dd id="v-card-pos-au">—</dd>
+                <small id="v-card-pos-km">—</small>
+              </div>
+              <div class="v-metric-wide">
+                <dt>Dirección unitaria de movimiento (û)</dt>
+                <dd id="v-card-vel-dir">—</dd>
+                <small id="v-card-next-event">Próximo hito: —</small>
+              </div>
+            </dl>
+
+            <div class="voyager-provenance-box">
+              <span class="eyebrow">MUESTRA / INTERPOLACIÓN Y PROCEDENCIA</span>
+              <p id="v-card-sample-info">—</p>
+            </div>
+
+            <details class="voyager-static-meta">
+              <summary>Datos estáticos e institucionales <svg class="icon disclosure-icon"><use href="#icon-chevron"></use></svg></summary>
+              <dl>
+                <div><dt>Nombre y NAIF ID</dt><dd id="v-static-id">—</dd></div>
+                <div><dt>Lanzamiento oficial</dt><dd id="v-static-launch">—</dd></div>
+                <div><dt>Institución responsable</dt><dd id="v-static-agency">—</dd></div>
+                <div><dt>Objetivos históricos</dt><dd id="v-static-objectives">—</dd></div>
+                <div><dt>Cámaras ISS</dt><dd id="v-static-cameras">—</dd></div>
+                <div><dt>Fuente de efemérides</dt><dd id="v-static-source">—</dd></div>
+              </dl>
+            </details>
           </div>
         </details>
 
@@ -101,19 +486,80 @@
           </div>
         </details>
 
-        <p class="scene-hint hud-secondary">Arrastra para orbitar <span>·</span> Doble clic para viajar</p>
+        <!-- COMPARADOR A/B: A. FOTOGRAFÍA ORIGINAL NASA vs B. RECREACIÓN TRIDIMENSIONAL WEBGL -->
+        <section class="photo-comparator-panel hud-secondary" id="photo-comparator-panel" aria-label="Comparador entre fotografía original NASA y recreación tridimensional" hidden>
+          <article class="comparator-card-a">
+            <div class="comparator-header">
+              <div>
+                <span class="comparator-tag comparator-tag--nasa">A · FOTOGRAFÍA ORIGINAL NASA</span>
+                <strong id="comp-photo-title">—</strong>
+              </div>
+              <button type="button" id="comp-close-btn" class="icon-button" aria-label="Cerrar comparador A/B" title="Cerrar comparador A/B"><svg class="icon"><use href="#icon-close"></use></svg></button>
+            </div>
+            <figure class="comparator-figure">
+              <img id="comp-photo-img" alt="" loading="lazy" decoding="async" />
+              <figcaption id="comp-photo-caption">—</figcaption>
+            </figure>
+            <dl class="comparator-meta">
+              <div><dt>Misión e instrumento</dt><dd id="comp-photo-instrument">—</dd></div>
+              <div><dt>Fecha documentada</dt><dd id="comp-photo-date">—</dd></div>
+              <div><dt>Procedencia oficial</dt><dd><a id="comp-photo-link" class="hist-source-link" href="https://science.nasa.gov/mission/voyager/" target="_blank" rel="noopener noreferrer">—</a></dd></div>
+            </dl>
+          </article>
+
+          <aside class="comparator-banner-b">
+            <div class="comparator-b-top">
+              <span class="comparator-tag comparator-tag--webgl">B · RECREACIÓN TRIDIMENSIONAL WEBGL (NO ES FOTOGRAFÍA)</span>
+              <div class="comparator-fov-toggle" role="group" aria-label="Campo visual de la recreación 3D">
+                <button type="button" id="comp-fov-iss-btn" aria-pressed="true">FOV ISS-NAC (0,424°)</button>
+                <button type="button" id="comp-fov-ctx-btn" aria-pressed="false">FOV contextual</button>
+              </div>
+            </div>
+            <p id="comp-fidelity-note">—</p>
+            <small id="comp-geometry-telemetry">—</small>
+          </aside>
+        </section>
+
+        <!-- VISOR AMPLIADO DE FOTOGRAFÍA AUTÉNTICA NASA -->
+        <div class="photo-lightbox-modal" id="photo-lightbox-modal" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" hidden>
+          <div class="lightbox-card">
+            <div class="lightbox-header">
+              <div>
+                <span class="eyebrow" id="lightbox-eyebrow">FOTOGRAFÍA AUTÉNTICA · NASA / JPL</span>
+                <strong id="lightbox-title">—</strong>
+              </div>
+              <button type="button" id="lightbox-close-btn" class="icon-button" aria-label="Cerrar imagen ampliada"><svg class="icon"><use href="#icon-close"></use></svg></button>
+            </div>
+            <div class="lightbox-image-wrap">
+              <img id="lightbox-img" alt="" loading="lazy" decoding="async" />
+            </div>
+            <div class="lightbox-footer">
+              <p id="lightbox-desc">—</p>
+              <div class="lightbox-meta-row">
+                <span id="lightbox-meta">—</span>
+                <div class="lightbox-actions">
+                  <a id="lightbox-source-link" class="hist-source-link" href="https://science.nasa.gov/mission/voyager/" target="_blank" rel="noopener noreferrer">Ver registro oficial NASA/JPL</a>
+                  <button type="button" id="lightbox-compare-btn" class="button-primary">Abrir comparador A/B 3D</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="scene-hint hud-secondary" id="scene-hint">Arrastra para orbitar <span>·</span> Doble clic para viajar</p>
 
         <div class="camera-tools hud-secondary" aria-label="Herramientas de cámara">
           <button id="reset-button" class="icon-button" type="button" aria-label="Restablecer cámara" title="Restablecer cámara"><svg class="icon"><use href="#icon-reset"></use></svg></button>
           <details id="camera-help" class="camera-help">
             <summary aria-label="Ayuda de navegación" title="Ayuda de navegación"><svg class="icon"><use href="#icon-help"></use></svg></summary>
-            <div class="help-body"><span class="menu-heading">Navegación</span><p>Arrastra para orbitar. Usa la rueda o pellizca para acercarte.</p><p>Un clic selecciona. Doble clic inicia el viaje.</p><p><kbd>I</kbd> Modo inmersivo <br><kbd>Esc</kbd> Recuperar controles</p></div>
+            <div class="help-body"><span class="menu-heading">Navegación</span><p>Arrastra para orbitar (o girar la vista en 1.ª persona). Usa la rueda para acercarte o cambiar el FOV angular.</p><p>Un clic selecciona. Doble clic inicia el viaje hacia un planeta o sonda Voyager.</p><p><kbd>I</kbd> Modo inmersivo <br><kbd>Esc</kbd> Recuperar controles</p></div>
           </details>
         </div>
         <button id="immersive-button" class="immersive-button" type="button" aria-pressed="false" aria-label="Activar modo inmersivo" title="Modo inmersivo (I)"><svg class="icon"><use href="#icon-expand"></use></svg><span id="immersive-label">Modo inmersivo</span><kbd>I</kbd></button>
         <span id="hud-announcement" class="sr-only" role="status"></span>
 
-        <section class="timeline-panel hud-secondary" aria-label="Controles de fecha astronómica">
+        <!-- LÍNEA TEMPORAL 2026 (MODOS EXPLORACIÓN Y EXPERIMENTAL) -->
+        <section class="timeline-panel hud-secondary" id="timeline-panel" aria-label="Controles de fecha astronómica">
         <div class="timeline-heading">
           <div><span class="eyebrow">TIEMPO · TDB</span><strong id="timeline-date" class="sr-only">—</strong></div>
           <span id="playback-status" class="playback-status" role="status">Pausado</span>
@@ -126,6 +572,72 @@
         </div>
         <label class="speed-field" for="playback-speed"><span>Velocidad</span><select id="playback-speed" disabled><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
         <div class="range-row"><span>01 OCT 2026</span><input id="timeline-range" type="range" min="0" max="31" step="1" value="9" aria-label="Desplazarse entre muestras diarias TDB" disabled /><span>01 NOV 2026</span></div>
+        </section>
+
+        <!-- LÍNEA TEMPORAL EXCLUSIVA DEL MODO HISTÓRICO VOYAGER (1977–2026) -->
+        <section class="historical-timeline-panel hud-secondary" id="historical-timeline-panel" aria-label="Línea temporal histórica Voyager 1977–2026" hidden>
+          <div class="hist-event-pause-toast" id="hist-event-pause-toast" hidden>
+            <span id="hist-toast-text">Hito alcanzado</span>
+            <button type="button" id="hist-skip-event-btn" class="button-primary">Omitir y continuar ▶</button>
+          </div>
+
+          <div class="hist-decade-bar" role="group" aria-label="Saltos históricos por época y encuentro">
+            <button type="button" data-hist-jump="v2-launch-1977">1977 Lanz.</button>
+            <button type="button" data-hist-jump="v1-jupiter-1979">1979 Júpiter</button>
+            <button type="button" data-hist-jump="v1-saturn-1980">1980 Saturno V1</button>
+            <button type="button" data-hist-jump="v2-saturn-1981">1981 Saturno V2</button>
+            <button type="button" data-hist-jump="v2-uranus-1986">1986 Urano</button>
+            <button type="button" data-hist-jump="v2-neptune-1989">1989 Neptuno</button>
+            <button type="button" data-hist-jump="v1-pale-blue-dot-1990">1990 Pale Blue Dot</button>
+            <button type="button" data-hist-jump="v1-termination-shock-2004">2004 Choque</button>
+            <button type="button" data-hist-jump="v1-heliopause-2012">2012 Heliopausa V1</button>
+            <button type="button" data-hist-jump="v2-heliopause-2018">2018 Heliopausa V2</button>
+            <button type="button" data-hist-jump="latest-2026">2026 Actual</button>
+          </div>
+
+          <div class="range-row hist-range-row">
+            <span>20 AGO 1977</span>
+            <input id="hist-timeline-range" type="range" min="0" max="100000" step="1" value="0" aria-label="Desplazamiento continuo por la historia de Voyager (1977–2026)" />
+            <span>02 NOV 2026</span>
+          </div>
+
+          <div class="hist-transport-row">
+            <div class="hist-clock-readout">
+              <strong id="hist-clock-utc">1977-08-20 · 14:29:00 UTC</strong>
+              <small id="hist-clock-tdb">TDB · Pausado</small>
+            </div>
+
+            <div class="hist-transport-buttons">
+              <button type="button" id="hist-launch-btn" class="icon-button" title="Reiniciar al lanzamiento de 1977" aria-label="Reiniciar al lanzamiento"><svg class="icon"><use href="#icon-skip-back"></use></svg></button>
+              <button type="button" id="hist-prev-event-btn" class="hist-step-btn" title="Ir al acontecimiento histórico anterior" aria-label="Acontecimiento anterior"><svg class="icon"><use href="#icon-arrow-left"></use></svg><span>Hito</span></button>
+              <button type="button" id="hist-reverse-btn" class="icon-button" aria-pressed="false" title="Invertir sentido temporal (retroceso / avance)" aria-label="Retroceso temporal"><svg class="icon"><use href="#icon-reverse"></use></svg></button>
+              <button type="button" id="hist-play-btn" class="play-button" title="Reproducir o pausar misión histórica" aria-label="Reproducir misión histórica"><svg id="hist-play-icon" class="icon"><use href="#icon-play"></use></svg></button>
+              <button type="button" id="hist-next-event-btn" class="hist-step-btn" title="Ir al siguiente acontecimiento histórico" aria-label="Siguiente acontecimiento"><span>Hito</span><svg class="icon"><use href="#icon-arrow-right"></use></svg></button>
+              <button type="button" id="hist-latest-btn" class="icon-button" title="Ir al último instante verificado (noviembre 2026)" aria-label="Ir al último instante disponible"><svg class="icon"><use href="#icon-skip-forward"></use></svg></button>
+            </div>
+
+            <div class="hist-date-selectors" aria-label="Selección directa de año, mes, día y hora UTC">
+              <select id="hist-year-select" aria-label="Año histórico"></select>
+              <select id="hist-month-select" aria-label="Mes histórico"></select>
+              <select id="hist-day-select" aria-label="Día histórico"></select>
+              <select id="hist-hour-select" aria-label="Hora UTC"></select>
+            </div>
+
+            <div class="hist-speed-and-assists">
+              <label class="hist-speed-label" for="hist-speed-select">
+                <span id="hist-speed-unit-hint">86 400 s/s</span>
+                <select id="hist-speed-select" aria-label="Velocidad de reproducción histórica"></select>
+              </label>
+              <label class="hist-mini-check" title="Reducir automáticamente la velocidad al acercarse a un encuentro o hito">
+                <input id="hist-auto-slow" type="checkbox" checked />
+                <span>Frenar</span>
+              </label>
+              <label class="hist-mini-check" title="Pausar exactamente en el instante de cada acontecimiento sin saltarlo">
+                <input id="hist-auto-pause" type="checkbox" checked />
+                <span>Pausar hito</span>
+              </label>
+            </div>
+          </div>
         </section>
       </section>
 

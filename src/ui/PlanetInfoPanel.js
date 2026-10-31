@@ -1,6 +1,7 @@
-// Unidad astronómica exacta (IAU 2012): 149 597 870 700 m.
-export const KILOMETROS_POR_AU = 149597870.7;
-export const SEGUNDOS_POR_DIA = 86400;
+import { KM_PER_AU as KILOMETROS_POR_AU, SECONDS_PER_DAY as SEGUNDOS_POR_DIA } from '../science/Units.js';
+
+// Conserva las exportaciones anteriores de la ficha y usa una sola fuente de constantes.
+export { KM_PER_AU as KILOMETROS_POR_AU, SECONDS_PER_DAY as SEGUNDOS_POR_DIA } from '../science/Units.js';
 
 const ETIQUETAS = { Jupiter: 'Júpiter' };
 const formatoAU = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 4, maximumFractionDigits: 6 });
@@ -8,6 +9,7 @@ const formatoKm = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 0 });
 const formatoVelocidad = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
 
 export function derivarDatos(estado) {
+  // Las unidades de la ficha se calculan a partir de los vectores, sin redondear los datos fuente.
   const p = estado.posicionAU;
   const v = estado.velocidadAUporDia;
   const distanciaAU = Math.hypot(p.x, p.y, p.z);

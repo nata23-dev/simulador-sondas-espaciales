@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { aplicarMapaColor, cargarTextura } from './TextureLoader.js';
 import { crearAtmosferaTierra } from './Atmosphere.js';
 
-// Oblicuidad aproximada en grados: NASA Planetary Fact Sheet.
+// Oblicuidad aproximada en grados, según la ficha de datos planetarios de la NASA.
 // El giro es visual; no modifica las efemérides ni modela la orientación a una fecha dada.
 const ASPECTO = {
   Mercurio: { textura: 'mercury.jpg', inclinacion: 0.034, horas: 1407.6 },
@@ -67,26 +67,28 @@ function agregarAnillos(grupo, radio, centroPlaneta) {
     opacity: 0.75,
     depthWrite: false
   });
-  // Sombra geométrica aproximada del planeta sobre el anillo. Usa las
-  // posiciones de escena proporcionales a AU; no requiere sombras cúbicas.
+  // Sombra geométrica aproximada del planeta sobre el anillo. Evalúa el desplazamiento
+  // local respecto al centro de Saturno y escala el radio con modelMatrix para conservar
+  // precisión completa tanto en Escala Científica 1:1 como en Escala Exploratoria.
   material.onBeforeCompile = shader => {
     shader.uniforms.centroPlaneta = { value: centroPlaneta };
     shader.uniforms.radioPlaneta = { value: radio };
-    shader.vertexShader = `varying vec3 vPosicionAnillo;\n${shader.vertexShader}`
+    shader.vertexShader = `varying vec3 vPosicionAnillo;\nvarying vec3 vDesplazamientoCentro;\nvarying float vEscalaMundo;\n${shader.vertexShader}`
       .replace('#include <worldpos_vertex>',
-        '#include <worldpos_vertex>\nvPosicionAnillo = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    shader.fragmentShader = `varying vec3 vPosicionAnillo;\nuniform vec3 centroPlaneta;\nuniform float radioPlaneta;\n${shader.fragmentShader}`
+        '#include <worldpos_vertex>\nvPosicionAnillo = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvDesplazamientoCentro = mat3(modelMatrix) * transformed;\nvEscalaMundo = length(modelMatrix[0].xyz);');
+    shader.fragmentShader = `varying vec3 vPosicionAnillo;\nvarying vec3 vDesplazamientoCentro;\nvarying float vEscalaMundo;\nuniform vec3 centroPlaneta;\nuniform float radioPlaneta;\n${shader.fragmentShader}`
       .replace('#include <map_fragment>', `#include <map_fragment>
         vec3 haciaSol = normalize(-vPosicionAnillo);
-        vec3 haciaPlaneta = centroPlaneta - vPosicionAnillo;
+        vec3 haciaPlaneta = -vDesplazamientoCentro;
+        float radioEfectivo = radioPlaneta * max(vEscalaMundo, 1e-6);
         float delante = dot(haciaPlaneta, haciaSol);
         float distanciaEje = length(haciaPlaneta - haciaSol * max(delante, 0.0));
         float sombra = step(0.0, delante) *
-          (1.0 - smoothstep(radioPlaneta * 0.92, radioPlaneta * 1.25, distanciaEje));
+          (1.0 - smoothstep(radioEfectivo * 0.92, radioEfectivo * 1.25, distanciaEje));
         diffuseColor.rgb *= 1.0 - 0.6 * sombra;
       `);
   };
-  material.customProgramCacheKey = () => 'sombra-anillos-v1';
+  material.customProgramCacheKey = () => 'sombra-anillos-v2';
   const anillos = new THREE.Mesh(geometria, material);
   anillos.rotation.x = -Math.PI / 2;
   grupo.add(anillos);
@@ -116,7 +118,7 @@ export function crearPlaneta(planeta) {
   });
   if (planeta.nombre === 'Tierra') {
     // El mapa original deja el océano casi negro (muy especular). Conservamos
-    // la textura y limitamos solo la rugosidad mínima en el shader.
+    // la textura y limitamos solo la rugosidad mínima en el sombreador.
     material.onBeforeCompile = shader => {
       shader.fragmentShader = shader.fragmentShader.replace(
         '#include <roughnessmap_fragment>',

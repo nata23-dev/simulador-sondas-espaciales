@@ -1,0 +1,68 @@
+{
+  "datasetId": "hist-bridge-v2-1989-min",
+  "configSha256": "504a7db4bf52b36a54a67c9b737c94852506e04d794e4465cc0ef5e34122103d",
+  "sha256": "083e8b2d2085645268089a5a19d20a2fe7e5e05e94383b7db67094d3ed20a1fc",
+  "catalogEntry": {
+    "id": "hist-bridge-v2-1989-min",
+    "file": "data/historical/probes/hist-bridge-v2-1989-min.json",
+    "format": "horizons-compact-v1",
+    "formatVersion": 1,
+    "bodyIds": [
+      "-32"
+    ],
+    "coverage": {
+      "startJdTdb": 2447767.834027778,
+      "endJdTdb": 2447767.875
+    },
+    "bodyCoverage": {
+      "-32": {
+        "startJdTdb": 2447767.834027778,
+        "endJdTdb": 2447767.875
+      }
+    },
+    "cadenceSeconds": 60,
+    "frameId": "ICRF_ECLIPTIC_J2000",
+    "origin": "SUN_CENTER",
+    "fileUnits": {
+      "position": "km",
+      "velocity": "km/s"
+    },
+    "source": "NASA/JPL Horizons",
+    "sourceVersion": "1.2"
+  },
+  "apiVersion": "1.2",
+  "solutionIds": [
+    {
+      "bodyId": "-32",
+      "solutionId": "Voyager_2_ST+refit2022_m"
+    }
+  ],
+  "responses": [
+    {
+      "bodyId": "-32",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'-32'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1989-08-29 08:01'",
+        "STOP_TIME": "'1989-08-29 09:00'",
+        "STEP_SIZE": "'1 m'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:39:24.018Z",
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "7d83e7e3394e2ad92de5ef025f1421855282db78890b29092e18fb45f14ee12a"
+    }
+  ]
+}

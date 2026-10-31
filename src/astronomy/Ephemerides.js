@@ -35,6 +35,7 @@ export async function cargarEfemerides() {
 }
 
 export function obtenerEstados(datos, fechaISO) {
+  // Las muestras están ordenadas por día; usamos UTC solo para localizar el índice TDB.
   const inicio = Date.parse(`${datos.metadatos.inicio}T00:00:00Z`);
   const fecha = Date.parse(`${fechaISO}T00:00:00Z`);
 
@@ -66,6 +67,7 @@ export function obtenerEstados(datos, fechaISO) {
 
     estados[nombre] = {
       ...registro,
+      // La distancia se deriva del vector original y no modifica la efeméride.
       distanciaAU: Math.hypot(p.x, p.y, p.z)
     };
   }

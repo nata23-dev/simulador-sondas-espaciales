@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 const loader = new THREE.TextureLoader();
 
-/** Loads a local texture and leaves the supplied fallback material intact on error. */
+/** Carga una textura local y conserva el material de respaldo si falla. */
 export function cargarTextura(nombre, onLoad, { color = true } = {}) {
   const ruta = `${import.meta.env.BASE_URL}textures/${nombre}`;
   loader.load(

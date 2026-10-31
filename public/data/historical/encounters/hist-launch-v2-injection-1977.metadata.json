@@ -1,0 +1,103 @@
+{
+  "datasetId": "hist-launch-v2-injection-1977",
+  "configSha256": "09ec2dda503317ceb5edbfcbd619a4bb6ddfda9ba6ea939a56b1122119c4d792",
+  "sha256": "69d67a616ff6c00cc533cb52e11990e147bac49fead6ff72d659b1780eecc9b4",
+  "catalogEntry": {
+    "id": "hist-launch-v2-injection-1977",
+    "file": "data/historical/encounters/hist-launch-v2-injection-1977.json",
+    "format": "horizons-compact-v1",
+    "formatVersion": 1,
+    "bodyIds": [
+      "-32",
+      "399"
+    ],
+    "coverage": {
+      "startJdTdb": 2443376.147916667,
+      "endJdTdb": 2443376.5
+    },
+    "bodyCoverage": {
+      "399": {
+        "startJdTdb": 2443376.147916667,
+        "endJdTdb": 2443376.5
+      },
+      "-32": {
+        "startJdTdb": 2443376.147916667,
+        "endJdTdb": 2443376.5
+      }
+    },
+    "cadenceSeconds": 180,
+    "frameId": "ICRF_ECLIPTIC_J2000",
+    "origin": "SUN_CENTER",
+    "fileUnits": {
+      "position": "km",
+      "velocity": "km/s"
+    },
+    "source": "NASA/JPL Horizons",
+    "sourceVersion": "1.2"
+  },
+  "apiVersion": "1.2",
+  "solutionIds": [
+    {
+      "bodyId": "-32",
+      "solutionId": "Voyager_2_ST+refit2022_m"
+    },
+    {
+      "bodyId": "399",
+      "solutionId": "DE441"
+    }
+  ],
+  "responses": [
+    {
+      "bodyId": "-32",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'-32'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1977-08-20 15:33'",
+        "STOP_TIME": "'1977-08-21 00:00'",
+        "STEP_SIZE": "'3 m'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:38:21.079Z",
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "dcea07d7570735b7d829cdc192a3b7247eb7f2f5bfa02a98c48d9ce448c71e4f"
+    },
+    {
+      "bodyId": "399",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'399'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1977-08-20 15:33'",
+        "STOP_TIME": "'1977-08-21 00:00'",
+        "STEP_SIZE": "'3 m'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:38:22.467Z",
+      "apiVersion": "1.2",
+      "solutionId": "DE441",
+      "responseSha256": "5d06003466811a52522dd40af40d3554c19fe17ee45dfdf80eda6e54229abccf"
+    }
+  ]
+}

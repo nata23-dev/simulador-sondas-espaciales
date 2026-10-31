@@ -1,0 +1,23 @@
+{
+  "datasetId": "horizons-planets-2026-10",
+  "bodies": [
+    { "id": "199", "type": "planet" },
+    { "id": "299", "type": "planet" },
+    { "id": "399", "type": "planet" },
+    { "id": "499", "type": "planet" },
+    { "id": "599", "type": "planet" },
+    { "id": "699", "type": "planet" },
+    { "id": "799", "type": "planet" },
+    { "id": "899", "type": "planet" }
+  ],
+  "startTdb": "2026-10-01",
+  "endTdb": "2026-11-01",
+  "cadenceSeconds": 86400,
+  "origin": "SUN_CENTER",
+  "frameId": "ICRF_ECLIPTIC_J2000",
+  "timeScale": "TDB",
+  "fileUnits": { "position": "AU", "velocity": "AU/dia" },
+  "outputFile": "public/data/efemerides-2026.json",
+  "minIntervalMs": 1000,
+  "maxRetries": 3
+}

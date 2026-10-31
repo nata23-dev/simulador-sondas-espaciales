@@ -15,6 +15,7 @@ export function crearSelectorPlanetas({ alElegir, alExplorar, alVistaGeneral }) 
     selector.append(opcion);
   }
 
+  // Elegir un destino y comenzar a explorarlo son acciones separadas.
   selector.addEventListener('change', () => {
     if (selector.value) alElegir(selector.value);
   });

@@ -1,0 +1,103 @@
+{
+  "datasetId": "hist-flyby-v2-uranus-1986",
+  "configSha256": "b4017fc41088a60a10d20f1fd4271c1996475c0ff6e5b8327198d38478148edd",
+  "sha256": "9f12ac2e8c978cfc0dda1625be4e13ee570afa156abb17e0bb287a106b1ea395",
+  "catalogEntry": {
+    "id": "hist-flyby-v2-uranus-1986",
+    "file": "data/historical/encounters/hist-flyby-v2-uranus-1986.json",
+    "format": "horizons-compact-v1",
+    "formatVersion": 1,
+    "bodyIds": [
+      "-32",
+      "799"
+    ],
+    "coverage": {
+      "startJdTdb": 2446450.5,
+      "endJdTdb": 2446459.5
+    },
+    "bodyCoverage": {
+      "799": {
+        "startJdTdb": 2446450.5,
+        "endJdTdb": 2446459.5
+      },
+      "-32": {
+        "startJdTdb": 2446450.5,
+        "endJdTdb": 2446459.5
+      }
+    },
+    "cadenceSeconds": 1200,
+    "frameId": "ICRF_ECLIPTIC_J2000",
+    "origin": "SUN_CENTER",
+    "fileUnits": {
+      "position": "km",
+      "velocity": "km/s"
+    },
+    "source": "NASA/JPL Horizons",
+    "sourceVersion": "1.2"
+  },
+  "apiVersion": "1.2",
+  "solutionIds": [
+    {
+      "bodyId": "-32",
+      "solutionId": "Voyager_2_ST+refit2022_m"
+    },
+    {
+      "bodyId": "799",
+      "solutionId": "ura184_merged"
+    }
+  ],
+  "responses": [
+    {
+      "bodyId": "-32",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'-32'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1986-01-20 00:00'",
+        "STOP_TIME": "'1986-01-29 00:00'",
+        "STEP_SIZE": "'20 m'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:38:53.140Z",
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "53283def8c8bb4b584cde510bec5a799eeec322f115434da08001edc55faa55a"
+    },
+    {
+      "bodyId": "799",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'799'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'1986-01-20 00:00'",
+        "STOP_TIME": "'1986-01-29 00:00'",
+        "STEP_SIZE": "'20 m'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-10-30T23:38:54.708Z",
+      "apiVersion": "1.2",
+      "solutionId": "ura184_merged",
+      "responseSha256": "f8e5d36623ef6765c19bc34a7f47ad88214fd071d1b94b3104c186b2bb1c5abd"
+    }
+  ]
+}

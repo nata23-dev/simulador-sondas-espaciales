@@ -1,0 +1,1075 @@
+{
+  "catalogVersion": 1,
+  "datasets": [
+    {
+      "id": "hist-launch-v2-injection-1977",
+      "file": "data/historical/encounters/hist-launch-v2-injection-1977.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32",
+        "399"
+      ],
+      "coverage": {
+        "startJdTdb": 2443376.147916667,
+        "endJdTdb": 2443376.5
+      },
+      "bodyCoverage": {
+        "399": {
+          "startJdTdb": 2443376.147916667,
+          "endJdTdb": 2443376.5
+        },
+        "-32": {
+          "startJdTdb": 2443376.147916667,
+          "endJdTdb": 2443376.5
+        }
+      },
+      "cadenceSeconds": 180,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-launch-v2-departure-1977",
+      "file": "data/historical/encounters/hist-launch-v2-departure-1977.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32",
+        "399"
+      ],
+      "coverage": {
+        "startJdTdb": 2443376.5,
+        "endJdTdb": 2443384.5
+      },
+      "bodyCoverage": {
+        "399": {
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2443384.5
+        },
+        "-32": {
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2443384.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-launch-v1-injection-1977",
+      "file": "data/historical/encounters/hist-launch-v1-injection-1977.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31",
+        "-32",
+        "399"
+      ],
+      "coverage": {
+        "startJdTdb": 2443392.083333333,
+        "endJdTdb": 2443392.5
+      },
+      "bodyCoverage": {
+        "399": {
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5
+        },
+        "-31": {
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5
+        },
+        "-32": {
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5
+        }
+      },
+      "cadenceSeconds": 300,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-launch-v1-departure-1977",
+      "file": "data/historical/encounters/hist-launch-v1-departure-1977.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31",
+        "-32",
+        "399"
+      ],
+      "coverage": {
+        "startJdTdb": 2443392.5,
+        "endJdTdb": 2443400.5
+      },
+      "bodyCoverage": {
+        "399": {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5
+        },
+        "-31": {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5
+        },
+        "-32": {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-flyby-v1-jupiter-1979",
+      "file": "data/historical/encounters/hist-flyby-v1-jupiter-1979.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31",
+        "599",
+        "501"
+      ],
+      "coverage": {
+        "startJdTdb": 2443933.5,
+        "endJdTdb": 2443942.5
+      },
+      "bodyCoverage": {
+        "501": {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        },
+        "599": {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        },
+        "-31": {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-flyby-v2-jupiter-1979",
+      "file": "data/historical/encounters/hist-flyby-v2-jupiter-1979.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32",
+        "599",
+        "501"
+      ],
+      "coverage": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      },
+      "bodyCoverage": {
+        "501": {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        },
+        "599": {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        },
+        "-32": {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-flyby-v1-saturn-1980",
+      "file": "data/historical/encounters/hist-flyby-v1-saturn-1980.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31",
+        "699",
+        "606"
+      ],
+      "coverage": {
+        "startJdTdb": 2444551.5,
+        "endJdTdb": 2444560.5
+      },
+      "bodyCoverage": {
+        "606": {
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5
+        },
+        "699": {
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5
+        },
+        "-31": {
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-flyby-v2-saturn-1981",
+      "file": "data/historical/encounters/hist-flyby-v2-saturn-1981.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32",
+        "699",
+        "606"
+      ],
+      "coverage": {
+        "startJdTdb": 2444838.5,
+        "endJdTdb": 2444846.5
+      },
+      "bodyCoverage": {
+        "606": {
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5
+        },
+        "699": {
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5
+        },
+        "-32": {
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-flyby-v2-uranus-1986",
+      "file": "data/historical/encounters/hist-flyby-v2-uranus-1986.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32",
+        "799"
+      ],
+      "coverage": {
+        "startJdTdb": 2446450.5,
+        "endJdTdb": 2446459.5
+      },
+      "bodyCoverage": {
+        "799": {
+          "startJdTdb": 2446450.5,
+          "endJdTdb": 2446459.5
+        },
+        "-32": {
+          "startJdTdb": 2446450.5,
+          "endJdTdb": 2446459.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-flyby-v2-neptune-1989",
+      "file": "data/historical/encounters/hist-flyby-v2-neptune-1989.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32",
+        "899",
+        "801"
+      ],
+      "coverage": {
+        "startJdTdb": 2447759.5,
+        "endJdTdb": 2447767.833333333
+      },
+      "bodyCoverage": {
+        "801": {
+          "startJdTdb": 2447759.5,
+          "endJdTdb": 2447767.833333333
+        },
+        "899": {
+          "startJdTdb": 2447759.5,
+          "endJdTdb": 2447767.833333333
+        },
+        "-32": {
+          "startJdTdb": 2447759.5,
+          "endJdTdb": 2447767.833333333
+        }
+      },
+      "cadenceSeconds": 900,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-event-v1-palebluedot-1990",
+      "file": "data/historical/encounters/hist-event-v1-palebluedot-1990.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31",
+        "199",
+        "299",
+        "399",
+        "499",
+        "599",
+        "699",
+        "799",
+        "899"
+      ],
+      "coverage": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "bodyCoverage": {
+        "199": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "299": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "399": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "499": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "599": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "699": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "799": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "899": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "-31": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-cruise-v1-1977-1981",
+      "file": "data/historical/probes/hist-cruise-v1-1977-1981.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "startJdTdb": 2443392.5,
+        "endJdTdb": 2444605.5
+      },
+      "bodyCoverage": {
+        "-31": {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2444605.5
+        }
+      },
+      "cadenceSeconds": 86400,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-bridge-v1-1981-min",
+      "file": "data/historical/probes/hist-bridge-v1-1981-min.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "startJdTdb": 2444605.500694444,
+        "endJdTdb": 2444605.541666667
+      },
+      "bodyCoverage": {
+        "-31": {
+          "startJdTdb": 2444605.500694444,
+          "endJdTdb": 2444605.541666667
+        }
+      },
+      "cadenceSeconds": 60,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-bridge-v1-1981-hours",
+      "file": "data/historical/probes/hist-bridge-v1-1981-hours.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "startJdTdb": 2444605.541666667,
+        "endJdTdb": 2444606.5
+      },
+      "bodyCoverage": {
+        "-31": {
+          "startJdTdb": 2444605.541666667,
+          "endJdTdb": 2444606.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-cruise-v1-1981-1996",
+      "file": "data/historical/probes/hist-cruise-v1-1981-1996.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "startJdTdb": 2444606.5,
+        "endJdTdb": 2450186.5
+      },
+      "bodyCoverage": {
+        "-31": {
+          "startJdTdb": 2444606.5,
+          "endJdTdb": 2450186.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-cruise-v1-1996-2011",
+      "file": "data/historical/probes/hist-cruise-v1-1996-2011.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "startJdTdb": 2450186.5,
+        "endJdTdb": 2455766.5
+      },
+      "bodyCoverage": {
+        "-31": {
+          "startJdTdb": 2450186.5,
+          "endJdTdb": 2455766.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-cruise-v1-2011-2026",
+      "file": "data/historical/probes/hist-cruise-v1-2011-2026.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "startJdTdb": 2455766.5,
+        "endJdTdb": 2461346.5
+      },
+      "bodyCoverage": {
+        "-31": {
+          "startJdTdb": 2455766.5,
+          "endJdTdb": 2461346.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-cruise-v2-1977-1989",
+      "file": "data/historical/probes/hist-cruise-v2-1977-1989.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "startJdTdb": 2443376.5,
+        "endJdTdb": 2447767.5
+      },
+      "bodyCoverage": {
+        "-32": {
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2447767.5
+        }
+      },
+      "cadenceSeconds": 86400,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-bridge-v2-1989-min",
+      "file": "data/historical/probes/hist-bridge-v2-1989-min.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "startJdTdb": 2447767.834027778,
+        "endJdTdb": 2447767.875
+      },
+      "bodyCoverage": {
+        "-32": {
+          "startJdTdb": 2447767.834027778,
+          "endJdTdb": 2447767.875
+        }
+      },
+      "cadenceSeconds": 60,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-bridge-v2-1989-hours",
+      "file": "data/historical/probes/hist-bridge-v2-1989-hours.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "startJdTdb": 2447767.875,
+        "endJdTdb": 2447771.5
+      },
+      "bodyCoverage": {
+        "-32": {
+          "startJdTdb": 2447767.875,
+          "endJdTdb": 2447771.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-cruise-v2-1989-2002",
+      "file": "data/historical/probes/hist-cruise-v2-1989-2002.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "startJdTdb": 2447771.5,
+        "endJdTdb": 2452296.5
+      },
+      "bodyCoverage": {
+        "-32": {
+          "startJdTdb": 2447771.5,
+          "endJdTdb": 2452296.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-cruise-v2-2002-2014",
+      "file": "data/historical/probes/hist-cruise-v2-2002-2014.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "startJdTdb": 2452296.5,
+        "endJdTdb": 2456821.5
+      },
+      "bodyCoverage": {
+        "-32": {
+          "startJdTdb": 2452296.5,
+          "endJdTdb": 2456821.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-cruise-v2-2014-2026",
+      "file": "data/historical/probes/hist-cruise-v2-2014-2026.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "startJdTdb": 2456821.5,
+        "endJdTdb": 2461346.5
+      },
+      "bodyCoverage": {
+        "-32": {
+          "startJdTdb": 2456821.5,
+          "endJdTdb": 2461346.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-planets-outer-1977-2002",
+      "file": "data/historical/planets/hist-planets-outer-1977-2002.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "599",
+        "699",
+        "799",
+        "899"
+      ],
+      "coverage": {
+        "startJdTdb": 2443375.5,
+        "endJdTdb": 2452360.5
+      },
+      "bodyCoverage": {
+        "599": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2452360.5
+        },
+        "699": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2452360.5
+        },
+        "799": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2452360.5
+        },
+        "899": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2452360.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-planets-outer-2002-2026",
+      "file": "data/historical/planets/hist-planets-outer-2002-2026.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "599",
+        "699",
+        "799",
+        "899"
+      ],
+      "coverage": {
+        "startJdTdb": 2452360.5,
+        "endJdTdb": 2461350.5
+      },
+      "bodyCoverage": {
+        "599": {
+          "startJdTdb": 2452360.5,
+          "endJdTdb": 2461350.5
+        },
+        "699": {
+          "startJdTdb": 2452360.5,
+          "endJdTdb": 2461350.5
+        },
+        "799": {
+          "startJdTdb": 2452360.5,
+          "endJdTdb": 2461350.5
+        },
+        "899": {
+          "startJdTdb": 2452360.5,
+          "endJdTdb": 2461350.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-planets-inner-1977-1987",
+      "file": "data/historical/planets/hist-planets-inner-1977-1987.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "startJdTdb": 2443375.5,
+        "endJdTdb": 2446969.5
+      },
+      "bodyCoverage": {
+        "199": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2446969.5
+        },
+        "299": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2446969.5
+        },
+        "399": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2446969.5
+        },
+        "499": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2446969.5
+        }
+      },
+      "cadenceSeconds": 172800,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-planets-inner-1987-1997",
+      "file": "data/historical/planets/hist-planets-inner-1987-1997.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "startJdTdb": 2446969.5,
+        "endJdTdb": 2450563.5
+      },
+      "bodyCoverage": {
+        "199": {
+          "startJdTdb": 2446969.5,
+          "endJdTdb": 2450563.5
+        },
+        "299": {
+          "startJdTdb": 2446969.5,
+          "endJdTdb": 2450563.5
+        },
+        "399": {
+          "startJdTdb": 2446969.5,
+          "endJdTdb": 2450563.5
+        },
+        "499": {
+          "startJdTdb": 2446969.5,
+          "endJdTdb": 2450563.5
+        }
+      },
+      "cadenceSeconds": 172800,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-planets-inner-1997-2007",
+      "file": "data/historical/planets/hist-planets-inner-1997-2007.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "startJdTdb": 2450563.5,
+        "endJdTdb": 2454157.5
+      },
+      "bodyCoverage": {
+        "199": {
+          "startJdTdb": 2450563.5,
+          "endJdTdb": 2454157.5
+        },
+        "299": {
+          "startJdTdb": 2450563.5,
+          "endJdTdb": 2454157.5
+        },
+        "399": {
+          "startJdTdb": 2450563.5,
+          "endJdTdb": 2454157.5
+        },
+        "499": {
+          "startJdTdb": 2450563.5,
+          "endJdTdb": 2454157.5
+        }
+      },
+      "cadenceSeconds": 172800,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-planets-inner-2007-2016",
+      "file": "data/historical/planets/hist-planets-inner-2007-2016.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "startJdTdb": 2454157.5,
+        "endJdTdb": 2457751.5
+      },
+      "bodyCoverage": {
+        "199": {
+          "startJdTdb": 2454157.5,
+          "endJdTdb": 2457751.5
+        },
+        "299": {
+          "startJdTdb": 2454157.5,
+          "endJdTdb": 2457751.5
+        },
+        "399": {
+          "startJdTdb": 2454157.5,
+          "endJdTdb": 2457751.5
+        },
+        "499": {
+          "startJdTdb": 2454157.5,
+          "endJdTdb": 2457751.5
+        }
+      },
+      "cadenceSeconds": 172800,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "hist-planets-inner-2016-2026",
+      "file": "data/historical/planets/hist-planets-inner-2016-2026.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "startJdTdb": 2457751.5,
+        "endJdTdb": 2461347.5
+      },
+      "bodyCoverage": {
+        "199": {
+          "startJdTdb": 2457751.5,
+          "endJdTdb": 2461347.5
+        },
+        "299": {
+          "startJdTdb": 2457751.5,
+          "endJdTdb": 2461347.5
+        },
+        "399": {
+          "startJdTdb": 2457751.5,
+          "endJdTdb": 2461347.5
+        },
+        "499": {
+          "startJdTdb": 2457751.5,
+          "endJdTdb": 2461347.5
+        }
+      },
+      "cadenceSeconds": 172800,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    }
+  ]
+}

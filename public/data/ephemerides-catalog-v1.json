@@ -1,0 +1,19 @@
+{
+  "catalogVersion": 1,
+  "datasets": [
+    {
+      "id": "horizons-planets-2026-10",
+      "file": "data/efemerides-2026.json",
+      "format": "horizons-daily-v1",
+      "formatVersion": 1,
+      "bodyIds": ["199", "299", "399", "499", "599", "699", "799", "899"],
+      "coverage": { "startJdTdb": 2461314.5, "endJdTdb": 2461345.5 },
+      "cadenceSeconds": 86400,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": { "position": "AU", "velocity": "AU/dia" },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": null
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { cargarCatalogoHipparcos, direccionICRSEscena } from './StarCatalog.js';
 
-// La esfera sigue a la cámara y permanece dentro del far=10000 sin paralaje.
-const RADIO_CIELO = 1800;
+// La esfera sigue a la cámara y permanece dentro del plano lejano (> 350 AU), sin paralaje.
+const RADIO_CIELO = 14000;
 
 function colorEstelar(indiceBV, destino) {
   if (!Number.isFinite(indiceBV)) return destino.set(0xf5f3ed);

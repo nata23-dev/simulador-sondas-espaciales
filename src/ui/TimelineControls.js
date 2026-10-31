@@ -20,6 +20,7 @@ export function crearControlesTemporales(alCambiarFecha) {
   let fechas = [];
   let indice = 0;
   let temporizador = null;
+  let observadorVelocidad = null;
 
   function actualizar() {
     const disponible = fechas.length > 0;
@@ -58,7 +59,20 @@ export function crearControlesTemporales(alCambiarFecha) {
     return true;
   }
 
+  function sincronizarFechaSilenciosa(fecha, textoEstado = null, etiquetaHoraTdb = null) {
+    const nuevoIndice = fechas.indexOf(fecha);
+    if (nuevoIndice >= 0) indice = nuevoIndice;
+    actualizar();
+    if (etiquetaHoraTdb && fechas[indice]) {
+      fechaTexto.textContent = `${fechaLegible.format(new Date(`${fechas[indice]}T00:00:00Z`))} · ${etiquetaHoraTdb} TDB`;
+    }
+    if (textoEstado !== null) {
+      estado.textContent = textoEstado;
+    }
+  }
+
   function iniciarTemporizador() {
+    // Cada pulso avanza una muestra diaria; la velocidad cambia el intervalo entre pulsos.
     if (temporizador !== null) clearInterval(temporizador);
     temporizador = setInterval(() => {
       if (indice + 1 >= fechas.length) {
@@ -94,6 +108,7 @@ export function crearControlesTemporales(alCambiarFecha) {
   velocidad.addEventListener('change', () => {
     if (temporizador !== null) iniciarTemporizador();
     else actualizar();
+    observadorVelocidad?.(Number(velocidad.value) || 1);
   });
 
   function configurar(datos, fechaInicial) {
@@ -103,7 +118,7 @@ export function crearControlesTemporales(alCambiarFecha) {
       throw new Error('El intervalo de fechas de Horizons no es válido.');
     }
 
-    // Date sólo enumera días civiles; las muestras siguen etiquetadas en TDB.
+    // El control de fecha enumera días civiles; las muestras siguen etiquetadas en TDB.
     const disponibles = [];
     for (let dia = inicio; dia <= fin; dia += MILISEGUNDOS_DIA) {
       const fecha = new Date(dia).toISOString().slice(0, 10);
@@ -123,5 +138,12 @@ export function crearControlesTemporales(alCambiarFecha) {
   }
 
   actualizar();
-  return { configurar, detener, obtenerFecha: () => fechas[indice] ?? null };
+  return {
+    configurar,
+    detener,
+    sincronizarFechaSilenciosa,
+    obtenerFecha: () => fechas[indice] ?? null,
+    obtenerVelocidad: () => Number(velocidad.value) || 1,
+    alCambiarVelocidad(fn) { observadorVelocidad = fn; }
+  };
 }

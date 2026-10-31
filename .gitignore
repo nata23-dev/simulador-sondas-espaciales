@@ -26,5 +26,6 @@ dist-ssr
 # Archivos locales de pruebas y copias de recuperación
 /.navigation-chrome/
 /capturas/
+/evidencias/
 /navigation-*.png
 /recuperacion-*.zip

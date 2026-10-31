@@ -1,0 +1,284 @@
+{
+  "formatVersion": 1,
+  "purpose": "Independent off-grid Horizons reference samples for quantitative Hermite validation",
+  "source": "NASA/JPL Horizons",
+  "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+  "origin": "SUN_CENTER",
+  "frameId": "ICRF_ECLIPTIC_J2000",
+  "timeScale": "TDB",
+  "samples": [
+    {
+      "id": "v1-cruise-inner-1978",
+      "bodyId": "-31",
+      "type": "probe",
+      "jdTdb": 2443675,
+      "labelTdb": "A.D. 1978-Jun-15 12:00:00.0000",
+      "positionKm": {
+        "x": -166657981.7646257,
+        "y": 488089678.3986512,
+        "z": 7573271.380348802
+      },
+      "velocityKmPerS": {
+        "x": -15.59036942396206,
+        "y": 9.676170496780584,
+        "z": 0.08541813302178314
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_1_ST+refit2022_m",
+      "responseSha256": "3cde900fb381f682f80f59f9e44b5568208fa9e1f6bae5b0e6d54d5396e547c7",
+      "acquiredAtUtc": "2026-10-30T23:40:16.808Z"
+    },
+    {
+      "id": "v1-jupiter-flyby-1979",
+      "bodyId": "-31",
+      "type": "probe",
+      "jdTdb": 2443938.010416667,
+      "labelTdb": "A.D. 1979-Mar-05 12:15:00.0000",
+      "positionKm": {
+        "x": -482014892.8877298,
+        "y": 627781520.8730215,
+        "z": 8200503.98339507
+      },
+      "velocityKmPerS": {
+        "x": -35.44660684062485,
+        "y": 7.487172078281755,
+        "z": 1.247871375929194
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_1_ST+refit2022_m",
+      "responseSha256": "d4cb1fa68902c14d8bc4775c5920107fcd14c6b504a6ab0b5a30f1d8153ee7a5",
+      "acquiredAtUtc": "2026-10-30T23:40:18.190Z"
+    },
+    {
+      "id": "v1-saturn-flyby-1980",
+      "bodyId": "-31",
+      "type": "probe",
+      "jdTdb": 2444556.493055556,
+      "labelTdb": "A.D. 1980-Nov-12 23:50:00.0000",
+      "positionKm": {
+        "x": -1421439528.846212,
+        "y": -54563252.71492492,
+        "z": 57281351.64076753
+      },
+      "velocityKmPerS": {
+        "x": -19.80038900817327,
+        "y": -20.02538017908729,
+        "z": 12.31066561047036
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_1_ST+refit2022_m",
+      "responseSha256": "64d9eca73469ea5b918389854efb9b0b89cc666f7143a25a2b249350fc914d90",
+      "acquiredAtUtc": "2026-10-30T23:40:19.690Z"
+    },
+    {
+      "id": "v1-palebluedot-1990",
+      "bodyId": "-31",
+      "type": "probe",
+      "jdTdb": 2447936.6875,
+      "labelTdb": "A.D. 1990-Feb-14 04:30:00.0000",
+      "positionKm": {
+        "x": -2354906389.736729,
+        "y": -4496522747.01685,
+        "z": 3269782618.287237
+      },
+      "velocityKmPerS": {
+        "x": -2.356920630183142,
+        "y": -14.369387347855,
+        "z": 10.38074643310375
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_1_ST+refit2022_m",
+      "responseSha256": "8bfb28b83f1453f43a3a85a998d895e3ba40627dca4a5f0158dd8556c6cb3572",
+      "acquiredAtUtc": "2026-10-30T23:40:21.077Z"
+    },
+    {
+      "id": "v1-heliopause-2012",
+      "bodyId": "-31",
+      "type": "probe",
+      "jdTdb": 2456165,
+      "labelTdb": "A.D. 2012-Aug-25 12:00:00.0000",
+      "positionKm": {
+        "x": -3889996269.758802,
+        "y": -14395294506.40184,
+        "z": 10421123798.11057
+      },
+      "velocityKmPerS": {
+        "x": -2.095803929327749,
+        "y": -13.70292666090781,
+        "z": 9.903454000066457
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_1_ST+refit2022_m",
+      "responseSha256": "af698eaf7ee09ac6d4d8dd0d2bcc7471874ca38bca92ffc12b6f678dea344045",
+      "acquiredAtUtc": "2026-10-30T23:40:22.442Z"
+    },
+    {
+      "id": "v1-interstellar-2025",
+      "bodyId": "-31",
+      "type": "probe",
+      "jdTdb": 2460842,
+      "labelTdb": "A.D. 2025-Jun-15 12:00:00.0000",
+      "positionKm": {
+        "x": -4726920178.363365,
+        "y": -19913008891.60578,
+        "z": 14407999481.18334
+      },
+      "velocityKmPerS": {
+        "x": -2.073745116730707,
+        "y": -13.6103943388132,
+        "z": 9.836715327197702
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_1_ST+refit2022_m",
+      "responseSha256": "567680982ebd3b9b483c5a5d67c2a652236347f228a43b08c57e8e59e9d65e1a",
+      "acquiredAtUtc": "2026-10-30T23:40:23.818Z"
+    },
+    {
+      "id": "v2-solo-postlaunch-1977",
+      "bodyId": "-32",
+      "type": "probe",
+      "jdTdb": 2443381.020833333,
+      "labelTdb": "A.D. 1977-Aug-25 12:30:00.0000",
+      "positionKm": {
+        "x": 135117900.8185292,
+        "y": -65866095.8764344,
+        "z": 1376036.206935313
+      },
+      "velocityKmPerS": {
+        "x": 15.59775591227697,
+        "y": 35.60361771981239,
+        "z": 3.247429712941633
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "bcfc181ad0c08dd4c211c63119e1e2fe535a35ec0b4f8869860e3ca008128c23",
+      "acquiredAtUtc": "2026-10-30T23:40:25.208Z"
+    },
+    {
+      "id": "v2-jupiter-flyby-1979",
+      "bodyId": "-32",
+      "type": "probe",
+      "jdTdb": 2444064.427083333,
+      "labelTdb": "A.D. 1979-Jul-09 22:15:00.0000",
+      "positionKm": {
+        "x": -588448753.6729395,
+        "y": 538102200.339331,
+        "z": 10895790.35952049
+      },
+      "velocityKmPerS": {
+        "x": -24.83793066036061,
+        "y": 3.489462302010361,
+        "z": -0.02900784174562721
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "ea9c3bf0aeecaf9efda0b5b38130d641a15094b7411e82f52e3c22b5713d0e5e",
+      "acquiredAtUtc": "2026-10-30T23:40:26.585Z"
+    },
+    {
+      "id": "v2-saturn-flyby-1981",
+      "bodyId": "-32",
+      "type": "probe",
+      "jdTdb": 2444842.645833333,
+      "labelTdb": "A.D. 1981-Aug-26 03:30:00.0000",
+      "positionKm": {
+        "x": -1405206595.834436,
+        "y": -292080919.6379495,
+        "z": 60934715.70843703
+      },
+      "velocityKmPerS": {
+        "x": -10.53936435382452,
+        "y": -30.51004587311155,
+        "z": 0.1266891720941619
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "811547e360bd08a1fb19f953ac736875fae9624c8ba0d749f9b0cd135363fb6f",
+      "acquiredAtUtc": "2026-10-30T23:40:27.965Z"
+    },
+    {
+      "id": "v2-uranus-flyby-1986",
+      "bodyId": "-32",
+      "type": "probe",
+      "jdTdb": 2446455.256944444,
+      "labelTdb": "A.D. 1986-Jan-24 18:10:00.0000",
+      "positionKm": {
+        "x": -548825244.662366,
+        "y": -2807585594.727172,
+        "z": -3314040.292195678
+      },
+      "velocityKmPerS": {
+        "x": 11.08360466941718,
+        "y": -19.07704249979892,
+        "z": 0.187153288115752
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "957d141854ad0cbb5934e4b5156261979312337678a2a99f89f6589a43f32dff",
+      "acquiredAtUtc": "2026-10-30T23:40:29.330Z"
+    },
+    {
+      "id": "v2-neptune-flyby-1989",
+      "bodyId": "-32",
+      "type": "probe",
+      "jdTdb": 2447763.659722222,
+      "labelTdb": "A.D. 1989-Aug-25 03:50:00.0000",
+      "positionKm": {
+        "x": 897653182.3700919,
+        "y": -4429280049.767509,
+        "z": 70555269.83522868
+      },
+      "velocityKmPerS": {
+        "x": 12.99065693772128,
+        "y": -23.65439892023716,
+        "z": -7.482986667461033
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "e28fc3869790c208a98de61a48597ac115479bb61f6fbe057868e5da7a241240",
+      "acquiredAtUtc": "2026-10-30T23:40:30.724Z"
+    },
+    {
+      "id": "v2-heliopause-2018",
+      "bodyId": "-32",
+      "type": "probe",
+      "jdTdb": 2458428,
+      "labelTdb": "A.D. 2018-Nov-05 12:00:00.0000",
+      "positionKm": {
+        "x": 4913585629.288556,
+        "y": -13443286977.73939,
+        "z": -10590884598.77271
+      },
+      "velocityKmPerS": {
+        "x": 4.251535874053398,
+        "y": -9.404562984081448,
+        "z": -11.36941188139306
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "1e9aff113e5656ab858c44dafa05b10982c7caeec942b0b9262be6c9b92cbb73",
+      "acquiredAtUtc": "2026-10-30T23:40:32.097Z"
+    },
+    {
+      "id": "v2-interstellar-2025",
+      "bodyId": "-32",
+      "type": "probe",
+      "jdTdb": 2460842,
+      "labelTdb": "A.D. 2025-Jun-15 12:00:00.0000",
+      "positionKm": {
+        "x": 5795893610.399393,
+        "y": -15395898298.58438,
+        "z": -12957279253.10151
+      },
+      "velocityKmPerS": {
+        "x": 4.204693025105599,
+        "y": -9.341525083424925,
+        "z": -11.32416338621535
+      },
+      "apiVersion": "1.2",
+      "solutionId": "Voyager_2_ST+refit2022_m",
+      "responseSha256": "24f6bf08d1f09728f8b53e89d652b3cfc71628cfef0b82d48c765f31757550db",
+      "acquiredAtUtc": "2026-10-30T23:40:33.473Z"
+    }
+  ]
+}

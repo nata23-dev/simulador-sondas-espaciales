@@ -1,26 +1,46 @@
 import * as THREE from 'three';
+import { REGIONES_SISTEMA } from './ScaleModeConfig.js';
 
-// Oblique scientific overview; the cinematic view travels to a planet.
+// La vista general conserva un ángulo oblicuo; la cinematográfica viaja al planeta.
 const DIRECCION_CIENTIFICA = new THREE.Vector3(-0.32, 0.45, 0.83).normalize();
 const HOLGURA_RADIO = 1.18;
 const DISTANCIA_MAXIMA_ENCUADRE = 6000;
+const PLANETAS_INTERIORES = new Set(['Mercurio', 'Venus', 'Tierra', 'Marte']);
 
-function cuerposEnVista(objetos) {
-  return [
-    { posicion: new THREE.Vector3(), radio: 5.8 },
-    ...[...objetos.keys()].map(nombre => ({
-      posicion: objetos.get(nombre).posicion.position,
-      radio: objetos.get(nombre).planeta.radio * (nombre === 'Saturno' ? 2.02 : 1.055)
-    }))
-  ];
+function cuerposEnVista(objetos, { region = REGIONES_SISTEMA.COMPLETO, usarRadiosActuales = false, sonda = null } = {}) {
+  const radioSol = usarRadiosActuales ? 0.5 : 5.8;
+  const lista = [{ posicion: new THREE.Vector3(), radio: radioSol }];
+
+  for (const [nombre, objeto] of objetos.entries()) {
+    if (region === REGIONES_SISTEMA.INTERIOR && !PLANETAS_INTERIORES.has(nombre)) {
+      continue;
+    }
+    const escalaNodo = usarRadiosActuales && objeto.posicion?.scale
+      ? objeto.posicion.scale.x
+      : 1;
+    const radioBase = objeto.planeta.radio * escalaNodo * (nombre === 'Saturno' ? 2.02 : 1.055);
+    lista.push({
+      posicion: objeto.posicion.position,
+      radio: Math.max(radioBase, 0.02)
+    });
+  }
+
+  if (region === REGIONES_SISTEMA.INTERIOR && sonda?.posicion?.visible) {
+    lista.push({
+      posicion: sonda.posicion.position,
+      radio: 0.4
+    });
+  }
+
+  return lista;
 }
 
 /**
  * Encuadra discos visuales dentro del área que queda libre entre los paneles.
  * Resuelve la distancia mínima y los desplazamientos lateral y vertical del
- * objetivo con el FOV real; nunca modifica posiciones ni escala astronómica.
+ * objetivo con el campo de visión real; nunca modifica posiciones ni escala astronómica.
  */
-export function calcularEncuadreVista(camera, objetos, zona) {
+export function calcularEncuadreVista(camera, objetos, zona, opciones = null) {
   const direccion = DIRECCION_CIENTIFICA;
 
   const derecha = new THREE.Vector3().crossVectors(camera.up, direccion).normalize();
@@ -31,7 +51,7 @@ export function calcularEncuadreVista(camera, objetos, zona) {
   const derechaNDC = 2 * zona.right / zona.width - 1;
   const superior = 1 - 2 * zona.top / zona.height;
   const inferior = 1 - 2 * zona.bottom / zona.height;
-  const cuerpos = cuerposEnVista(objetos);
+  const cuerpos = cuerposEnVista(objetos, opciones ?? {});
 
   function limites(distancia) {
     let minimoX = -Infinity;
@@ -57,11 +77,12 @@ export function calcularEncuadreVista(camera, objetos, zona) {
       : null;
   }
 
-  let inferiorDistancia = 8;
+  let inferiorDistancia = opciones?.region === REGIONES_SISTEMA.INTERIOR ? 2 : 8;
   let superiorDistancia = DISTANCIA_MAXIMA_ENCUADRE;
   if (!limites(superiorDistancia)) {
     throw new Error('No se pudo encuadrar la vista con el tamaño actual del lienzo.');
   }
+  // La búsqueda binaria encuentra la distancia mínima que deja visibles todos los discos.
   for (let i = 0; i < 42; i++) {
     const medio = (inferiorDistancia + superiorDistancia) / 2;
     if (limites(medio)) superiorDistancia = medio;
@@ -69,10 +90,14 @@ export function calcularEncuadreVista(camera, objetos, zona) {
   }
 
   // Reserva espacio adicional para etiquetas, movimiento orbital y perspectiva.
+  const usarOpcionesRegion = Boolean(opciones);
+  const margenMultiplicador = opciones?.region === REGIONES_SISTEMA.INTERIOR ? 1.24 : 1.10;
   const radioSolarMaximo = 75;
-  const distanciaSolar = 5.8 * zona.height / (2 * tanVertical * radioSolarMaximo);
+  const distanciaSolar = usarOpcionesRegion
+    ? 18
+    : 5.8 * zona.height / (2 * tanVertical * radioSolarMaximo);
   const distancia = Math.min(DISTANCIA_MAXIMA_ENCUADRE, Math.max(
-    superiorDistancia * 1.10 + 1,
+    superiorDistancia * margenMultiplicador + 1,
     distanciaSolar
   ));
   const rango = limites(distancia);

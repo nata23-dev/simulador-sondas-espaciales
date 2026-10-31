@@ -1,4 +1,8 @@
 import * as THREE from 'three';
+import {
+  MODOS_ESCALA_VISUAL,
+  calcularEscalaObjetivoSol
+} from './ScaleModeConfig.js';
 
 const superficieVertex = `
   varying vec3 vPosicion;
@@ -85,6 +89,26 @@ const coronaFragment = `
   }
 `;
 
+function crearTexturaDestelloSolar() {
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  const grad = ctx.createRadialGradient(64, 64, 1, 64, 64, 62);
+  grad.addColorStop(0, 'rgba(255, 250, 236, 1.0)');
+  grad.addColorStop(0.12, 'rgba(255, 214, 145, 0.85)');
+  grad.addColorStop(0.35, 'rgba(255, 138, 48, 0.25)');
+  grad.addColorStop(0.7, 'rgba(255, 102, 24, 0.05)');
+  grad.addColorStop(1, 'rgba(255, 90, 15, 0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 128, 128);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
 export function crearSol() {
   const grupo = new THREE.Group();
   const material = new THREE.ShaderMaterial({
@@ -95,7 +119,7 @@ export function crearSol() {
   const superficie = new THREE.Mesh(new THREE.SphereGeometry(5, 64, 48), material);
   grupo.add(superficie);
 
-  // Aproximación local de bloom: una sola lámina aditiva, sin desenfocar planetas ni estrellas.
+  // El resplandor usa una sola lámina aditiva, sin desenfocar planetas ni estrellas.
   const corona = new THREE.Mesh(
     new THREE.PlaneGeometry(46, 46),
     new THREE.ShaderMaterial({
@@ -112,21 +136,71 @@ export function crearSol() {
   grupo.add(corona);
   const intensidadCorona = corona.material.uniforms.uIntensidad;
 
-  // Las órbitas están comprimidas para la visualización: esta potencia se calibra en
-  // unidades de la escena y no representa luminosidad ni distancias astronómicas.
+  // Resplandor estelar puntual cuando el Sol se observa a escala física 1:1 desde grandes distancias.
+  const materialDestello = new THREE.SpriteMaterial({
+    map: crearTexturaDestelloSolar(),
+    color: 0xffe8c2,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    toneMapped: false
+  });
+  const destelloLejano = new THREE.Sprite(materialDestello);
+  destelloLejano.renderOrder = 2;
+  grupo.add(destelloLejano);
+
+  // La intensidad se calibra para las unidades de la escena; las posiciones
+  // heliocéntricas siguen proporcionales y la luz no simula luminosidad física.
   const luz = new THREE.PointLight(0xfff3db, 4300, 0, 2);
   grupo.add(luz);
+
+  let modoEscala = MODOS_ESCALA_VISUAL.CIENTIFICA;
+  let escalaActual = calcularEscalaObjetivoSol({ modoEscala, distanciaCamaraSol: 900 });
+  superficie.scale.setScalar(escalaActual);
+  corona.scale.setScalar(escalaActual);
 
   return {
     grupo,
     luz,
+    radioActualEscena: () => 5 * escalaActual,
+    establecerModoEscala(nuevoModo) {
+      if (nuevoModo === MODOS_ESCALA_VISUAL.CIENTIFICA || nuevoModo === MODOS_ESCALA_VISUAL.EXPLORATORIA) {
+        modoEscala = nuevoModo;
+      }
+    },
     actualizar(segundos, camera) {
       material.uniforms.uTiempo.value += segundos;
       superficie.rotation.y += segundos * 0.0025;
       corona.quaternion.copy(camera.quaternion);
+
+      const distanciaSol = camera.position.length();
+      const objetivoEscala = calcularEscalaObjetivoSol({
+        modoEscala,
+        distanciaCamaraSol: distanciaSol
+      });
+      const mezcla = 1 - Math.exp(-7 * Math.max(segundos, 0.001));
+      escalaActual += (objetivoEscala - escalaActual) * mezcla;
+      superficie.scale.setScalar(escalaActual);
+      corona.scale.setScalar(escalaActual);
+
       intensidadCorona.value = THREE.MathUtils.lerp(
-        0.62, 1, THREE.MathUtils.smoothstep(camera.position.length(), 30, 140)
+        0.62, 1, THREE.MathUtils.smoothstep(distanciaSol, 30 * escalaActual, 140 * escalaActual)
       );
+
+      // Si el disco físico solar subtiende un ángulo muy pequeño, el destello puntual mantiene su presencia estelar
+      // compensando el FOV activo para conservar tamaño angular aparente limpio incluso con teleobjetivo ISS (0,424°).
+      const radioEfectivo = 5 * escalaActual;
+      const factorFov = Math.tan(THREE.MathUtils.degToRad(camera.getEffectiveFOV()) * 0.5)
+        / Math.tan(THREE.MathUtils.degToRad(48) * 0.5);
+      const anguloAparente = (radioEfectivo / Math.max(distanciaSol, 1e-3)) / Math.max(factorFov, 1e-3);
+      const factorPuntual = 1 - THREE.MathUtils.smoothstep(anguloAparente, 0.0015, 0.008);
+      materialDestello.opacity = 0.88 * factorPuntual;
+      destelloLejano.visible = materialDestello.opacity > 0.01;
+      if (destelloLejano.visible) {
+        const tamanoDestello = THREE.MathUtils.clamp(distanciaSol * 0.028 * factorFov, 0.02, 160);
+        destelloLejano.scale.setScalar(tamanoDestello);
+      }
     }
   };
 }
