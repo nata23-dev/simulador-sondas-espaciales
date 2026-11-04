@@ -1,0 +1,8 @@
+{
+  "source": "NASA/JPL NAIF",
+  "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/aa_summaries.txt",
+  "acquiredAtUtc": "2026-11-01T02:08:30.007Z",
+  "httpStatus": 200,
+  "bytes": 19338,
+  "sha256": "97fa05e30d98938cc29308fbba958df0851f68e6149f06af9faa7e77e09c144a"
+}

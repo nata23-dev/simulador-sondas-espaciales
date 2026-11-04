@@ -1,0 +1,10 @@
+Verificación del paquete provisional de Etapa 04, 2026-11-01
+
+- Python zipfile: 1125 entradas con rutas POSIX, metadatos UNIX, sin duplicados, CRC íntegro; extracción y SHA-256 de 1124 archivos correctos.
+- Git for Windows unzip -t -qq y unzip -q: código 0, sin advertencias.
+- Windows .NET ZipFile.ExtractToDirectory: extracción correcta y 1124 archivos iguales al manifiesto SHA-256.
+- Desde esa copia extraída: npm ci correcto, 99/99 pruebas aprobadas y compilación Vite correcta (77 módulos). Vite emitió el aviso conocido de bloque JavaScript >500 kB.
+
+El ZIP final incluye este registro, el verificador scripts/verify-portable-zip.py y los resultados de la instalación limpia; por ello su número de archivos supera al del paquete provisional. Se repite en él la validación de rutas, CRC, extracción y SHA-256 antes de entregarlo.
+
+No hay una distribución Linux/WSL instalada en este equipo. unzip se ejecutó en Windows; no se afirma una extracción nativa en Linux.

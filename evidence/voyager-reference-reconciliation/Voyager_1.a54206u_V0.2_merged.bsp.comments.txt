@@ -1,0 +1,65 @@
+
+This SPK was provided by Jon Giorgini on 01/21/15. It is a merge of at
+least two files:
+
+#1) 1977-Sep-5 to 1986-Jan-1:
+
+    The Voyager 1 "supertrajectory" nio file obtained from George Lewis
+    by Chuck Acton on 23 May 1996. The original producer was S.
+    Mastousek who last updated it in 1987 on the VAX ("Groucho")
+    system.
+
+    This interval provides a patched conic mission-design type
+    trajectory in which the conics are constrained to match specific
+    events (satellite encounters), providing a rough accuracy which was
+    used throughout the Voyager mission. The file started shortly after
+    launch and originally extended to 2050. See IOM Voy-NAV-87-16,
+    dated 31 Mar 87.
+
+#2) 1986-Jan-1 to 2030-Dec-31
+
+    "pfile_a54206u" based on data March 1986 to Feb 1990. Note that the
+    previously used solution "54418u" used in the merged SPK file
+    "voyager_1.ST+1991_a54418u.merged.bsp" was based on data Mar 1986
+    to April 1992 and included modeling of the additional two years of
+    turn maneuvers and non-gravs since "54206u", so using the
+    "pfile_a54206u" in this merged SPK is a regression to an older
+    trajectory that runs out longer.
+
+The planetary ephemeris used in this SPK is DE118.
+
+BVS/NAIF, 01/21/15.
+
+------
+
+The original comments from Jon's SPK:
+
+; Voyager_1.a54206u_V0.2_merged.bsp LOG FILE
+
+; Created 2015-01-21/13:04:08.63.
+;
+; BEGIN SPKMERGE COMMANDS
+
+LEAPSECONDS_KERNEL   = /disk/data/leap-kernel
+
+SPK_KERNEL           = Voyager_1.a54206u_V0.2_merged.bsp
+  LOG_FILE           = Voyager_1.a54206u_V0.2_merged.log
+  SOURCE_SPK_KERNEL  = vgr1_st.bsp
+    INCLUDE_COMMENTS = NO
+    BODIES           = -31, 499, 299, 199, 399, 301, 10, 9, 8, 7, 6, 5, 4, 3,
+                       2, 1
+    BEGIN_TIME       = 1977 SEP 05 13:58:36.200
+    END_TIME         = 1985 DEC 31 23:59:04.816
+  SOURCE_SPK_KERNEL  = vgr1_st.bsp
+    INCLUDE_COMMENTS = NO
+    BODIES           = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 199, 299, 301, 399, 499
+    BEGIN_TIME       = 1985 DEC 31 23:59:04.816
+    END_TIME         = 2030 DEC 31 23:58:51.816
+  SOURCE_SPK_KERNEL  = pfile_a54206u.bsp_V0.2
+    INCLUDE_COMMENTS = NO
+    BODIES           = -31
+    BEGIN_TIME       = 1985 DEC 31 23:59:04.816
+    END_TIME         = 2030 DEC 31 23:58:51.816
+
+; END SPKMERGE COMMANDS
+

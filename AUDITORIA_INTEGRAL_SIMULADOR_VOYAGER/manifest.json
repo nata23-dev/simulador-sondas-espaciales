@@ -1,0 +1,472 @@
+{
+  "auditTitle": "Auditoría Integral de Software: Simulador de Sondas Espaciales",
+  "version": "1.0.0",
+  "date": "2026-10-31T17:43:47.427Z",
+  "benchmarkReference": "NASA Eyes on the Solar System",
+  "totalFiles": 92,
+  "pngEvidenceCount": 73,
+  "documentsCount": 12,
+  "recordsCount": 5,
+  "files": [
+    {
+      "path": "00_LEEME.md",
+      "sizeBytes": 5940,
+      "sha256": "a89a9d2380348729faaeb82a2d25e198737e0c1edba39d11a06b616a3b0f4134"
+    },
+    {
+      "path": "01_INFORME_EJECUTIVO.md",
+      "sizeBytes": 14578,
+      "sha256": "eec563b4f170aaeeca06a3bb9ddb08421fef48ba7506a3a6dda2254fea0a496c"
+    },
+    {
+      "path": "02_ARQUITECTURA_Y_ESTADO_TECNICO.md",
+      "sizeBytes": 12129,
+      "sha256": "4ba223315eb1d1fabc996e2177412eb5ef251ee10443224aa9d507a3936d2c7b"
+    },
+    {
+      "path": "03_INVENTARIO_FUNCIONAL.md",
+      "sizeBytes": 13736,
+      "sha256": "7e29aea94d7027de9a53606b4936f48cef62bac62aec33b7a80a3cf82ba3a403"
+    },
+    {
+      "path": "04_AUDITORIA_UX_UI.md",
+      "sizeBytes": 8365,
+      "sha256": "18a38205a6b35d79160a1db2e4cd5630d82200b57c602b102e23abbf5c95507d"
+    },
+    {
+      "path": "05_AUDITORIA_CIENTIFICA.md",
+      "sizeBytes": 7474,
+      "sha256": "42c3749232e46abb1dd5c5b4e29c6d1612b085563e0866e3d6ff33ab203c8a89"
+    },
+    {
+      "path": "06_AUDITORIA_RESPONSIVE.md",
+      "sizeBytes": 6058,
+      "sha256": "a39bd4ba8784e4769d282104f4558953a3c10c03f964df60429a6a52267c3546"
+    },
+    {
+      "path": "07_AUDITORIA_RENDIMIENTO.md",
+      "sizeBytes": 5420,
+      "sha256": "6c5b2b6c26e047e91440acad04dfcfe5c01e15380fb90687ef5014542950e979"
+    },
+    {
+      "path": "08_DEFECTOS_ENCONTRADOS.md",
+      "sizeBytes": 11842,
+      "sha256": "7cdffde4aa08f4b76f07e383cb900bee6967cc0785503fc99bce4538e201955b"
+    },
+    {
+      "path": "09_MATRIZ_DE_PRUEBAS.csv",
+      "sizeBytes": 12140,
+      "sha256": "0c797708e61c51253bd491d58cddb1e7acd8cc404e708335443232af587fc77a"
+    },
+    {
+      "path": "10_CATALOGO_DE_EVIDENCIAS.csv",
+      "sizeBytes": 28264,
+      "sha256": "af672e03852d884fb8479974fc2bb8746a83b96be9e9416f442f0c28ee69d02f"
+    },
+    {
+      "path": "11_PLAN_DE_MEJORAS_PRIORIZADO.md",
+      "sizeBytes": 7563,
+      "sha256": "f797b23f9798526e102da988611bb1d9e6a0ed3e27bd2b252422a91a2d0720f8"
+    },
+    {
+      "path": "12_ESTADO_REAL_DEL_PROYECTO.md",
+      "sizeBytes": 4805,
+      "sha256": "8e147e26c3d96035f7f8bb7b3e83129fda85c9e8354a2234daeb07095099ab17"
+    },
+    {
+      "path": "13_GUIA_PARA_CONTINUAR_CON_CODEX.md",
+      "sizeBytes": 5404,
+      "sha256": "7c21b19f1ee49a7569d08855d4dc964c2908a9979cf9c2e2844a4cce6c984cbb"
+    },
+    {
+      "path": "evidencias/001-solar-vista-general-1920x1080.png",
+      "sizeBytes": 133035,
+      "sha256": "3a2a392d89096311ca79a3631dc8b19fd101aebc929ff866064d05f49823e3ed"
+    },
+    {
+      "path": "evidencias/001-solar-vista-inicial-1920x1080.png",
+      "sizeBytes": 133035,
+      "sha256": "4dd227f3148591f4a7f087ef7dcc85cd6d83cd83fd47f71478736baeac693d41"
+    },
+    {
+      "path": "evidencias/002-solar-planeta-mercurio-1920x1080.png",
+      "sizeBytes": 136759,
+      "sha256": "ad19d3d074e1ed8702b6da4f0039af9e4408da52210f1ca408ce3c7133037834"
+    },
+    {
+      "path": "evidencias/003-solar-planeta-venus-1920x1080.png",
+      "sizeBytes": 138737,
+      "sha256": "c7a9f353555421c351fb0d91abc638abdc3b465172a954872d4a5aad5b56c344"
+    },
+    {
+      "path": "evidencias/004-solar-planeta-tierra-1920x1080.png",
+      "sizeBytes": 302805,
+      "sha256": "e8a855cb805f4df30793962090bdd93c7041e02133a4fde412ec47ccaf3d6d4f"
+    },
+    {
+      "path": "evidencias/005-solar-planeta-marte-1920x1080.png",
+      "sizeBytes": 100907,
+      "sha256": "00af9707606ad10e70b73980099f9b4534634e015a37994a87b3487000af674f"
+    },
+    {
+      "path": "evidencias/006-solar-planeta-jupiter-1920x1080.png",
+      "sizeBytes": 48976,
+      "sha256": "71e083d81adcbfda6872dccf1f8c86c536e806ef71098f601245b3649b490416"
+    },
+    {
+      "path": "evidencias/007-solar-planeta-saturno-1920x1080.png",
+      "sizeBytes": 51694,
+      "sha256": "cabed28a6a31ba4179cec22ee4a0d6bfbb490ed134d806055bacf89cc13c4340"
+    },
+    {
+      "path": "evidencias/008-solar-planeta-urano-1920x1080.png",
+      "sizeBytes": 96298,
+      "sha256": "bf8a0ef74b1ca34a615a9ff36580a367b1c2827049864747cccf6b494aee4741"
+    },
+    {
+      "path": "evidencias/009-solar-planeta-neptuno-1920x1080.png",
+      "sizeBytes": 48797,
+      "sha256": "056a4bcc933c2669d4947a54fea938f1d9135624e7b89b43e989d1ba678d314e"
+    },
+    {
+      "path": "evidencias/010-solar-menu-herramientas-1920x1080.png",
+      "sizeBytes": 145558,
+      "sha256": "4a35cd1e320853d56e3ff4f961bf8ea1033ab09a2bd97222441012daa6f44e00"
+    },
+    {
+      "path": "evidencias/011-solar-vista-cinematografica-1920x1080.png",
+      "sizeBytes": 120617,
+      "sha256": "3fded76cdcd7f2c45663c6d9da96137ed5df78a2901eb63e3f301a8e606ef6f9"
+    },
+    {
+      "path": "evidencias/012-solar-escala-cientifica-1920x1080.png",
+      "sizeBytes": 136905,
+      "sha256": "e15de1bfb56dbc03c4de1bb1ec51fa48506ef336eb2b6a0a27602ca35161a2eb"
+    },
+    {
+      "path": "evidencias/013-solar-herramienta-distancias-1920x1080.png",
+      "sizeBytes": 165134,
+      "sha256": "27278fabe5ce39efc14b0ffdc82db670ceb0ef1783b210d7d6512b1e06cd02cb"
+    },
+    {
+      "path": "evidencias/014-solar-linea-temporal-2026-1920x1080.png",
+      "sizeBytes": 135826,
+      "sha256": "ebccffccc5c29b68351ff9e59b04c112927998b8957efd7540a0cc45864cbf00"
+    },
+    {
+      "path": "evidencias/015-hist-modal-bienvenida-1920x1080.png",
+      "sizeBytes": 73565,
+      "sha256": "8de81550e6debe5fa8b252b772edb83913c0d146eed3097be2e0c970ec6d8e39"
+    },
+    {
+      "path": "evidencias/016-hist-vista-ambas-sondas-1920x1080.png",
+      "sizeBytes": 166470,
+      "sha256": "41f8b505bd944c54dc5a4b8453b97d30fddeabdd71d7360fa62bb6ac904507ec"
+    },
+    {
+      "path": "evidencias/017-hist-selector-voyager1-1920x1080.png",
+      "sizeBytes": 617273,
+      "sha256": "1b8b59d7d60832163a2bd92e07d2d6a2a5308e85e767370a71594d2fbb7d0921"
+    },
+    {
+      "path": "evidencias/018-hist-selector-voyager2-1920x1080.png",
+      "sizeBytes": 617561,
+      "sha256": "69f599951d1b9c399020e41be688febcb986c4cb6fcedfee49585d77896c1e54"
+    },
+    {
+      "path": "evidencias/019-hist-inspector-telemetria-1920x1080.png",
+      "sizeBytes": 636580,
+      "sha256": "d38533c42833b363505b663481774318822347e20d0865c0f181c37546fee67b"
+    },
+    {
+      "path": "evidencias/020-hist-inspector-historia-1920x1080.png",
+      "sizeBytes": 677669,
+      "sha256": "85544054dcf6072861e33dd6aa2cfbacca6d5f9deb514ede5c21bf6b6b2e1500"
+    },
+    {
+      "path": "evidencias/021-hist-inspector-fotografias-1920x1080.png",
+      "sizeBytes": 660867,
+      "sha256": "8a929446737002ca7f4916ce4798a1064452eb8516e7c381235dac8c773d1a67"
+    },
+    {
+      "path": "evidencias/022-hist-camara-primera-persona-pov-1920x1080.png",
+      "sizeBytes": 576949,
+      "sha256": "7c22f59c936265231899b49831d32d2e1551bf75068e48845f42bf90dc637f4d"
+    },
+    {
+      "path": "evidencias/023-hist-primera-persona-fov-iss-1920x1080.png",
+      "sizeBytes": 576439,
+      "sha256": "8ffb8b31f843fdfb4d208e618ea004cd2487d23900d447bbecec2e3e035565f8"
+    },
+    {
+      "path": "evidencias/024-recorrido-hito-01-v2-launch-1977-1920x1080.png",
+      "sizeBytes": 622144,
+      "sha256": "4e181b1c8314d0be385e99e13d2cb4bd3b02e14af42bbedd0c450990f044dc3d"
+    },
+    {
+      "path": "evidencias/025-recorrido-hito-02-v1-launch-1977-1920x1080.png",
+      "sizeBytes": 425490,
+      "sha256": "5ec5ccf7675d8f1ea3fc4e297014d1d1911319d1c6ec1fb2d7c36075e47103d9"
+    },
+    {
+      "path": "evidencias/026-recorrido-hito-03-v1-jupiter-1979-1920x1080.png",
+      "sizeBytes": 165350,
+      "sha256": "06b118a2987059d5ef0e84c187976c18870c21b8fc83719a276b4ed9c5a0dec7"
+    },
+    {
+      "path": "evidencias/027-recorrido-hito-04-v2-jupiter-1979-1920x1080.png",
+      "sizeBytes": 238038,
+      "sha256": "c6c7c006613f9a95cafe5c5eb2ba046c7a66cf37905536157f17f11fa9afd853"
+    },
+    {
+      "path": "evidencias/028-recorrido-hito-05-v1-saturn-1980-1920x1080.png",
+      "sizeBytes": 203410,
+      "sha256": "a947a0dba5d93b2056aa63d6f79e6b969cda45f845ff2cd99f1899ef635ce947"
+    },
+    {
+      "path": "evidencias/029-recorrido-hito-06-v2-saturn-1981-1920x1080.png",
+      "sizeBytes": 173853,
+      "sha256": "42dbab46e86c5b8ccacefcb480aaf0eee9932e8b9ec53d4881c016feee81dfa8"
+    },
+    {
+      "path": "evidencias/030-recorrido-hito-07-v2-uranus-1986-1920x1080.png",
+      "sizeBytes": 198130,
+      "sha256": "51113b23549b904c1e15fa15ef4a04a7c96fc28bd0fd6114bd11eba8fb34d239"
+    },
+    {
+      "path": "evidencias/031-recorrido-hito-08-v2-neptune-1989-1920x1080.png",
+      "sizeBytes": 273194,
+      "sha256": "9be8bb5d49955964a71b82ca79278a76eec7bd6ddfe0e239e39689653f427baf"
+    },
+    {
+      "path": "evidencias/032-recorrido-hito-09-v1-pale-blue-dot-1990-1920x1080.png",
+      "sizeBytes": 123377,
+      "sha256": "09f50975f619296d558e176022280013c77dee200615b6fda977f1524c99b1c5"
+    },
+    {
+      "path": "evidencias/033-recorrido-hito-10-v1-termination-shock-2004-1920x1080.png",
+      "sizeBytes": 339278,
+      "sha256": "ea30ba64b8935fdccd979fd6cc948b40c5fb1cbc1efb596675d10a73aba2b52e"
+    },
+    {
+      "path": "evidencias/034-recorrido-hito-11-v1-heliopause-2012-1920x1080.png",
+      "sizeBytes": 326118,
+      "sha256": "a32f46600275a597ecd034fbeb342e59bbe62d93016199e7690c0f3c6ee09f16"
+    },
+    {
+      "path": "evidencias/035-recorrido-hito-12-v2-heliopause-2018-1920x1080.png",
+      "sizeBytes": 276060,
+      "sha256": "f657232cf730316caf182fc49ca5719be87632a42e9633e63519e5e8729384d7"
+    },
+    {
+      "path": "evidencias/036-lanzamiento-v2-fase-plataforma-lc41-1920x1080.png",
+      "sizeBytes": 82140,
+      "sha256": "c375a9dab6c3b9c904b7224bf40d3b8b6ab8dc613665e2e20e7f0ddba9ab1c24"
+    },
+    {
+      "path": "evidencias/037-lanzamiento-v2-fase-despegue-1920x1080.png",
+      "sizeBytes": 115708,
+      "sha256": "23ff77a614e692ad3f9ccfd3c3edb44e218b454d30cc9d0f860be05c44eef031"
+    },
+    {
+      "path": "evidencias/038-lanzamiento-v2-fase-separacion-etapas-1920x1080.png",
+      "sizeBytes": 122832,
+      "sha256": "4226f526d7749ec6ad24ceb028358b1e667df7408b32ff5458974e54125cdae5"
+    },
+    {
+      "path": "evidencias/039-lanzamiento-v2-transicion-horizons-1920x1080.png",
+      "sizeBytes": 168760,
+      "sha256": "a9b0ea73695b3fa4ee0545b97f29f336eed4103e947792c220f5706dc3d92db1"
+    },
+    {
+      "path": "evidencias/040-lanzamiento-v1-titan-centaur-lc41-1920x1080.png",
+      "sizeBytes": 86747,
+      "sha256": "665d260b3f309b67afd0da2aa18591df33c7b3de244b856db78b4bcf5c839e54"
+    },
+    {
+      "path": "evidencias/041-comparador-v1-jupiter-grs-1979-fov-iss-1920x1080.png",
+      "sizeBytes": 684412,
+      "sha256": "6ccbbbb5c13455c7ce4f210b600198be25d9471364bf0b82deb8cb96c314d052"
+    },
+    {
+      "path": "evidencias/042-comparador-v1-jupiter-grs-1979-fov-contexto-1920x1080.png",
+      "sizeBytes": 488094,
+      "sha256": "78e900913c9032cfa9b595cf1a41abe2315fb9a7c7a8f592e6e08779ac23b663"
+    },
+    {
+      "path": "evidencias/043-comparador-v2-jupiter-europa-1979-fov-iss-1920x1080.png",
+      "sizeBytes": 505191,
+      "sha256": "7120bbbb62d53249bdd72da56fbd11e2099f9681239e956b0d07c6063dd49acf"
+    },
+    {
+      "path": "evidencias/044-comparador-v2-jupiter-europa-1979-fov-contexto-1920x1080.png",
+      "sizeBytes": 1093041,
+      "sha256": "3f64cb7f5ef9ae3b00431bcfe5e1b2e22157ac80566d478b002b465419ef726f"
+    },
+    {
+      "path": "evidencias/045-comparador-v1-saturn-system-1980-fov-iss-1920x1080.png",
+      "sizeBytes": 864111,
+      "sha256": "8bb4ae5284d3c6310dd2425d0338b71c6284b2d0ef9d59b6c50e20457b0dabd2"
+    },
+    {
+      "path": "evidencias/046-comparador-v1-saturn-system-1980-fov-contexto-1920x1080.png",
+      "sizeBytes": 290848,
+      "sha256": "646388b2e40d34acaef21bef189a56d0ef54662602b9797fdfc0d3d9737de1d7"
+    },
+    {
+      "path": "evidencias/047-comparador-v2-saturn-rings-1981-fov-iss-1920x1080.png",
+      "sizeBytes": 629021,
+      "sha256": "dcdadbbca3b834bc71b8f225cb9f7afaa54fa8e909f015981c0299d8afaf91a2"
+    },
+    {
+      "path": "evidencias/048-comparador-v2-saturn-rings-1981-fov-contexto-1920x1080.png",
+      "sizeBytes": 638216,
+      "sha256": "e58a71accb7c5cdf11f6999dc46d2253c2934f8f108b99b513719038cd431840"
+    },
+    {
+      "path": "evidencias/049-comparador-v2-uranus-crescent-1986-fov-iss-1920x1080.png",
+      "sizeBytes": 217288,
+      "sha256": "4061d8406ba06f1450592b91a167390978bdaed80dc3be26e503884c81bd98bf"
+    },
+    {
+      "path": "evidencias/050-comparador-v2-uranus-crescent-1986-fov-contexto-1920x1080.png",
+      "sizeBytes": 350218,
+      "sha256": "0824193808327a36472f35b3540e195582d0c25745abd6dcb37641a4b93d86e0"
+    },
+    {
+      "path": "evidencias/051-comparador-v2-neptune-gds-1989-fov-iss-1920x1080.png",
+      "sizeBytes": 495462,
+      "sha256": "69fbf608a8b9e55d9a955c6afa4efb493e4b7f93d96939c617cc36c12ef3bed1"
+    },
+    {
+      "path": "evidencias/052-comparador-v2-neptune-gds-1989-fov-contexto-1920x1080.png",
+      "sizeBytes": 263504,
+      "sha256": "26af727f82768a1d6f31a076e45907686e3e046790cccddbdd17d3ce410c942f"
+    },
+    {
+      "path": "evidencias/053-comparador-v2-triton-flyby-1989-fov-iss-1920x1080.png",
+      "sizeBytes": 342356,
+      "sha256": "5c191f5a6c23b689122c911d400c8fdb81805f3bf15a8f9892d69a18fa2f8bb8"
+    },
+    {
+      "path": "evidencias/054-comparador-v2-triton-flyby-1989-fov-contexto-1920x1080.png",
+      "sizeBytes": 366564,
+      "sha256": "2e1cec50d3399d3bf9d0e5c5682af36b0643e345e00aefbfc4c5c4ea08483dc2"
+    },
+    {
+      "path": "evidencias/055-comparador-v1-pale-blue-dot-1990-fov-iss-1920x1080.png",
+      "sizeBytes": 229043,
+      "sha256": "a8c14d462d18d0e75e400ce47f73a26dd70465693ee5ac3568fb9edfbdbd93fc"
+    },
+    {
+      "path": "evidencias/056-comparador-v1-pale-blue-dot-1990-fov-contexto-1920x1080.png",
+      "sizeBytes": 249740,
+      "sha256": "4ec9eb7c97c0316c7c2bbdb7d318f64a7cd09036b06a8ad86ed5348902fe32ea"
+    },
+    {
+      "path": "evidencias/057-exp-simulacion-inicial-1920x1080.png",
+      "sizeBytes": 144876,
+      "sha256": "eb06ad468f24f70abcf96fe45caed5593008a4a175291d062309d76dd7f704a3"
+    },
+    {
+      "path": "evidencias/058-exp-simulacion-en-avance-1920x1080.png",
+      "sizeBytes": 211202,
+      "sha256": "e81f02247309c56d50b98e547cb175524ca133fd360815b82da7c41b9817b862"
+    },
+    {
+      "path": "evidencias/059-responsive-desktop-fhd-1920x1080-solar.png",
+      "sizeBytes": 135784,
+      "sha256": "57a04ed89ed813c677fef32e508df0091f55219a6fe90763c9959bfbf711ed97"
+    },
+    {
+      "path": "evidencias/060-responsive-desktop-fhd-1920x1080-historico.png",
+      "sizeBytes": 97090,
+      "sha256": "a87906be1590a562fb59bec0b6627f6cfbfdaf706fa66cad4b7bbe0d9ff2ee05"
+    },
+    {
+      "path": "evidencias/061-responsive-desktop-hdplus-1600x900-solar.png",
+      "sizeBytes": 119533,
+      "sha256": "0a712a08b85a6c24ac80cec0af705ca31d19cdd4826870c92ffcd0086204072a"
+    },
+    {
+      "path": "evidencias/062-responsive-desktop-hdplus-1600x900-historico.png",
+      "sizeBytes": 88732,
+      "sha256": "6a5e0994fe2898b2c03476252ae152ea16613cf583bde04f074975e3b9f8a34d"
+    },
+    {
+      "path": "evidencias/063-responsive-laptop-standard-1366x768-solar.png",
+      "sizeBytes": 103471,
+      "sha256": "c3cd53cc9a38d7938171af0749eb1d7f3b954496ce2d69a09da85dec65d72ff6"
+    },
+    {
+      "path": "evidencias/064-responsive-laptop-standard-1366x768-historico.png",
+      "sizeBytes": 78302,
+      "sha256": "d5a0ad0e48bb2d06ec5f8f4080325813bb41cb83e1bbb145a3c35d7822298850"
+    },
+    {
+      "path": "evidencias/065-responsive-hd-ready-1280x720-solar.png",
+      "sizeBytes": 95110,
+      "sha256": "d70702a31c11d60c122e7432720359adf965fcc902885bf68c897bb74182717b"
+    },
+    {
+      "path": "evidencias/066-responsive-hd-ready-1280x720-historico.png",
+      "sizeBytes": 71680,
+      "sha256": "5e2a2cda9451e4cf53cdc0f2bc23785c417542ce273bd0b92d7e4c9a4c2fa7bc"
+    },
+    {
+      "path": "evidencias/067-responsive-tablet-portrait-768x1024-solar.png",
+      "sizeBytes": 64630,
+      "sha256": "d865486f1b66741f2f1e79eb4aba7037702016598d3551f4d9032acc80988dcb"
+    },
+    {
+      "path": "evidencias/068-responsive-tablet-portrait-768x1024-historico.png",
+      "sizeBytes": 60139,
+      "sha256": "62870acfa9a2ec844660f9e362b19e93339facbfdb10e72870963c86eb8f7db9"
+    },
+    {
+      "path": "evidencias/069-responsive-mobile-iphone14-390x844-solar.png",
+      "sizeBytes": 41503,
+      "sha256": "6c23fe33591461adfe734c6366d2cff7fbe9631db29c4404dcfd983e0d7df0e9"
+    },
+    {
+      "path": "evidencias/070-responsive-mobile-iphone14-390x844-historico.png",
+      "sizeBytes": 47124,
+      "sha256": "fd153387b2377438e111d4c8efca1ca9f790e9b4726ed947e94aea1de71ff877"
+    },
+    {
+      "path": "evidencias/071-responsive-mobile-iphone-se1-320x568-solar.png",
+      "sizeBytes": 34931,
+      "sha256": "c9aa8828c7831b7ce19d2500e712edcd31a57335ee65b9255a7163ae6d7f76db"
+    },
+    {
+      "path": "evidencias/072-responsive-mobile-iphone-se1-320x568-historico.png",
+      "sizeBytes": 35240,
+      "sha256": "f3e7e5588c7bbec7093ec3bc463b9c3ace12859e800d4328893a124b5924fbbf"
+    },
+    {
+      "path": "registros/console_logs.json",
+      "sizeBytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "registros/javascript_exceptions.json",
+      "sizeBytes": 13455,
+      "sha256": "e93c4d74288c01523ca3c48fe0339211fd15a59a27b4f28b3ff079dc3a3ac113"
+    },
+    {
+      "path": "registros/network_requests.json",
+      "sizeBytes": 22458,
+      "sha256": "3cc68b9a7c3631660b1aa8526dec15ffd077bb0f667a21d81aca1d169b6d0cd8"
+    },
+    {
+      "path": "registros/performance_metrics.json",
+      "sizeBytes": 208,
+      "sha256": "5d1cf09edd0e0a28c8636a00028215506667d53e536691d32ced1854ae365720"
+    },
+    {
+      "path": "registros/webgl_environment.json",
+      "sizeBytes": 497,
+      "sha256": "5545e29705795bfc412e0eecc136118ae5d3ab0b28900928a624fce86a9eaff7"
+    }
+  ]
+}

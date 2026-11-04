@@ -1,0 +1,8 @@
+{
+  "source": "NASA/JPL NAIF",
+  "url": "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls",
+  "acquiredAtUtc": "2026-11-01T02:09:00.764Z",
+  "httpStatus": 200,
+  "bytes": 5257,
+  "sha256": "678e32bdb5a744117a467cd9601cd6b373f0e9bc9bbde1371d5eee39600a039b"
+}

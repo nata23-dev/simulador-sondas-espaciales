@@ -55,9 +55,6 @@ export function crearControlesMision({
   botonEnfocar.addEventListener('click', () => {
     if (!habilitado || !sondaVisibleEnEscena) return;
     alEnfocarSonda?.();
-    if (window.matchMedia('(max-width: 760px)').matches) {
-      panel.open = false;
-    }
   });
 
   casillaTrayectoria.addEventListener('change', () => {

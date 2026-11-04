@@ -1,0 +1,17 @@
+ETAPA 03.1 — verificación de extracción portable
+Fecha: 2026-11-01
+
+Paquete provisional generado con scripts/package-portable-zip.py:
+- 1069 entradas ZIP: 1067 archivos del proyecto, un archivo de inicio y el manifiesto.
+- Todas las rutas usan /; ninguna contiene \, es absoluta o incluye segmentos ..
+- Metadatos de origen UNIX y archivos regulares en las entradas.
+- Python zipfile.testzip(): sin errores.
+- Extracción con Python zipfile: 1068 archivos comprobados con SHA-256 contra el manifiesto.
+- Git for Windows unzip -t -qq: código 0, sin salida ni advertencias.
+- Git for Windows unzip -q: código 0, sin salida ni advertencias.
+- Windows .NET ZipFile.ExtractToDirectory: 1068 archivos comprobados con SHA-256.
+- Desde esa extracción Windows: npm ci correcto (16 paquetes, 0 vulnerabilidades); node --test tests/*.test.mjs: 94/94; npm run build: correcto, 74 módulos.
+
+La distribución Linux/WSL no está instalada en este equipo. La prueba con unzip es de una herramienta Unix ejecutada en Windows; no se declara una extracción nativa en Linux.
+
+ZIP final: 1070 entradas, 1069 archivos verificados por SHA-256 (1068 del proyecto y el archivo de inicio). Rutas POSIX, metadatos UNIX, CRC y extracción correctos. `unzip -t -qq` y `unzip -q` terminaron con código 0, sin mensajes ni advertencias. Windows .NET extrajo y verificó los mismos 1069 archivos.

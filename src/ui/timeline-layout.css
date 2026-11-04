@@ -1,0 +1,88 @@
+/* Scoped layout for both time systems. No time calculations or duplicated inputs. */
+#app .temporal-layout {
+  position:absolute;
+  z-index:12;
+  inset:auto auto max(12px,env(safe-area-inset-bottom)) 50%;
+  transform:translateX(-50%);
+  width:min(820px,calc(100% - 160px));
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding:10px 16px 5px;
+  border:1px solid #ffffff16;
+  border-radius:14px;
+  background:rgba(12,14,17,.95);
+  backdrop-filter:blur(8px);
+  box-shadow:0 8px 30px #0004;
+}
+#app .temporal-main { display:flex; align-items:center; justify-content:space-between; gap:12px; min-width:0; }
+#app .temporal-main .date-field { margin:0; flex:none; }
+#app .temporal-main .timeline-controls { gap:2px; flex:none; }
+#app .temporal-main .timeline-controls > button,
+#app .temporal-main .hist-transport-buttons > button { width:40px; height:40px; min-height:40px; padding:0; flex:none; }
+#app .temporal-main .hist-transport-buttons { gap:4px; }
+#app .temporal-main .hist-step-btn span { display:none; }
+#app .temporal-main .hist-clock-readout { min-width:0; }
+#app .temporal-main .hist-clock-readout strong { font-size:12px; }
+#app .temporal-main .hist-clock-readout small { font-size:10px; }
+#app .temporal-main .hist-speed-label { min-width:0; }
+#app .temporal-main .hist-speed-label > span { display:none; }
+#app .temporal-main .hist-speed-label select { width:110px; min-height:40px; font-size:11px; }
+#app .temporal-main .speed-field select { min-height:40px; }
+#app .temporal-layout > .range-row { display:flex; grid-area:auto; width:100%; margin:0; min-height:26px; }
+#app .temporal-advanced { position:relative; flex:none; }
+#app .temporal-advanced > summary { min-height:40px; display:flex; align-items:center; padding:0 10px; border:1px solid #ffffff16; border-radius:8px; color:#d3bd91; font-size:11px; white-space:nowrap; }
+#app .temporal-advanced[open] > summary { background:#d3bd9114; border-color:#d3bd9155; }
+#app .temporal-advanced-body { position:absolute; bottom:calc(100% + 18px); right:0; width:350px; max-width:calc(100vw - 32px); max-height:min(420px,calc(100dvh - 200px)); overflow:auto; overscroll-behavior:contain; padding:18px; border:1px solid #ffffff20; border-radius:12px; background:#111316; box-shadow:0 12px 40px #0009; display:grid; gap:14px; }
+#app .temporal-options-heading { font-size:13px; font-weight:500; }
+#app .temporal-advanced-body p { color:#a7aab0; font-size:12px; line-height:1.6; margin:0; }
+#app .temporal-advanced-body .timeline-heading { display:grid; font-size:12px; }
+#app .temporal-advanced-body .timeline-heading .eyebrow,
+#app .temporal-advanced-body .playback-status { font-size:11px; }
+#app .temporal-advanced-body .hist-date-selectors { display:grid; grid-template-columns:1.2fr 1fr 1fr 1.2fr; gap:5px; }
+#app .temporal-advanced-body .hist-date-selectors select { display:block; width:100%; min-height:40px; font-size:12px; }
+#app .temporal-advanced-body .hist-decade-bar { display:flex; flex-wrap:wrap; overflow:visible; gap:6px; }
+#app .temporal-advanced-body .hist-decade-bar button { min-height:38px; font-size:11px; padding:6px 10px; }
+#app #historical-time-options .hist-decade-bar { display:grid; grid-template-columns:minmax(0,1fr); gap:0; max-height:none; overflow:visible; border-top:1px solid #ffffff1b; }
+#app #historical-time-options .hist-decade-bar button { display:grid; gap:3px; width:100%; min-width:0; min-height:54px; padding:9px 7px; border:0; border-bottom:1px solid #ffffff16; border-radius:0; background:transparent; color:#e5e5e1; text-align:left; white-space:normal; }
+#app #historical-time-options .hist-decade-bar button time { color:#aeb4b5; font-size:12px; }
+#app #historical-time-options .hist-decade-bar button span { font-size:13px; line-height:1.4; overflow-wrap:anywhere; }
+#app #historical-time-options .hist-decade-bar button:hover, #app #historical-time-options .hist-decade-bar button[aria-current=step] { color:var(--accent); background:#d3bd9111; }
+#app #historical-time-options .hist-decade-bar button[aria-current=step] { box-shadow:inset 2px 0 var(--accent); }
+#app .temporal-secondary-transport { display:flex; gap:10px; }
+#app .temporal-secondary-transport button { width:44px; height:44px; }
+#app .temporal-assists { display:flex; flex-wrap:wrap; gap:14px; }
+#app .temporal-assists .hist-mini-check { display:flex; font-size:12px; min-height:40px; }
+#app .temporal-assists input { width:18px; height:18px; }
+#app .temporal-advanced-body .hist-event-pause-toast { position:static; transform:none; display:flex; flex-wrap:wrap; white-space:normal; border-radius:8px; padding:10px; max-width:100%; }
+#app .temporal-advanced-body .hist-event-pause-toast span { font-size:12px; }
+#app .temporal-advanced-body .hist-event-pause-toast button { min-height:40px; font-size:11px; }
+@media(max-width:760px) {
+  #app .temporal-layout { width:calc(100% - 16px); padding:8px 10px 4px; bottom:max(8px,env(safe-area-inset-bottom)); border-radius:12px; }
+  #app .temporal-main { gap:4px; flex-wrap:wrap; }
+  #app .temporal-main--historical .hist-clock-readout { flex:0 0 100%; padding-bottom:4px; }
+  #app .temporal-main--historical .hist-clock-readout strong { font-size:12px; }
+  #app .temporal-main--historical .hist-clock-readout small { font-size:9px; }
+  #app .temporal-main .hist-speed-label select { width:90px; font-size:10px; }
+  #app .temporal-advanced > summary { font-size:10px; padding:0 7px; }
+  #app .temporal-main--solar .date-field { order:0; flex:1 1 auto; }
+  #app .temporal-main--solar .timeline-controls { order:3; flex:1 0 100%; justify-content:center; }
+  #app .temporal-main--solar .speed-field { order:1; gap:0; }
+  #app .temporal-main--solar .speed-field > span { display:none; }
+  #app .temporal-main--solar .temporal-advanced { order:2; }
+  #app .temporal-layout .range-row { gap:8px; }
+  #app .temporal-layout .range-row > span { font-size:7px; letter-spacing:0; }
+  #app .temporal-advanced-body { position:fixed; bottom:calc(100% + 8px); right:0; max-height:calc(100dvh - 240px); width:350px; }
+}
+@media(max-width:370px) {
+  #app .temporal-main .hist-transport-buttons { gap:1px; }
+  #app .temporal-main .hist-transport-buttons > button { width:36px; }
+  #app .temporal-main .hist-speed-label select { width:85px; }
+}
+@media(max-height:500px) and (min-width:761px) {
+  #app .temporal-layout { bottom:8px; padding:5px 12px 2px; }
+  #app .temporal-advanced-body { max-height:calc(100dvh - 140px); }
+}
+#app .hist-decade-bar[hidden] { display:none; }
+#app .temporal-open-catalog { min-height:44px; padding:9px 12px; border:1px solid #d3bd9166; border-radius:6px; background:#d3bd9112; color:#ead9ba; font-size:13px; text-align:left; cursor:pointer; }
+#app .temporal-open-catalog:hover, #app .temporal-open-catalog:focus-visible { background:#d3bd9126; }

@@ -1,6 +1,7 @@
 # Logs
 logs
 *.log
+!evidence/**/*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -29,3 +30,6 @@ dist-ssr
 /evidencias/
 /navigation-*.png
 /recuperacion-*.zip
+/UX_Auditoria_Completa_Voyager.zip
+/UX_Rediseno_Profesional_Voyager.zip
+/.redesign-chrome/

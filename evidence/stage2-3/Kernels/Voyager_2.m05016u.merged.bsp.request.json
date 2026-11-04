@@ -1,0 +1,8 @@
+{
+  "source": "NASA/JPL NAIF",
+  "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/Voyager_2.m05016u.merged.bsp",
+  "acquiredAtUtc": "2026-11-01T02:08:34.448Z",
+  "httpStatus": 200,
+  "bytes": 6447104,
+  "sha256": "ce66cba12cf77bf3a1097f44142ef978f46656788ed08f9052238a102ed2e706"
+}

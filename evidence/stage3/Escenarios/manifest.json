@@ -1,0 +1,1032 @@
+{
+  "checks": [
+    "Entrada histórica de usuario nuevo",
+    "Guía y catálogo comparten Historia",
+    "Voyager 1 seleccionada",
+    "Voyager 2 seleccionada",
+    "Acontecimiento v2-neptune-1989",
+    "Neptuno desde Voyager 2 con objetivo explícito",
+    "Cámara intacta después de leer datos",
+    "Regreso a escena despejada",
+    "Fecha libre conserva el paso del recorrido",
+    "Continuar vuelve al hito guardado",
+    "Acontecimiento v2-neptune-1989",
+    "Comparador abierto",
+    "Comparador restaura fecha, cámara y panel",
+    "Exploración libre de Saturno",
+    "Modo inmersivo reversible",
+    "Regreso desde modo inmersivo",
+    "Acontecimiento v2-neptune-1989",
+    "Escritorio amplio sin desbordamiento",
+    "Entrada móvil cargada",
+    "Móvil inicia con escena despejada",
+    "Guía móvil accesible",
+    "Cambio móvil a Voyager 1",
+    "Cambio móvil a Voyager 2",
+    "Acontecimiento v2-neptune-1989",
+    "Vista Voyager móvil despejada y control recuperable",
+    "Panel móvil separado de línea temporal",
+    "Último paso ofrece finalizar",
+    "Finalización y reinicio explícitos",
+    "Nuevo recorrido empieza en el paso 1",
+    "Exploración libre móvil"
+  ],
+  "errors": [],
+  "captures": [
+    {
+      "name": "01-recorrido-nuevo-1366",
+      "file": "01-recorrido-nuevo-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -166.05565043103766,
+            350.5286969879809,
+            589.8621235208722
+          ],
+          "objetivoEscena": [
+            59.39836111420482,
+            33.48435218324594,
+            5.091487040215199
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "tab": "history",
+        "inspector": "half",
+        "inspectorBottom": 628,
+        "timelineTop": 671,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "02-voyager-1-1366",
+      "file": "02-voyager-1-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -97.18404810875958,
+            225.7244430929517,
+            385.9923940559567
+          ],
+          "objetivoEscena": [
+            47.99997999680759,
+            21.56211931204104,
+            9.426662629329753
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "tab": "explore",
+        "inspector": "half",
+        "inspectorBottom": 643,
+        "timelineTop": 671,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "03-voyager-2-1366",
+      "file": "03-voyager-2-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -28.62666929694393,
+            101.48960285256686,
+            183.05281083288014
+          ],
+          "objetivoEscena": [
+            36.65360346776794,
+            9.694281078669754,
+            13.74205917968014
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "tab": "explore",
+        "inspector": "half",
+        "inspectorBottom": 643,
+        "timelineTop": 671,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "04-neptuno-desde-voyager-1366",
+      "file": "04-neptuno-desde-voyager-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 117.17563267055476,
+          "fovReferenciaGrados": 117.17563267055476,
+          "fovHorizontalGrados": 142.10038545805665,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 117.17563267055476,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "navigation",
+        "inspector": "half",
+        "inspectorBottom": 643,
+        "timelineTop": 671,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "05-datos-sin-perder-camara-1366",
+      "file": "05-datos-sin-perder-camara-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 117.17563267055476,
+          "fovReferenciaGrados": 117.17563267055476,
+          "fovHorizontalGrados": 142.10038545805665,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 117.17563267055476,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "telemetry",
+        "inspector": "half",
+        "inspectorBottom": 643,
+        "timelineTop": 671,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "06-neptuno-despejado-1366",
+      "file": "06-neptuno-despejado-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 117.17563267055476,
+          "fovReferenciaGrados": 117.17563267055476,
+          "fovHorizontalGrados": 142.10038545805665,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 117.17563267055476,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "navigation",
+        "inspector": "closed",
+        "inspectorBottom": 643,
+        "timelineTop": 671,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "07-fecha-libre-1366",
+      "file": "07-fecha-libre-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 117.17563267055476,
+          "fovReferenciaGrados": 117.17563267055476,
+          "fovHorizontalGrados": 142.10038545805665,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 0.0026623916876800102,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 0.004247791290447089,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            19.247383657050502,
+            6.28958098640293,
+            757.0894533011015
+          ],
+          "objetivoEscena": [
+            63.743704206520945,
+            11.012721011487479,
+            846.5197021314733
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1987-08-25 · 03:00:00 UTC",
+        "tab": "explore",
+        "inspector": "closed",
+        "inspectorBottom": 643,
+        "timelineTop": 671,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "08-recorrido-reanudado-1366",
+      "file": "08-recorrido-reanudado-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 117.17563267055476,
+          "fovReferenciaGrados": 117.17563267055476,
+          "fovHorizontalGrados": 142.10038545805665,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 117.17563267055476,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "explore",
+        "inspector": "half",
+        "inspectorBottom": 643,
+        "timelineTop": 671,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "09-comparador-1366",
+      "file": "09-comparador-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "camera": {
+          "modo": "photo_recreation",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 0.424,
+          "fovReferenciaGrados": 0.424,
+          "fovHorizontalGrados": 0.7541383873031959,
+          "fovTipo": "instrumento_cuadrado",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 0.3971245714938187,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 0.6336001824276836,
+            "cabeEnAreaLibre": null
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            190.86679739282985,
+            15.036500461877578,
+            946.1931546937487
+          ],
+          "objetivoEscena": [
+            235.04665246341213,
+            19.169543511121972,
+            1035.8093271242617
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "recreacion_fotografica_aproximada",
+          "fotoRecreacionId": "v2-neptune-gds-1989"
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "history",
+        "inspector": "closed",
+        "inspectorBottom": 628,
+        "timelineTop": 671,
+        "comparatorOpen": true,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "10-comparador-cerrado-1366",
+      "file": "10-comparador-cerrado-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 117.17563267055476,
+          "fovReferenciaGrados": 117.17563267055476,
+          "fovHorizontalGrados": 142.10038545805665,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 117.17563267055476,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "history",
+        "inspector": "half",
+        "inspectorBottom": 628,
+        "timelineTop": 671,
+        "comparatorOpen": false,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "11-exploracion-libre-1366",
+      "file": "11-exploracion-libre-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "exploracion",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Saturno",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            83.56692002863988,
+            123.09244105237462,
+            822.3048208640885
+          ],
+          "objetivoEscena": [
+            156.50171232425288,
+            20.521167007147824,
+            633.1174713225571
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "telemetry",
+        "inspector": "half",
+        "inspectorBottom": 643,
+        "timelineTop": 0,
+        "comparatorOpen": false,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "12-neptuno-1920",
+      "file": "12-neptuno-1920.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 111.41411842363917,
+          "fovReferenciaGrados": 111.41411842363917,
+          "fovHorizontalGrados": 138.02537990078127,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 111.41411842363917,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "navigation",
+        "inspector": "half",
+        "inspectorBottom": 955,
+        "timelineTop": 983,
+        "comparatorOpen": false,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "13-entrada-movil-despejada",
+      "file": "13-entrada-movil-despejada.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -585.6757300487266,
+            1359.4492399927917,
+            2308.883009907761
+          ],
+          "objetivoEscena": [
+            288.6976010146269,
+            129.86191228263516,
+            40.977515052837916
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "tab": "explore",
+        "inspector": "closed",
+        "inspectorBottom": 690,
+        "timelineTop": 717,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "14-recorrido-movil",
+      "file": "14-recorrido-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -559.8089765764132,
+            1302.0891926175568,
+            2212.191505337495
+          ],
+          "objetivoEscena": [
+            277.6718562782227,
+            124.38253566979364,
+            39.97709829782823
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "tab": "history",
+        "inspector": "half",
+        "inspectorBottom": 666,
+        "timelineTop": 717,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "14b-cambio-voyager-movil",
+      "file": "14b-cambio-voyager-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -496.5489417971759,
+            1161.8087899848892,
+            1975.721631044268
+          ],
+          "objetivoEscena": [
+            250.70716601516025,
+            110.98210814927363,
+            37.530467382843725
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "tab": "explore",
+        "inspector": "half",
+        "inspectorBottom": 666,
+        "timelineTop": 717,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "15-neptuno-movil-despejado",
+      "file": "15-neptuno-movil-despejado.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 150,
+          "fovReferenciaGrados": 150,
+          "fovHorizontalGrados": 119.78372129473975,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 140.02775375249897,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "navigation",
+        "inspector": "closed",
+        "inspectorBottom": 690,
+        "timelineTop": 717,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "16-datos-movil",
+      "file": "16-datos-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 150,
+          "fovReferenciaGrados": 150,
+          "fovHorizontalGrados": 119.78372129473975,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 154.56215939407386,
+            "cabeEnAreaLibre": false
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "telemetry",
+        "inspector": "half",
+        "inspectorBottom": 666,
+        "timelineTop": 717,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "17-retorno-escena-movil",
+      "file": "17-retorno-escena-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 150,
+          "fovReferenciaGrados": 150,
+          "fovHorizontalGrados": 119.78372129473975,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 140.02775375249897,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "tab": "telemetry",
+        "inspector": "closed",
+        "inspectorBottom": 690,
+        "timelineTop": 717,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "18-recorrido-reiniciado-movil",
+      "file": "18-recorrido-reiniciado-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            1043.172031370661,
+            -2248.011197866677,
+            2853.6377067373846
+          ],
+          "objetivoEscena": [
+            1015.7874005965343,
+            -2188.985927638949,
+            2778.7141473266624
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "tab": "history",
+        "inspector": "half",
+        "inspectorBottom": 666,
+        "timelineTop": 717,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "19-planeta-libre-movil",
+      "file": "19-planeta-libre-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "exploracion",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Jupiter",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            481.998404763783,
+            -1164.3719996032264,
+            2718.9277336977293
+          ],
+          "objetivoEscena": [
+            752.1887910532945,
+            -1530.6304569522158,
+            1920.679553274024
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "tab": "telemetry",
+        "inspector": "half",
+        "inspectorBottom": 706,
+        "timelineTop": 0,
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    }
+  ]
+}

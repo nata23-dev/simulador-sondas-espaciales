@@ -1,0 +1,374 @@
+{
+  "sourceOfficial": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse.html",
+  "interpretation": "NSSDCA: radios planetarios publicados y fecha/hora UTC de la nave. Local: distancia geométrica entre vectores heliocéntricos al mismo JD TDB.",
+  "rows": [
+    {
+      "eventId": "v1-jupiter-1979",
+      "utc": "1979-03-05T12:05:26Z",
+      "jdTdb": 2443938.004353998,
+      "tdbMinusUtcSeconds": 50.18545505013401,
+      "official": {
+        "radii": 4.89,
+        "radiusKm": 71398,
+        "distanceKm": 349136.22
+      },
+      "local": {
+        "km": 348092.8429971733,
+        "probeStatus": "interpolated",
+        "bodyStatus": "interpolated",
+        "probeDataset": "hist-flyby-v1-jupiter-1979",
+        "bodyDataset": "hist-flyby-v1-jupiter-1979",
+        "differenceFromOfficialKm": -1043.377002826659,
+        "linearInterpolationKm": 347814.18520049227,
+        "hermiteMinusLinearKm": 278.6577966810437,
+        "utcMisreadAsTdbKm": 348090.879461544,
+        "timeConversionEffectKm": 1.9635356293292716,
+        "samples": [
+          {
+            "jdTdb": 2443938,
+            "labelTdb": "A.D. 1979-Mar-05 12:00:00.0000",
+            "distanceKm": 348162.57253842254
+          },
+          {
+            "jdTdb": 2443938.020833333,
+            "labelTdb": "A.D. 1979-Mar-05 12:30:00.0000",
+            "distanceKm": 349592.51930399524
+          }
+        ],
+        "minimumWithinHalfHour": {
+          "km": 348090.901313549,
+          "jdTdb": 2443938.003659554,
+          "secondsFromOfficialUtc": -60
+        }
+      },
+      "source": {
+        "file": "data/historical/encounters/hist-flyby-v1-jupiter-1979.json",
+        "frameId": "ICRF_ECLIPTIC_J2000",
+        "origin": "SUN_CENTER",
+        "originCode": "500@10",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          },
+          {
+            "bodyId": "599",
+            "solutionId": "jup365_merged"
+          },
+          {
+            "bodyId": "501",
+            "solutionId": "jup365_merged"
+          }
+        ]
+      }
+    },
+    {
+      "eventId": "v2-jupiter-1979",
+      "utc": "1979-07-09T22:29:51Z",
+      "jdTdb": 2444064.4379766653,
+      "tdbMinusUtcSeconds": 50.18386827922212,
+      "official": {
+        "radii": 10.11,
+        "radiusKm": 71398,
+        "distanceKm": 721833.7799999999
+      },
+      "local": {
+        "km": 721017.6592572149,
+        "probeStatus": "interpolated",
+        "bodyStatus": "interpolated",
+        "probeDataset": "hist-flyby-v2-jupiter-1979",
+        "bodyDataset": "hist-flyby-v2-jupiter-1979",
+        "differenceFromOfficialKm": -816.1207427850459,
+        "linearInterpolationKm": 721008.846254033,
+        "hermiteMinusLinearKm": 8.813003181829117,
+        "utcMisreadAsTdbKm": 721017.3039720679,
+        "timeConversionEffectKm": 0.3552851469721645,
+        "samples": [
+          {
+            "jdTdb": 2444064.4375,
+            "labelTdb": "A.D. 1979-Jul-09 22:30:00.0000",
+            "distanceKm": 721017.307638029
+          },
+          {
+            "jdTdb": 2444064.458333333,
+            "labelTdb": "A.D. 1979-Jul-09 23:00:00.0000",
+            "distanceKm": 721545.5164882941
+          }
+        ],
+        "minimumWithinHalfHour": {
+          "km": 721017.3298977972,
+          "jdTdb": 2444064.437282221,
+          "secondsFromOfficialUtc": -60
+        }
+      },
+      "source": {
+        "file": "data/historical/encounters/hist-flyby-v2-jupiter-1979.json",
+        "frameId": "ICRF_ECLIPTIC_J2000",
+        "origin": "SUN_CENTER",
+        "originCode": "500@10",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "599",
+            "solutionId": "jup365_merged"
+          },
+          {
+            "bodyId": "501",
+            "solutionId": "jup365_merged"
+          }
+        ]
+      }
+    },
+    {
+      "eventId": "v1-saturn-1980",
+      "utc": "1980-11-12T23:46:30Z",
+      "jdTdb": 2444556.4912173925,
+      "tdbMinusUtcSeconds": 51.18270259154061,
+      "official": {
+        "radii": 3.09,
+        "radiusKm": 60330,
+        "distanceKm": 186419.69999999998
+      },
+      "local": {
+        "km": 183545.9098819129,
+        "probeStatus": "interpolated",
+        "bodyStatus": "interpolated",
+        "probeDataset": "hist-flyby-v1-saturn-1980",
+        "bodyDataset": "hist-flyby-v1-saturn-1980",
+        "differenceFromOfficialKm": -2873.790118087083,
+        "linearInterpolationKm": 183359.00998359278,
+        "hermiteMinusLinearKm": 186.89989832011634,
+        "utcMisreadAsTdbKm": 183540.77255073108,
+        "timeConversionEffectKm": 5.13733118181699,
+        "samples": [
+          {
+            "jdTdb": 2444556.486111111,
+            "labelTdb": "A.D. 1980-Nov-12 23:40:00.0000",
+            "distanceKm": 183705.4319791039
+          },
+          {
+            "jdTdb": 2444556.5,
+            "labelTdb": "A.D. 1980-Nov-13 00:00:00.0000",
+            "distanceKm": 184348.92152884995
+          }
+        ],
+        "minimumWithinHalfHour": {
+          "km": 183540.51492144447,
+          "jdTdb": 2444556.490522948,
+          "secondsFromOfficialUtc": -60
+        }
+      },
+      "source": {
+        "file": "data/historical/encounters/hist-flyby-v1-saturn-1980.json",
+        "frameId": "ICRF_ECLIPTIC_J2000",
+        "origin": "SUN_CENTER",
+        "originCode": "500@10",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          },
+          {
+            "bodyId": "699",
+            "solutionId": "sat441l"
+          },
+          {
+            "bodyId": "606",
+            "solutionId": "sat441l"
+          }
+        ]
+      }
+    },
+    {
+      "eventId": "v2-saturn-1981",
+      "utc": "1981-08-26T03:24:57Z",
+      "jdTdb": 2444842.6429303554,
+      "tdbMinusUtcSeconds": 52.182721339879656,
+      "official": {
+        "radii": 2.67,
+        "radiusKm": 60330,
+        "distanceKm": 161081.1
+      },
+      "local": {
+        "km": 159580.82172240235,
+        "probeStatus": "interpolated",
+        "bodyStatus": "interpolated",
+        "probeDataset": "hist-flyby-v2-saturn-1981",
+        "bodyDataset": "hist-flyby-v2-saturn-1981",
+        "differenceFromOfficialKm": -1500.278277597652,
+        "linearInterpolationKm": 159363.40987496893,
+        "hermiteMinusLinearKm": 217.41184743342455,
+        "utcMisreadAsTdbKm": 159570.8154714179,
+        "timeConversionEffectKm": 10.006250984442886,
+        "samples": [
+          {
+            "jdTdb": 2444842.638888889,
+            "labelTdb": "A.D. 1981-Aug-26 03:20:00.0000",
+            "distanceKm": 159628.04475242662
+          },
+          {
+            "jdTdb": 2444842.652777778,
+            "labelTdb": "A.D. 1981-Aug-26 03:40:00.0000",
+            "distanceKm": 160587.5354622163
+          }
+        ],
+        "minimumWithinHalfHour": {
+          "km": 159566.78029759997,
+          "jdTdb": 2444842.6415414666,
+          "secondsFromOfficialUtc": -120
+        }
+      },
+      "source": {
+        "file": "data/historical/encounters/hist-flyby-v2-saturn-1981.json",
+        "frameId": "ICRF_ECLIPTIC_J2000",
+        "origin": "SUN_CENTER",
+        "originCode": "500@10",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "699",
+            "solutionId": "sat441l"
+          },
+          {
+            "bodyId": "606",
+            "solutionId": "sat441l"
+          }
+        ]
+      }
+    },
+    {
+      "eventId": "v2-uranus-1986",
+      "utc": "1986-01-24T17:59:47Z",
+      "jdTdb": 2446455.2504882477,
+      "tdbMinusUtcSeconds": 55.18461044292597,
+      "official": {
+        "radii": 4.19,
+        "radiusKm": 25559,
+        "distanceKm": 107092.21
+      },
+      "local": {
+        "km": 102310.6561829867,
+        "probeStatus": "interpolated",
+        "bodyStatus": "interpolated",
+        "probeDataset": "hist-flyby-v2-uranus-1986",
+        "bodyDataset": "hist-flyby-v2-uranus-1986",
+        "differenceFromOfficialKm": -4781.553817013308,
+        "linearInterpolationKm": 102298.43476288482,
+        "hermiteMinusLinearKm": 12.22142010187963,
+        "utcMisreadAsTdbKm": 102288.65565568357,
+        "timeConversionEffectKm": 22.000527303127456,
+        "samples": [
+          {
+            "jdTdb": 2446455.25,
+            "labelTdb": "A.D. 1986-Jan-24 18:00:00.0000",
+            "distanceKm": 102293.10661879444
+          },
+          {
+            "jdTdb": 2446455.263888889,
+            "labelTdb": "A.D. 1986-Jan-24 18:20:00.0000",
+            "distanceKm": 104622.14834027267
+          }
+        ],
+        "minimumWithinHalfHour": {
+          "km": 102268.89335413346,
+          "jdTdb": 2446455.2484049145,
+          "secondsFromOfficialUtc": -180
+        }
+      },
+      "source": {
+        "file": "data/historical/encounters/hist-flyby-v2-uranus-1986.json",
+        "frameId": "ICRF_ECLIPTIC_J2000",
+        "origin": "SUN_CENTER",
+        "originCode": "500@10",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "799",
+            "solutionId": "ura184_merged"
+          }
+        ]
+      }
+    },
+    {
+      "eventId": "v2-neptune-1989",
+      "utc": "1989-08-25T03:56:36Z",
+      "jdTdb": 2447763.6649558186,
+      "tdbMinusUtcSeconds": 56.182740369158964,
+      "official": {
+        "radii": 1.18,
+        "radiusKm": 24760,
+        "distanceKm": 29216.8
+      },
+      "local": {
+        "km": 34377.100576031786,
+        "probeStatus": "interpolated",
+        "bodyStatus": "interpolated",
+        "probeDataset": "hist-flyby-v2-neptune-1989",
+        "bodyDataset": "hist-flyby-v2-neptune-1989",
+        "differenceFromOfficialKm": 5160.3005760317865,
+        "linearInterpolationKm": 33987.24692409527,
+        "hermiteMinusLinearKm": 389.85365193651523,
+        "utcMisreadAsTdbKm": 34652.65344874569,
+        "timeConversionEffectKm": -275.5528727139026,
+        "samples": [
+          {
+            "jdTdb": 2447763.65625,
+            "labelTdb": "A.D. 1989-Aug-25 03:45:00.0000",
+            "distanceKm": 41133.37506158946
+          },
+          {
+            "jdTdb": 2447763.666666667,
+            "labelTdb": "A.D. 1989-Aug-25 04:00:00.0000",
+            "distanceKm": 33858.622725361434
+          }
+        ],
+        "minimumWithinHalfHour": {
+          "km": 33648.85580549159,
+          "jdTdb": 2447763.668775263,
+          "secondsFromOfficialUtc": 330
+        }
+      },
+      "source": {
+        "file": "data/historical/encounters/hist-flyby-v2-neptune-1989.json",
+        "frameId": "ICRF_ECLIPTIC_J2000",
+        "origin": "SUN_CENTER",
+        "originCode": "500@10",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "899",
+            "solutionId": "nep098_merged"
+          },
+          {
+            "bodyId": "801",
+            "solutionId": "nep098_merged"
+          }
+        ]
+      }
+    }
+  ]
+}

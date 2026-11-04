@@ -1,0 +1,411 @@
+{
+  "method": "Production JS Hermite vs original SPICE heliocentric states, 1/4, 1/2, 3/4 of each interval within +/-2h; alternate cadences are diagnostic only.",
+  "sourceInputSha256": "835802ebcb021bbe09c955c360a5ebc976172a89c0d34df5a04b6751aa9f5fe8",
+  "summaries": [
+    {
+      "eventId": "v1-io-encounter-1979",
+      "probeId": "-31",
+      "stepSeconds": 1800,
+      "productionStepSeconds": 1800,
+      "count": 27,
+      "worstPosition": {
+        "jdTdb": 2443938.010416667,
+        "positionResidualKm": 0.42067125384738285,
+        "velocityResidualKmS": 0.00001823812355679135
+      },
+      "maxVelocityResidualKmS": 0.0007014632048433862,
+      "checkedStartJdTdb": 2443937.921875,
+      "checkedEndJdTdb": 2443938.098958333
+    },
+    {
+      "eventId": "v1-io-encounter-1979",
+      "probeId": "-31",
+      "stepSeconds": 300,
+      "productionStepSeconds": 1800,
+      "count": 147,
+      "worstPosition": {
+        "jdTdb": 2443938.005208333,
+        "positionResidualKm": 0.0003273149839839492,
+        "velocityResidualKmS": 5.846558597234135e-9
+      },
+      "maxVelocityResidualKmS": 0.0000032701171287096587,
+      "checkedStartJdTdb": 2443937.9210069445,
+      "checkedEndJdTdb": 2443938.0894097225
+    },
+    {
+      "eventId": "v1-io-encounter-1979",
+      "probeId": "-31",
+      "stepSeconds": 60,
+      "productionStepSeconds": 1800,
+      "count": 723,
+      "worstPosition": {
+        "jdTdb": 2443938.0836805557,
+        "positionResidualKm": 0.0000047794708704490115,
+        "velocityResidualKmS": 1.9934065689537777e-9
+      },
+      "maxVelocityResidualKmS": 6.148513825605242e-8,
+      "checkedStartJdTdb": 2443937.9210069445,
+      "checkedEndJdTdb": 2443938.088020833
+    },
+    {
+      "eventId": "v1-europa-1979",
+      "probeId": "-31",
+      "stepSeconds": 1800,
+      "productionStepSeconds": 1800,
+      "count": 27,
+      "worstPosition": {
+        "jdTdb": 2443937.34375,
+        "positionResidualKm": 0.0034772689625393147,
+        "velocityResidualKmS": 4.1599464743986965e-8
+      },
+      "maxVelocityResidualKmS": 0.000005804543629120297,
+      "checkedStartJdTdb": 2443937.171875,
+      "checkedEndJdTdb": 2443937.348958333
+    },
+    {
+      "eventId": "v1-europa-1979",
+      "probeId": "-31",
+      "stepSeconds": 300,
+      "productionStepSeconds": 1800,
+      "count": 147,
+      "worstPosition": {
+        "jdTdb": 2443937.3350694445,
+        "positionResidualKm": 0.0000046987844257103815,
+        "velocityResidualKmS": 3.092339080767935e-10
+      },
+      "maxVelocityResidualKmS": 2.9149597165218276e-8,
+      "checkedStartJdTdb": 2443937.167534722,
+      "checkedEndJdTdb": 2443937.3359375
+    },
+    {
+      "eventId": "v1-europa-1979",
+      "probeId": "-31",
+      "stepSeconds": 60,
+      "productionStepSeconds": 1800,
+      "count": 723,
+      "worstPosition": {
+        "jdTdb": 2443937.2427083333,
+        "positionResidualKm": 0.0000033426650176046424,
+        "velocityResidualKmS": 5.301263941085432e-8
+      },
+      "maxVelocityResidualKmS": 5.301263941085432e-8,
+      "checkedStartJdTdb": 2443937.1668402776,
+      "checkedEndJdTdb": 2443937.333854167
+    },
+    {
+      "eventId": "v1-ganymede-1979",
+      "probeId": "-31",
+      "stepSeconds": 1800,
+      "productionStepSeconds": 1800,
+      "count": 27,
+      "worstPosition": {
+        "jdTdb": 2443938.177083333,
+        "positionResidualKm": 0.12580801193268287,
+        "velocityResidualKmS": 0.000003930312907447809
+      },
+      "maxVelocityResidualKmS": 0.00021018002917002682,
+      "checkedStartJdTdb": 2443938.171875,
+      "checkedEndJdTdb": 2443938.348958333
+    },
+    {
+      "eventId": "v1-ganymede-1979",
+      "probeId": "-31",
+      "stepSeconds": 300,
+      "productionStepSeconds": 1800,
+      "count": 147,
+      "worstPosition": {
+        "jdTdb": 2443938.168402778,
+        "positionResidualKm": 0.00010531082913806908,
+        "velocityResidualKmS": 9.974997040975754e-9
+      },
+      "maxVelocityResidualKmS": 0.000001068454269051328,
+      "checkedStartJdTdb": 2443938.167534722,
+      "checkedEndJdTdb": 2443938.3359375
+    },
+    {
+      "eventId": "v1-ganymede-1979",
+      "probeId": "-31",
+      "stepSeconds": 60,
+      "productionStepSeconds": 1800,
+      "count": 723,
+      "worstPosition": {
+        "jdTdb": 2443938.1947916667,
+        "positionResidualKm": 0.000005195423196072616,
+        "velocityResidualKmS": 5.6275969176197055e-8
+      },
+      "maxVelocityResidualKmS": 6.179700008500036e-8,
+      "checkedStartJdTdb": 2443938.1668402776,
+      "checkedEndJdTdb": 2443938.333854167
+    },
+    {
+      "eventId": "v1-callisto-1979",
+      "probeId": "-31",
+      "stepSeconds": 1800,
+      "productionStepSeconds": 1800,
+      "count": 27,
+      "worstPosition": {
+        "jdTdb": 2443936.09375,
+        "positionResidualKm": 0.00007567985474549546,
+        "velocityResidualKmS": 1.2117857824334492e-9
+      },
+      "maxVelocityResidualKmS": 1.2722051590955156e-7,
+      "checkedStartJdTdb": 2443935.921875,
+      "checkedEndJdTdb": 2443936.098958333
+    },
+    {
+      "eventId": "v1-callisto-1979",
+      "probeId": "-31",
+      "stepSeconds": 300,
+      "productionStepSeconds": 1800,
+      "count": 147,
+      "worstPosition": {
+        "jdTdb": 2443936.0538194445,
+        "positionResidualKm": 0.0000019222001589259865,
+        "velocityResidualKmS": 5.484215734936106e-10
+      },
+      "maxVelocityResidualKmS": 5.50899042492994e-9,
+      "checkedStartJdTdb": 2443935.917534722,
+      "checkedEndJdTdb": 2443936.0859375
+    },
+    {
+      "eventId": "v1-callisto-1979",
+      "probeId": "-31",
+      "stepSeconds": 60,
+      "productionStepSeconds": 1800,
+      "count": 723,
+      "worstPosition": {
+        "jdTdb": 2443935.9586805557,
+        "positionResidualKm": 0.00000197586531801718,
+        "velocityResidualKmS": 2.9084903550644285e-9
+      },
+      "maxVelocityResidualKmS": 2.444878500207066e-8,
+      "checkedStartJdTdb": 2443935.9168402776,
+      "checkedEndJdTdb": 2443936.083854167
+    },
+    {
+      "eventId": "v1-titan-1980",
+      "probeId": "-31",
+      "stepSeconds": 1200,
+      "productionStepSeconds": 1200,
+      "count": 39,
+      "worstPosition": {
+        "jdTdb": 2444555.7430555555,
+        "positionResidualKm": 3.2179826985523015,
+        "velocityResidualKmS": 0.003217849445243165
+      },
+      "maxVelocityResidualKmS": 0.00909513300613036,
+      "checkedStartJdTdb": 2444555.65625,
+      "checkedEndJdTdb": 2444555.829861111
+    },
+    {
+      "eventId": "v1-titan-1980",
+      "probeId": "-31",
+      "stepSeconds": 300,
+      "productionStepSeconds": 1200,
+      "count": 147,
+      "worstPosition": {
+        "jdTdb": 2444555.737847222,
+        "positionResidualKm": 0.07481640006695722,
+        "velocityResidualKmS": 0.00012648243511698235
+      },
+      "maxVelocityResidualKmS": 0.0007635119348161,
+      "checkedStartJdTdb": 2444555.6536458335,
+      "checkedEndJdTdb": 2444555.822048611
+    },
+    {
+      "eventId": "v1-titan-1980",
+      "probeId": "-31",
+      "stepSeconds": 60,
+      "productionStepSeconds": 1200,
+      "count": 723,
+      "worstPosition": {
+        "jdTdb": 2444555.7371527776,
+        "positionResidualKm": 0.00015063700853044424,
+        "velocityResidualKmS": 2.1426246147516732e-7
+      },
+      "maxVelocityResidualKmS": 0.000007552826499685494,
+      "checkedStartJdTdb": 2444555.654340278,
+      "checkedEndJdTdb": 2444555.8213541666
+    },
+    {
+      "eventId": "v2-europa-1979",
+      "probeId": "-32",
+      "stepSeconds": 1800,
+      "productionStepSeconds": 1800,
+      "count": 27,
+      "worstPosition": {
+        "jdTdb": 2444064.09375,
+        "positionResidualKm": 0.005585497926113482,
+        "velocityResidualKmS": 7.620082499491138e-8
+      },
+      "maxVelocityResidualKmS": 0.000009315403326151589,
+      "checkedStartJdTdb": 2444063.921875,
+      "checkedEndJdTdb": 2444064.098958333
+    },
+    {
+      "eventId": "v2-europa-1979",
+      "probeId": "-32",
+      "stepSeconds": 300,
+      "productionStepSeconds": 1800,
+      "count": 147,
+      "worstPosition": {
+        "jdTdb": 2444064.0711805555,
+        "positionResidualKm": 0.0000058434025371829846,
+        "velocityResidualKmS": 5.970902463007233e-10
+      },
+      "maxVelocityResidualKmS": 4.485158572433042e-8,
+      "checkedStartJdTdb": 2444063.917534722,
+      "checkedEndJdTdb": 2444064.0859375
+    },
+    {
+      "eventId": "v2-europa-1979",
+      "probeId": "-32",
+      "stepSeconds": 60,
+      "productionStepSeconds": 1800,
+      "count": 723,
+      "worstPosition": {
+        "jdTdb": 2444064.035763889,
+        "positionResidualKm": 0.000002679440134816153,
+        "velocityResidualKmS": 3.233238112599637e-9
+      },
+      "maxVelocityResidualKmS": 3.542527030045527e-8,
+      "checkedStartJdTdb": 2444063.9168402776,
+      "checkedEndJdTdb": 2444064.083854167
+    },
+    {
+      "eventId": "v2-titania-1986",
+      "probeId": "-32",
+      "stepSeconds": 1200,
+      "productionStepSeconds": 1200,
+      "count": 39,
+      "worstPosition": {
+        "jdTdb": 2446454.840277778,
+        "positionResidualKm": 0.00041366319710123864,
+        "velocityResidualKmS": 8.463447261710853e-9
+      },
+      "maxVelocityResidualKmS": 0.0000010369343384656803,
+      "checkedStartJdTdb": 2446454.670138889,
+      "checkedEndJdTdb": 2446454.84375
+    },
+    {
+      "eventId": "v2-titania-1986",
+      "probeId": "-32",
+      "stepSeconds": 300,
+      "productionStepSeconds": 1200,
+      "count": 147,
+      "worstPosition": {
+        "jdTdb": 2446454.6848958335,
+        "positionResidualKm": 0.0000030872316839776663,
+        "velocityResidualKmS": 1.605258213021174e-8
+      },
+      "maxVelocityResidualKmS": 1.9015808724744585e-8,
+      "checkedStartJdTdb": 2446454.667534722,
+      "checkedEndJdTdb": 2446454.8359375
+    },
+    {
+      "eventId": "v2-titania-1986",
+      "probeId": "-32",
+      "stepSeconds": 60,
+      "productionStepSeconds": 1200,
+      "count": 723,
+      "worstPosition": {
+        "jdTdb": 2446454.684201389,
+        "positionResidualKm": 0.000002858520289449479,
+        "velocityResidualKmS": 5.802565671505447e-8
+      },
+      "maxVelocityResidualKmS": 7.724499580250076e-8,
+      "checkedStartJdTdb": 2446454.6668402776,
+      "checkedEndJdTdb": 2446454.833854167
+    },
+    {
+      "eventId": "v2-miranda-1986",
+      "probeId": "-32",
+      "stepSeconds": 1200,
+      "productionStepSeconds": 1200,
+      "count": 39,
+      "worstPosition": {
+        "jdTdb": 2446455.090277778,
+        "positionResidualKm": 0.010654454292407505,
+        "velocityResidualKmS": 4.802197368398746e-7
+      },
+      "maxVelocityResidualKmS": 0.000026719394471239273,
+      "checkedStartJdTdb": 2446454.920138889,
+      "checkedEndJdTdb": 2446455.09375
+    },
+    {
+      "eventId": "v2-miranda-1986",
+      "probeId": "-32",
+      "stepSeconds": 300,
+      "productionStepSeconds": 1200,
+      "count": 147,
+      "worstPosition": {
+        "jdTdb": 2446455.0850694445,
+        "positionResidualKm": 0.00003766240782263196,
+        "velocityResidualKmS": 1.9992266067867246e-9
+      },
+      "maxVelocityResidualKmS": 3.782604971546967e-7,
+      "checkedStartJdTdb": 2446454.917534722,
+      "checkedEndJdTdb": 2446455.0859375
+    },
+    {
+      "eventId": "v2-miranda-1986",
+      "probeId": "-32",
+      "stepSeconds": 60,
+      "productionStepSeconds": 1200,
+      "count": 723,
+      "worstPosition": {
+        "jdTdb": 2446454.9635416665,
+        "positionResidualKm": 0.0000014756859094044787,
+        "velocityResidualKmS": 1.8746032397376655e-8
+      },
+      "maxVelocityResidualKmS": 3.708143483567936e-8,
+      "checkedStartJdTdb": 2446454.9168402776,
+      "checkedEndJdTdb": 2446455.083854167
+    },
+    {
+      "eventId": "v2-triton-1989",
+      "probeId": "-32",
+      "stepSeconds": 900,
+      "productionStepSeconds": 900,
+      "count": 51,
+      "worstPosition": {
+        "jdTdb": 2447763.796875,
+        "positionResidualKm": 0.008848786705018806,
+        "velocityResidualKmS": 5.841654324931554e-7
+      },
+      "maxVelocityResidualKmS": 0.000029604565416404746,
+      "checkedStartJdTdb": 2447763.794270833,
+      "checkedEndJdTdb": 2447763.9661458335
+    },
+    {
+      "eventId": "v2-triton-1989",
+      "probeId": "-32",
+      "stepSeconds": 300,
+      "productionStepSeconds": 900,
+      "count": 147,
+      "worstPosition": {
+        "jdTdb": 2447763.800347222,
+        "positionResidualKm": 0.00009948870943913067,
+        "velocityResidualKmS": 8.906945714664542e-9
+      },
+      "maxVelocityResidualKmS": 9.895812225446014e-7,
+      "checkedStartJdTdb": 2447763.7994791665,
+      "checkedEndJdTdb": 2447763.9678819445
+    },
+    {
+      "eventId": "v2-triton-1989",
+      "probeId": "-32",
+      "stepSeconds": 60,
+      "productionStepSeconds": 900,
+      "count": 723,
+      "worstPosition": {
+        "jdTdb": 2447763.8421875,
+        "positionResidualKm": 0.00000202617440030687,
+        "velocityResidualKmS": 1.483796033480599e-8
+      },
+      "maxVelocityResidualKmS": 4.657234456583766e-8,
+      "checkedStartJdTdb": 2447763.798784722,
+      "checkedEndJdTdb": 2447763.9657986113
+    }
+  ]
+}

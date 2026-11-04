@@ -1,0 +1,14 @@
+{
+  "appName": "Simulador de Sondas Espaciales · Sistema Solar y Misiones Voyager",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+  "webgl2": true,
+  "renderer": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "vendor": "Google Inc. (AMD)",
+  "maxTextureSize": 16384,
+  "contextLost": false,
+  "viewport": {
+    "w": 1920,
+    "h": 1080
+  },
+  "devicePixelRatio": 1
+}

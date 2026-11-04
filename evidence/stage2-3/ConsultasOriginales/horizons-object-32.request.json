@@ -1,0 +1,13 @@
+{
+  "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27-32%27&OBJ_DATA=%27YES%27&MAKE_EPHEM=%27NO%27",
+  "parameters": {
+    "format": "json",
+    "COMMAND": "'-32'",
+    "OBJ_DATA": "'YES'",
+    "MAKE_EPHEM": "'NO'"
+  },
+  "acquiredAtUtc": "2026-11-01T02:07:37.629Z",
+  "httpStatus": 200,
+  "bytes": 3103,
+  "sha256": "729257944520cccd917aae84b77eadf107bd303f66f6b097cf1c570e1667622d"
+}

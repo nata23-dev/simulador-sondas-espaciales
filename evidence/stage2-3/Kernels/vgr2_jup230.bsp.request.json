@@ -1,0 +1,8 @@
+{
+  "source": "NASA/JPL NAIF",
+  "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/vgr2_jup230.bsp",
+  "acquiredAtUtc": "2026-11-01T02:08:44.391Z",
+  "httpStatus": 200,
+  "bytes": 330752,
+  "sha256": "9c00be3c83915f6c1fd8448d9266420e3c462e9d78e4c32b17145dac81529d5a"
+}

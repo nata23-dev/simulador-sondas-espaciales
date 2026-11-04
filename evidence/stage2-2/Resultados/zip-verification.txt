@@ -1,0 +1,6 @@
+﻿ZIP extraído en un directorio temporal nuevo.
+Integridad: 668 archivos y 147927605 bytes verificaron SHA-256 contra MANIFEST_SHA256.json (antes de instalar dependencias).
+npm ci: exit 0; 16 paquetes instalados; 0 vulnerabilidades reportadas.
+node --test: exit 0; 91/91 pruebas aprobadas.
+npm run build: exit 0; Vite 8.3.4, 74 módulos; aviso no bloqueante de chunk >500 kB.
+No se realizó commit, push ni despliegue.

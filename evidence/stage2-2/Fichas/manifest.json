@@ -1,0 +1,171 @@
+{
+  "source": "Chrome CDP, capturas auténticas",
+  "timestamp": "2026-11-01T01:43:58.859Z",
+  "captures": [
+    {
+      "file": "v2-uranus-1986-1366x768.png",
+      "state": {
+        "event": "v2-uranus-1986",
+        "note": "Al UTC oficial: NSSDCA ~107 092 km al centro; Horizons directo ~107 158 km; geometría local ~102 311 km. La trayectoria local sigue pendiente de reconciliación.",
+        "noteVisible": true,
+        "welcomeVisible": false,
+        "width": 1366,
+        "height": 768,
+        "horizontalOverflow": false,
+        "inspector": "half",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -138.6258599785703,
+            179.5393735425423,
+            578.5049575739838
+          ],
+          "objetivoEscena": [
+            -22.919548281326556,
+            16.85800787825648,
+            278.445198460975
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        }
+      }
+    },
+    {
+      "file": "v2-neptune-1989-1366x768.png",
+      "state": {
+        "event": "v2-neptune-1989",
+        "note": "Al UTC oficial: NSSDCA ~29 217 km al centro; Horizons directo ~29 264 km; geometría local ~34 377 km. La trayectoria local sigue pendiente de reconciliación.",
+        "noteVisible": true,
+        "welcomeVisible": false,
+        "width": 1366,
+        "height": 768,
+        "horizontalOverflow": false,
+        "inspector": "half",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            0.49016243687049155,
+            58.201102524658594,
+            733.240820445201
+          ],
+          "objetivoEscena": [
+            34.23972847528199,
+            10.749899023130636,
+            645.7310887419252
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        }
+      }
+    },
+    {
+      "file": "v2-uranus-1986-390x844.png",
+      "state": {
+        "event": "v2-uranus-1986",
+        "note": "Al UTC oficial: NSSDCA ~107 092 km al centro; Horizons directo ~107 158 km; geometría local ~102 311 km. La trayectoria local sigue pendiente de reconciliación.",
+        "noteVisible": true,
+        "welcomeVisible": false,
+        "width": 390,
+        "height": 844,
+        "horizontalOverflow": false,
+        "inspector": "half",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -18.030644827204597,
+            19.256237217362557,
+            712.1498007445713
+          ],
+          "objetivoEscena": [
+            -8.486951806805521,
+            5.898990971076583,
+            687.5158233280495
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        }
+      }
+    },
+    {
+      "file": "v2-neptune-1989-390x844.png",
+      "state": {
+        "event": "v2-neptune-1989",
+        "note": "Al UTC oficial: NSSDCA ~29 217 km al centro; Horizons directo ~29 264 km; geometría local ~34 377 km. La trayectoria local sigue pendiente de reconciliación.",
+        "noteVisible": true,
+        "welcomeVisible": false,
+        "width": 390,
+        "height": 844,
+        "horizontalOverflow": false,
+        "inspector": "half",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            55.202933569478745,
+            12.610122784129103,
+            794.1301947590335
+          ],
+          "objetivoEscena": [
+            58.08162966292102,
+            8.56613232521208,
+            786.7030356139079
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        }
+      }
+    }
+  ],
+  "errors": []
+}

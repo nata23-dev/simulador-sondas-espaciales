@@ -1,0 +1,611 @@
+{
+  "toolkit": "CSPICE_N0067",
+  "spiceypy": "8.3.0",
+  "frame": "ECLIPJ2000",
+  "timeScale": "TDB/ET",
+  "aberration": "NONE",
+  "units": "km, km/s",
+  "source": {
+    "vgr1_jup230.bsp": {
+      "file": "evidence/stage2-3/Kernels/vgr1_jup230.bsp",
+      "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/vgr1_jup230.bsp",
+      "sha256": "e1ea3f72f19b15508bc45979771a36a97d02f33056b76867d444304cb82205c9",
+      "bytes": 325632,
+      "segments": [
+        {
+          "target": -31,
+          "center": 5,
+          "frameId": 1,
+          "type": 1,
+          "startEt": -660052800.0,
+          "endEt": -656078400.0
+        }
+      ]
+    },
+    "vgr1_sat337.bsp": {
+      "file": "evidence/stage2-3/Kernels/vgr1_sat337.bsp",
+      "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/vgr1_sat337.bsp",
+      "sha256": "f451f9f095bc4ad175cde701367cbf1ccc061dd706ad0008cda75fd939d94efa",
+      "bytes": 749568,
+      "segments": [
+        {
+          "target": -31,
+          "center": 10,
+          "frameId": 1,
+          "type": 1,
+          "startEt": -612273600.0,
+          "endEt": -607052990.3429815
+        },
+        {
+          "target": -31,
+          "center": 6,
+          "frameId": 1,
+          "type": 1,
+          "startEt": -607052990.3429815,
+          "endEt": -603201600.0
+        }
+      ]
+    },
+    "sat337.bsp": {
+      "file": "evidence/voyager-encounter-context/Kernels/sat337.bsp",
+      "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/sat337.bsp",
+      "sha256": "5f145798110d6e070c72876cd0673ec07b02b94f36d835f1996474441681847d",
+      "bytes": 2456576,
+      "segments": [
+        {
+          "target": 601,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 602,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 603,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 604,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 605,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 606,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 607,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 608,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 609,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 612,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 613,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 614,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 632,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 699,
+          "center": 6,
+          "frameId": 1,
+          "type": 3,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 6,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -612273600.0,
+          "endEt": -576763200.0
+        }
+      ]
+    },
+    "vgr2_jup230.bsp": {
+      "file": "evidence/stage2-3/Kernels/vgr2_jup230.bsp",
+      "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/vgr2_jup230.bsp",
+      "sha256": "9c00be3c83915f6c1fd8448d9266420e3c462e9d78e4c32b17145dac81529d5a",
+      "bytes": 330752,
+      "segments": [
+        {
+          "target": -32,
+          "center": 5,
+          "frameId": 1,
+          "type": 1,
+          "startEt": -649364400.0,
+          "endEt": -645364800.0
+        }
+      ]
+    },
+    "vgr2.ura182.bsp": {
+      "file": "evidence/stage2-3/Kernels/vgr2.ura182.bsp",
+      "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/vgr2.ura182.bsp",
+      "sha256": "22d012ab426273ffb22710238cfe4f7d0c63850225cc9e46b1f5aa40308cd880",
+      "bytes": 1064960,
+      "segments": [
+        {
+          "target": -32,
+          "center": 7,
+          "frameId": 1,
+          "type": 1,
+          "startEt": -443273772.526956,
+          "endEt": -438004800.0
+        },
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 1,
+          "type": 1,
+          "startEt": -453211200.0,
+          "endEt": -443273772.526956
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        },
+        {
+          "target": 7,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        },
+        {
+          "target": 799,
+          "center": 7,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        },
+        {
+          "target": 715,
+          "center": 7,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        },
+        {
+          "target": 704,
+          "center": 7,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        },
+        {
+          "target": 703,
+          "center": 7,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        },
+        {
+          "target": 702,
+          "center": 7,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        },
+        {
+          "target": 701,
+          "center": 7,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        },
+        {
+          "target": 705,
+          "center": 7,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -453211200.0,
+          "endEt": -438004800.0
+        }
+      ]
+    },
+    "vgr2_nep097.bsp": {
+      "file": "evidence/stage2-3/Kernels/vgr2_nep097.bsp",
+      "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/vgr2_nep097.bsp",
+      "sha256": "1aee50e5e4a5253c660d06f7359eb4dac2fe4a5dab5fdc821d2b868469bdc473",
+      "bytes": 1469440,
+      "segments": [
+        {
+          "target": -32,
+          "center": 8,
+          "frameId": 1,
+          "type": 1,
+          "startEt": -331475555.73652345,
+          "endEt": -323481600.0
+        },
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 1,
+          "type": 1,
+          "startEt": -351345600.0,
+          "endEt": -331475555.73652345
+        },
+        {
+          "target": 299,
+          "center": 2,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 199,
+          "center": 1,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 301,
+          "center": 3,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 9,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 8,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 7,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 6,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 5,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 4,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 2,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 1,
+          "center": 0,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 899,
+          "center": 8,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        },
+        {
+          "target": 801,
+          "center": 8,
+          "frameId": 1,
+          "type": 2,
+          "startEt": -351345600.0,
+          "endEt": -323481600.0
+        }
+      ]
+    }
+  },
+  "events": [
+    {
+      "eventId": "v1-io-encounter-1979",
+      "dateUtc": "1979-03-05T12:05:26Z",
+      "probeId": "-31",
+      "moonId": "501",
+      "loadOrder": [
+        "vgr1_jup230.bsp"
+      ],
+      "horizonsDistanceKm": 159220.4481218188,
+      "status": "missing_compatible_moon_segment",
+      "reason": "",
+      "note": "jup230-short.bsp is ~98.75 MB; direct Horizons vector retained as smaller verified derivative"
+    },
+    {
+      "eventId": "v1-europa-1979",
+      "dateUtc": "1979-03-04T18:00:00Z",
+      "probeId": "-31",
+      "moonId": "502",
+      "loadOrder": [
+        "vgr1_jup230.bsp"
+      ],
+      "horizonsDistanceKm": 1874145.5587660607,
+      "status": "missing_compatible_moon_segment",
+      "reason": "",
+      "note": "jup230-short.bsp is ~98.75 MB; direct Horizons vector retained as smaller verified derivative"
+    },
+    {
+      "eventId": "v1-ganymede-1979",
+      "dateUtc": "1979-03-05T18:00:00Z",
+      "probeId": "-31",
+      "moonId": "503",
+      "loadOrder": [
+        "vgr1_jup230.bsp"
+      ],
+      "horizonsDistanceKm": 552693.7968380466,
+      "status": "missing_compatible_moon_segment",
+      "reason": "",
+      "note": "jup230-short.bsp is ~98.75 MB; direct Horizons vector retained as smaller verified derivative"
+    },
+    {
+      "eventId": "v1-callisto-1979",
+      "dateUtc": "1979-03-03T12:00:00Z",
+      "probeId": "-31",
+      "moonId": "504",
+      "loadOrder": [
+        "vgr1_jup230.bsp"
+      ],
+      "horizonsDistanceKm": 4740388.501715752,
+      "status": "missing_compatible_moon_segment",
+      "reason": "",
+      "note": "jup230-short.bsp is ~98.75 MB; direct Horizons vector retained as smaller verified derivative"
+    },
+    {
+      "eventId": "v1-titan-1980",
+      "dateUtc": "1980-11-12T05:41:21Z",
+      "probeId": "-31",
+      "moonId": "606",
+      "loadOrder": [
+        "vgr1_sat337.bsp",
+        "sat337.bsp"
+      ],
+      "horizonsDistanceKm": 6664.045993610833,
+      "status": "computable",
+      "distanceKm": 6576.104173615077,
+      "distanceDifferenceKm": -87.9418199957554,
+      "positionErrorKm": 99.80106726523198,
+      "velocityErrorKmS": 0.0027151168579004448
+    },
+    {
+      "eventId": "v2-europa-1979",
+      "dateUtc": "1979-07-09T12:00:00Z",
+      "probeId": "-32",
+      "moonId": "502",
+      "loadOrder": [
+        "vgr2_jup230.bsp"
+      ],
+      "horizonsDistanceKm": 308044.21193638304,
+      "status": "missing_compatible_moon_segment",
+      "reason": "",
+      "note": "jup230-short.bsp is ~98.75 MB; direct Horizons vector retained as smaller verified derivative"
+    },
+    {
+      "eventId": "v2-titania-1986",
+      "dateUtc": "1986-01-24T06:00:00Z",
+      "probeId": "-32",
+      "moonId": "703",
+      "loadOrder": [
+        "vgr2.ura182.bsp"
+      ],
+      "horizonsDistanceKm": 635071.4758685404,
+      "status": "computable",
+      "distanceKm": 635101.0471042371,
+      "distanceDifferenceKm": 29.571235696785152,
+      "positionErrorKm": 119.14563769650474,
+      "velocityErrorKmS": 0.0027198430943662943
+    },
+    {
+      "eventId": "v2-miranda-1986",
+      "dateUtc": "1986-01-24T12:00:00Z",
+      "probeId": "-32",
+      "moonId": "705",
+      "loadOrder": [
+        "vgr2.ura182.bsp"
+      ],
+      "horizonsDistanceKm": 354629.2979907669,
+      "status": "computable",
+      "distanceKm": 354646.75829007727,
+      "distanceDifferenceKm": 17.460299310390837,
+      "positionErrorKm": 62.19892121852833,
+      "velocityErrorKmS": 0.0027347043592182985
+    },
+    {
+      "eventId": "v2-triton-1989",
+      "dateUtc": "1989-08-25T09:10:00Z",
+      "probeId": "-32",
+      "moonId": "801",
+      "loadOrder": [
+        "vgr2_nep097.bsp"
+      ],
+      "horizonsDistanceKm": 39734.57421527362,
+      "status": "computable",
+      "distanceKm": 39782.81441115242,
+      "distanceDifferenceKm": 48.240195878803206,
+      "positionErrorKm": 49.70274126160518,
+      "velocityErrorKmS": 0.0019534861055396473
+    }
+  ],
+  "comparison": "Specialized SPK relative moon-probe versus independent current Horizons direct at identical catalog epoch"
+}

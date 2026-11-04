@@ -1,5 +1,12 @@
 import * as THREE from 'three';
 import { calcularEncuadreVista } from './OverviewFraming.js';
+import { horizontalFovFromVertical, verticalFovForSquareFootprint } from './InstrumentFov.js';
+import {
+  projectedRingHalfTangents,
+  requiredVerticalFovDeg,
+  sphereAngularDiameterDeg,
+  sphereHalfTangent
+} from './AngularGeometry.js';
 import {
   MODOS_ESCALA_VISUAL,
   REGIONES_SISTEMA,
@@ -9,8 +16,9 @@ import {
 const DISTANCIA_MAXIMA = 24000;
 const FOV_EXTERIOR_GRADOS = 48;
 const FOV_MIN_PRIMERA_PERSONA = 0.35;
-const FOV_MAX_PRIMERA_PERSONA = 65;
+const FOV_MAX_PRIMERA_PERSONA = 150;
 const FRACCION_ENCUADRE = 0.64;
+const OBJETIVOS_CONTEXTO_VOYAGER = new Set(['Jupiter','Saturno','Urano','Neptuno']);
 
 export const MODOS_CAMARA_HISTORICA = Object.freeze({
   EXTERIOR: 'exterior',
@@ -34,6 +42,8 @@ export function crearControladorCamara({
   alSeleccionarSonda = null,
   sondasHistoricas = new Map(),
   satelites = new Map(),
+  lunasPlanetarias = new Map(),
+  alSeleccionarLuna = null,
   alSeleccionarSondaHistorica = null,
   alCambiarEstadoCamaraHistorica = null,
   obtenerModoEscala = () => MODOS_ESCALA_VISUAL.CIENTIFICA,
@@ -55,6 +65,14 @@ export function crearControladorCamara({
       mallasPlanetas.push(nodo);
     });
   }
+  for (const [nombre, luna] of lunasPlanetarias) {
+    luna.mesh.userData.nombreLuna = nombre;
+    mallasPlanetas.push(luna.mesh);
+  }
+  for (const [nombre, luna] of satelites) {
+    luna.malla.userData.nombreLuna = nombre;
+    mallasPlanetas.push(luna.malla);
+  }
 
   let seleccionado = null;
   let sondaEnfocada = false;
@@ -65,7 +83,12 @@ export function crearControladorCamara({
   let yawPrimeraPersona = 0;
   let pitchPrimeraPersona = 0;
   let fovPrimeraPersona = 45;
+  let fovTipo = 'contextual_vertical';
+  let fovContextualAutomatico = false;
+  let fotoUsaFovContexto = false;
+  let transicionOrientacion = null;
   let fotoRecreacionActiva = null;
+  let contextosLocales = Object.freeze({});
 
   let transicion = null;
   let gesto = null;
@@ -79,24 +102,74 @@ export function crearControladorCamara({
       || modoCamaraHistorica === MODOS_CAMARA_HISTORICA.RECREACION_FOTOGRAFICA;
   }
 
+  function contextoLocal(idSonda, objetivo) {
+    return contextosLocales?.[`${idSonda}:${objetivo}`] ?? null;
+  }
+
+  function posicionObservador(idSonda, objetivo) {
+    const local=contextoLocal(idSonda,objetivo)?.observerPositionScene;
+    return local
+      ? new THREE.Vector3(local.x,local.y,local.z)
+      : sondasHistoricas.get(idSonda)?.posicion.position ?? null;
+  }
+
+  function establecerContextosLocales(nuevos) {
+    const anterior=enPrimeraPersonaORecreacion()
+      ? contextoLocal(idSondaPrimeraPersona,objetivoMirada) : null;
+    contextosLocales=nuevos ?? Object.freeze({});
+    if(anterior&&!contextoLocal(idSondaPrimeraPersona,objetivoMirada)) {
+      // La ventana local terminó: cambia explícitamente a la vista global.
+      salirDePrimeraPersonaHaciaExterior();
+    }
+  }
+
   function notificarCamaraHistorica() {
     alCambiarEstadoCamaraHistorica?.(obtenerEstadoCamaraHistorica());
   }
 
   function obtenerEstadoCamaraHistorica() {
+    const local=enPrimeraPersonaORecreacion()
+      ? contextoLocal(idSondaPrimeraPersona,objetivoMirada) : null;
     let tipoOrientacion = 'orbita_exterior';
     if (modoCamaraHistorica === MODOS_CAMARA_HISTORICA.RECREACION_FOTOGRAFICA) {
       tipoOrientacion = 'recreacion_fotografica_aproximada';
     } else if (modoCamaraHistorica === MODOS_CAMARA_HISTORICA.PRIMERA_PERSONA) {
       tipoOrientacion = objetivoMirada ? 'apuntado_geometrico' : 'libre_usuario';
     }
+    const encuadre = enPrimeraPersonaORecreacion()
+      ? geometriaEncuadreContextual(idSondaPrimeraPersona, objetivoMirada)
+      : null;
     return Object.freeze({
       modo: modoCamaraHistorica,
       idSondaObservador: enPrimeraPersonaORecreacion() ? idSondaPrimeraPersona : idSondaHistoricaEnfocada,
       idSondaExterior: idSondaHistoricaEnfocada,
+      objetoExteriorSeleccionado: seleccionado,
+      sondaExperimentalEnfocada: sondaEnfocada,
       objetivoMirada: enPrimeraPersonaORecreacion() ? objetivoMirada : null,
       fovGrados: camera.fov,
+      fovReferenciaGrados: enPrimeraPersonaORecreacion() ? fovPrimeraPersona : camera.fov,
+      fovHorizontalGrados: horizontalFovFromVertical(camera.fov, camera.aspect),
+      fovTipo: enPrimeraPersonaORecreacion() ? fovTipo : 'exterior_vertical',
+      encuadreObjetivo: encuadre ? Object.freeze({
+        diametroEsferaGrados: encuadre.diametroEsferaGrados,
+        incluyeAnillos: encuadre.incluyeAnillos,
+        fovVerticalNecesarioGrados: encuadre.fovVerticalNecesarioGrados,
+        cabeEnAreaLibre: fovTipo === 'contextual_vertical'
+          ? camera.fov + 0.05 >= encuadre.fovVerticalNecesarioGrados
+          : null
+      }) : null,
+      fotoUsaFovContexto,
+      posicionEscena: Object.freeze(camera.position.toArray()),
+      objetivoEscena: Object.freeze(controls.target.toArray()),
+      transicionActiva: transicion !== null || transicionOrientacion !== null,
+      modoVista,
       tipoOrientacion,
+      contextoGeometria:local?'encuentro_local':'trayectoria_global',
+      fuenteContextoLocal:local?.source??null,
+      datasetContextoLocal:local?.datasetId??null,
+      objetivoSinContextoLocal:enPrimeraPersonaORecreacion()
+        && (Boolean(satelites.get(objetivoMirada)?.posicion.visible)
+          || OBJETIVOS_CONTEXTO_VOYAGER.has(objetivoMirada)) && !local,
       fotoRecreacionId: fotoRecreacionActiva?.id ?? null
     });
   }
@@ -119,7 +192,11 @@ export function crearControladorCamara({
     if (!enPrimeraPersonaORecreacion()) return;
     const sondaPrev = sondasHistoricas.get(idSondaPrimeraPersona);
     modoCamaraHistorica = MODOS_CAMARA_HISTORICA.EXTERIOR;
+    transicionOrientacion = null;
     fotoRecreacionActiva = null;
+    fotoUsaFovContexto = false;
+    fovTipo = 'contextual_vertical';
+    fovContextualAutomatico = false;
     sincronizarOcultamientoPrimeraPersona();
     restaurarFovExterior();
     controls.enabled = true;
@@ -147,6 +224,8 @@ export function crearControladorCamara({
   }
 
   function radioBaseModoPlaneta(nombre) {
+    if (lunasPlanetarias.has(nombre)) return lunasPlanetarias.get(nombre).radioEscena;
+    if (satelites.get(nombre)?.posicion.visible) return satelites.get(nombre).radioFisicoEscena;
     const modoEscala = enPrimeraPersonaORecreacion() ? MODOS_ESCALA_VISUAL.CIENTIFICA : obtenerModoEscala();
     if (modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA) {
       return obtenerRadioFisicoEscena(nombre);
@@ -155,6 +234,8 @@ export function crearControladorCamara({
   }
 
   function radioActualMundoPlaneta(nombre) {
+    if (lunasPlanetarias.has(nombre)) return lunasPlanetarias.get(nombre).radioEscena;
+    if (satelites.get(nombre)?.posicion.visible) return satelites.get(nombre).radioFisicoEscena;
     const objeto = objetos.get(nombre);
     return objeto.planeta.radio * Math.max(objeto.posicion.scale.x, 1e-6);
   }
@@ -201,7 +282,9 @@ export function crearControladorCamara({
     if ((sondaEnfocada || idSondaHistoricaEnfocada) && !seleccionado) {
       return radioObservacionSondaActiva() * 3.15;
     }
-    const mitadVertical = THREE.MathUtils.degToRad(camera.getEffectiveFOV()) / 2;
+    // La compensación del inspector se aplica a la proyección, sin alterar
+    // esta distancia física de observación ni compensar dos veces el zoom.
+    const mitadVertical = THREE.MathUtils.degToRad(camera.fov) / 2;
     const mitadHorizontal = Math.atan(Math.tan(mitadVertical) * camera.aspect);
     const radioPlanetaModo = radioBaseModoPlaneta(seleccionado);
     let radioVertical = radioPlanetaModo * 1.014;
@@ -323,6 +406,12 @@ export function crearControladorCamara({
       return sondasHistoricas.get(idSondaHistoricaEnfocada).posicion.position;
     }
     if (sondaEnfocada && sonda) return sonda.posicion.position;
+    if (lunasPlanetarias.get(seleccionado)?.posicion.visible) {
+      return lunasPlanetarias.get(seleccionado).posicion.position;
+    }
+    if (satelites.get(seleccionado)?.posicion.visible) {
+      return satelites.get(seleccionado).posicion.position;
+    }
     return objetos.get(seleccionado)?.posicion.position ?? null;
   }
 
@@ -340,7 +429,7 @@ export function crearControladorCamara({
   function iniciarTransicion(tipo, duracion, direccion = null, control = null, destinoFijo = null) {
     transicion = {
       tipo,
-      duracion,
+      duracion: globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 0.001 : duracion,
       transcurrido: 0,
       inicioPosicion: camera.position.clone(),
       inicioObjetivo: controls.target.clone(),
@@ -381,7 +470,9 @@ export function crearControladorCamara({
     controls.minDistance = distanciaMinima();
     controls.maxDistance = DISTANCIA_MAXIMA;
     iniciarTransicion('centrar', 0.75);
-    alSeleccionar?.(nombre);
+    const esLuna = lunasPlanetarias.has(nombre) || Boolean(satelites.get(nombre)?.posicion.visible);
+    alSeleccionar?.(esLuna ? null : nombre);
+    alSeleccionarLuna?.(esLuna ? nombre : null);
     notificarCamaraHistorica();
   }
 
@@ -500,17 +591,13 @@ export function crearControladorCamara({
     return true;
   }
 
-  /**
-   * Encuadra un sobrevuelo planetario histórico manteniendo el seguimiento exterior de la sonda
-   * y orientando la cámara desde detrás/costado de la Voyager hacia el planeta de encuentro,
-   * de forma que se aprecien simultáneamente el modelo 3D Voyager, la curvatura gravitacional
-   * de su trayectoria histórica y el globo/anillos del planeta.
-   */
+  /** Compone el planeta del encuentro y, si está cerca, la sonda en el área libre. */
   function encuadrarEncuentroHistorico(idSondaHist, nombrePlaneta, { inmediato = false } = {}) {
     const sHist = sondasHistoricas.get(idSondaHist);
     if (!sHist || !sHist.posicion.visible) return false;
     const objPlaneta = objetos.get(nombrePlaneta);
-    if (!objPlaneta) {
+    const lunaHistorica = satelites.get(nombrePlaneta);
+    if (!objPlaneta && !lunaHistorica?.posicion.visible) {
       return enfocarSondaHistorica(idSondaHist, { inmediato });
     }
 
@@ -531,35 +618,47 @@ export function crearControladorCamara({
     controls.maxDistance = DISTANCIA_MAXIMA;
 
     const centroSonda = sHist.posicion.position;
-    const centroPlaneta = objPlaneta.posicion.position;
-    const desdePlaneta = centroSonda.clone().sub(centroPlaneta);
-    const distPlanetaSonda = Math.max(desdePlaneta.length(), 1e-4);
-    desdePlaneta.normalize();
-
+    const centroPlaneta = objPlaneta?.posicion.position ?? lunaHistorica.posicion.position;
+    const separacion = centroSonda.clone().sub(centroPlaneta);
+    const distanciaSonda = separacion.length();
+    const radioPlaneta = Math.max(radioEncuadre(nombrePlaneta), 1e-5);
+    const incluirSonda = distanciaSonda <= radioPlaneta * 8;
+    const haciaSonda = distanciaSonda > 1e-6
+      ? separacion.clone().divideScalar(distanciaSonda)
+      : new THREE.Vector3(-0.38, 0.22, 0.9).normalize();
+    const desdePlaneta = incluirSonda ? haciaSonda : camera.position.clone().sub(centroPlaneta).normalize();
+    if (desdePlaneta.lengthSq() < 1e-6) desdePlaneta.set(-0.38, 0.22, 0.9).normalize();
     const lateral = new THREE.Vector3(-desdePlaneta.z, 0, desdePlaneta.x);
     if (lateral.lengthSq() < 1e-6) lateral.set(1, 0, 0);
     lateral.normalize();
-
-    const direccion = desdePlaneta.clone().multiplyScalar(0.84)
-      .addScaledVector(lateral, 0.36)
-      .addScaledVector(camera.up, 0.24)
-      .normalize();
-
-    const distBase = distanciaObservacion(direccion);
-    const distObs = Math.max(distBase * 0.92, Math.min(distPlanetaSonda * 0.52, distBase * 2.1));
-    const destino = centroSonda.clone().addScaledVector(direccion, distObs);
+    const direccion = desdePlaneta.clone().addScaledVector(lateral, 0.22)
+      .addScaledVector(camera.up, 0.12).normalize();
+    const objetivo = centroPlaneta.clone();
+    if (incluirSonda) objetivo.addScaledVector(separacion, 0.16);
+    const zona = obtenerZonaEncuadre();
+    const fraccionHorizontal = Math.max(0.35, (zona.right - zona.left) / zona.width);
+    const fraccionVertical = Math.max(0.35, (zona.bottom - zona.top) / zona.height);
+    const mitadVertical = THREE.MathUtils.degToRad(camera.fov) / 2;
+    const mitadHorizontal = Math.atan(Math.tan(mitadVertical) * camera.aspect);
+    const anguloEncuadre = Math.min(mitadVertical * fraccionVertical, mitadHorizontal * fraccionHorizontal) * 0.82;
+    const radioComposicion = incluirSonda
+      ? Math.max(radioPlaneta * 1.45, distanciaSonda * 0.30 + radioPlaneta)
+      : radioPlaneta * 1.45;
+    const distObs = Math.max(radioPlaneta * 5.2,
+      radioComposicion / Math.tan(anguloEncuadre),
+      incluirSonda ? distanciaSonda + radioPlaneta * 2.4 : 0);
+    const destino = centroPlaneta.clone().addScaledVector(direccion, distObs);
 
     if (inmediato) {
       cancelarTransicionInteractiva();
       camera.position.copy(destino);
-      controls.target.copy(centroSonda);
-      camera.lookAt(centroSonda);
+      controls.target.copy(objetivo);
+      camera.lookAt(objetivo);
       controls.enabled = true;
       controls.update();
     } else {
-      const control = controlDeRuta(camera.position, destino);
       const duracion = THREE.MathUtils.clamp(1.2 + camera.position.distanceTo(destino) / 1400, 1.2, 3.0);
-      iniciarTransicion('explorar', duracion, direccion, control);
+      iniciarTransicion('fijo', duracion, null, null, { posicion: destino, objetivo });
     }
     notificarCamaraHistorica();
     return true;
@@ -656,20 +755,22 @@ export function crearControladorCamara({
     }
 
     modoCamaraHistorica = MODOS_CAMARA_HISTORICA.PRIMERA_PERSONA;
+    transicionOrientacion = null;
     fotoRecreacionActiva = null;
+    fotoUsaFovContexto = false;
     idSondaPrimeraPersona = idSondaHist;
     idSondaHistoricaEnfocada = idSondaHist;
     alSeleccionarSondaHistorica?.(idSondaHist);
 
     objetivoMirada = objetivo === idSondaHist ? 'Tierra' : objetivo;
-    fovPrimeraPersona = THREE.MathUtils.clamp(fovGrados, FOV_MIN_PRIMERA_PERSONA, FOV_MAX_PRIMERA_PERSONA);
-    camera.fov = fovPrimeraPersona;
-    camera.updateProjectionMatrix();
+    establecerFovInterno(fovGrados);
+    fovContextualAutomatico = fovTipo === 'contextual_vertical'
+      && Math.abs(fovPrimeraPersona-obtenerFovContextualParaObjetivo(idSondaHist,objetivoMirada)) < 0.05;
 
     controls.enabled = false;
     sincronizarOcultamientoPrimeraPersona();
 
-    const posObservador = sHist.posicion.position;
+    const posObservador = posicionObservador(idSondaHist,objetivo);
     camera.position.copy(posObservador);
     const posObj = resolverPosicionObjetivoMirada(objetivoMirada) ?? centroSol;
     dirMiradaScratch.copy(posObj).sub(posObservador);
@@ -701,19 +802,19 @@ export function crearControladorCamara({
     }
 
     modoCamaraHistorica = MODOS_CAMARA_HISTORICA.RECREACION_FOTOGRAFICA;
+    transicionOrientacion = null;
     fotoRecreacionActiva = foto;
+    fotoUsaFovContexto = usarFovContexto;
     idSondaPrimeraPersona = foto.missionId;
     idSondaHistoricaEnfocada = foto.missionId;
     alSeleccionarSondaHistorica?.(foto.missionId);
 
     objetivoMirada = resolverPosicionObjetivoMirada(foto.targetBody) ? foto.targetBody : 'Sol';
-    fovPrimeraPersona = THREE.MathUtils.clamp(
-      usarFovContexto ? (foto.contextFovDeg ?? 6.0) : (foto.instrumentFovDeg ?? 0.424),
-      FOV_MIN_PRIMERA_PERSONA,
-      FOV_MAX_PRIMERA_PERSONA
-    );
-    camera.fov = fovPrimeraPersona;
-    camera.updateProjectionMatrix();
+    const fovContexto = satelites.get(foto.targetBody)?.posicion.visible
+      ? obtenerFovContextualParaObjetivo(foto.missionId, foto.targetBody)
+      : (foto.contextFovDeg ?? 6.0);
+    establecerFovInterno(usarFovContexto ? fovContexto : (foto.instrumentFovDeg ?? 0.424), !usarFovContexto);
+    fovContextualAutomatico = false;
 
     controls.enabled = false;
     sincronizarOcultamientoPrimeraPersona();
@@ -731,27 +832,156 @@ export function crearControladorCamara({
       modoCamaraHistorica = MODOS_CAMARA_HISTORICA.PRIMERA_PERSONA;
       fotoRecreacionActiva = null;
     }
+    const observador = posicionObservador(idSondaPrimeraPersona,nuevoObjetivo);
+    if (!observador) return false;
+    dirMiradaScratch.copy(posObj).sub(observador);
+    if (dirMiradaScratch.lengthSq() < 1e-12) return false;
+    transicionOrientacion = {
+      inicioYaw: yawPrimeraPersona,
+      inicioPitch: pitchPrimeraPersona,
+      transcurrido: 0,
+      duracion: globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 0.001 : 0.36
+    };
     objetivoMirada = nuevoObjetivo;
     aplicarOrientacionPrimeraPersona();
     notificarCamaraHistorica();
     return true;
   }
 
-  function establecerFovPrimeraPersona(grados) {
+  function establecerFovPrimeraPersona(grados,{automatico=false}={}) {
     if (!enPrimeraPersonaORecreacion() || !Number.isFinite(grados)) return camera.fov;
-    fovPrimeraPersona = THREE.MathUtils.clamp(grados, FOV_MIN_PRIMERA_PERSONA, FOV_MAX_PRIMERA_PERSONA);
-    camera.fov = fovPrimeraPersona;
-    camera.updateProjectionMatrix();
+    establecerFovInterno(grados);
+    fovContextualAutomatico = automatico && modoCamaraHistorica === MODOS_CAMARA_HISTORICA.PRIMERA_PERSONA
+      && fovTipo === 'contextual_vertical';
     notificarCamaraHistorica();
     return fovPrimeraPersona;
   }
 
-  function aplicarOrientacionPrimeraPersona() {
+  function actualizarFovContextualAutomatico() {
+    if (!fovContextualAutomatico || modoCamaraHistorica !== MODOS_CAMARA_HISTORICA.PRIMERA_PERSONA) return;
+    const necesario=obtenerFovContextualParaObjetivo(idSondaPrimeraPersona,objetivoMirada);
+    if (Math.abs(necesario-fovPrimeraPersona)<0.05) return;
+    establecerFovInterno(necesario,false);
+    notificarCamaraHistorica();
+  }
+
+  function obtenerFovContextualParaObjetivo(idSonda, objetivo) {
+    const encuadre = geometriaEncuadreContextual(idSonda, objetivo);
+    const minimo = satelites.get(objetivo)?.posicion.visible ? FOV_MIN_PRIMERA_PERSONA : 45;
+    return encuadre
+      ? THREE.MathUtils.clamp(Math.max(minimo, encuadre.fovVerticalNecesarioGrados), minimo, FOV_MAX_PRIMERA_PERSONA)
+      : 45;
+  }
+
+  function geometriaEncuadreContextual(idSonda, objetivo) {
+    const sonda = sondasHistoricas.get(idSonda);
+    const centro = resolverPosicionObjetivoMirada(objetivo);
+    const esPlaneta = objetos.has(objetivo);
+    const luna = satelites.get(objetivo);
+    if (!sonda?.posicion.visible || !centro || (!esPlaneta && !luna?.posicion.visible)) return null;
+    const observador = posicionObservador(idSonda,objetivo);
+    const distancia = observador.distanceTo(centro);
+    const radio = esPlaneta ? obtenerRadioFisicoEscena(objetivo) : luna.radioFisicoEscena;
+    const diametroEsferaGrados = sphereAngularDiameterDeg(radio, distancia);
+    const tangentEsfera = sphereHalfTangent(radio, distancia);
+    if (diametroEsferaGrados === null || tangentEsfera === null) return null;
+    let halfTangentX = tangentEsfera;
+    let halfTangentY = tangentEsfera;
+    let incluyeAnillos = false;
+    if (objetivo === 'Saturno') {
+      const anillo = objetos.get('Saturno').posicion.children[0].children
+        .find(nodo => nodo.geometry?.type === 'RingGeometry');
+      if (anillo) {
+        anillo.updateWorldMatrix(true, false);
+        const giro = anillo.getWorldQuaternion(new THREE.Quaternion());
+        const escala = anillo.getWorldScale(new THREE.Vector3());
+        const forward = centro.clone().sub(observador).normalize();
+        const right = new THREE.Vector3().crossVectors(forward, camera.up);
+        if (right.lengthSq() < 1e-10) right.set(1, 0, 0);
+        right.normalize();
+        const up = new THREE.Vector3().crossVectors(right, forward).normalize();
+        const ring = projectedRingHalfTangents({
+          observer: observador, center: centro,
+          axisX: new THREE.Vector3(1, 0, 0).applyQuaternion(giro),
+          axisY: new THREE.Vector3(0, 1, 0).applyQuaternion(giro),
+          outerRadius: anillo.geometry.parameters.outerRadius * escala.x,
+          forward, right, up
+        });
+        if (ring?.fullyInFront) {
+          halfTangentX = Math.max(halfTangentX, ring.horizontal);
+          halfTangentY = Math.max(halfTangentY, ring.vertical);
+          incluyeAnillos = true;
+        } else {
+          // Desde dentro de la extensión proyectada del anillo no existe
+          // un encuadre completo mediante una proyección frontal finita.
+          return null;
+        }
+      }
+    }
+    const zona = obtenerZonaEncuadre();
+    const fovVerticalNecesarioGrados = requiredVerticalFovDeg({
+      halfTangentX, halfTangentY,
+      aspect: camera.aspect,
+      freeFractionX: (zona.right - zona.left) / zona.width,
+      freeFractionY: (zona.bottom - zona.top) / zona.height,
+      margin: 0.88
+    });
+    if (fovVerticalNecesarioGrados === null) return null;
+    return { diametroEsferaGrados, incluyeAnillos, fovVerticalNecesarioGrados };
+  }
+
+  function establecerFovInterno(grados, instrumental = Math.abs(grados - 0.424) < 1e-6 || Math.abs(grados - 3.2) < 1e-6) {
+    fovPrimeraPersona = THREE.MathUtils.clamp(grados, FOV_MIN_PRIMERA_PERSONA, FOV_MAX_PRIMERA_PERSONA);
+    fovTipo = instrumental ? 'instrumento_cuadrado' : 'contextual_vertical';
+    camera.fov = instrumental
+      ? verticalFovForSquareFootprint(fovPrimeraPersona, camera.aspect)
+      : fovPrimeraPersona;
+    camera.updateProjectionMatrix();
+  }
+
+  function restaurarEstadoCamaraHistorica(estado, foto = null) {
+    if (!estado) return false;
+    if (estado.modo === MODOS_CAMARA_HISTORICA.RECREACION_FOTOGRAFICA && foto) {
+      return activarRecreacionFotografica(foto, { usarFovContexto: estado.fotoUsaFovContexto });
+    }
+    if (estado.modo === MODOS_CAMARA_HISTORICA.PRIMERA_PERSONA) {
+      const ok = activarPrimeraPersona(estado.idSondaObservador, {
+        objetivo: estado.objetivoMirada || 'Sol',
+        fovGrados: estado.fovReferenciaGrados
+      });
+      if (ok && !estado.objetivoMirada) {
+        objetivoMirada = null;
+        dirMiradaScratch.fromArray(estado.objetivoEscena).sub(camera.position).normalize();
+        actualizarAngulosDesdeDireccion(dirMiradaScratch);
+        aplicarOrientacionPrimeraPersona();
+        notificarCamaraHistorica();
+      }
+      return ok;
+    }
+    salirDePrimeraPersonaHaciaExterior();
+    cancelarTransicionInteractiva();
+    seleccionado = estado.objetoExteriorSeleccionado ?? null;
+    sondaEnfocada = Boolean(estado.sondaExperimentalEnfocada);
+    idSondaHistoricaEnfocada = estado.idSondaExterior ?? null;
+    alSeleccionarSondaHistorica?.(idSondaHistoricaEnfocada);
+    alSeleccionar?.(seleccionado);
+    camera.position.fromArray(estado.posicionEscena);
+    controls.target.fromArray(estado.objetivoEscena);
+    camera.fov = estado.fovGrados;
+    camera.updateProjectionMatrix();
+    camera.lookAt(controls.target);
+    controls.enabled = true;
+    controls.update();
+    notificarCamaraHistorica();
+    return true;
+  }
+
+  function aplicarOrientacionPrimeraPersona(segundos = 0) {
     if (!enPrimeraPersonaORecreacion()) return;
     const sHist = sondasHistoricas.get(idSondaPrimeraPersona);
     if (!sHist || !sHist.posicion.visible) return;
 
-    camera.position.copy(sHist.posicion.position);
+    camera.position.copy(posicionObservador(idSondaPrimeraPersona,objetivoMirada));
 
     if (objetivoMirada) {
       const posObj = resolverPosicionObjetivoMirada(objetivoMirada);
@@ -759,7 +989,21 @@ export function crearControladorCamara({
         dirMiradaScratch.copy(posObj).sub(camera.position);
         if (dirMiradaScratch.lengthSq() > 1e-12) {
           dirMiradaScratch.normalize();
-          actualizarAngulosDesdeDireccion(dirMiradaScratch);
+          if (transicionOrientacion) {
+            const destinoPitch = Math.asin(THREE.MathUtils.clamp(dirMiradaScratch.y, -0.9995, 0.9995));
+            const destinoYaw = Math.atan2(dirMiradaScratch.x, dirMiradaScratch.z);
+            transicionOrientacion.transcurrido += segundos;
+            const t = Math.min(1, transicionOrientacion.transcurrido / transicionOrientacion.duracion);
+            const mezcla = suavizar(t);
+            const deltaYaw = THREE.MathUtils.euclideanModulo(
+              destinoYaw - transicionOrientacion.inicioYaw + Math.PI, 2 * Math.PI
+            ) - Math.PI;
+            yawPrimeraPersona = transicionOrientacion.inicioYaw + deltaYaw * mezcla;
+            pitchPrimeraPersona = THREE.MathUtils.lerp(transicionOrientacion.inicioPitch, destinoPitch, mezcla);
+            if (t === 1) transicionOrientacion = null;
+          } else {
+            actualizarAngulosDesdeDireccion(dirMiradaScratch);
+          }
         }
       }
     }
@@ -842,6 +1086,7 @@ export function crearControladorCamara({
     const control = controlDeRuta(camera.position, destino.posicion);
     iniciarTransicion('vista', modo === 'cientifica' ? 1.45 : 1.7, null, control);
     alSeleccionar?.(null);
+    alSeleccionarLuna?.(null);
     notificarCamaraHistorica();
   }
 
@@ -849,6 +1094,10 @@ export function crearControladorCamara({
     if (enPrimeraPersonaORecreacion()) return;
     if (modoAnterior === modoNuevo) return;
     if (seleccionado) {
+      if (lunasPlanetarias.has(seleccionado) || satelites.get(seleccionado)?.posicion.visible) {
+        controls.minDistance = distanciaMinima();
+        return;
+      }
       const radioPrevio = modoAnterior === MODOS_ESCALA_VISUAL.CIENTIFICA
         ? obtenerRadioFisicoEscena(seleccionado)
         : objetos.get(seleccionado).planeta.radio;
@@ -890,7 +1139,7 @@ export function crearControladorCamara({
 
   function actualizar(segundos) {
     if (enPrimeraPersonaORecreacion()) {
-      aplicarOrientacionPrimeraPersona();
+      aplicarOrientacionPrimeraPersona(segundos);
       actualizarOrbitas();
       return;
     }
@@ -974,6 +1223,19 @@ export function crearControladorCamara({
     controls.update();
   }
 
+  function alActualizarLuna(centroAnterior) {
+    if (!centroAnterior || !(lunasPlanetarias.has(seleccionado) || satelites.get(seleccionado)?.posicion.visible) || enPrimeraPersonaORecreacion()) return;
+    const delta = centroSeleccionado().clone().sub(centroAnterior);
+    camera.position.add(delta);
+    controls.target.add(delta);
+    if (transicion) {
+      transicion.inicioPosicion.add(delta);
+      transicion.inicioObjetivo.add(delta);
+      transicion.control?.add(delta);
+    }
+    controls.update();
+  }
+
   function alActualizarPosicionSonda(posicionAnterior) {
     if (!sondaEnfocada || !sonda || !posicionAnterior || enPrimeraPersonaORecreacion()) return;
     const desplazamiento = sonda.posicion.position.clone().sub(posicionAnterior);
@@ -1014,8 +1276,20 @@ export function crearControladorCamara({
 
   function alCambiarTamano() {
     if (enPrimeraPersonaORecreacion()) {
+      if (fovTipo === 'instrumento_cuadrado') establecerFovInterno(fovPrimeraPersona, true);
       aplicarOrientacionPrimeraPersona();
+      notificarCamaraHistorica();
       return;
+    }
+    if (lunasPlanetarias.has(seleccionado) || satelites.get(seleccionado)?.posicion.visible) {
+      const centro = centroSeleccionado();
+      const direccion = camera.position.clone().sub(centro).normalize();
+      const necesaria = distanciaObservacion(direccion);
+      if (camera.position.distanceTo(centro) < necesaria) {
+        camera.position.copy(centro).addScaledVector(direccion, necesaria);
+        controls.target.copy(centro);
+        controls.update();
+      }
     }
     if (posicionesListas && !seleccionado && !sondaEnfocada && !idSondaHistoricaEnfocada && !transicion) {
       aplicarEncuadre();
@@ -1105,6 +1379,9 @@ export function crearControladorCamara({
 
     const intersecciones = raycaster.intersectObjects(candidatasMallas, false);
     for (const hit of intersecciones) {
+      if (hit.object.userData.nombreLuna && (lunasPlanetarias.get(hit.object.userData.nombreLuna)?.posicion.visible || satelites.get(hit.object.userData.nombreLuna)?.posicion.visible)) {
+        return { tipo: 'luna', id: hit.object.userData.nombreLuna };
+      }
       if (hit.object.userData.esSonda) {
         const idSondaHit = hit.object.userData.idSonda ?? '__SONDA__';
         if (idSondaHit === '__SONDA__' && sonda?.posicion.visible) {
@@ -1146,6 +1423,7 @@ export function crearControladorCamara({
         cancelarTransicionInteractiva();
       }
       if (gesto.arrastre && enPrimeraPersonaORecreacion()) {
+        transicionOrientacion = null;
         const dx = event.clientX - gesto.prevX;
         const dy = event.clientY - gesto.prevY;
         gesto.prevX = event.clientX;
@@ -1217,6 +1495,7 @@ export function crearControladorCamara({
       if (ultimoClic.tipo === 'sonda') enfocarSonda();
       else if (ultimoClic.tipo === 'sonda_historica') enfocarSondaHistorica(ultimoClic.id);
       else if (ultimoClic.tipo === 'planeta') explorarSeleccionado();
+      else if (ultimoClic.tipo === 'luna') explorarSeleccionado();
       ultimoClic = null;
       return;
     }
@@ -1232,6 +1511,8 @@ export function crearControladorCamara({
       enfocarSondaHistorica(objetivo.id);
     } else if (objetivo.tipo === 'planeta') {
       seleccionar(objetivo.id);
+    } else if (objetivo.tipo === 'luna') {
+      seleccionar(objetivo.id);
     }
     ultimoClic = {
       tipo: objetivo.tipo,
@@ -1245,6 +1526,7 @@ export function crearControladorCamara({
   return {
     actualizar,
     alActualizarPosiciones,
+    alActualizarLuna,
     alActualizarPosicionSonda,
     alActualizarPosicionSondaHistorica,
     alCambiarModoEscala,
@@ -1264,7 +1546,11 @@ export function crearControladorCamara({
     salirDePrimeraPersonaHaciaExterior,
     apuntarPrimeraPersonaHacia,
     establecerFovPrimeraPersona,
+    actualizarFovContextualAutomatico,
+    obtenerFovContextualParaObjetivo,
+    restaurarEstadoCamaraHistorica,
     obtenerEstadoCamaraHistorica,
+    establecerContextosLocales,
     requiereEscalaFisicaUnoAUno: enPrimeraPersonaORecreacion,
     vistaCinematografica,
     vistaGeneral,

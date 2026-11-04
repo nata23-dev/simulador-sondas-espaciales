@@ -1,0 +1,7 @@
+{
+  "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/",
+  "httpStatus": 200,
+  "acquiredAtUtc": "2026-11-02T17:06:33.030Z",
+  "bytes": 15594,
+  "sha256": "5792d2431137f7f1563c123664cb4a1bc906baadcc32365d666bec908cdcfaf3"
+}

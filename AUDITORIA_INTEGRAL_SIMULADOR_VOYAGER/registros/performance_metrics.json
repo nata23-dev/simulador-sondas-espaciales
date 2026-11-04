@@ -1,0 +1,12 @@
+{
+  "mem": {
+    "usedJSHeapSize": 105679932,
+    "totalJSHeapSize": 167920616,
+    "jsHeapSizeLimit": 4395630592
+  },
+  "timing": {
+    "loadTime": 301,
+    "domReadyTime": 205
+  },
+  "totalElements": 1187
+}

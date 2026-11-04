@@ -1,0 +1,8 @@
+{
+  "source": "NASA/JPL NAIF",
+  "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/vgr2.ura182.cmt",
+  "acquiredAtUtc": "2026-11-01T02:08:51.795Z",
+  "httpStatus": 200,
+  "bytes": 44737,
+  "sha256": "177def7f407461268e6816c10eca76ce62b7029df9c71907299abc9b0ce0a6f6"
+}

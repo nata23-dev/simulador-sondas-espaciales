@@ -1,0 +1,265 @@
+{
+  "generatedAtUtc": "2026-11-02T02:09:09.987Z",
+  "method": "Independent 2026 samples; direct planet-centered local composition; direct Voyager-to-moon Horizons vectors",
+  "contemporary": {
+    "Luna": {
+      "positionResidualKm": 0.000040758407907155995,
+      "velocityResidualKmS": 1.0888290332872635e-8,
+      "independentJdTdb": 2461328.645833333
+    },
+    "Europa": {
+      "positionResidualKm": 0.05485154911786326,
+      "velocityResidualKmS": 3.933910527126282e-7,
+      "independentJdTdb": 2461328.645833333
+    },
+    "Titan": {
+      "positionResidualKm": 0.0003672391085829389,
+      "velocityResidualKmS": 6.442147993356368e-8,
+      "independentJdTdb": 2461328.645833333
+    },
+    "Titania": {
+      "positionResidualKm": 0.0009426896494592337,
+      "velocityResidualKmS": 4.2325209035422535e-8,
+      "independentJdTdb": 2461328.645833333
+    },
+    "Triton": {
+      "positionResidualKm": 0.003641617970116144,
+      "velocityResidualKmS": 5.815594437077757e-8,
+      "independentJdTdb": 2461328.645833333
+    },
+    "Io": {
+      "positionResidualKm": 0.5324983008066208,
+      "velocityResidualKmS": 0.000004624881607913671,
+      "independentJdTdb": 2461328.645833333
+    },
+    "Ganymede": {
+      "positionResidualKm": 0.005107842805661437,
+      "velocityResidualKmS": 1.3248691912989355e-7,
+      "independentJdTdb": 2461328.645833333
+    },
+    "Callisto": {
+      "positionResidualKm": 0.00042261192878234794,
+      "velocityResidualKmS": 9.138801083188459e-8,
+      "independentJdTdb": 2461328.645833333
+    },
+    "Enceladus": {
+      "positionResidualKm": 0.8546775128299365,
+      "velocityResidualKmS": 0.000009528682744414687,
+      "independentJdTdb": 2461328.645833333
+    },
+    "Miranda": {
+      "positionResidualKm": 0.39477175976994194,
+      "velocityResidualKmS": 0.000004106877578492907,
+      "independentJdTdb": 2461328.645833333
+    }
+  },
+  "localConsistency": {
+    "hist-launch-v2-injection-1977-moon-301": {
+      "samples": 170,
+      "parentId": "399",
+      "maxPositionResidualKm": 1.002478049769602e-8,
+      "maxVelocityResidualKmS": 2.434909185329438e-15
+    },
+    "hist-launch-v2-departure-1977-moon-301": {
+      "samples": 193,
+      "parentId": "399",
+      "maxPositionResidualKm": 1.4015995016121889e-8,
+      "maxVelocityResidualKmS": 1.897149936107019e-15
+    },
+    "hist-launch-v1-injection-1977-moon-301": {
+      "samples": 121,
+      "parentId": "399",
+      "maxPositionResidualKm": 1.4685211452474632e-8,
+      "maxVelocityResidualKmS": 1.8041124150158794e-15
+    },
+    "hist-launch-v1-departure-1977-moon-301": {
+      "samples": 193,
+      "parentId": "399",
+      "maxPositionResidualKm": 1.510096256295074e-8,
+      "maxVelocityResidualKmS": 1.8073129764781443e-15
+    },
+    "hist-flyby-v1-jupiter-1979-moon-502": {
+      "samples": 433,
+      "parentId": "599",
+      "maxPositionResidualKm": 6.476269341300609e-8,
+      "maxVelocityResidualKmS": 2.5121479338940403e-15
+    },
+    "hist-flyby-v1-jupiter-1979-moon-503": {
+      "samples": 433,
+      "parentId": "599",
+      "maxPositionResidualKm": 6.632860694135459e-8,
+      "maxVelocityResidualKmS": 2.5121479338940403e-15
+    },
+    "hist-flyby-v1-jupiter-1979-moon-504": {
+      "samples": 433,
+      "parentId": "599",
+      "maxPositionResidualKm": 6.468306512659927e-8,
+      "maxVelocityResidualKmS": 1.9860273225978185e-15
+    },
+    "hist-flyby-v2-jupiter-1979-moon-502": {
+      "samples": 433,
+      "parentId": "599",
+      "maxPositionResidualKm": 8.310639428223122e-8,
+      "maxVelocityResidualKmS": 2.5121479338940403e-15
+    },
+    "hist-flyby-v2-jupiter-1979-moon-503": {
+      "samples": 433,
+      "parentId": "599",
+      "maxPositionResidualKm": 8.13386314669735e-8,
+      "maxVelocityResidualKmS": 2.5121479338940403e-15
+    },
+    "hist-flyby-v2-jupiter-1979-moon-504": {
+      "samples": 433,
+      "parentId": "599",
+      "maxPositionResidualKm": 8.248491774642239e-8,
+      "maxVelocityResidualKmS": 1.9860273225978185e-15
+    },
+    "hist-flyby-v1-saturn-1980-moon-602": {
+      "samples": 649,
+      "parentId": "699",
+      "maxPositionResidualKm": 1.191220634425564e-7,
+      "maxVelocityResidualKmS": 1.9860273225978185e-15
+    },
+    "hist-flyby-v2-saturn-1981-moon-602": {
+      "samples": 577,
+      "parentId": "699",
+      "maxPositionResidualKm": 1.2063345862195174e-7,
+      "maxVelocityResidualKmS": 2.5121479338940403e-15
+    },
+    "hist-flyby-v2-uranus-1986-moon-703": {
+      "samples": 649,
+      "parentId": "799",
+      "maxPositionResidualKm": 2.4359033812029407e-7,
+      "maxVelocityResidualKmS": 9.934014815290038e-16
+    },
+    "hist-flyby-v2-uranus-1986-moon-705": {
+      "samples": 649,
+      "parentId": "799",
+      "maxPositionResidualKm": 2.423639344830454e-7,
+      "maxVelocityResidualKmS": 1.2755491433176288e-15
+    },
+    "hist-flyby-v1-jupiter-1979-moon-501": {
+      "samples": 433,
+      "parentId": "599",
+      "maxPositionResidualKm": 6.474160004859415e-8,
+      "maxVelocityResidualKmS": 3.66205343881779e-15
+    },
+    "hist-flyby-v2-jupiter-1979-moon-501": {
+      "samples": 433,
+      "parentId": "599",
+      "maxPositionResidualKm": 8.096150510804718e-8,
+      "maxVelocityResidualKmS": 3.66205343881779e-15
+    },
+    "hist-flyby-v1-saturn-1980-moon-606": {
+      "samples": 649,
+      "parentId": "699",
+      "maxPositionResidualKm": 1.1925382604366584e-7,
+      "maxVelocityResidualKmS": 1.2755491433176288e-15
+    },
+    "hist-flyby-v2-saturn-1981-moon-606": {
+      "samples": 577,
+      "parentId": "699",
+      "maxPositionResidualKm": 1.208130430838515e-7,
+      "maxVelocityResidualKmS": 1.2560739669470201e-15
+    },
+    "hist-flyby-v2-neptune-1989-moon-801": {
+      "samples": 801,
+      "parentId": "899",
+      "maxPositionResidualKm": 4.784406707709885e-7,
+      "maxVelocityResidualKmS": 9.945640348601413e-16
+    }
+  },
+  "flybys": {
+    "v1-io-1979": {
+      "dateUtc": "1979-03-05T12:05:26Z",
+      "jdTdb": 2443938.004353998,
+      "probeId": "-31",
+      "moonId": "501",
+      "localDistanceKm": 159303.7570265757,
+      "directDistanceKm": 159220.44877722661,
+      "signedDistanceErrorKm": 83.3082493490947,
+      "vectorResidualKm": 383.59796918978725,
+      "velocityResidualKmS": 0.000671271739228886,
+      "rawSha256": "fd1666cce40cef20091578996c8bbd8adf83cbacc1c12e607eaa635251dc4ae3",
+      "rawFile": "evidence/stage6/Horizons-original/v1-io-1979-probe-direct.json"
+    },
+    "v1-europa-1979": {
+      "dateUtc": "1979-03-04T18:00:00Z",
+      "jdTdb": 2443937.25058085,
+      "probeId": "-31",
+      "moonId": "502",
+      "localDistanceKm": 1874256.001410495,
+      "directDistanceKm": 1874145.5593037084,
+      "signedDistanceErrorKm": 110.44210678664967,
+      "vectorResidualKm": 383.2010649942138,
+      "velocityResidualKmS": 0.000006613225533995378,
+      "rawSha256": "0c7d2ffb4e232e949c75a41bf37e46183681597e3da53363ade57e1314c06ba6",
+      "rawFile": "evidence/stage6/Horizons-original/v1-europa-1979-probe-direct.json"
+    },
+    "v2-europa-1979": {
+      "dateUtc": "1979-07-09T12:00:00Z",
+      "jdTdb": 2444064.000580832,
+      "probeId": "-32",
+      "moonId": "502",
+      "localDistanceKm": 307747.1427099861,
+      "directDistanceKm": 308044.2117171031,
+      "signedDistanceErrorKm": -297.0690071170102,
+      "vectorResidualKm": 424.26667168265976,
+      "velocityResidualKmS": 0.000007021219729239002,
+      "rawSha256": "a85478c88a81e4c5e39b556c7375459b7b6497f467458571f466b452aeeb42c0",
+      "rawFile": "evidence/stage6/Horizons-original/v2-europa-1979-probe-direct.json"
+    },
+    "v1-titan-1980": {
+      "dateUtc": "1980-11-12T05:41:21Z",
+      "jdTdb": 2444555.7376410034,
+      "probeId": "-31",
+      "moonId": "606",
+      "localDistanceKm": 5568.7177305811365,
+      "directDistanceKm": 6664.045998914055,
+      "signedDistanceErrorKm": -1095.328268332919,
+      "vectorResidualKm": 1355.9626985153861,
+      "velocityResidualKmS": 0.008293521881544549,
+      "rawSha256": "080eaea6382015cbbf0b47a1198340932f0e86dcd608271217fcf93b83afc020",
+      "rawFile": "evidence/stage6/Horizons-original/v1-titan-1980-probe-direct.json"
+    },
+    "v2-titania-1986": {
+      "dateUtc": "1986-01-24T06:00:00Z",
+      "jdTdb": 2446454.750638711,
+      "probeId": "-32",
+      "moonId": "703",
+      "localDistanceKm": 636068.3183802419,
+      "directDistanceKm": 635071.4760359742,
+      "signedDistanceErrorKm": 996.842344267643,
+      "vectorResidualKm": 5221.265521404944,
+      "velocityResidualKmS": 0.000007860337715113959,
+      "rawSha256": "ae9204d19607a80c1128da56733ccf6ee281f98a60b9bc9eb1340f99c41c3277",
+      "rawFile": "evidence/stage6/Horizons-original/v2-titania-1986-probe-direct.json"
+    },
+    "v2-miranda-1986": {
+      "dateUtc": "1986-01-24T12:00:00Z",
+      "jdTdb": 2446455.000638711,
+      "probeId": "-32",
+      "moonId": "705",
+      "localDistanceKm": 353411.20381123904,
+      "directDistanceKm": 354629.2982385344,
+      "signedDistanceErrorKm": -1218.0944272953784,
+      "vectorResidualKm": 5221.324886428587,
+      "velocityResidualKmS": 0.00000947732258862323,
+      "rawSha256": "ec807e71b20b14056eeae4cde53aefcda30e2448b140d936ca7670fdc33fdf91",
+      "rawFile": "evidence/stage6/Horizons-original/v2-miranda-1986-probe-direct.json"
+    },
+    "v2-triton-1989": {
+      "dateUtc": "1989-08-25T09:10:00Z",
+      "jdTdb": 2447763.8825947074,
+      "probeId": "-32",
+      "moonId": "801",
+      "localDistanceKm": 34969.04205116822,
+      "directDistanceKm": 39734.57421652523,
+      "signedDistanceErrorKm": -4765.532165357014,
+      "vectorResidualKm": 13594.726502162548,
+      "velocityResidualKmS": 0.000021781255620362707,
+      "rawSha256": "90ed06b234faea1096dfbbb476508913b8333ee943e7185c2ce77082ed704174",
+      "rawFile": "evidence/stage6/Horizons-original/v2-triton-1989-probe-direct.json"
+    }
+  }
+}

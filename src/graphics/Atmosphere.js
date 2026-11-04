@@ -31,7 +31,7 @@ const fragmentShader = `
     vec3 haciaSol = normalize(-vPosicionMundo);
     float borde = pow(1.0 - abs(dot(normalVista, vista)), 3.2);
     float dia = smoothstep(-0.28, 0.55, dot(normalMundo, haciaSol));
-    float alfa = borde * (0.035 + 0.18 * dia);
+    float alfa = borde * 0.18 * dia;
     gl_FragColor = vec4(0.25, 0.49, 0.95, alfa);
     #include <colorspace_fragment>
   }
@@ -51,5 +51,45 @@ export function crearAtmosferaTierra(radio) {
     })
   );
   atmosfera.scale.setScalar(radio * 1.055);
+  return atmosfera;
+}
+
+// Atmósfera de Urano con dispersión hacia adelante (forward scattering)
+// Produce el arco creciente cian brillante característico de la fotografía Voyager 2 PIA00143
+const fragmentShaderUrano = `
+  varying vec3 vNormalVista;
+  varying vec3 vPosicionVista;
+  varying vec3 vNormalMundo;
+  varying vec3 vPosicionMundo;
+
+  void main() {
+    vec3 normalVista = normalize(vNormalVista);
+    vec3 vista = normalize(-vPosicionVista);
+    vec3 normalMundo = normalize(vNormalMundo);
+    vec3 haciaSol = normalize(-vPosicionMundo);
+    float borde = pow(1.0 - abs(dot(normalVista, vista)), 2.6);
+    float incidenciaSolar = dot(normalMundo, haciaSol);
+    float iluminacionLimb = smoothstep(-0.25, 0.45, incidenciaSolar);
+    float dispersionFrontal = pow(max(0.0, dot(-vista, haciaSol)), 1.6);
+    float alfa = borde * iluminacionLimb * (0.38 + 0.28 * dispersionFrontal);
+    gl_FragColor = vec4(0.38, 0.78, 0.88, alfa);
+    #include <colorspace_fragment>
+  }
+`;
+
+export function crearAtmosferaUrano(radio) {
+  const atmosfera = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 48, 32),
+    new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader: fragmentShaderUrano,
+      side: THREE.BackSide,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      toneMapped: false
+    })
+  );
+  atmosfera.scale.setScalar(radio * 1.045);
   return atmosfera;
 }

@@ -1,0 +1,8 @@
+{
+  "source": "NASA/JPL NAIF",
+  "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/vgr2_sat337.bsp",
+  "acquiredAtUtc": "2026-11-01T02:08:46.697Z",
+  "httpStatus": 200,
+  "bytes": 494592,
+  "sha256": "1d15debf7bdc6c6ba4c0462b5f4f6af85ddf9948735f434792a1c41418bb39a8"
+}

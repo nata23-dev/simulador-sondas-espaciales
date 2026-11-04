@@ -16,6 +16,7 @@ import {
   getVoyagerPhotoById
 } from '../science/VoyagerPhotoCatalog.js';
 import { RADIOS_FISICOS_KM } from '../graphics/ScaleModeConfig.js';
+import { sphereAngularDiameterDeg } from '../graphics/AngularGeometry.js';
 import { HISTORICAL_ENCOUNTER_MOONS } from '../science/HistoricalEphemerisResolver.js';
 
 const MESES_CORTOS = [
@@ -73,9 +74,8 @@ function obtenerRadioObjetivoKm(idCuerpo) {
 }
 
 function formatearDiametroAngular(distanciaKm, radioKm) {
-  if (!Number.isFinite(distanciaKm) || distanciaKm <= 0 || !Number.isFinite(radioKm)) return null;
-  const rad = 2 * Math.atan(radioKm / distanciaKm);
-  const deg = rad * (180 / Math.PI);
+  const deg = sphereAngularDiameterDeg(radioKm, distanciaKm);
+  if (deg === null) return null;
   if (deg >= 0.05) return `${deg.toFixed(2).replace('.', ',')}°`;
   const arcsec = deg * 3600;
   return `${arcsec.toFixed(2).replace('.', ',')}″`;
@@ -91,6 +91,7 @@ export function crearControlesModoHistorico({
   alActivarPrimeraPersona,
   alCambiarSondaPrimeraPersona,
   alApuntarPrimeraPersona,
+  alReencuadrarPrimeraPersona,
   alCambiarFovPrimeraPersona,
   alAlternarTrayectoriasHistoricas,
   alAlternarHeliosfera,
@@ -132,6 +133,7 @@ export function crearControlesModoHistorico({
   const botonesFpSonda = [...document.querySelectorAll('[data-fp-probe]')];
   const botonesFpTarget = [...document.querySelectorAll('[data-fp-target]')];
   const selectFpExtra = document.querySelector('#fp-extra-target');
+  const btnFpReframe = document.querySelector('#fp-reframe-btn');
   const botonesFpFov = [...document.querySelectorAll('[data-fp-fov]')];
   const lecturaFpFov = document.querySelector('#fp-fov-readout');
   const insigniaFpFidelidad = document.querySelector('#fp-fidelity-badge');
@@ -149,7 +151,6 @@ export function crearControlesModoHistorico({
   const columnaIzquierda = document.querySelector('#historical-left-stack');
   const panelEventos = document.querySelector('#historical-events-panel');
   const selectorEvento = document.querySelector('#historical-event-select');
-  const btnIrEvento = document.querySelector('#historical-event-go-btn');
   const evProbeTag = document.querySelector('#hist-ev-probe');
   const evKindTag = document.querySelector('#hist-ev-kind');
   const evTitle = document.querySelector('#hist-ev-title');
@@ -204,6 +205,7 @@ export function crearControlesModoHistorico({
   const compCaption = document.querySelector('#comp-photo-caption');
   const compInstrument = document.querySelector('#comp-photo-instrument');
   const compDate = document.querySelector('#comp-photo-date');
+  const compSessionDate = document.querySelector('#comp-session-date');
   const compLink = document.querySelector('#comp-photo-link');
   const btnCompCerrar = document.querySelector('#comp-close-btn');
   const btnCompFovIss = document.querySelector('#comp-fov-iss-btn');
@@ -226,7 +228,7 @@ export function crearControlesModoHistorico({
   const toastEventoPausa = document.querySelector('#hist-event-pause-toast');
   const toastTexto = document.querySelector('#hist-toast-text');
   const btnOmitirEvento = document.querySelector('#hist-skip-event-btn');
-  const botonesDecada = [...document.querySelectorAll('[data-hist-jump]')];
+  const barraHitos = document.querySelector('.hist-decade-bar');
   const rangoHist = document.querySelector('#hist-timeline-range');
   const relojUtc = document.querySelector('#hist-clock-utc');
   const relojTdb = document.querySelector('#hist-clock-tdb');
@@ -252,6 +254,7 @@ export function crearControlesModoHistorico({
   let modoAppActual = 'exploracion';
   let pestanaFichaActiva = VOYAGER_1_ID;
   let ultimoSnapshot = null;
+  let ultimoEstadoCamara = null;
   let trayectoriasVisibles = true;
   let heliosferaActiva = false;
   let lanzamientoDescartadoClave = null;
@@ -260,33 +263,6 @@ export function crearControlesModoHistorico({
   let comparadorUsaContexto = false;
   let fotoLightboxActiva = null;
   let sincronizandoSelectoresFecha = false;
-
-  // En móvil los paneles laterales comienzan contraídos para despejar la escena 3D
-  if (window.matchMedia('(max-width: 760px)').matches) {
-    panelEventos.open = false;
-    panelFotos.open = false;
-    panelFichaVoyager.open = false;
-  }
-
-  // Mutua exclusión ergonómica entre los dos acordeones izquierdos para evitar desbordamiento vertical
-  panelEventos.addEventListener('toggle', () => {
-    if (panelEventos.open && panelFotos.open) panelFotos.open = false;
-    if (window.matchMedia('(max-width: 760px)').matches && panelEventos.open) {
-      panelFichaVoyager.open = false;
-    }
-  });
-  panelFotos.addEventListener('toggle', () => {
-    if (panelFotos.open && panelEventos.open) panelEventos.open = false;
-    if (window.matchMedia('(max-width: 760px)').matches && panelFotos.open) {
-      panelFichaVoyager.open = false;
-    }
-  });
-  panelFichaVoyager.addEventListener('toggle', () => {
-    if (window.matchMedia('(max-width: 760px)').matches && panelFichaVoyager.open) {
-      panelEventos.open = false;
-      panelFotos.open = false;
-    }
-  });
 
   // Inicializar selectores de fecha directa (1977..2026)
   for (let y = 1977; y <= 2026; y++) {
@@ -337,16 +313,39 @@ export function crearControlesModoHistorico({
   }
   selectVelocidad.value = '1d_s';
 
-  // Inicializar lista de acontecimientos históricos
+  // El campo oculto conserva el id seleccionado para los demás controladores.
+  // La lista es la única presentación y única fuente de selección del catálogo.
+  const listaEventos = document.createElement('div');
+  listaEventos.className = 'historical-event-list';
+  listaEventos.setAttribute('role', 'group');
+  listaEventos.setAttribute('aria-label', `${VOYAGER_HISTORICAL_EVENTS.length} acontecimientos históricos Voyager`);
   for (const ev of VOYAGER_HISTORICAL_EVENTS) {
-    const prefijo = ev.missionId === VOYAGER_1_ID ? 'V1' : 'V2';
-    const anio = ev.dateUtc.slice(0, 4);
-    selectorEvento.add(new Option(`[${prefijo} · ${anio}] ${ev.title.replace(/^Voyager [12] · /, '')}`, ev.id));
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.eventId = ev.id;
+    const probe = document.createElement('span');
+    probe.className = 'historical-event-list-probe';
+    probe.textContent = ev.probeName;
+    const date = document.createElement('time');
+    date.dateTime = ev.dateUtc;
+    date.textContent = ev.dateUtc.slice(0, 4);
+    const title = document.createElement('strong');
+    title.textContent = ev.title;
+    button.append(probe, date, title);
+    button.addEventListener('click', () => {
+      renderizarTarjetaEvento(ev);
+      alIrAEvento?.(ev.id);
+    });
+    listaEventos.append(button);
   }
+  selectorEvento.before(listaEventos);
 
   function renderizarTarjetaEvento(ev) {
     if (!ev) return;
     if (selectorEvento.value !== ev.id) selectorEvento.value = ev.id;
+    for (const button of listaEventos.children) {
+      button.setAttribute('aria-pressed', String(button.dataset.eventId === ev.id));
+    }
     evProbeTag.textContent = `${ev.probeName} (${ev.missionId === VOYAGER_1_ID ? '-31' : '-32'})`;
     evProbeTag.dataset.mission = ev.missionId;
     evKindTag.textContent = ev.kindLabel;
@@ -371,6 +370,9 @@ export function crearControlesModoHistorico({
       btnEvPhoto.dataset.photoId = '';
     }
   }
+  function objetivoContextualEvento(ev) {
+    return ev?.focusTarget?.startsWith('voyager-') ? 'Sol' : (ev?.focusTarget || 'Sol');
+  }
   renderizarTarjetaEvento(VOYAGER_HISTORICAL_EVENTS[0]);
 
   selectorEvento.addEventListener('change', () => {
@@ -378,10 +380,6 @@ export function crearControlesModoHistorico({
     renderizarTarjetaEvento(ev);
   });
 
-  btnIrEvento.addEventListener('click', () => {
-    const ev = getHistoricalEventById(selectorEvento.value);
-    if (ev) alIrAEvento?.(ev.id);
-  });
   btnEvFocus.addEventListener('click', () => {
     const ev = getHistoricalEventById(selectorEvento.value);
     if (ev) alEnfocarEventoActual?.(ev);
@@ -389,9 +387,7 @@ export function crearControlesModoHistorico({
   btnEvFp.addEventListener('click', () => {
     const ev = getHistoricalEventById(selectorEvento.value);
     if (!ev) return;
-    const target = ev.focusTarget && !ev.focusTarget.startsWith('voyager-')
-      ? ev.focusTarget
-      : 'Tierra';
+    const target = objetivoContextualEvento(ev);
     alActivarPrimeraPersona?.(ev.missionId, target);
   });
   btnEvPhoto.addEventListener('click', () => {
@@ -413,7 +409,7 @@ export function crearControlesModoHistorico({
       const thumbUrl = resolverRutaPublica(baseUrl, photo.thumbPath);
       card.innerHTML = `
         <div class="hist-photo-row">
-          <img class="hist-photo-thumb" src="${thumbUrl}" alt="${photo.title}" loading="lazy" decoding="async" width="76" height="76" />
+          <button type="button" class="hist-photo-preview" data-photo-act="zoom" aria-label="Ampliar fotografía: ${photo.title}"><img class="hist-photo-thumb" src="${thumbUrl}" alt="" loading="lazy" decoding="async" width="76" height="76" /></button>
           <div class="hist-photo-info">
             <div class="hist-photo-meta-top">
               <span class="hist-probe-tag" data-mission="${photo.missionId}">${photo.probeName}</span>
@@ -421,14 +417,15 @@ export function crearControlesModoHistorico({
             </div>
             <h4>${photo.title}</h4>
             <small class="hist-photo-target">${photo.targetDisplay} · ${photo.displayDateUtc}</small>
+            <p class="hist-photo-description">${photo.description}</p>
             <a class="hist-source-link" href="${photo.officialSourceUrl}" target="_blank" rel="noopener noreferrer">${photo.provenance} ↗</a>
           </div>
         </div>
-        <div class="hist-photo-actions">
-          <button type="button" data-photo-act="goto">Ir a fecha</button>
-          <button type="button" data-photo-act="zoom">Ampliar</button>
-          <button type="button" data-photo-act="compare" class="button-primary">Comparar A/B 3D</button>
-        </div>
+        <details class="hist-photo-actions">
+          <summary>Opciones de fotografía</summary>
+          <div><button type="button" data-photo-act="goto">Ir a fecha</button>
+          <button type="button" data-photo-act="compare">Comparar NASA / 3D</button></div>
+        </details>
       `;
 
       card.querySelector('[data-photo-act="goto"]').addEventListener('click', () => {
@@ -440,12 +437,38 @@ export function crearControlesModoHistorico({
       card.querySelector('[data-photo-act="compare"]').addEventListener('click', () => {
         abrirComparadorAB(photo);
       });
+      card.querySelector('.hist-photo-actions').addEventListener('toggle', event => {
+        if (event.currentTarget.open) for (const other of contenedorListaFotos.querySelectorAll('.hist-photo-actions')) {
+          if (other !== event.currentTarget) other.open = false;
+        }
+      });
 
       contenedorListaFotos.appendChild(card);
       nodosFotoPorId.set(photo.id, card);
     }
   }
   construirGaleriaFotos();
+  const navegacionFotos = document.createElement('div');
+  navegacionFotos.className = 'hist-photo-navigation';
+  navegacionFotos.innerHTML = '<button type="button" data-photo-nav="prev">Anterior</button><span role="status" aria-live="polite"></span><button type="button" data-photo-nav="next">Siguiente</button>';
+  contenedorListaFotos.before(navegacionFotos);
+  let fotoVisibleId = null;
+  function actualizarNavegacionFotos() {
+    const disponibles = [...nodosFotoPorId.values()].filter(card => card.dataset.inFilter !== 'false');
+    if (!disponibles.some(card => card.dataset.photoId === fotoVisibleId)) fotoVisibleId = disponibles[0]?.dataset.photoId ?? null;
+    for (const card of nodosFotoPorId.values()) card.hidden = card.dataset.photoId !== fotoVisibleId;
+    const indice = disponibles.findIndex(card => card.dataset.photoId === fotoVisibleId);
+    navegacionFotos.querySelector('[role="status"]').textContent = disponibles.length ? `${indice + 1} de ${disponibles.length}` : 'Sin fotografías';
+    navegacionFotos.querySelector('[data-photo-nav="prev"]').disabled = indice <= 0;
+    navegacionFotos.querySelector('[data-photo-nav="next"]').disabled = indice < 0 || indice >= disponibles.length - 1;
+  }
+  for (const button of navegacionFotos.querySelectorAll('button')) button.addEventListener('click', () => {
+    const disponibles = [...nodosFotoPorId.values()].filter(card => card.dataset.inFilter !== 'false');
+    const indice = disponibles.findIndex(card => card.dataset.photoId === fotoVisibleId);
+    fotoVisibleId = disponibles[indice + (button.dataset.photoNav === 'next' ? 1 : -1)]?.dataset.photoId ?? fotoVisibleId;
+    actualizarNavegacionFotos();
+  });
+  actualizarNavegacionFotos();
 
   function abrirLightbox(photo) {
     if (!photo) return;
@@ -485,6 +508,7 @@ export function crearControlesModoHistorico({
     compCaption.textContent = photo.description;
     compInstrument.textContent = `${photo.probeName} · ${photo.instrument}`;
     compDate.textContent = `${photo.displayDateUtc} · Objetivo: ${photo.targetDisplay}`;
+    compSessionDate.textContent = ultimoSnapshot?.timeLabels.labelUtc ?? '—';
     compLink.href = photo.officialSourceUrl;
     compLink.textContent = `${photo.provenance} ↗`;
     compFidelityNote.textContent = photo.recreationFidelityNote;
@@ -506,7 +530,7 @@ export function crearControlesModoHistorico({
     if (panelComparador.hidden && !fotoComparadorActiva) return;
     panelComparador.hidden = true;
     fotoComparadorActiva = null;
-    if (notificar) alCerrarComparadorFoto?.();
+    alCerrarComparadorFoto?.({ reanudar: notificar });
   }
 
   btnCompCerrar.addEventListener('click', () => cerrarComparadorAB({ notificar: true }));
@@ -592,7 +616,8 @@ export function crearControlesModoHistorico({
   });
   btnCamFp.addEventListener('click', () => {
     cerrarComparadorAB({ notificar: false });
-    alActivarPrimeraPersona?.(pestanaFichaActiva, 'Tierra');
+    const ev = getHistoricalEventById(selectorEvento.value);
+    alActivarPrimeraPersona?.(ev?.missionId ?? pestanaFichaActiva, objetivoContextualEvento(ev));
   });
 
   btnSeguirV1.addEventListener('click', () => alSeguirSondaExterior?.(VOYAGER_1_ID));
@@ -626,6 +651,7 @@ export function crearControlesModoHistorico({
     if (!selectFpExtra.value) return;
     alApuntarPrimeraPersona?.(selectFpExtra.value);
   });
+  btnFpReframe.addEventListener('click', () => alReencuadrarPrimeraPersona?.());
   for (const btn of botonesFpFov) {
     btn.addEventListener('click', () => {
       alCambiarFovPrimeraPersona?.(Number(btn.dataset.fpFov));
@@ -676,13 +702,13 @@ export function crearControlesModoHistorico({
   renderizarMetadatosEstaticosFicha(pestanaFichaActiva);
 
   // Transporte de línea temporal histórica
-  for (const chip of botonesDecada) {
-    chip.addEventListener('click', () => {
-      const destino = chip.dataset.histJump;
-      if (destino === 'latest-2026') alIrAUltimoDisponible?.();
-      else alIrAEvento?.(destino);
-    });
-  }
+  barraHitos.addEventListener('click', event => {
+    const chip = event.target.closest('[data-hist-jump]');
+    if (!chip || !barraHitos.contains(chip)) return;
+    alIrAEvento?.(chip.dataset.histJump);
+    const menu = barraHitos.closest('.temporal-advanced');
+    if (menu) menu.open = false;
+  });
 
   rangoHist.addEventListener('input', () => {
     const frac = Number(rangoHist.value) / Number(rangoHist.max);
@@ -818,9 +844,10 @@ export function crearControlesModoHistorico({
     for (const [id, card] of nodosFotoPorId.entries()) {
       const mId = card.dataset.mission;
       const visiblePorFiltro = visibilityMode === 'both' || visibilityMode === mId;
-      card.hidden = !visiblePorFiltro;
+      card.dataset.inFilter = String(visiblePorFiltro);
       card.classList.toggle('is-date-match', idsCercanos.has(id));
     }
+    actualizarNavegacionFotos();
   }
 
   function actualizarTarjetaLanzamiento(snapshot, visibilityMode) {
@@ -872,6 +899,7 @@ export function crearControlesModoHistorico({
 
   function actualizarTelemetriaComparador(snapshot) {
     if (!fotoComparadorActiva || panelComparador.hidden) return;
+    ultimoSnapshot = snapshot;
     const probe = snapshot.probes[fotoComparadorActiva.missionId];
     if (!probe?.state) {
       compTelemetry.textContent = 'Sonda sin estado heliocéntrico en la fecha seleccionada.';
@@ -886,19 +914,42 @@ export function crearControlesModoHistorico({
       compTelemetry.textContent = `Observador ${probe.mission.name} a ${fmtAu3.format(probe.distanceSunAu)} AU del Sol · ${snapshot.timeLabels.labelUtc}`;
       return;
     }
-    const dx = targetState.position.x - probe.positionKm.x;
-    const dy = targetState.position.y - probe.positionKm.y;
-    const dz = targetState.position.z - probe.positionKm.z;
+    const localFrame = snapshot.localFrames?.[`${fotoComparadorActiva.missionId}:${targetName}`] ?? null;
+    const dx = localFrame?.targetMinusObserverKm.x ?? targetState.position.x - probe.positionKm.x;
+    const dy = localFrame?.targetMinusObserverKm.y ?? targetState.position.y - probe.positionKm.y;
+    const dz = localFrame?.targetMinusObserverKm.z ?? targetState.position.z - probe.positionKm.z;
     const distKm = Math.hypot(dx, dy, dz);
     const distAu = distKm / 149597870.7;
     const luzSeg = distKm / 299792.458;
-    const luzMin = (luzSeg / 60).toFixed(1).replace('.', ',');
+    const luzTexto = luzSeg < 6
+      ? `${luzSeg.toFixed(luzSeg < 1 ? 2 : 1).replace('.', ',')} s`
+      : `${(luzSeg / 60).toFixed(1).replace('.', ',')} min`;
     const diamAng = formatearDiametroAngular(distKm, obtenerRadioObjetivoKm(targetName));
     const txtAng = diamAng ? ` · Diámetro angular físico 1:1: ${diamAng}` : '';
+    const fovContextualReal = ultimoEstadoCamara?.fovTipo === 'contextual_vertical'
+      ? ultimoEstadoCamara.fovGrados : fotoComparadorActiva.contextFovDeg;
     const txtFov = comparadorUsaContexto
-      ? `FOV contextual ${String(fotoComparadorActiva.contextFovDeg).replace('.', ',')}°`
+      ? `FOV contextual ${String(fovContextualReal).replace('.', ',')}°`
       : `FOV instrumento ISS-NAC ${String(fotoComparadorActiva.instrumentFovDeg).replace('.', ',')}°`;
-    compTelemetry.textContent = `Geometría Horizons: distancia ${probe.mission.name} → ${fotoComparadorActiva.targetDisplay} = ${fmtKm0.format(distKm)} km (${fmtAu4.format(distAu)} AU) · Tiempo de luz: ${luzMin} min${txtAng} · ${txtFov}`;
+    const anguloObjetivo = sphereAngularDiameterDeg(obtenerRadioObjetivoKm(targetName), distKm);
+    const fovActivo = comparadorUsaContexto
+      ? fovContextualReal : fotoComparadorActiva.instrumentFovDeg;
+    const planetaRecortado = anguloObjetivo !== null && anguloObjetivo > fovActivo;
+    const anillosRecortados = targetName === 'Saturno'
+      && ultimoEstadoCamara?.encuadreObjetivo?.incluyeAnillos
+      && ultimoEstadoCamara.encuadreObjetivo.fovVerticalNecesarioGrados > ultimoEstadoCamara.fovGrados;
+    const notaCampo = planetaRecortado || anillosRecortados
+      ? ` · Encuadre parcial: ${anillosRecortados ? 'los anillos o el planeta exceden' : 'el cuerpo excede'} el campo activo.`
+      : '';
+    const notaCadena = HISTORICAL_ENCOUNTER_MOONS[targetName]
+      || ['Jupiter','Saturno','Urano','Neptuno'].includes(targetName)
+      ? localFrame
+        ? ' · Vector directo objetivo–nave de Horizons; trayectoria global separada.'
+        : ' · Sin contexto local verificado para esta fecha; la geometría global nave–objetivo conserva posibles discrepancias.'
+      : '';
+    const etiquetaGeometria = localFrame ? 'Geometría local verificada' : 'Geometría global';
+    compTelemetry.textContent = `${etiquetaGeometria}: distancia ${probe.mission.name} → ${fotoComparadorActiva.targetDisplay} = ${fmtKm0.format(distKm)} km (${fmtAu4.format(distAu)} AU) · Tiempo de luz: ${luzTexto}${txtAng} · ${txtFov}${notaCampo}${notaCadena}`;
+    if (ultimoEstadoCamara?.modo === 'photo_recreation') actualizarEstadoCamaraHistorica(ultimoEstadoCamara);
   }
 
   function actualizarDesdeMotor({
@@ -934,7 +985,8 @@ export function crearControlesModoHistorico({
     relojTdb.textContent = `${snapshot.timeLabels.shortLabelTdb} · ${estadoReprod}`;
 
     iconoPlay.setAttribute('href', playing ? '#icon-pause' : '#icon-play');
-    btnPlay.setAttribute('aria-label', playing ? 'Pausar misión histórica' : 'Reproducir misión histórica');
+    btnPlay.setAttribute('aria-label', playing ? 'Pausar tiempo continuo' : 'Reproducir tiempo continuo');
+    btnPlay.title = playing ? 'Pausar el avance continuo del tiempo' : 'Reproducir el avance continuo del tiempo; no salta entre acontecimientos';
     btnReverse.setAttribute('aria-pressed', String(direction < 0));
 
     if (selectVelocidad.value !== speed.id) selectVelocidad.value = speed.id;
@@ -953,7 +1005,7 @@ export function crearControlesModoHistorico({
 
     // Habilitar/deshabilitar lunas de encuentro y sondas en el selector de 1.ª persona
     for (const opt of selectFpExtra.options) {
-      if (opt.value === 'Io' || opt.value === 'Titan' || opt.value === 'Triton') {
+      if (HISTORICAL_ENCOUNTER_MOONS[opt.value]) {
         const activa = Boolean(snapshot.moons?.[opt.value]?.state);
         opt.disabled = !activa;
       } else if (opt.value === VOYAGER_1_ID || opt.value === VOYAGER_2_ID) {
@@ -977,6 +1029,11 @@ export function crearControlesModoHistorico({
     } else {
       toastEventoPausa.hidden = true;
     }
+    const hitoActual = triggeredEvent ?? VOYAGER_HISTORICAL_EVENTS.filter(ev => ev.jdTdb <= snapshot.jdTdb).at(-1);
+    for (const chip of barraHitos.querySelectorAll('[data-hist-jump]')) {
+      if (chip.dataset.histJump === hitoActual?.id) chip.setAttribute('aria-current', 'step');
+      else chip.removeAttribute('aria-current');
+    }
 
     // Si la visibilidad fuerza una sola sonda, sincroniza la ficha con esa sonda
     if ((visibilityMode === VOYAGER_1_ID || visibilityMode === VOYAGER_2_ID) && pestanaFichaActiva !== visibilityMode) {
@@ -992,8 +1049,9 @@ export function crearControlesModoHistorico({
   }
 
   function actualizarEstadoCamaraHistorica(estadoCam) {
+    ultimoEstadoCamara = estadoCam;
     if (!estadoCam) return;
-    const enFp = estadoCam.modo === 'primera_persona' || estadoCam.modo === 'recreacion_fotografica';
+    const enFp = estadoCam.modo === 'first_person' || estadoCam.modo === 'photo_recreation';
     btnCamExterior.setAttribute('aria-pressed', String(!enFp));
     btnCamFp.setAttribute('aria-pressed', String(enFp));
     barraFocoExterior.hidden = enFp;
@@ -1008,7 +1066,7 @@ export function crearControlesModoHistorico({
         btn.setAttribute('aria-pressed', String(esObs));
       }
       for (const opt of selectFpExtra.options) {
-        if (opt.value === estadoCam.idSondaObservador) opt.disabled = true;
+        opt.disabled = opt.value === estadoCam.idSondaObservador;
       }
 
       let coincideBoton = false;
@@ -1023,16 +1081,45 @@ export function crearControlesModoHistorico({
         selectFpExtra.value = estadoCam.objetivoMirada;
       }
 
-      lecturaFpFov.textContent = `FOV ${estadoCam.fovGrados.toFixed(estadoCam.fovGrados < 2 ? 2 : 1).replace('.', ',')}°`;
+      for (const btn of botonesFpFov) btn.setAttribute('aria-pressed', String(Math.abs(Number(btn.dataset.fpFov) - estadoCam.fovReferenciaGrados) < 0.001));
+      const refFov = estadoCam.fovReferenciaGrados;
+      lecturaFpFov.textContent = estadoCam.fovTipo === 'instrumento_cuadrado'
+        ? `FOV ISS ${refFov.toFixed(refFov < 1 ? 3 : 1).replace('.', ',')}° por lado · ${estadoCam.fovGrados.toFixed(3).replace('.', ',')}° vertical en pantalla`
+        : `FOV contextual ${refFov.toFixed(refFov < 2 ? 2 : 1).replace('.', ',')}° vertical`;
 
       const nombreObs = estadoCam.idSondaObservador === VOYAGER_1_ID ? 'Voyager 1 (-31)' : 'Voyager 2 (-32)';
+      const marcoGeometrico = estadoCam.contextoGeometria === 'encuentro_local'
+        ? 'vector local directo de Horizons; trayectoria global separada'
+        : 'trayectoria global; sin vector local validado para este objetivo y fecha';
       if (estadoCam.tipoOrientacion === 'recreacion_fotografica_aproximada') {
-        insigniaFpFidelidad.textContent = `Posición histórica exacta de ${nombreObs} (JPL Horizons) · Escala angular 1:1 · Recreación fotográfica geométrica aproximada (sin matriz SPICE CK de balanceo)`;
+        insigniaFpFidelidad.textContent = `${nombreObs} · ${marcoGeometrico} · comparación geométrica aproximada, sin CK/IK`;
       } else if (estadoCam.tipoOrientacion === 'apuntado_geometrico') {
         const etqObj = estadoCam.objetivoMirada === 'Jupiter' ? 'Júpiter' : estadoCam.objetivoMirada;
-        insigniaFpFidelidad.textContent = `Posición histórica exacta de ${nombreObs} (JPL Horizons) · Escala angular física 1:1 · Apuntado geométrico hacia ${etqObj} (no orientación de actitud histórica)`;
+        insigniaFpFidelidad.textContent = `${nombreObs} → ${etqObj} · ${marcoGeometrico} · apuntado geométrico, sin CK/IK`;
       } else {
-        insigniaFpFidelidad.textContent = `Posición histórica exacta de ${nombreObs} (JPL Horizons) · Escala angular física 1:1 · Orientación libre elegida por el usuario (arrastra para girar, rueda para zoom FOV)`;
+        insigniaFpFidelidad.textContent = `${nombreObs} · orientación libre (arrastra para girar) · ${marcoGeometrico} · sin CK/IK`;
+      }
+      const probe = ultimoSnapshot?.probes?.[estadoCam.idSondaObservador];
+      const objetivo = ultimoSnapshot?.rawPlanets?.[estadoCam.objetivoMirada]?.state
+        ?? ultimoSnapshot?.moons?.[estadoCam.objetivoMirada]?.state;
+      const radio = obtenerRadioObjetivoKm(estadoCam.objetivoMirada);
+      const frameLocal = ultimoSnapshot?.localFrames?.[`${estadoCam.idSondaObservador}:${estadoCam.objetivoMirada}`];
+      if (probe?.positionKm && objetivo && radio) {
+        const p = probe.positionKm, q = objetivo.position;
+        const distancia = frameLocal?.distanceKm ?? Math.hypot(q.x - p.x, q.y - p.y, q.z - p.z);
+        const diametroAngular = sphereAngularDiameterDeg(radio, distancia);
+        if (diametroAngular === null) {
+          insigniaFpFidelidad.textContent += ' · Observador dentro del radio físico: diámetro angular exterior no definido.';
+          return;
+        }
+        if (estadoCam.fovTipo === 'instrumento_cuadrado' && diametroAngular > estadoCam.fovReferenciaGrados) {
+          insigniaFpFidelidad.textContent += ' · El cuerpo excede el campo ISS: se observa una región; el FOV contextual puede mostrar una zona mayor.';
+        } else if (estadoCam.fovTipo === 'contextual_vertical' && estadoCam.encuadreObjetivo?.cabeEnAreaLibre === false) {
+          insigniaFpFidelidad.textContent += ' · Encuadre parcial desde esta posición y con el espacio libre actual; cierra el panel o ajusta el campo para ver más superficie.';
+        }
+        if (selectorEvento.value === 'v1-pale-blue-dot-1990' && estadoCam.objetivoMirada === 'Tierra') {
+          insigniaFpFidelidad.textContent += ` · Tierra ≈ ${(diametroAngular * 3600).toFixed(2).replace('.', ',')}″ desde Voyager 1: aparece como un punto subpíxel; el indicador sólo señala su dirección.`;
+        }
       }
     }
   }
@@ -1051,6 +1138,7 @@ export function crearControlesModoHistorico({
       btnToggleHelio.setAttribute('aria-pressed', String(heliosferaActiva));
     },
     actualizarDesdeMotor,
-    actualizarEstadoCamaraHistorica
+    actualizarEstadoCamaraHistorica,
+    actualizarTelemetriaComparador
   };
 }

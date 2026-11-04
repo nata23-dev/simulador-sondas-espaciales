@@ -1,0 +1,25 @@
+{
+  "source": "public/textures/moons/io-voyager-usgs.jpg",
+  "derivative": "public/textures/moons/io-voyager-usgs-seam-feathered.png",
+  "sourceDimensions": [
+    1440,
+    720
+  ],
+  "joinsPx": [
+    348,
+    502,
+    768
+  ],
+  "halfWidthPx": 10,
+  "meanAdjacentRgbDifferenceBefore": {
+    "348": 4.501785755157471,
+    "502": 5.327976226806641,
+    "768": 5.272023677825928
+  },
+  "meanAdjacentRgbDifferenceAfter": {
+    "348": 0.012500000186264515,
+    "502": 0.0053571430034935474,
+    "768": 0.31607142090797424
+  },
+  "note": "Local color feather only; original source and geological structures retained. Native resolution mismatch remains."
+}

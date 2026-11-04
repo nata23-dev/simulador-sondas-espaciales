@@ -1,0 +1,12 @@
+; vgr2_jup230.bsp LOG FILE
+;
+; Created 2012-02-13/15:40:32.00.
+;
+; BEGIN NIOSPK COMMANDS
+
+SPK_FILE            = vgr2_jup230.bsp
+  SOURCE_NIO_FILE   = vgr2.jup230.nio
+    BEGIN_TIME      = CAL-ET 1979 JUN 04 17:00:00.000
+    END_TIME        = CAL-ET 1979 JUL 21 00:00:00.000
+
+; END NIOSPK COMMANDS

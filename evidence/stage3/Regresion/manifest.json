@@ -1,0 +1,422 @@
+{
+  "checks": [
+    "Modo histórico cargado",
+    "Acceso principal visible",
+    "Paso inicial en Historia",
+    "Anterior deshabilitado al inicio",
+    "Paso 2 de 12",
+    "Paso 3 de 12",
+    "Paso 4 de 12",
+    "Paso 5 de 12",
+    "Paso 6 de 12",
+    "Paso 7 de 12",
+    "Paso 8 de 12",
+    "Paso 9 de 12",
+    "Paso 10 de 12",
+    "Paso 11 de 12",
+    "Paso 12 de 12",
+    "Finalización explícita al final",
+    "Retroceso desde el final",
+    "Progreso conservado entre secciones",
+    "Catálogo único de 14",
+    "Nombres completos multilínea",
+    "Catálogo v2-launch-1977",
+    "Catálogo v1-launch-1977",
+    "Catálogo v1-jupiter-1979",
+    "Catálogo v2-jupiter-1979",
+    "Catálogo v1-titan-1980",
+    "Catálogo v1-saturn-1980",
+    "Catálogo v2-saturn-1981",
+    "Catálogo v2-uranus-1986",
+    "Catálogo v2-neptune-1989",
+    "Catálogo v1-pale-blue-dot-1990",
+    "Catálogo v1-termination-shock-2004",
+    "Catálogo v2-termination-shock-2007",
+    "Catálogo v1-heliopause-2012",
+    "Catálogo v2-heliopause-2018",
+    "Acontecimiento adicional sin paso falso",
+    "Retorno al paso narrativo",
+    "Primera persona Voyager accesible",
+    "Regreso a cámara exterior",
+    "Fotografía NASA ampliada",
+    "Comparador NASA y 3D activo",
+    "Comparador cerrado y cámara exterior",
+    "Reproducción temporal independiente",
+    "Tiempo libre sin acontecimiento contradictorio",
+    "Tiempo separado del catálogo",
+    "Acceso temporal abre el catálogo",
+    "Sin desbordamiento horizontal 1366",
+    "Sin desbordamiento horizontal 768",
+    "Sin desbordamiento horizontal 390",
+    "Catálogo operable en móvil",
+    "Recorrido operable en móvil",
+    "Entrada histórica móvil cargada",
+    "Acceso al recorrido visible en móvil",
+    "Modo Experimental disponible",
+    "Modo Sistema Solar disponible",
+    "Regreso a Misiones históricas"
+  ],
+  "errors": [],
+  "captures": [
+    {
+      "name": "01-entrada-historica",
+      "file": "Despues/01-entrada-historica.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "explore",
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "02-acceso-recorrido",
+      "file": "Despues/02-acceso-recorrido.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "explore",
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "03-recorrido-paso-01",
+      "file": "Despues/03-recorrido-paso-01.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "recorrido-paso-06",
+      "file": "Despues/recorrido-paso-06.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v2-saturn-1981",
+        "step": "Paso 6 de 12 · acontecimiento 7 de 14",
+        "date": "1981-08-26 · 03:24:57 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "recorrido-paso-12",
+      "file": "Despues/recorrido-paso-12.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12 · acontecimiento 14 de 14",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": "first_person",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "04-informacion-desde-recorrido",
+      "file": "Despues/04-informacion-desde-recorrido.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "telemetry",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12 · acontecimiento 14 de 14",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": "first_person",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "05-catalogo-14",
+      "file": "Despues/05-catalogo-14.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12 · acontecimiento 14 de 14",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": "first_person",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "06-catalogo-seleccion",
+      "file": "Despues/06-catalogo-seleccion.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12 · acontecimiento 14 de 14",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": "first_person",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "07-acontecimiento-adicional",
+      "file": "Despues/07-acontecimiento-adicional.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v1-titan-1980",
+        "step": "Paso 12 de 12 · acontecimiento 14 de 14",
+        "date": "1980-11-12 · 05:41:21 UTC",
+        "camera": "first_person",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "08-camaras",
+      "file": "Despues/08-camaras.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12 · acontecimiento 14 de 14",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": "first_person",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "09-fotografias",
+      "file": "Despues/09-fotografias.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "photos",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12 · acontecimiento 14 de 14",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": "first_person",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "11-primera-persona",
+      "file": "Despues/11-primera-persona.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12 · acontecimiento 3 de 14",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": "first_person",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "12-fotografia-nasa",
+      "file": "Despues/12-fotografia-nasa.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "photos",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12 · acontecimiento 3 de 14",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "13-comparador-nasa-3d",
+      "file": "Despues/13-comparador-nasa-3d.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "closed",
+        "tab": "photos",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12 · acontecimiento 3 de 14",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": "photo_recreation",
+        "comparatorOpen": true,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "10-tiempo",
+      "file": "Despues/10-tiempo.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "closed",
+        "tab": "photos",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12 · acontecimiento 3 de 14",
+        "date": "1979-03-05 · 13:11:15 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "responsive-1366x768",
+      "file": "Despues/responsive-1366x768.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12 · acontecimiento 3 de 14",
+        "date": "1979-03-05 · 13:11:15 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "responsive-768x1024",
+      "file": "Despues/responsive-768x1024.png",
+      "state": {
+        "width": 768,
+        "height": 1024,
+        "scrollWidth": 768,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12 · acontecimiento 3 de 14",
+        "date": "1979-03-05 · 13:11:15 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "responsive-390x844",
+      "file": "Despues/responsive-390x844.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12 · acontecimiento 3 de 14",
+        "date": "1979-03-05 · 13:11:15 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "responsive-390x844-recorrido",
+      "file": "Despues/responsive-390x844-recorrido.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v2-uranus-1986",
+        "step": "Paso 7 de 12 · acontecimiento 8 de 14",
+        "date": "1986-01-24 · 17:59:47 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "responsive-390x844-acceso",
+      "file": "Despues/responsive-390x844-acceso.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "explore",
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "camera": "exterior",
+        "comparatorOpen": false,
+        "photoLoaded": false
+      }
+    }
+  ]
+}

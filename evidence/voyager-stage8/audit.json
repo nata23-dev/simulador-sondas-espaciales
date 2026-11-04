@@ -1,0 +1,5151 @@
+{
+  "generatedAtUtc": "2026-11-04T04:21:47.541Z",
+  "provenance": "Offline comparison with preserved, hash-verified Horizons requests",
+  "sources": [
+    {
+      "id": "hist-launch-v2-injection-1977",
+      "file": "data/historical/encounters/hist-launch-v2-injection-1977.json",
+      "sha256": "69d67a616ff6c00cc533cb52e11990e147bac49fead6ff72d659b1780eecc9b4",
+      "bodyIds": [
+        "-32",
+        "399"
+      ],
+      "coverage": {
+        "399": {
+          "startJdTdb": 2443376.147916667,
+          "endJdTdb": 2443376.5
+        },
+        "-32": {
+          "startJdTdb": 2443376.147916667,
+          "endJdTdb": 2443376.5
+        }
+      },
+      "cadenceSeconds": 180,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "399",
+            "solutionId": "DE441"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-launch-v2-departure-1977",
+      "file": "data/historical/encounters/hist-launch-v2-departure-1977.json",
+      "sha256": "cb233b8317af293ac46c0e6bb69145abd093b2e0524a049e9e5f4bc8d79cacc2",
+      "bodyIds": [
+        "-32",
+        "399"
+      ],
+      "coverage": {
+        "399": {
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2443384.5
+        },
+        "-32": {
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2443384.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "399",
+            "solutionId": "DE441"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-launch-v1-injection-1977",
+      "file": "data/historical/encounters/hist-launch-v1-injection-1977.json",
+      "sha256": "4655ddeed2d9e0cb114a741569581528ad7b2d52d298af15b9d549388d541f55",
+      "bodyIds": [
+        "-31",
+        "-32",
+        "399"
+      ],
+      "coverage": {
+        "399": {
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5
+        },
+        "-31": {
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5
+        },
+        "-32": {
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5
+        }
+      },
+      "cadenceSeconds": 300,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          },
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "399",
+            "solutionId": "DE441"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-launch-v1-departure-1977",
+      "file": "data/historical/encounters/hist-launch-v1-departure-1977.json",
+      "sha256": "c9d06708307e229042a38349f7ccbe72b952066d3147d12f198143900bf8ba6a",
+      "bodyIds": [
+        "-31",
+        "-32",
+        "399"
+      ],
+      "coverage": {
+        "399": {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5
+        },
+        "-31": {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5
+        },
+        "-32": {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          },
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "399",
+            "solutionId": "DE441"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-flyby-v1-jupiter-1979",
+      "file": "data/historical/encounters/hist-flyby-v1-jupiter-1979.json",
+      "sha256": "23f6ce5bd0f4e0603d250d493d1f18f2b0778e7e2db45fcfa0f3beb429f4488a",
+      "bodyIds": [
+        "-31",
+        "599",
+        "501"
+      ],
+      "coverage": {
+        "501": {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        },
+        "599": {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        },
+        "-31": {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          },
+          {
+            "bodyId": "599",
+            "solutionId": "jup365_merged"
+          },
+          {
+            "bodyId": "501",
+            "solutionId": "jup365_merged"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-flyby-v2-jupiter-1979",
+      "file": "data/historical/encounters/hist-flyby-v2-jupiter-1979.json",
+      "sha256": "67cbe45338e684a283bbb9a80dc4a104526237122e2ee2c0f9b83d1ae420ec9a",
+      "bodyIds": [
+        "-32",
+        "599",
+        "501"
+      ],
+      "coverage": {
+        "501": {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        },
+        "599": {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        },
+        "-32": {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "599",
+            "solutionId": "jup365_merged"
+          },
+          {
+            "bodyId": "501",
+            "solutionId": "jup365_merged"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-flyby-v1-saturn-1980",
+      "file": "data/historical/encounters/hist-flyby-v1-saturn-1980.json",
+      "sha256": "c076a489fbf102c80b4ce02e9dcb6009dd4cbc16296da5b338e653fad04b601c",
+      "bodyIds": [
+        "-31",
+        "699",
+        "606"
+      ],
+      "coverage": {
+        "606": {
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5
+        },
+        "699": {
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5
+        },
+        "-31": {
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          },
+          {
+            "bodyId": "699",
+            "solutionId": "sat441l"
+          },
+          {
+            "bodyId": "606",
+            "solutionId": "sat441l"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-flyby-v2-saturn-1981",
+      "file": "data/historical/encounters/hist-flyby-v2-saturn-1981.json",
+      "sha256": "d833f62581ac2c839708878fa065557450c5975191a5bd6ff0dd4c8097a6a021",
+      "bodyIds": [
+        "-32",
+        "699",
+        "606"
+      ],
+      "coverage": {
+        "606": {
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5
+        },
+        "699": {
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5
+        },
+        "-32": {
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "699",
+            "solutionId": "sat441l"
+          },
+          {
+            "bodyId": "606",
+            "solutionId": "sat441l"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-flyby-v2-uranus-1986",
+      "file": "data/historical/encounters/hist-flyby-v2-uranus-1986.json",
+      "sha256": "9f12ac2e8c978cfc0dda1625be4e13ee570afa156abb17e0bb287a106b1ea395",
+      "bodyIds": [
+        "-32",
+        "799"
+      ],
+      "coverage": {
+        "799": {
+          "startJdTdb": 2446450.5,
+          "endJdTdb": 2446459.5
+        },
+        "-32": {
+          "startJdTdb": 2446450.5,
+          "endJdTdb": 2446459.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "799",
+            "solutionId": "ura184_merged"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-flyby-v2-neptune-1989",
+      "file": "data/historical/encounters/hist-flyby-v2-neptune-1989.json",
+      "sha256": "ac9e4419603bc8e51e0e7c22a0e0d48a2c86b258c37621d82282fd8d729e4aba",
+      "bodyIds": [
+        "-32",
+        "899",
+        "801"
+      ],
+      "coverage": {
+        "801": {
+          "startJdTdb": 2447759.5,
+          "endJdTdb": 2447767.833333333
+        },
+        "899": {
+          "startJdTdb": 2447759.5,
+          "endJdTdb": 2447767.833333333
+        },
+        "-32": {
+          "startJdTdb": 2447759.5,
+          "endJdTdb": 2447767.833333333
+        }
+      },
+      "cadenceSeconds": 900,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "899",
+            "solutionId": "nep098_merged"
+          },
+          {
+            "bodyId": "801",
+            "solutionId": "nep098_merged"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-event-v1-palebluedot-1990",
+      "file": "data/historical/encounters/hist-event-v1-palebluedot-1990.json",
+      "sha256": "d1c22bba9ae96aa32e35b5ca95c48683b9b915014c0aadd32fc841cc54ab9702",
+      "bodyIds": [
+        "-31",
+        "199",
+        "299",
+        "399",
+        "499",
+        "599",
+        "699",
+        "799",
+        "899"
+      ],
+      "coverage": {
+        "199": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "299": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "399": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "499": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "599": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "699": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "799": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "899": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        "-31": {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          },
+          {
+            "bodyId": "199",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "299",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "399",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "499",
+            "solutionId": "mar099"
+          },
+          {
+            "bodyId": "599",
+            "solutionId": "jup365_merged"
+          },
+          {
+            "bodyId": "699",
+            "solutionId": "sat441l"
+          },
+          {
+            "bodyId": "799",
+            "solutionId": "ura184_merged"
+          },
+          {
+            "bodyId": "899",
+            "solutionId": "nep098_merged"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-cruise-v1-1977-1981",
+      "file": "data/historical/probes/hist-cruise-v1-1977-1981.json",
+      "sha256": "8784b8d7a4ec288f004dc47190763cc4b2998faeb2b78b1d6003faf15637225d",
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "-31": {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2444605.5
+        }
+      },
+      "cadenceSeconds": 86400,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-bridge-v1-1981-min",
+      "file": "data/historical/probes/hist-bridge-v1-1981-min.json",
+      "sha256": "884e4089aaf8cb4175f21a815d74e0b9a7e9a5791bd8e7076b6be2051109505f",
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "-31": {
+          "startJdTdb": 2444605.500694444,
+          "endJdTdb": 2444605.541666667
+        }
+      },
+      "cadenceSeconds": 60,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-bridge-v1-1981-hours",
+      "file": "data/historical/probes/hist-bridge-v1-1981-hours.json",
+      "sha256": "cd9c36650019687e3e5b2ec9453543bb5a90a48f4aea2aa6984a3e471da055b1",
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "-31": {
+          "startJdTdb": 2444605.541666667,
+          "endJdTdb": 2444606.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-cruise-v1-1981-1996",
+      "file": "data/historical/probes/hist-cruise-v1-1981-1996.json",
+      "sha256": "d13c68f3e2412cef83c8b042002826ca9d65fc7b4497473bf848f1a121e86b02",
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "-31": {
+          "startJdTdb": 2444606.5,
+          "endJdTdb": 2450186.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-cruise-v1-1996-2011",
+      "file": "data/historical/probes/hist-cruise-v1-1996-2011.json",
+      "sha256": "17e9299abad95dfbc3c18b93b55cbc51294e698a7e7842d24e823292aa1d260e",
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "-31": {
+          "startJdTdb": 2450186.5,
+          "endJdTdb": 2455766.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-cruise-v1-2011-2026",
+      "file": "data/historical/probes/hist-cruise-v1-2011-2026.json",
+      "sha256": "95ad2822fedfad7b33214685145616dcbe046d3184bcd098251ec6e2909fb5aa",
+      "bodyIds": [
+        "-31"
+      ],
+      "coverage": {
+        "-31": {
+          "startJdTdb": 2455766.5,
+          "endJdTdb": 2461346.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-cruise-v2-1977-1989",
+      "file": "data/historical/probes/hist-cruise-v2-1977-1989.json",
+      "sha256": "c3cd3332f581ff8ebf4234456f1493774a04250ac6ab2095dbe84b837380b316",
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "-32": {
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2447767.5
+        }
+      },
+      "cadenceSeconds": 86400,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-bridge-v2-1989-min",
+      "file": "data/historical/probes/hist-bridge-v2-1989-min.json",
+      "sha256": "083e8b2d2085645268089a5a19d20a2fe7e5e05e94383b7db67094d3ed20a1fc",
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "-32": {
+          "startJdTdb": 2447767.834027778,
+          "endJdTdb": 2447767.875
+        }
+      },
+      "cadenceSeconds": 60,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-bridge-v2-1989-hours",
+      "file": "data/historical/probes/hist-bridge-v2-1989-hours.json",
+      "sha256": "2ed68e04b75efb3b9ee5ecad272141ecd1189a573d89205a258e685f2ddb9c39",
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "-32": {
+          "startJdTdb": 2447767.875,
+          "endJdTdb": 2447771.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-cruise-v2-1989-2002",
+      "file": "data/historical/probes/hist-cruise-v2-1989-2002.json",
+      "sha256": "e262680c056c06b3f955466678c0819a78b79109dd7698699c556e4a3fa1d810",
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "-32": {
+          "startJdTdb": 2447771.5,
+          "endJdTdb": 2452296.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-cruise-v2-2002-2014",
+      "file": "data/historical/probes/hist-cruise-v2-2002-2014.json",
+      "sha256": "8f2a7c640af948f28bb46f195639d419ab2fe0976d153eac74bcc670c66a7a3e",
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "-32": {
+          "startJdTdb": 2452296.5,
+          "endJdTdb": 2456821.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-cruise-v2-2014-2026",
+      "file": "data/historical/probes/hist-cruise-v2-2014-2026.json",
+      "sha256": "38b02524a332c4a029df5b394baff00656c220a0bc9e92298b474276beae63ad",
+      "bodyIds": [
+        "-32"
+      ],
+      "coverage": {
+        "-32": {
+          "startJdTdb": 2456821.5,
+          "endJdTdb": 2461346.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-planets-outer-1977-2002",
+      "file": "data/historical/planets/hist-planets-outer-1977-2002.json",
+      "sha256": "ec5841b05b1fda94e006dca30781fb74e1a111434fc4c22bd6e522485420ab13",
+      "bodyIds": [
+        "599",
+        "699",
+        "799",
+        "899"
+      ],
+      "coverage": {
+        "599": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2452360.5
+        },
+        "699": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2452360.5
+        },
+        "799": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2452360.5
+        },
+        "899": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2452360.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "599",
+            "solutionId": "jup365_merged"
+          },
+          {
+            "bodyId": "699",
+            "solutionId": "sat441l"
+          },
+          {
+            "bodyId": "799",
+            "solutionId": "ura184_merged"
+          },
+          {
+            "bodyId": "899",
+            "solutionId": "nep098_merged"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-planets-outer-2002-2026",
+      "file": "data/historical/planets/hist-planets-outer-2002-2026.json",
+      "sha256": "ebc3d70fb8f3ecd3eb3ff991221dd697e03d1136f4ed8db0043b626a1d1f5237",
+      "bodyIds": [
+        "599",
+        "699",
+        "799",
+        "899"
+      ],
+      "coverage": {
+        "599": {
+          "startJdTdb": 2452360.5,
+          "endJdTdb": 2461350.5
+        },
+        "699": {
+          "startJdTdb": 2452360.5,
+          "endJdTdb": 2461350.5
+        },
+        "799": {
+          "startJdTdb": 2452360.5,
+          "endJdTdb": 2461350.5
+        },
+        "899": {
+          "startJdTdb": 2452360.5,
+          "endJdTdb": 2461350.5
+        }
+      },
+      "cadenceSeconds": 432000,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "599",
+            "solutionId": "jup365_merged"
+          },
+          {
+            "bodyId": "699",
+            "solutionId": "sat441l"
+          },
+          {
+            "bodyId": "799",
+            "solutionId": "ura184_merged"
+          },
+          {
+            "bodyId": "899",
+            "solutionId": "nep098_merged"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-planets-inner-1977-1987",
+      "file": "data/historical/planets/hist-planets-inner-1977-1987.json",
+      "sha256": "924a1597f41fed478a70bc5fa7eeb3d1bd49a69e491a7c554b6beed6e724224c",
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "199": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2446969.5
+        },
+        "299": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2446969.5
+        },
+        "399": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2446969.5
+        },
+        "499": {
+          "startJdTdb": 2443375.5,
+          "endJdTdb": 2446969.5
+        }
+      },
+      "cadenceSeconds": 172800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "199",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "299",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "399",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "499",
+            "solutionId": "mar099"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-planets-inner-1987-1997",
+      "file": "data/historical/planets/hist-planets-inner-1987-1997.json",
+      "sha256": "7dc2f038a36165826b0ed90da4503b8001f5f383883e6a9e4da9e1d832fd5b6f",
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "199": {
+          "startJdTdb": 2446969.5,
+          "endJdTdb": 2450563.5
+        },
+        "299": {
+          "startJdTdb": 2446969.5,
+          "endJdTdb": 2450563.5
+        },
+        "399": {
+          "startJdTdb": 2446969.5,
+          "endJdTdb": 2450563.5
+        },
+        "499": {
+          "startJdTdb": 2446969.5,
+          "endJdTdb": 2450563.5
+        }
+      },
+      "cadenceSeconds": 172800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "199",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "299",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "399",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "499",
+            "solutionId": "mar099"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-planets-inner-1997-2007",
+      "file": "data/historical/planets/hist-planets-inner-1997-2007.json",
+      "sha256": "2891e30b975257cb8549134e9841c5348fcc167c82d5b31c0403a115797f81ce",
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "199": {
+          "startJdTdb": 2450563.5,
+          "endJdTdb": 2454157.5
+        },
+        "299": {
+          "startJdTdb": 2450563.5,
+          "endJdTdb": 2454157.5
+        },
+        "399": {
+          "startJdTdb": 2450563.5,
+          "endJdTdb": 2454157.5
+        },
+        "499": {
+          "startJdTdb": 2450563.5,
+          "endJdTdb": 2454157.5
+        }
+      },
+      "cadenceSeconds": 172800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "199",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "299",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "399",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "499",
+            "solutionId": "mar099"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-planets-inner-2007-2016",
+      "file": "data/historical/planets/hist-planets-inner-2007-2016.json",
+      "sha256": "c08409d69bd075038bc6394b0d28b589e25617839011c6f889ef1226ce92ad41",
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "199": {
+          "startJdTdb": 2454157.5,
+          "endJdTdb": 2457751.5
+        },
+        "299": {
+          "startJdTdb": 2454157.5,
+          "endJdTdb": 2457751.5
+        },
+        "399": {
+          "startJdTdb": 2454157.5,
+          "endJdTdb": 2457751.5
+        },
+        "499": {
+          "startJdTdb": 2454157.5,
+          "endJdTdb": 2457751.5
+        }
+      },
+      "cadenceSeconds": 172800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "199",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "299",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "399",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "499",
+            "solutionId": "mar099"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-planets-inner-2016-2026",
+      "file": "data/historical/planets/hist-planets-inner-2016-2026.json",
+      "sha256": "6a29039a919b6d3230d161b591587c21bf3d65d843273ec68669ad7e347bbc8a",
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "199": {
+          "startJdTdb": 2457751.5,
+          "endJdTdb": 2461347.5
+        },
+        "299": {
+          "startJdTdb": 2457751.5,
+          "endJdTdb": 2461347.5
+        },
+        "399": {
+          "startJdTdb": 2457751.5,
+          "endJdTdb": 2461347.5
+        },
+        "499": {
+          "startJdTdb": 2457751.5,
+          "endJdTdb": 2461347.5
+        }
+      },
+      "cadenceSeconds": 172800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "199",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "299",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "399",
+            "solutionId": "DE441"
+          },
+          {
+            "bodyId": "499",
+            "solutionId": "mar099"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-launch-v2-injection-1977-moon-301",
+      "file": "data/historical/moons/hist-launch-v2-injection-1977-moon-301.json",
+      "sha256": "af2460ebda12c4efd8be81d7636e90d419d714492b36072d37b5be7c74e3e935",
+      "bodyIds": [
+        "301"
+      ],
+      "coverage": {
+        "301": {
+          "startJdTdb": 2443376.147916667,
+          "endJdTdb": 2443376.5
+        }
+      },
+      "cadenceSeconds": 180,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-launch-v2-departure-1977-moon-301",
+      "file": "data/historical/moons/hist-launch-v2-departure-1977-moon-301.json",
+      "sha256": "a9e88bb652e3e2cef25ebd76b32586a70394a10b970eb65747f3906dd798cd61",
+      "bodyIds": [
+        "301"
+      ],
+      "coverage": {
+        "301": {
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2443384.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-launch-v1-injection-1977-moon-301",
+      "file": "data/historical/moons/hist-launch-v1-injection-1977-moon-301.json",
+      "sha256": "0e2ed1b4b671ef65c5afac33f4068ad2c6133e619a4ffad4b3154468c5f0e998",
+      "bodyIds": [
+        "301"
+      ],
+      "coverage": {
+        "301": {
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5
+        }
+      },
+      "cadenceSeconds": 300,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-launch-v1-departure-1977-moon-301",
+      "file": "data/historical/moons/hist-launch-v1-departure-1977-moon-301.json",
+      "sha256": "a8d0c91a3003bb2d3cb8dde64352b39fc7efc18870fe22f58114854d2efe0b81",
+      "bodyIds": [
+        "301"
+      ],
+      "coverage": {
+        "301": {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5
+        }
+      },
+      "cadenceSeconds": 3600,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v1-jupiter-1979-moon-502",
+      "file": "data/historical/moons/hist-flyby-v1-jupiter-1979-moon-502.json",
+      "sha256": "fccab9d80290503f51c1c7a7116d67c9db93e464bacbd407869b616f008d78e7",
+      "bodyIds": [
+        "502"
+      ],
+      "coverage": {
+        "502": {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v1-jupiter-1979-moon-503",
+      "file": "data/historical/moons/hist-flyby-v1-jupiter-1979-moon-503.json",
+      "sha256": "720c9d9d7fff9349072976e7365b746b577bdee3c96d093929ee5120773a20cf",
+      "bodyIds": [
+        "503"
+      ],
+      "coverage": {
+        "503": {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v1-jupiter-1979-moon-504",
+      "file": "data/historical/moons/hist-flyby-v1-jupiter-1979-moon-504.json",
+      "sha256": "eb6b684eb6ed2809c7e0b646376c79a597f3b4afdfa4cb0fb142bec932e940ca",
+      "bodyIds": [
+        "504"
+      ],
+      "coverage": {
+        "504": {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v2-jupiter-1979-moon-502",
+      "file": "data/historical/moons/hist-flyby-v2-jupiter-1979-moon-502.json",
+      "sha256": "fbe0a6d468bd4c35e2ef807e3586fd70e211e8718679379d9fd4de384b655bd8",
+      "bodyIds": [
+        "502"
+      ],
+      "coverage": {
+        "502": {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v2-jupiter-1979-moon-503",
+      "file": "data/historical/moons/hist-flyby-v2-jupiter-1979-moon-503.json",
+      "sha256": "e9354bf7b8657e730800571e66720d49d14e121ca7bb3892829fbc67362c9b49",
+      "bodyIds": [
+        "503"
+      ],
+      "coverage": {
+        "503": {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v2-jupiter-1979-moon-504",
+      "file": "data/historical/moons/hist-flyby-v2-jupiter-1979-moon-504.json",
+      "sha256": "9dae5dc1d198db63b57567cdf62ee6286ac1c7405d91300295620ff92b79e904",
+      "bodyIds": [
+        "504"
+      ],
+      "coverage": {
+        "504": {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v1-saturn-1980-moon-602",
+      "file": "data/historical/moons/hist-flyby-v1-saturn-1980-moon-602.json",
+      "sha256": "f71a2323f08319df856d426e10bf23d317d7c7affbcb067f237cd1a09851bc48",
+      "bodyIds": [
+        "602"
+      ],
+      "coverage": {
+        "602": {
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v2-saturn-1981-moon-602",
+      "file": "data/historical/moons/hist-flyby-v2-saturn-1981-moon-602.json",
+      "sha256": "2d4b75d6c2c6d5e21517d01e041873d15b609920a7b384965c651a67c98b42d4",
+      "bodyIds": [
+        "602"
+      ],
+      "coverage": {
+        "602": {
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v2-uranus-1986-moon-703",
+      "file": "data/historical/moons/hist-flyby-v2-uranus-1986-moon-703.json",
+      "sha256": "826c5c2b610741687d587f00f23ab8787c347fff84bcda077fb2854c24895440",
+      "bodyIds": [
+        "703"
+      ],
+      "coverage": {
+        "703": {
+          "startJdTdb": 2446450.5,
+          "endJdTdb": 2446459.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v2-uranus-1986-moon-705",
+      "file": "data/historical/moons/hist-flyby-v2-uranus-1986-moon-705.json",
+      "sha256": "56deeb1d1cad97fd2ac6b27d2fe890508881cd9e1145612c427dbfffac148fc6",
+      "bodyIds": [
+        "705"
+      ],
+      "coverage": {
+        "705": {
+          "startJdTdb": 2446450.5,
+          "endJdTdb": 2446459.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE"
+      }
+    },
+    {
+      "id": "hist-flyby-v1-jupiter-1979-moon-501",
+      "file": "data/historical/moons/hist-flyby-v1-jupiter-1979-moon-501.json",
+      "sha256": "6d4bb3dafc1ade89a486b1364597f39dcdcfdef01dda4f4beb4f6dbef4678d74",
+      "bodyIds": [
+        "501"
+      ],
+      "coverage": {
+        "501": {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          },
+          {
+            "bodyId": "599",
+            "solutionId": "jup365_merged"
+          },
+          {
+            "bodyId": "501",
+            "solutionId": "jup365_merged"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-flyby-v2-jupiter-1979-moon-501",
+      "file": "data/historical/moons/hist-flyby-v2-jupiter-1979-moon-501.json",
+      "sha256": "440de98bed0291b99e166366cad0af0214b1cb9bdce38332358610a5a84edd6d",
+      "bodyIds": [
+        "501"
+      ],
+      "coverage": {
+        "501": {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        }
+      },
+      "cadenceSeconds": 1800,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "599",
+            "solutionId": "jup365_merged"
+          },
+          {
+            "bodyId": "501",
+            "solutionId": "jup365_merged"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-flyby-v1-saturn-1980-moon-606",
+      "file": "data/historical/moons/hist-flyby-v1-saturn-1980-moon-606.json",
+      "sha256": "08818f6aec80587bc8f800b9af436937d2691f5581b6de4377349855d7a59a88",
+      "bodyIds": [
+        "606"
+      ],
+      "coverage": {
+        "606": {
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-31",
+            "solutionId": "Voyager_1_ST+refit2022_m"
+          },
+          {
+            "bodyId": "699",
+            "solutionId": "sat441l"
+          },
+          {
+            "bodyId": "606",
+            "solutionId": "sat441l"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-flyby-v2-saturn-1981-moon-606",
+      "file": "data/historical/moons/hist-flyby-v2-saturn-1981-moon-606.json",
+      "sha256": "f7bf8c63f9ace872764c9313be954fd011b57e82d6ebcc91f549a3a529a51bc3",
+      "bodyIds": [
+        "606"
+      ],
+      "coverage": {
+        "606": {
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5
+        }
+      },
+      "cadenceSeconds": 1200,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "699",
+            "solutionId": "sat441l"
+          },
+          {
+            "bodyId": "606",
+            "solutionId": "sat441l"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hist-flyby-v2-neptune-1989-moon-801",
+      "file": "data/historical/moons/hist-flyby-v2-neptune-1989-moon-801.json",
+      "sha256": "8dbb8fb9e9e2611986b3ee8fdeb33ff78fa68c9dd53a946633c24a3cc40a152f",
+      "bodyIds": [
+        "801"
+      ],
+      "coverage": {
+        "801": {
+          "startJdTdb": 2447759.5,
+          "endJdTdb": 2447767.833333333
+        }
+      },
+      "cadenceSeconds": 900,
+      "origin": "SUN_CENTER",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "acquisition": {
+        "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+        "originCode": "500@10",
+        "referencePlane": "ECLIPTIC",
+        "referenceSystem": "ICRF",
+        "timeScale": "TDB",
+        "correction": "NONE",
+        "solutionIds": [
+          {
+            "bodyId": "-32",
+            "solutionId": "Voyager_2_ST+refit2022_m"
+          },
+          {
+            "bodyId": "899",
+            "solutionId": "nep098_merged"
+          },
+          {
+            "bodyId": "801",
+            "solutionId": "nep098_merged"
+          }
+        ]
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "file": "evidence/stage2-3/Kernels/Voyager_1.a54206u_V0.2_merged.bsp",
+      "sha256": "47c6f2be03668b50a1efb5f96978a2b68b2b501dae6f585841b1569baa3f4311",
+      "segments": [
+        {
+          "target": -31,
+          "center": 10,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -600549280.1523788,
+          "endEt": -441806400,
+          "startTdb": "1980 DEC 20 16:45:19.847",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "vgr1_st.nio"
+        },
+        {
+          "target": -31,
+          "center": 6,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -607052749.9756155,
+          "endEt": -600549280.1523788,
+          "startTdb": "1980 OCT 06 10:14:10.024",
+          "endTdb": "1980 DEC 20 16:45:19.847",
+          "id": "vgr1_st.nio"
+        },
+        {
+          "target": -31,
+          "center": 10,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -652940817.3622439,
+          "endEt": -607052749.9756155,
+          "startTdb": "1979 APR 24 07:33:02.637",
+          "endTdb": "1980 OCT 06 10:14:10.024",
+          "id": "vgr1_st.nio"
+        },
+        {
+          "target": -31,
+          "center": 5,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -661550936.2641029,
+          "endEt": -652940817.3622439,
+          "startTdb": "1979 JAN 14 15:51:03.735",
+          "endTdb": "1979 APR 24 07:33:02.637",
+          "id": "vgr1_st.nio"
+        },
+        {
+          "target": -31,
+          "center": 10,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -704170303.4066772,
+          "endEt": -661550936.2641029,
+          "startTdb": "1977 SEP 08 09:08:16.593",
+          "endTdb": "1979 JAN 14 15:51:03.735",
+          "id": "vgr1_st.nio"
+        },
+        {
+          "target": -31,
+          "center": 399,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -704412035.617,
+          "endEt": -704170303.4066772,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1977 SEP 08 09:08:16.593",
+          "id": "vgr1_st.nio"
+        },
+        {
+          "target": 499,
+          "center": 4,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 299,
+          "center": 2,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 199,
+          "center": 1,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 301,
+          "center": 3,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 9,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 8,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 7,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 6,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 5,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 4,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 2,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 1,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -704412035.617,
+          "endEt": -441806400,
+          "startTdb": "1977 SEP 05 13:59:24.383",
+          "endTdb": "1986 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 499,
+          "center": 4,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 299,
+          "center": 2,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 199,
+          "center": 1,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 301,
+          "center": 3,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 9,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 8,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 7,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 6,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 5,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 4,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 2,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 1,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": -31,
+          "center": 10,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -441806400,
+          "endEt": 978264000,
+          "startTdb": "1986 JAN 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "tst.nio"
+        }
+      ]
+    },
+    {
+      "file": "evidence/stage2-3/Kernels/Voyager_2.m05016u.merged.bsp",
+      "sha256": "ce66cba12cf77bf3a1097f44142ef978f46656788ed08f9052238a102ed2e706",
+      "segments": [
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -324745382.0613611,
+          "endEt": -323524800,
+          "startTdb": "1989 SEP 16 20:56:57.938",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "vgr2_st.nio"
+        },
+        {
+          "target": -32,
+          "center": 8,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -328669349.28312373,
+          "endEt": -324745382.0613611,
+          "startTdb": "1989 AUG 02 10:57:30.716",
+          "endTdb": "1989 SEP 16 20:56:57.938",
+          "id": "vgr2_st.nio"
+        },
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -438004709.4942746,
+          "endEt": -328669349.28312373,
+          "startTdb": "1986 FEB 14 00:01:30.505",
+          "endTdb": "1989 AUG 02 10:57:30.716",
+          "id": "vgr2_st.nio"
+        },
+        {
+          "target": -32,
+          "center": 7,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -441504111.43486214,
+          "endEt": -438004709.4942746,
+          "startTdb": "1986 JAN 04 11:58:08.565",
+          "endTdb": "1986 FEB 14 00:01:30.505",
+          "id": "vgr2_st.nio"
+        },
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -574535763.6477046,
+          "endEt": -441504111.43486214,
+          "startTdb": "1981 OCT 17 18:43:56.352",
+          "endTdb": "1986 JAN 04 11:58:08.565",
+          "id": "vgr2_st.nio"
+        },
+        {
+          "target": -32,
+          "center": 6,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -583632011.3178444,
+          "endEt": -574535763.6477046,
+          "startTdb": "1981 JUL 04 11:59:48.682",
+          "endTdb": "1981 OCT 17 18:43:56.352",
+          "id": "vgr2_st.nio"
+        },
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -640486354.970042,
+          "endEt": -583632011.3178444,
+          "startTdb": "1979 SEP 15 11:07:25.029",
+          "endTdb": "1981 JUL 04 11:59:48.682",
+          "id": "vgr2_st.nio"
+        },
+        {
+          "target": -32,
+          "center": 5,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -652112223.8194203,
+          "endEt": -640486354.970042,
+          "startTdb": "1979 MAY 03 21:42:56.180",
+          "endTdb": "1979 SEP 15 11:07:25.029",
+          "id": "vgr2_st.nio"
+        },
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -705544249.1582385,
+          "endEt": -652112223.8194203,
+          "startTdb": "1977 AUG 23 11:29:10.841",
+          "endTdb": "1979 MAY 03 21:42:56.180",
+          "id": "vgr2_st.nio"
+        },
+        {
+          "target": -32,
+          "center": 399,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -705788847.817,
+          "endEt": -705544249.1582385,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1977 AUG 23 11:29:10.841",
+          "id": "vgr2_st.nio"
+        },
+        {
+          "target": 499,
+          "center": 4,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 299,
+          "center": 2,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 199,
+          "center": 1,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 301,
+          "center": 3,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 9,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 8,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 7,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 6,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 5,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 4,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 2,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 1,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -705788847.817,
+          "endEt": -323524800,
+          "startTdb": "1977 AUG 20 15:32:32.182",
+          "endTdb": "1989 OCT 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 499,
+          "center": 4,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 299,
+          "center": 2,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 199,
+          "center": 1,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 301,
+          "center": 3,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 9,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 8,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 7,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 6,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 5,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 4,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 2,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": 1,
+          "center": 0,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 2,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "DE-0118LE-0118"
+        },
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 4,
+          "frameName": "DE-118",
+          "type": 1,
+          "startEt": -323524800,
+          "endEt": 978264000,
+          "startTdb": "1989 OCT 01 00:00:00.000",
+          "endTdb": "2031 JAN 01 00:00:00.000",
+          "id": "pfile_m05016u.nio"
+        }
+      ]
+    },
+    {
+      "file": "evidence/voyager-reference-reconciliation/Kernels/vgr1.x2100.bsp",
+      "sha256": "aa8f37673b5ef60296d210566d01cc49f7b32711f37003393c3327616c9fc6d0",
+      "segments": [
+        {
+          "target": -31,
+          "center": 10,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "pfile.nio"
+        },
+        {
+          "target": 299,
+          "center": 2,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 199,
+          "center": 1,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 301,
+          "center": 3,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 9,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 8,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 7,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 6,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 5,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 4,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 2,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 1,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -599572800,
+          "endEt": 3155716800,
+          "startTdb": "1981 JAN 01 00:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        }
+      ]
+    },
+    {
+      "file": "evidence/voyager-reference-reconciliation/Kernels/vgr2.x2100.bsp",
+      "sha256": "391f5361773322e2242fb1c81578aeb1fbf9134c3878b2f325e9b8b5f46ad7cb",
+      "segments": [
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -321939125.56859577,
+          "endEt": 3155716800,
+          "startTdb": "1989 OCT 19 08:27:54.431",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "pfile.nio"
+        },
+        {
+          "target": -32,
+          "center": 8,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -326347200,
+          "endEt": -321939125.56859577,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "1989 OCT 19 08:27:54.431",
+          "id": "pfile.nio"
+        },
+        {
+          "target": 299,
+          "center": 2,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 199,
+          "center": 1,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 301,
+          "center": 3,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 9,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 8,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 7,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 6,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 5,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 4,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 2,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 1,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -326347200,
+          "endEt": 3155716800,
+          "startTdb": "1989 AUG 29 08:00:00.000",
+          "endTdb": "2100 JAN 01 00:00:00.000",
+          "id": "DE-0440LE-0440"
+        }
+      ]
+    },
+    {
+      "file": "evidence/stage2-3/Kernels/vgr1_jup230.bsp",
+      "sha256": "e1ea3f72f19b15508bc45979771a36a97d02f33056b76867d444304cb82205c9",
+      "segments": [
+        {
+          "target": -31,
+          "center": 5,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -660052800,
+          "endEt": -656078400,
+          "startTdb": "1979 FEB 01 00:00:00.000",
+          "endTdb": "1979 MAR 19 00:00:00.000",
+          "id": "vgr1.jup230.nio"
+        }
+      ]
+    },
+    {
+      "file": "evidence/stage2-3/Kernels/vgr1_sat337.bsp",
+      "sha256": "f451f9f095bc4ad175cde701367cbf1ccc061dd706ad0008cda75fd939d94efa",
+      "segments": [
+        {
+          "target": -31,
+          "center": 10,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -612273600,
+          "endEt": -607052990.3429815,
+          "startTdb": "1980 AUG 07 00:00:00.000",
+          "endTdb": "1980 OCT 06 10:10:09.657",
+          "id": "vgr1.sat337.nio"
+        },
+        {
+          "target": -31,
+          "center": 6,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -607052990.3429815,
+          "endEt": -603201600,
+          "startTdb": "1980 OCT 06 10:10:09.657",
+          "endTdb": "1980 NOV 20 00:00:00.000",
+          "id": "vgr1.sat337.nio"
+        }
+      ]
+    },
+    {
+      "file": "evidence/stage2-3/Kernels/vgr2_jup230.bsp",
+      "sha256": "9c00be3c83915f6c1fd8448d9266420e3c462e9d78e4c32b17145dac81529d5a",
+      "segments": [
+        {
+          "target": -32,
+          "center": 5,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -649364400,
+          "endEt": -645364800,
+          "startTdb": "1979 JUN 04 17:00:00.000",
+          "endTdb": "1979 JUL 21 00:00:00.000",
+          "id": "vgr2.jup230.nio"
+        }
+      ]
+    },
+    {
+      "file": "evidence/stage2-3/Kernels/vgr2_sat337.bsp",
+      "sha256": "1d15debf7bdc6c6ba4c0462b5f4f6af85ddf9948735f434792a1c41418bb39a8",
+      "segments": [
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -585921600,
+          "endEt": -583632001.0575235,
+          "startTdb": "1981 JUN 08 00:00:00.000",
+          "endTdb": "1981 JUL 04 11:59:58.942",
+          "id": "vgr2.sat337.nio"
+        },
+        {
+          "target": -32,
+          "center": 6,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -583632001.0575235,
+          "endEt": -576763200,
+          "startTdb": "1981 JUL 04 11:59:58.942",
+          "endTdb": "1981 SEP 22 00:00:00.000",
+          "id": "vgr2.sat337.nio"
+        }
+      ]
+    },
+    {
+      "file": "evidence/stage2-3/Kernels/vgr2.ura182.bsp",
+      "sha256": "22d012ab426273ffb22710238cfe4f7d0c63850225cc9e46b1f5aa40308cd880",
+      "segments": [
+        {
+          "target": -32,
+          "center": 7,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -443273772.526956,
+          "endEt": -438004800,
+          "startTdb": "1985 DEC 15 00:23:47.473",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "pfi"
+        },
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -453211200,
+          "endEt": -443273772.526956,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1985 DEC 15 00:23:47.473",
+          "id": "pfi"
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "DE-0442LE-0442"
+        },
+        {
+          "target": 7,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "DE-0442LE-0442"
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "DE-0442LE-0442"
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "DE-0442LE-0442"
+        },
+        {
+          "target": 799,
+          "center": 7,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "URA182.21"
+        },
+        {
+          "target": 715,
+          "center": 7,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "URA182.21"
+        },
+        {
+          "target": 704,
+          "center": 7,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "URA182.21"
+        },
+        {
+          "target": 703,
+          "center": 7,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "URA182.21"
+        },
+        {
+          "target": 702,
+          "center": 7,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "URA182.21"
+        },
+        {
+          "target": 701,
+          "center": 7,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "URA182.21"
+        },
+        {
+          "target": 705,
+          "center": 7,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -453211200,
+          "endEt": -438004800,
+          "startTdb": "1985 AUG 22 00:00:00.000",
+          "endTdb": "1986 FEB 14 00:00:00.000",
+          "id": "URA182.21"
+        }
+      ]
+    },
+    {
+      "file": "evidence/stage2-3/Kernels/vgr2_nep097.bsp",
+      "sha256": "1aee50e5e4a5253c660d06f7359eb4dac2fe4a5dab5fdc821d2b868469bdc473",
+      "segments": [
+        {
+          "target": -32,
+          "center": 8,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -331475555.73652345,
+          "endEt": -323481600,
+          "startTdb": "1989 JUN 30 23:27:24.263",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "pf"
+        },
+        {
+          "target": -32,
+          "center": 10,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 1,
+          "startEt": -351345600,
+          "endEt": -331475555.73652345,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 JUN 30 23:27:24.263",
+          "id": "pf"
+        },
+        {
+          "target": 299,
+          "center": 2,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 199,
+          "center": 1,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 399,
+          "center": 3,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 301,
+          "center": 3,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 10,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 9,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 8,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 7,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 6,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 5,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 4,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 3,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 2,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 1,
+          "center": 0,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "DE-0440LE-0440"
+        },
+        {
+          "target": 899,
+          "center": 8,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "NEP097"
+        },
+        {
+          "target": 801,
+          "center": 8,
+          "frameId": 1,
+          "frameName": "J2000",
+          "type": 2,
+          "startEt": -351345600,
+          "endEt": -323481600,
+          "startTdb": "1988 NOV 13 00:00:00.000",
+          "endTdb": "1989 OCT 01 12:00:00.000",
+          "id": "NEP097"
+        }
+      ]
+    }
+  ],
+  "missions": [
+    {
+      "missionId": "voyager-1",
+      "naifId": "-31",
+      "firstValidJdTdb": 2443392.0833333335,
+      "lastJdTdb": 2461346.5,
+      "coverage": [
+        {
+          "datasetId": "hist-launch-v1-injection-1977",
+          "cadenceSeconds": 300,
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5
+        },
+        {
+          "datasetId": "hist-launch-v1-departure-1977",
+          "cadenceSeconds": 3600,
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5
+        },
+        {
+          "datasetId": "hist-cruise-v1-1977-1981",
+          "cadenceSeconds": 86400,
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2444605.5
+        },
+        {
+          "datasetId": "hist-flyby-v1-jupiter-1979",
+          "cadenceSeconds": 1800,
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5
+        },
+        {
+          "datasetId": "hist-flyby-v1-saturn-1980",
+          "cadenceSeconds": 1200,
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5
+        },
+        {
+          "datasetId": "hist-bridge-v1-1981-min",
+          "cadenceSeconds": 60,
+          "startJdTdb": 2444605.500694444,
+          "endJdTdb": 2444605.541666667
+        },
+        {
+          "datasetId": "hist-bridge-v1-1981-hours",
+          "cadenceSeconds": 3600,
+          "startJdTdb": 2444605.541666667,
+          "endJdTdb": 2444606.5
+        },
+        {
+          "datasetId": "hist-cruise-v1-1981-1996",
+          "cadenceSeconds": 432000,
+          "startJdTdb": 2444606.5,
+          "endJdTdb": 2450186.5
+        },
+        {
+          "datasetId": "hist-event-v1-palebluedot-1990",
+          "cadenceSeconds": 3600,
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5
+        },
+        {
+          "datasetId": "hist-cruise-v1-1996-2011",
+          "cadenceSeconds": 432000,
+          "startJdTdb": 2450186.5,
+          "endJdTdb": 2455766.5
+        },
+        {
+          "datasetId": "hist-cruise-v1-2011-2026",
+          "cadenceSeconds": 432000,
+          "startJdTdb": 2455766.5,
+          "endJdTdb": 2461346.5
+        }
+      ],
+      "intervals": [
+        {
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5,
+          "durationSeconds": 36000.00002682209,
+          "selectedDatasetId": "hist-launch-v1-injection-1977",
+          "overlappingDatasetIds": [
+            "hist-launch-v1-injection-1977"
+          ]
+        },
+        {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5,
+          "durationSeconds": 691200,
+          "selectedDatasetId": "hist-launch-v1-departure-1977",
+          "overlappingDatasetIds": [
+            "hist-launch-v1-departure-1977",
+            "hist-cruise-v1-1977-1981"
+          ]
+        },
+        {
+          "startJdTdb": 2443400.5,
+          "endJdTdb": 2443933.5,
+          "durationSeconds": 46051200,
+          "selectedDatasetId": "hist-cruise-v1-1977-1981",
+          "overlappingDatasetIds": [
+            "hist-cruise-v1-1977-1981"
+          ]
+        },
+        {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5,
+          "durationSeconds": 777600,
+          "selectedDatasetId": "hist-flyby-v1-jupiter-1979",
+          "overlappingDatasetIds": [
+            "hist-flyby-v1-jupiter-1979",
+            "hist-cruise-v1-1977-1981"
+          ]
+        },
+        {
+          "startJdTdb": 2443942.5,
+          "endJdTdb": 2444551.5,
+          "durationSeconds": 52617600,
+          "selectedDatasetId": "hist-cruise-v1-1977-1981",
+          "overlappingDatasetIds": [
+            "hist-cruise-v1-1977-1981"
+          ]
+        },
+        {
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5,
+          "durationSeconds": 777600,
+          "selectedDatasetId": "hist-flyby-v1-saturn-1980",
+          "overlappingDatasetIds": [
+            "hist-flyby-v1-saturn-1980",
+            "hist-cruise-v1-1977-1981"
+          ]
+        },
+        {
+          "startJdTdb": 2444560.5,
+          "endJdTdb": 2444605.5,
+          "durationSeconds": 3888000,
+          "selectedDatasetId": "hist-cruise-v1-1977-1981",
+          "overlappingDatasetIds": [
+            "hist-cruise-v1-1977-1981"
+          ]
+        },
+        {
+          "startJdTdb": 2444605.5,
+          "endJdTdb": 2444605.500694444,
+          "durationSeconds": 59.99995619058609,
+          "selectedDatasetId": null,
+          "overlappingDatasetIds": []
+        },
+        {
+          "startJdTdb": 2444605.500694444,
+          "endJdTdb": 2444605.541666667,
+          "durationSeconds": 3540.000070631504,
+          "selectedDatasetId": "hist-bridge-v1-1981-min",
+          "overlappingDatasetIds": [
+            "hist-bridge-v1-1981-min"
+          ]
+        },
+        {
+          "startJdTdb": 2444605.541666667,
+          "endJdTdb": 2444606.5,
+          "durationSeconds": 82799.99997317791,
+          "selectedDatasetId": "hist-bridge-v1-1981-hours",
+          "overlappingDatasetIds": [
+            "hist-bridge-v1-1981-hours"
+          ]
+        },
+        {
+          "startJdTdb": 2444606.5,
+          "endJdTdb": 2447935.5,
+          "durationSeconds": 287625600,
+          "selectedDatasetId": "hist-cruise-v1-1981-1996",
+          "overlappingDatasetIds": [
+            "hist-cruise-v1-1981-1996"
+          ]
+        },
+        {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5,
+          "durationSeconds": 172800,
+          "selectedDatasetId": "hist-event-v1-palebluedot-1990",
+          "overlappingDatasetIds": [
+            "hist-event-v1-palebluedot-1990",
+            "hist-cruise-v1-1981-1996"
+          ]
+        },
+        {
+          "startJdTdb": 2447937.5,
+          "endJdTdb": 2450186.5,
+          "durationSeconds": 194313600,
+          "selectedDatasetId": "hist-cruise-v1-1981-1996",
+          "overlappingDatasetIds": [
+            "hist-cruise-v1-1981-1996"
+          ]
+        },
+        {
+          "startJdTdb": 2450186.5,
+          "endJdTdb": 2455766.5,
+          "durationSeconds": 482112000,
+          "selectedDatasetId": "hist-cruise-v1-1996-2011",
+          "overlappingDatasetIds": [
+            "hist-cruise-v1-1996-2011"
+          ]
+        },
+        {
+          "startJdTdb": 2455766.5,
+          "endJdTdb": 2461346.5,
+          "durationSeconds": 482112000,
+          "selectedDatasetId": "hist-cruise-v1-2011-2026",
+          "overlappingDatasetIds": [
+            "hist-cruise-v1-2011-2026"
+          ]
+        }
+      ],
+      "overlaps": [
+        {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5,
+          "selectedDatasetId": "hist-launch-v1-departure-1977",
+          "comparisons": [
+            {
+              "datasetId": "hist-launch-v1-departure-1977",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v1-1977-1981",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            }
+          ]
+        },
+        {
+          "startJdTdb": 2443933.5,
+          "endJdTdb": 2443942.5,
+          "selectedDatasetId": "hist-flyby-v1-jupiter-1979",
+          "comparisons": [
+            {
+              "datasetId": "hist-flyby-v1-jupiter-1979",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v1-1977-1981",
+              "status": "interpolated",
+              "positionDifferenceKm": 168445.7444487519,
+              "velocityDifferenceKmS": 4.697495006564712
+            }
+          ]
+        },
+        {
+          "startJdTdb": 2444551.5,
+          "endJdTdb": 2444560.5,
+          "selectedDatasetId": "hist-flyby-v1-saturn-1980",
+          "comparisons": [
+            {
+              "datasetId": "hist-flyby-v1-saturn-1980",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v1-1977-1981",
+              "status": "interpolated",
+              "positionDifferenceKm": 78455.29307090348,
+              "velocityDifferenceKmS": 1.4029508022803663
+            }
+          ]
+        },
+        {
+          "startJdTdb": 2447935.5,
+          "endJdTdb": 2447937.5,
+          "selectedDatasetId": "hist-event-v1-palebluedot-1990",
+          "comparisons": [
+            {
+              "datasetId": "hist-event-v1-palebluedot-1990",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v1-1981-1996",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            }
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "startJdTdb": 2444605.5,
+          "endJdTdb": 2444605.500694444,
+          "durationSeconds": 59.99995619058609,
+          "selectedDatasetId": null,
+          "overlappingDatasetIds": []
+        }
+      ],
+      "handoff": {
+        "probeId": "-31",
+        "boundaryJdTdb": 2444605.5,
+        "labelTdb": "1981 JAN 01 00:00:00 TDB",
+        "before": [
+          -1448269472.6315753,
+          -125478451.58240418,
+          108940774.3833287,
+          -6.099996505776036,
+          -16.658067490082857,
+          12.070321311026301
+        ],
+        "after": [
+          -1448282462.6847768,
+          -125418961.80845654,
+          108963963.10211489,
+          -6.10289463789726,
+          -16.64451306740333,
+          12.075740757556641
+        ],
+        "positionJumpResidualKm": 65176.82615430757,
+        "velocityJumpKmS": 0.01488260543932191
+      },
+      "sameTimeReference": {
+        "sampleCount": 106,
+        "maxPositionKm": 0.5371509836281309,
+        "maxVelocityKmS": 0.00030000311963751926,
+        "maxRelativePosition": 8.894593970067258e-11,
+        "maxRelativeVelocity": 0.000006887464648113618,
+        "worstPosition": {
+          "jdTdb": 2447937.500011574,
+          "labelTdb": "A.D. 1990-Feb-15 00:00:01.0000",
+          "datasetId": "hist-cruise-v1-1981-1996",
+          "status": "interpolated",
+          "stateTimeMismatchSeconds": 0,
+          "local": [
+            -2355071844.716379,
+            -4497531486.084207,
+            3270511352.002279,
+            -2.356819437102443,
+            -14.369210263630034,
+            10.380606326232872
+          ],
+          "direct": [
+            -2355071844.232238,
+            -4497531486.193138,
+            3270511352.207881,
+            -2.356815517973827,
+            -14.36921114483914,
+            10.3806079923765
+          ],
+          "positionResidualKm": 0.5371509836281309,
+          "velocityResidualKmS": 0.000004348808248939046
+        }
+      },
+      "boundaryChecks": [
+        {
+          "boundaryJdTdb": 2443392.5,
+          "beforeDataset": "hist-launch-v1-injection-1977",
+          "afterDataset": "hist-launch-v1-departure-1977",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 3.564221107620406e-8,
+          "localVelocityChangeOver2SecondsKmS": 0.00001409644755357151,
+          "horizonsPositionJoinKm": 0.000005097621248212218,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000014065322592023591
+        },
+        {
+          "boundaryJdTdb": 2443400.5,
+          "beforeDataset": "hist-launch-v1-departure-1977",
+          "afterDataset": "hist-cruise-v1-1977-1981",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 7.682903666735095e-9,
+          "localVelocityChangeOver2SecondsKmS": 0.000011458744760521269,
+          "horizonsPositionJoinKm": 0.00000473177536894434,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.00001145836832512065
+        },
+        {
+          "boundaryJdTdb": 2443933.5,
+          "beforeDataset": "hist-cruise-v1-1977-1981",
+          "afterDataset": "hist-flyby-v1-jupiter-1979",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 3.314836577400258e-8,
+          "localVelocityChangeOver2SecondsKmS": 0.000007374629312610841,
+          "horizonsPositionJoinKm": 0.0000017673677625296609,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000007428884034516305
+        },
+        {
+          "boundaryJdTdb": 2443942.5,
+          "beforeDataset": "hist-flyby-v1-jupiter-1979",
+          "afterDataset": "hist-cruise-v1-1977-1981",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 7.937434272627169e-8,
+          "localVelocityChangeOver2SecondsKmS": 0.000008010872483014394,
+          "horizonsPositionJoinKm": 0.000003061795950031552,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000008065042833712476
+        },
+        {
+          "boundaryJdTdb": 2444551.5,
+          "beforeDataset": "hist-cruise-v1-1977-1981",
+          "afterDataset": "hist-flyby-v1-saturn-1980",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 2.9821717587520435e-8,
+          "localVelocityChangeOver2SecondsKmS": 0.0000014113646914821323,
+          "horizonsPositionJoinKm": 0.0000021429058368971373,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000001422831946224994
+        },
+        {
+          "boundaryJdTdb": 2444560.5,
+          "beforeDataset": "hist-flyby-v1-saturn-1980",
+          "afterDataset": "hist-cruise-v1-1977-1981",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 2.0386696758783506e-7,
+          "localVelocityChangeOver2SecondsKmS": 0.000002412931207597749,
+          "horizonsPositionJoinKm": 0.0000025331848306443066,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000002437363284829811
+        },
+        {
+          "boundaryJdTdb": 2447935.5,
+          "beforeDataset": "hist-cruise-v1-1981-1996",
+          "afterDataset": "hist-event-v1-palebluedot-1990",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 0.23616812273579005,
+          "localVelocityChangeOver2SecondsKmS": 0.000005255236615539573,
+          "horizonsPositionJoinKm": 0.00009826608289144386,
+          "horizonsVelocityChangeOver2SecondsKmS": 7.0545446447378605e-9
+        },
+        {
+          "boundaryJdTdb": 2447937.5,
+          "beforeDataset": "hist-event-v1-palebluedot-1990",
+          "afterDataset": "hist-cruise-v1-1981-1996",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 0.5371457471029475,
+          "localVelocityChangeOver2SecondsKmS": 0.000004348584289250314,
+          "horizonsPositionJoinKm": 0.00009769621159327659,
+          "horizonsVelocityChangeOver2SecondsKmS": 7.0508689691087044e-9
+        },
+        {
+          "boundaryJdTdb": 2444605.5,
+          "beforeDataset": "hist-cruise-v1-1977-1981",
+          "afterDataset": null,
+          "beforeStatus": "interpolated",
+          "afterStatus": "spk_segment_transition",
+          "localPositionJoinKm": null,
+          "localVelocityChangeOver2SecondsKmS": null,
+          "horizonsPositionJoinKm": 65176.8261553986,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.014882605439424068
+        },
+        {
+          "boundaryJdTdb": 2444605.500694444,
+          "beforeDataset": null,
+          "afterDataset": "hist-bridge-v1-1981-min",
+          "beforeStatus": "spk_segment_transition",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": null,
+          "localVelocityChangeOver2SecondsKmS": null,
+          "horizonsPositionJoinKm": 9.010518068098134e-8,
+          "horizonsVelocityChangeOver2SecondsKmS": 1.3607769441300298e-7
+        },
+        {
+          "boundaryJdTdb": 2444605.541666667,
+          "beforeDataset": "hist-bridge-v1-1981-min",
+          "afterDataset": "hist-bridge-v1-1981-hours",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 6.795303347121396e-7,
+          "localVelocityChangeOver2SecondsKmS": 0.0000012290521230300806,
+          "horizonsPositionJoinKm": 0.000002381111058648186,
+          "horizonsVelocityChangeOver2SecondsKmS": 1.3605503274425153e-7
+        },
+        {
+          "boundaryJdTdb": 2444606.5,
+          "beforeDataset": "hist-bridge-v1-1981-hours",
+          "afterDataset": "hist-cruise-v1-1981-1996",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 2.1330955502266726e-7,
+          "localVelocityChangeOver2SecondsKmS": 1.3538781760246033e-7,
+          "horizonsPositionJoinKm": 0.00000258918063182398,
+          "horizonsVelocityChangeOver2SecondsKmS": 1.3553774055341423e-7
+        },
+        {
+          "boundaryJdTdb": 2450186.5,
+          "beforeDataset": "hist-cruise-v1-1981-1996",
+          "afterDataset": "hist-cruise-v1-1996-2011",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 6.97601794872602e-7,
+          "localVelocityChangeOver2SecondsKmS": 3.337038393646852e-9,
+          "horizonsPositionJoinKm": 0.000001974590629212774,
+          "horizonsVelocityChangeOver2SecondsKmS": 3.3373392470706835e-9
+        },
+        {
+          "boundaryJdTdb": 2455766.5,
+          "beforeDataset": "hist-cruise-v1-1996-2011",
+          "afterDataset": "hist-cruise-v1-2011-2026",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 0.0000013178064420916741,
+          "localVelocityChangeOver2SecondsKmS": 6.97113854374021e-10,
+          "horizonsPositionJoinKm": 0.00000517938172187277,
+          "horizonsVelocityChangeOver2SecondsKmS": 6.971579683220743e-10
+        }
+      ]
+    },
+    {
+      "missionId": "voyager-2",
+      "naifId": "-32",
+      "firstValidJdTdb": 2443376.1479166667,
+      "lastJdTdb": 2461346.5,
+      "coverage": [
+        {
+          "datasetId": "hist-launch-v2-injection-1977",
+          "cadenceSeconds": 180,
+          "startJdTdb": 2443376.147916667,
+          "endJdTdb": 2443376.5
+        },
+        {
+          "datasetId": "hist-launch-v2-departure-1977",
+          "cadenceSeconds": 3600,
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2443384.5
+        },
+        {
+          "datasetId": "hist-cruise-v2-1977-1989",
+          "cadenceSeconds": 86400,
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2447767.5
+        },
+        {
+          "datasetId": "hist-launch-v1-injection-1977",
+          "cadenceSeconds": 300,
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5
+        },
+        {
+          "datasetId": "hist-launch-v1-departure-1977",
+          "cadenceSeconds": 3600,
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5
+        },
+        {
+          "datasetId": "hist-flyby-v2-jupiter-1979",
+          "cadenceSeconds": 1800,
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5
+        },
+        {
+          "datasetId": "hist-flyby-v2-saturn-1981",
+          "cadenceSeconds": 1200,
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5
+        },
+        {
+          "datasetId": "hist-flyby-v2-uranus-1986",
+          "cadenceSeconds": 1200,
+          "startJdTdb": 2446450.5,
+          "endJdTdb": 2446459.5
+        },
+        {
+          "datasetId": "hist-flyby-v2-neptune-1989",
+          "cadenceSeconds": 900,
+          "startJdTdb": 2447759.5,
+          "endJdTdb": 2447767.833333333
+        },
+        {
+          "datasetId": "hist-bridge-v2-1989-min",
+          "cadenceSeconds": 60,
+          "startJdTdb": 2447767.834027778,
+          "endJdTdb": 2447767.875
+        },
+        {
+          "datasetId": "hist-bridge-v2-1989-hours",
+          "cadenceSeconds": 3600,
+          "startJdTdb": 2447767.875,
+          "endJdTdb": 2447771.5
+        },
+        {
+          "datasetId": "hist-cruise-v2-1989-2002",
+          "cadenceSeconds": 432000,
+          "startJdTdb": 2447771.5,
+          "endJdTdb": 2452296.5
+        },
+        {
+          "datasetId": "hist-cruise-v2-2002-2014",
+          "cadenceSeconds": 432000,
+          "startJdTdb": 2452296.5,
+          "endJdTdb": 2456821.5
+        },
+        {
+          "datasetId": "hist-cruise-v2-2014-2026",
+          "cadenceSeconds": 432000,
+          "startJdTdb": 2456821.5,
+          "endJdTdb": 2461346.5
+        }
+      ],
+      "intervals": [
+        {
+          "startJdTdb": 2443376.147916667,
+          "endJdTdb": 2443376.5,
+          "durationSeconds": 30419.999957084656,
+          "selectedDatasetId": "hist-launch-v2-injection-1977",
+          "overlappingDatasetIds": [
+            "hist-launch-v2-injection-1977"
+          ]
+        },
+        {
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2443384.5,
+          "durationSeconds": 691200,
+          "selectedDatasetId": "hist-launch-v2-departure-1977",
+          "overlappingDatasetIds": [
+            "hist-launch-v2-departure-1977",
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2443384.5,
+          "endJdTdb": 2443392.083333333,
+          "durationSeconds": 655199.9999731779,
+          "selectedDatasetId": "hist-cruise-v2-1977-1989",
+          "overlappingDatasetIds": [
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5,
+          "durationSeconds": 36000.00002682209,
+          "selectedDatasetId": "hist-launch-v1-injection-1977",
+          "overlappingDatasetIds": [
+            "hist-launch-v1-injection-1977",
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5,
+          "durationSeconds": 691200,
+          "selectedDatasetId": "hist-launch-v1-departure-1977",
+          "overlappingDatasetIds": [
+            "hist-launch-v1-departure-1977",
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2443400.5,
+          "endJdTdb": 2444059.5,
+          "durationSeconds": 56937600,
+          "selectedDatasetId": "hist-cruise-v2-1977-1989",
+          "overlappingDatasetIds": [
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5,
+          "durationSeconds": 777600,
+          "selectedDatasetId": "hist-flyby-v2-jupiter-1979",
+          "overlappingDatasetIds": [
+            "hist-flyby-v2-jupiter-1979",
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2444068.5,
+          "endJdTdb": 2444838.5,
+          "durationSeconds": 66528000,
+          "selectedDatasetId": "hist-cruise-v2-1977-1989",
+          "overlappingDatasetIds": [
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5,
+          "durationSeconds": 691200,
+          "selectedDatasetId": "hist-flyby-v2-saturn-1981",
+          "overlappingDatasetIds": [
+            "hist-flyby-v2-saturn-1981",
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2444846.5,
+          "endJdTdb": 2446450.5,
+          "durationSeconds": 138585600,
+          "selectedDatasetId": "hist-cruise-v2-1977-1989",
+          "overlappingDatasetIds": [
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2446450.5,
+          "endJdTdb": 2446459.5,
+          "durationSeconds": 777600,
+          "selectedDatasetId": "hist-flyby-v2-uranus-1986",
+          "overlappingDatasetIds": [
+            "hist-flyby-v2-uranus-1986",
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2446459.5,
+          "endJdTdb": 2447759.5,
+          "durationSeconds": 112320000,
+          "selectedDatasetId": "hist-cruise-v2-1977-1989",
+          "overlappingDatasetIds": [
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2447759.5,
+          "endJdTdb": 2447767.5,
+          "durationSeconds": 691200,
+          "selectedDatasetId": "hist-flyby-v2-neptune-1989",
+          "overlappingDatasetIds": [
+            "hist-flyby-v2-neptune-1989",
+            "hist-cruise-v2-1977-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2447767.5,
+          "endJdTdb": 2447767.833333333,
+          "durationSeconds": 28799.99997317791,
+          "selectedDatasetId": "hist-flyby-v2-neptune-1989",
+          "overlappingDatasetIds": [
+            "hist-flyby-v2-neptune-1989"
+          ]
+        },
+        {
+          "startJdTdb": 2447767.833333333,
+          "endJdTdb": 2447767.834027778,
+          "durationSeconds": 60.00003665685654,
+          "selectedDatasetId": null,
+          "overlappingDatasetIds": []
+        },
+        {
+          "startJdTdb": 2447767.834027778,
+          "endJdTdb": 2447767.875,
+          "durationSeconds": 3539.9999901652336,
+          "selectedDatasetId": "hist-bridge-v2-1989-min",
+          "overlappingDatasetIds": [
+            "hist-bridge-v2-1989-min"
+          ]
+        },
+        {
+          "startJdTdb": 2447767.875,
+          "endJdTdb": 2447771.5,
+          "durationSeconds": 313200,
+          "selectedDatasetId": "hist-bridge-v2-1989-hours",
+          "overlappingDatasetIds": [
+            "hist-bridge-v2-1989-hours"
+          ]
+        },
+        {
+          "startJdTdb": 2447771.5,
+          "endJdTdb": 2452296.5,
+          "durationSeconds": 390960000,
+          "selectedDatasetId": "hist-cruise-v2-1989-2002",
+          "overlappingDatasetIds": [
+            "hist-cruise-v2-1989-2002"
+          ]
+        },
+        {
+          "startJdTdb": 2452296.5,
+          "endJdTdb": 2456821.5,
+          "durationSeconds": 390960000,
+          "selectedDatasetId": "hist-cruise-v2-2002-2014",
+          "overlappingDatasetIds": [
+            "hist-cruise-v2-2002-2014"
+          ]
+        },
+        {
+          "startJdTdb": 2456821.5,
+          "endJdTdb": 2461346.5,
+          "durationSeconds": 390960000,
+          "selectedDatasetId": "hist-cruise-v2-2014-2026",
+          "overlappingDatasetIds": [
+            "hist-cruise-v2-2014-2026"
+          ]
+        }
+      ],
+      "overlaps": [
+        {
+          "startJdTdb": 2443376.5,
+          "endJdTdb": 2443384.5,
+          "selectedDatasetId": "hist-launch-v2-departure-1977",
+          "comparisons": [
+            {
+              "datasetId": "hist-launch-v2-departure-1977",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v2-1977-1989",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            }
+          ]
+        },
+        {
+          "startJdTdb": 2443392.083333333,
+          "endJdTdb": 2443392.5,
+          "selectedDatasetId": "hist-launch-v1-injection-1977",
+          "comparisons": [
+            {
+              "datasetId": "hist-launch-v1-injection-1977",
+              "status": "interpolated",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v2-1977-1989",
+              "status": "interpolated",
+              "positionDifferenceKm": 0.04491283753101454,
+              "velocityDifferenceKmS": 0.000003698915417194848
+            }
+          ]
+        },
+        {
+          "startJdTdb": 2443392.5,
+          "endJdTdb": 2443400.5,
+          "selectedDatasetId": "hist-launch-v1-departure-1977",
+          "comparisons": [
+            {
+              "datasetId": "hist-launch-v1-departure-1977",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v2-1977-1989",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            }
+          ]
+        },
+        {
+          "startJdTdb": 2444059.5,
+          "endJdTdb": 2444068.5,
+          "selectedDatasetId": "hist-flyby-v2-jupiter-1979",
+          "comparisons": [
+            {
+              "datasetId": "hist-flyby-v2-jupiter-1979",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v2-1977-1989",
+              "status": "interpolated",
+              "positionDifferenceKm": 17803.87281027427,
+              "velocityDifferenceKmS": 0.21680156206298482
+            }
+          ]
+        },
+        {
+          "startJdTdb": 2444838.5,
+          "endJdTdb": 2444846.5,
+          "selectedDatasetId": "hist-flyby-v2-saturn-1981",
+          "comparisons": [
+            {
+              "datasetId": "hist-flyby-v2-saturn-1981",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v2-1977-1989",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            }
+          ]
+        },
+        {
+          "startJdTdb": 2446450.5,
+          "endJdTdb": 2446459.5,
+          "selectedDatasetId": "hist-flyby-v2-uranus-1986",
+          "comparisons": [
+            {
+              "datasetId": "hist-flyby-v2-uranus-1986",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v2-1977-1989",
+              "status": "interpolated",
+              "positionDifferenceKm": 24579.357374966195,
+              "velocityDifferenceKmS": 0.9402926996776297
+            }
+          ]
+        },
+        {
+          "startJdTdb": 2447759.5,
+          "endJdTdb": 2447767.5,
+          "selectedDatasetId": "hist-flyby-v2-neptune-1989",
+          "comparisons": [
+            {
+              "datasetId": "hist-flyby-v2-neptune-1989",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            },
+            {
+              "datasetId": "hist-cruise-v2-1977-1989",
+              "status": "exact",
+              "positionDifferenceKm": 0,
+              "velocityDifferenceKmS": 0
+            }
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "startJdTdb": 2447767.833333333,
+          "endJdTdb": 2447767.834027778,
+          "durationSeconds": 60.00003665685654,
+          "selectedDatasetId": null,
+          "overlappingDatasetIds": []
+        }
+      ],
+      "handoff": {
+        "probeId": "-32",
+        "boundaryJdTdb": 2447767.8333333335,
+        "labelTdb": "1989 AUG 29 08:00:00 TDB",
+        "before": [
+          899331695.5685871,
+          -4433293979.540797,
+          66210757.48157382,
+          4.622118639707411,
+          -10.887619427535046,
+          -11.896066067346954
+        ],
+        "after": [
+          899322306.255806,
+          -4433303481.6377945,
+          66211315.05172253,
+          4.621867122110816,
+          -10.886206510029247,
+          -11.895198727770723
+        ],
+        "positionJumpResidualKm": 13362.162168813888,
+        "velocityJumpKmS": 0.0016768646099460007
+      },
+      "sameTimeReference": {
+        "sampleCount": 145,
+        "maxPositionKm": 3.926287009048335,
+        "maxVelocityKmS": 0.00031797255211248835,
+        "maxRelativePosition": 4.96439138176919e-9,
+        "maxRelativeVelocity": 0.000007660308943410066,
+        "worstPosition": {
+          "jdTdb": 2444057.0242592595,
+          "labelTdb": "A.D. 1979-Jul-02 12:34:56.0000",
+          "datasetId": "hist-cruise-v2-1977-1989",
+          "status": "interpolated",
+          "stateTimeMismatchSeconds": 0,
+          "local": [
+            -581006547.3012193,
+            536477619.6829764,
+            11401113.458818048,
+            -9.932720560360005,
+            0.6303509970538088,
+            -0.7001657004578979
+          ],
+          "direct": [
+            -581006549.1965432,
+            536477623.1135272,
+            11401113.224727,
+            -9.93271453809531,
+            0.630339297899365,
+            -0.7001648737106865
+          ],
+          "positionResidualKm": 3.926287009048335,
+          "velocityResidualKmS": 0.000013184134318082948
+        }
+      },
+      "boundaryChecks": [
+        {
+          "boundaryJdTdb": 2443376.5,
+          "beforeDataset": "hist-launch-v2-injection-1977",
+          "afterDataset": "hist-launch-v2-departure-1977",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 5.653718033771356e-8,
+          "localVelocityChangeOver2SecondsKmS": 0.000012193607901939341,
+          "horizonsPositionJoinKm": 0.000004662556752446326,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000012161837942298779
+        },
+        {
+          "boundaryJdTdb": 2443384.5,
+          "beforeDataset": "hist-launch-v2-departure-1977",
+          "afterDataset": "hist-cruise-v2-1977-1989",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 1.9104323776974092e-8,
+          "localVelocityChangeOver2SecondsKmS": 0.000011787662039754717,
+          "horizonsPositionJoinKm": 0.000004641701424167125,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000011787196210157059
+        },
+        {
+          "boundaryJdTdb": 2443392.083333333,
+          "beforeDataset": "hist-cruise-v2-1977-1989",
+          "afterDataset": "hist-launch-v1-injection-1977",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 0.09840800576306745,
+          "localVelocityChangeOver2SecondsKmS": 0.000013223973682121848,
+          "horizonsPositionJoinKm": 0.000004618460834901589,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000011674536330600048
+        },
+        {
+          "boundaryJdTdb": 2443392.5,
+          "beforeDataset": "hist-launch-v1-injection-1977",
+          "afterDataset": "hist-launch-v1-departure-1977",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 2.951432722752018e-8,
+          "localVelocityChangeOver2SecondsKmS": 0.000011663489284639331,
+          "horizonsPositionJoinKm": 0.000005213291847835413,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000011660195447080781
+        },
+        {
+          "boundaryJdTdb": 2443400.5,
+          "beforeDataset": "hist-launch-v1-departure-1977",
+          "afterDataset": "hist-cruise-v2-1977-1989",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 7.868334262012795e-9,
+          "localVelocityChangeOver2SecondsKmS": 0.00001123869844053238,
+          "horizonsPositionJoinKm": 0.000004588980837845356,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.00001123840766071602
+        },
+        {
+          "boundaryJdTdb": 2444059.5,
+          "beforeDataset": "hist-cruise-v2-1977-1989",
+          "afterDataset": "hist-flyby-v2-jupiter-1979",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 4.36970088831874e-8,
+          "localVelocityChangeOver2SecondsKmS": 0.00000929994321472756,
+          "horizonsPositionJoinKm": 0.0000011512495597717298,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000009355084155043144
+        },
+        {
+          "boundaryJdTdb": 2444068.5,
+          "beforeDataset": "hist-flyby-v2-jupiter-1979",
+          "afterDataset": "hist-cruise-v2-1977-1989",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 5.361233428800118e-8,
+          "localVelocityChangeOver2SecondsKmS": 0.000013786169759512386,
+          "horizonsPositionJoinKm": 0.000002718941436235857,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000013892958107778516
+        },
+        {
+          "boundaryJdTdb": 2444838.5,
+          "beforeDataset": "hist-cruise-v2-1977-1989",
+          "afterDataset": "hist-flyby-v2-saturn-1981",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 1.5756641870809416e-7,
+          "localVelocityChangeOver2SecondsKmS": 0.0000035823373337118132,
+          "horizonsPositionJoinKm": 0.0000017453514562637298,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000003615753058727249
+        },
+        {
+          "boundaryJdTdb": 2444846.5,
+          "beforeDataset": "hist-flyby-v2-saturn-1981",
+          "afterDataset": "hist-cruise-v2-1977-1989",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 2.338653236860793e-7,
+          "localVelocityChangeOver2SecondsKmS": 0.000004229054091947908,
+          "horizonsPositionJoinKm": 0.0000025060693218928646,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.000004271920620626376
+        },
+        {
+          "boundaryJdTdb": 2446450.5,
+          "beforeDataset": "hist-cruise-v2-1977-1989",
+          "afterDataset": "hist-flyby-v2-uranus-1986",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 4.5185959259557515e-7,
+          "localVelocityChangeOver2SecondsKmS": 2.722456980275993e-7,
+          "horizonsPositionJoinKm": 6.023822722342747e-7,
+          "horizonsVelocityChangeOver2SecondsKmS": 2.754395533145915e-7
+        },
+        {
+          "boundaryJdTdb": 2446459.5,
+          "beforeDataset": "hist-flyby-v2-uranus-1986",
+          "afterDataset": "hist-cruise-v2-1977-1989",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 1.746056629140127e-7,
+          "localVelocityChangeOver2SecondsKmS": 4.059246778021047e-7,
+          "horizonsPositionJoinKm": 7.474918982844858e-7,
+          "horizonsVelocityChangeOver2SecondsKmS": 4.1030500807372244e-7
+        },
+        {
+          "boundaryJdTdb": 2447759.5,
+          "beforeDataset": "hist-cruise-v2-1977-1989",
+          "afterDataset": "hist-flyby-v2-neptune-1989",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 8.343532807927603e-7,
+          "localVelocityChangeOver2SecondsKmS": 3.4398961162566143e-7,
+          "horizonsPositionJoinKm": 9.240814568407708e-7,
+          "horizonsVelocityChangeOver2SecondsKmS": 3.5120956125517924e-7
+        },
+        {
+          "boundaryJdTdb": 2447767.833333333,
+          "beforeDataset": "hist-flyby-v2-neptune-1989",
+          "afterDataset": null,
+          "beforeStatus": "interpolated",
+          "afterStatus": "spk_segment_transition",
+          "localPositionJoinKm": null,
+          "localVelocityChangeOver2SecondsKmS": null,
+          "horizonsPositionJoinKm": 13362.162168536703,
+          "horizonsVelocityChangeOver2SecondsKmS": 0.0016768646080036669
+        },
+        {
+          "boundaryJdTdb": 2447767.5,
+          "beforeDataset": "hist-flyby-v2-neptune-1989",
+          "afterDataset": "hist-flyby-v2-neptune-1989",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 3.8335512023284316e-7,
+          "localVelocityChangeOver2SecondsKmS": 4.3631486577282115e-7,
+          "horizonsPositionJoinKm": 0.000001341519879880192,
+          "horizonsVelocityChangeOver2SecondsKmS": 4.3632651674851444e-7
+        },
+        {
+          "boundaryJdTdb": 2447767.834027778,
+          "beforeDataset": null,
+          "afterDataset": "hist-bridge-v2-1989-min",
+          "beforeStatus": "spk_segment_transition",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": null,
+          "localVelocityChangeOver2SecondsKmS": null,
+          "horizonsPositionJoinKm": 1.1885812110102702e-7,
+          "horizonsVelocityChangeOver2SecondsKmS": 3.715144153235729e-7
+        },
+        {
+          "boundaryJdTdb": 2447767.875,
+          "beforeDataset": "hist-bridge-v2-1989-min",
+          "afterDataset": "hist-bridge-v2-1989-hours",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 8.851229030869415e-7,
+          "localVelocityChangeOver2SecondsKmS": 0.0000015540065669034358,
+          "horizonsPositionJoinKm": 2.2798734958862046e-7,
+          "horizonsVelocityChangeOver2SecondsKmS": 3.645868830772585e-7
+        },
+        {
+          "boundaryJdTdb": 2447771.5,
+          "beforeDataset": "hist-bridge-v2-1989-hours",
+          "afterDataset": "hist-cruise-v2-1989-2002",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 5.058188216966444e-7,
+          "localVelocityChangeOver2SecondsKmS": 1.0833811178448988e-7,
+          "horizonsPositionJoinKm": 5.170479440119749e-7,
+          "horizonsVelocityChangeOver2SecondsKmS": 1.1318910727425497e-7
+        },
+        {
+          "boundaryJdTdb": 2452296.5,
+          "beforeDataset": "hist-cruise-v2-1989-2002",
+          "afterDataset": "hist-cruise-v2-2002-2014",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 0.0000010428723132516953,
+          "localVelocityChangeOver2SecondsKmS": 2.318193030745714e-9,
+          "horizonsPositionJoinKm": 0.0000011431131645596548,
+          "horizonsVelocityChangeOver2SecondsKmS": 2.3186888482987894e-9
+        },
+        {
+          "boundaryJdTdb": 2456821.5,
+          "beforeDataset": "hist-cruise-v2-2002-2014",
+          "afterDataset": "hist-cruise-v2-2014-2026",
+          "beforeStatus": "interpolated",
+          "afterStatus": "interpolated",
+          "localPositionJoinKm": 0.0000035651896598030093,
+          "localVelocityChangeOver2SecondsKmS": 8.303864631714868e-10,
+          "horizonsPositionJoinKm": 0.000003913055454189874,
+          "horizonsVelocityChangeOver2SecondsKmS": 8.303394174392107e-10
+        }
+      ]
+    }
+  ],
+  "planetaryEncounters": [
+    {
+      "id": "v1-jupiter-1979",
+      "labelUtc": "A.D. 1979-Mar-05 12:05:26.0000",
+      "directDistanceKm": 348437.03238451644,
+      "separateHeliocentricDistanceKm": 348093.0262180942,
+      "distanceDifferenceKm": -344.00616642221576
+    },
+    {
+      "id": "v2-jupiter-1979",
+      "labelUtc": "A.D. 1979-Jul-09 22:29:51.0000",
+      "directDistanceKm": 721375.8632932594,
+      "separateHeliocentricDistanceKm": 721017.6593462542,
+      "distanceDifferenceKm": -358.2039470052114
+    },
+    {
+      "id": "v1-saturn-1980",
+      "labelUtc": "A.D. 1980-Nov-12 23:46:30.0000",
+      "directDistanceKm": 184033.25489166455,
+      "separateHeliocentricDistanceKm": 183546.14112735965,
+      "distanceDifferenceKm": -487.11376430490054
+    },
+    {
+      "id": "v2-saturn-1981",
+      "labelUtc": "A.D. 1981-Aug-26 03:24:57.0000",
+      "directDistanceKm": 160694.24880321746,
+      "separateHeliocentricDistanceKm": 159581.08765637365,
+      "distanceDifferenceKm": -1113.161146843806
+    },
+    {
+      "id": "v2-uranus-1986",
+      "labelUtc": "A.D. 1986-Jan-24 17:59:47.0000",
+      "directDistanceKm": 107158.1069956267,
+      "separateHeliocentricDistanceKm": 102310.65978659266,
+      "distanceDifferenceKm": -4847.447209034042
+    },
+    {
+      "id": "v2-neptune-1989",
+      "labelUtc": "A.D. 1989-Aug-25 03:56:36.0000",
+      "directDistanceKm": 29263.539260811995,
+      "separateHeliocentricDistanceKm": 34383.48682007032,
+      "distanceDifferenceKm": 5119.947559258326
+    }
+  ]
+}

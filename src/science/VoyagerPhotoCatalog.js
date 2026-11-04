@@ -12,7 +12,107 @@ export const RECREATION_FIDELITY_LEVELS = Object.freeze({
   GEOMETRIC_APPROXIMATION: 'geometric_approximation'
 });
 
+function moonPhoto({ id, nasaId, missionId, title, dayUtc, displayDateUtc, targetBody,
+  targetDisplay, instrument = 'Voyager ISS · cámara de ángulo estrecho (NAC)',
+  instrumentFovDeg = VOYAGER_ISS_NAC_FOV_DEG, contextFovDeg = 5,
+  sha256, officialSourceUrl, eventId, description, limitation, datePrecision = 'exact_day' }) {
+  return {
+    id, nasaId, missionId,
+    probeName: missionId === VOYAGER_1_ID ? 'Voyager 1' : 'Voyager 2',
+    title,
+    dateUtc: `${dayUtc}T12:00:00Z`,
+    displayDateUtc,
+    datePrecision,
+    targetBody, targetDisplay, instrument, instrumentFovDeg, contextFovDeg,
+    thumbPath: `images/voyager/${id}-thumb.jpg`,
+    imagePath: `images/voyager/${id}.jpg`,
+    sha256, officialSourceUrl,
+    pdsArchiveUrl: 'https://pds-rings.seti.org/voyager/iss/',
+    provenance: `NASA/JPL Photojournal (${nasaId}); JPEG de archivo`,
+    attribution: 'NASA/JPL', eventId,
+    orientationAvailability: 'Fecha documentada por día. La hora 12:00 UTC es solo un instante de referencia para el comparador; sin apuntado CK ni orientación absoluta validada de la luna.',
+    recreationFidelity: RECREATION_FIDELITY_LEVELS.GEOMETRIC_APPROXIMATION,
+    recreationFidelityNote: `Comparación geométrica aproximada: ${limitation.replace(/\.*$/, '.')} La fotografía y la vista 3D pueden diferir en hora, encuadre, filtros y orientación.`,
+    description
+  };
+}
+
 const RAW_PHOTOS = [
+  moonPhoto({
+    id: 'v1-io-plumes-1979', nasaId: 'PIA00379', missionId: VOYAGER_1_ID,
+    title: 'Dos penachos volcánicos en Ío', dayUtc: '1979-03-08',
+    displayDateUtc: '8 mar 1979 · hora de captura no publicada', targetBody: 'Io', targetDisplay: 'Ío',
+    sha256: '2050a786a50875fc8c65d2fe26caec1b6d175e5a645ad3cbb081bd25161cc181',
+    officialSourceUrl: 'https://science.nasa.gov/photojournal/volcanic-eruptions-on-io/',
+    eventId: 'v1-io-plume-1979',
+    description: 'Imagen de navegación óptica de Voyager 1 tomada el 8 de marzo de 1979 a unos 4,5 millones de km de Ío; Linda Morabito identificó el penacho en ella el 9 de marzo.',
+    limitation: 'el JPEG de archivo tiene baja resolución y la erupción localizada no se reconstruye como fenómeno fechado'
+  }),
+  moonPhoto({
+    id: 'v1-europa-1979', nasaId: 'PIA00016', missionId: VOYAGER_1_ID,
+    title: 'Europa: disco completo', dayUtc: '1979-03-04',
+    displayDateUtc: '4 mar 1979 · tarde; hora exacta no publicada', targetBody: 'Europa', targetDisplay: 'Europa',
+    sha256: '21a547cb03846a5f6e4a06741aa1beada9812c1e08d583971a20190f3c7f23b1',
+    officialSourceUrl: 'https://science.nasa.gov/photojournal/europa-full-disk/',
+    eventId: 'v1-europa-1979', description: 'Voyager 1 fotografió el disco de Europa desde unos dos millones de kilómetros.',
+    limitation: 'el mapa de la esfera combina observaciones posteriores y no reproduce la imagen de la cámara'
+  }),
+  moonPhoto({
+    id: 'v2-europa-1979', nasaId: 'PIA00459', missionId: VOYAGER_2_ID,
+    title: 'Europa durante el acercamiento de Voyager 2', dayUtc: '1979-07-09',
+    displayDateUtc: '9 jul 1979 · mañana; hora exacta no publicada', targetBody: 'Europa', targetDisplay: 'Europa',
+    sha256: 'eb0f6cef2748a2d8f3b9ed2c5180a406ed573949021d54526a50d2bd0c8a18b2',
+    officialSourceUrl: 'https://science.nasa.gov/photojournal/pj-europa-during-voyager-2-closest-approach/',
+    eventId: 'v2-europa-1979', description: 'Imagen en color de Europa capturada por Voyager 2 durante su encuentro joviano.',
+    limitation: 'composición cromática y orientación de cámara no equivalentes al render'
+  }),
+  moonPhoto({
+    id: 'v1-ganymede-1979', nasaId: 'PIA02279', missionId: VOYAGER_1_ID,
+    title: 'Primer plano de Ganímedes', dayUtc: '1979-03-05',
+    displayDateUtc: '5 mar 1979 · tarde; hora exacta no publicada', targetBody: 'Ganymede', targetDisplay: 'Ganímedes',
+    sha256: 'a1a675dc05f618db5d5e7def1460aef5d61e7fbc0e555ce9f7e27d54b48b2b05',
+    officialSourceUrl: 'https://science.nasa.gov/photojournal/ganymede-3/',
+    eventId: 'v1-ganymede-1979', description: 'Voyager 1 fotografió una región de Ganímedes a unos 246 000 km.',
+    limitation: 'la foto muestra solo una región de la superficie, no el disco completo'
+  }),
+  moonPhoto({
+    id: 'v1-galilean-1979', nasaId: 'PIA00012', missionId: VOYAGER_1_ID,
+    title: 'Cuatro satélites galileanos', dayUtc: '1979-03-03',
+    displayDateUtc: 'Principios de marzo de 1979 · día exacto de los cuadros no publicado',
+    datePrecision: 'documented_encounter_window',
+    targetBody: 'Callisto', targetDisplay: 'Calisto (referencia del montaje)',
+    sha256: '5728ff765b1ac962d152b88598422eb74c78522c34b93f2fc401abadf053d82e',
+    officialSourceUrl: 'https://science.nasa.gov/photojournal/galilean-satellites/',
+    eventId: 'v1-callisto-1979', description: 'Montaje NASA de cuatro fotografías individuales de Ío, Europa, Ganímedes y Calisto obtenidas por Voyager 1 durante su aproximación.',
+    limitation: 'es un montaje de cuatro cuerpos y fechas no precisadas, no una toma única de Calisto'
+  }),
+  moonPhoto({
+    id: 'v1-titan-haze-1980', nasaId: 'PIA01533', missionId: VOYAGER_1_ID,
+    title: 'Capas de bruma de Titán', dayUtc: '1980-11-12',
+    displayDateUtc: '12 nov 1980 · hora exacta no publicada', targetBody: 'Titan', targetDisplay: 'Titán',
+    sha256: 'a5655efeef2dd185b30eeda63673c9a8da3f4c0ece01ff22a8979169db876e8c',
+    officialSourceUrl: 'https://science.nasa.gov/photojournal/titan-haze/',
+    eventId: 'v1-titan-1980', description: 'Voyager 1 fotografió capas de bruma en la atmósfera de Titán a 22 000 km; color falso para revelar detalles.',
+    limitation: 'la foto de falso color muestra la bruma, no la cartografía infrarroja de la superficie'
+  }),
+  moonPhoto({
+    id: 'v2-titania-1986', nasaId: 'PIA01979', missionId: VOYAGER_2_ID,
+    title: 'Disco completo de Titania', dayUtc: '1986-01-24',
+    displayDateUtc: '24 ene 1986 · madrugada; hora exacta no publicada', targetBody: 'Titania', targetDisplay: 'Titania',
+    sha256: '1bc58e8f6c8c7f03b676cbfb7fcf5a691f0a72e3480501e27cf216d867f0bdb0',
+    officialSourceUrl: 'https://science.nasa.gov/photojournal/full-disk-view-of-titania/',
+    eventId: 'v2-titania-1986', description: 'Voyager 2 fotografió Titania desde unos 500 000 km en filtro claro.',
+    limitation: 'regiones no cartografiadas de la textura 3D incluyen relleno ilustrativo identificado'
+  }),
+  moonPhoto({
+    id: 'v2-miranda-1986', nasaId: 'PIA01354', missionId: VOYAGER_2_ID,
+    title: 'Terrenos tectónicos de Miranda', dayUtc: '1986-01-24',
+    displayDateUtc: '24 ene 1986 · hora exacta no publicada', targetBody: 'Miranda', targetDisplay: 'Miranda',
+    sha256: '993e96af884b91b21bb13f83e1b179fc8baa9350075a97d824443d6af47f5058',
+    officialSourceUrl: 'https://science.nasa.gov/photojournal/uranus-innermost-satellite-miranda/',
+    eventId: 'v2-miranda-1986', description: 'Imagen NAC en filtro claro capturada por Voyager 2 a unos 36 000 km de Miranda.',
+    limitation: 'la foto es un detalle regional y la cara no observada del mapa 3D es ilustrativa'
+  }),
   {
     id: 'v1-jupiter-grs-1979',
     nasaId: 'PIA00022',
@@ -49,8 +149,8 @@ const RAW_PHOTOS = [
     dateUtc: '1979-07-09T18:00:00Z',
     displayDateUtc: '9 jul 1979 (encuentro cercano a ~241 000 km de Europa)',
     datePrecision: 'exact_day',
-    targetBody: 'Jupiter',
-    targetDisplay: 'Sistema de Júpiter (encuentro con Europa)',
+    targetBody: 'Europa',
+    targetDisplay: 'Europa',
     instrument: 'Voyager 2 ISS · Narrow-Angle Camera (NAC, f = 1500 mm, FOV 0,424°)',
     instrumentFovDeg: VOYAGER_ISS_NAC_FOV_DEG,
     contextFovDeg: 6.0,
@@ -62,9 +162,9 @@ const RAW_PHOTOS = [
     provenance: 'NASA Ames / JPL Voyager 2 Archive (ARC-1979-A79-7092) · Dominio público',
     attribution: 'NASA / JPL',
     eventId: 'v2-jupiter-1979',
-    orientationAvailability: 'Posición real JPL Horizons (-32 y 599) el 9 jul 1979; Europa (502) no está mallada individualmente en 3D, por lo que la cámara 3D encuadra el sistema joviano desde la posición histórica de Voyager 2.',
+    orientationAvailability: 'Europa (502) tiene malla 3D y efemérides locales en la ventana joviana; hora exacta y apuntado CK de la fotografía no verificados.',
     recreationFidelity: RECREATION_FIDELITY_LEVELS.GEOMETRIC_APPROXIMATION,
-    recreationFidelityNote: 'Recreación geométrica contextual del sistema de Júpiter desde la posición real de Voyager 2 el 9 de julio de 1979 (Europa no posee malla 3D individual en esta escena).',
+    recreationFidelityNote: 'Recreación geométrica contextual de Europa desde Voyager 2; la hora y orientación de la fotografía no están verificadas.',
     description: 'Fotografía adquirida por Voyager 2 el 9 de julio de 1979 a 241 000 km de Europa. Reveló una superficie brillante casi carente de cráteres y cruzada por fracturas lineales globales, primer indicio de un océano subsuperficial bajo una corteza de hielo.'
   },
   {
@@ -199,7 +299,7 @@ const RAW_PHOTOS = [
     eventId: 'v2-neptune-1989',
     orientationAvailability: 'Posición exacta JPL Horizons tanto de Voyager 2 (-32) como de Tritón (801) con cadencia de 15 minutos en la ventana de sobrevuelo.',
     recreationFidelity: RECREATION_FIDELITY_LEVELS.GEOMETRIC_APPROXIMATION,
-    recreationFidelityNote: 'Recreación geométrica con efemérides reales de Tritón (NAIF 801): posición y tamaño angular verdaderos a ~39 800 km; esfera 3D de Tritón con sombreado básico sin mapa topográfico de alta resolución ni balanceo CK.',
+    recreationFidelityNote: 'Recreación geométrica con efemérides de Tritón (NAIF 801): posición y tamaño angular físicos; textura Voyager con cobertura incompleta y relleno ilustrativo, sin balanceo CK.',
     description: 'Una de las vistas de mayor detalle de Tritón obtenidas por Voyager 2 en la mañana del 25 de agosto de 1989 desde apenas ~40 000 km, almacenada en grabadora de cinta y retransmitida posteriormente a la Tierra.'
   },
   {

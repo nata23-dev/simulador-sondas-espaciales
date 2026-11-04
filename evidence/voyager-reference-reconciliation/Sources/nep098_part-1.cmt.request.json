@@ -1,0 +1,7 @@
+{
+  "url": "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/nep098_part-1.cmt",
+  "httpStatus": 200,
+  "acquiredAtUtc": "2026-11-02T17:06:33.090Z",
+  "bytes": 42361,
+  "sha256": "3f89f88f0a247d4dc945501f512a4e6d5ed5c7288cd89f03822301befc7ade2f"
+}

@@ -1,0 +1,424 @@
+{
+  "generatedAtUtc": "2026-11-01T01:44:27.484Z",
+  "sources": [
+    "https://ssd.jpl.nasa.gov/api/horizons.api",
+    "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse.html"
+  ],
+  "method": "Vectores geométricos KM-S ICRF/eclíptica J2000; Horizons TIME_TYPE=UT en el instante NSSDCA y una ventana ±60 min a 1 min. NSSDCA radios publicados multiplicados por radio de referencia; cifras redondeadas.",
+  "results": [
+    {
+      "eventId": "v1-jupiter-1979",
+      "eventUtc": "1979-03-05T12:05:26Z",
+      "naif": {
+        "probe": "-31",
+        "planet": "599"
+      },
+      "nssdc": {
+        "radiusMultiples": 4.89,
+        "referenceRadiusKm": 71398,
+        "centerDistanceKm": 349136.22
+      },
+      "local": {
+        "distanceKm": 348092.8429971733,
+        "deltaFromNssdcKm": -1043.377002826659,
+        "deltaFromNssdcPercent": -0.29884524808874285,
+        "datasetId": "hist-flyby-v1-jupiter-1979",
+        "hermiteMinusLinearKm": 278.6577966810437,
+        "utcConversionEffectKm": 1.9635356293292716
+      },
+      "horizons": {
+        "directCenterDistanceKm": 348437.03238451644,
+        "directVectorKm": [
+          182286.7163265103,
+          296187.7052295771,
+          -21278.20149035311
+        ],
+        "heliocentricSubtractionKm": 348093.0262180942,
+        "heliocentricDifferenceVectorKm": [
+          182048.3918569684,
+          295919.8702111244,
+          -21414.20879215002
+        ],
+        "vectorMismatchKm": 383.4476966080802,
+        "directDeltaFromNssdcKm": -699.1876154835336,
+        "directDeltaFromNssdcPercent": -0.20026212562063417,
+        "minimumOneMinuteGrid": {
+          "index": 59,
+          "utc": "1979-03-05T12:04:26.0000Z",
+          "distanceKm": 348435.3307208244
+        },
+        "directCenterMinusSurfaceKm": 277039.03238451644,
+        "sourceHeaders": {
+          "direct": "Target body name: Voyager 1 (spacecraft) (-31)    {source: Voyager_1_ST+refit2022_m}\nCenter body name: Jupiter (599)                   {source: jup365_merged}",
+          "probeHeliocentric": "Target body name: Voyager 1 (spacecraft) (-31)    {source: Voyager_1_ST+refit2022_m}\nCenter body name: Sun (10)                        {source: Voyager_1_ST+refit2022_m}",
+          "planetHeliocentric": "Target body name: Jupiter (599)                   {source: jup365_merged}\nCenter body name: Sun (10)                        {source: jup365_merged}"
+        },
+        "files": [
+          {
+            "file": "v1-jupiter-1979-relative-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-31%27&CENTER=%27500%40599%27&START_TIME=%271979-03-05+11%3A05%3A26%27&STOP_TIME=%271979-03-05+13%3A05%3A26%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "49091cb7286c5263692b84efd08d3b7e41fa3f24257415f55b02f2ff49b2c199",
+            "acquiredAtUtc": "2026-11-01T01:35:30.907Z"
+          },
+          {
+            "file": "v1-jupiter-1979-heliocentric-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-31%27&CENTER=%27500%4010%27&START_TIME=%271979-03-05+11%3A05%3A26%27&STOP_TIME=%271979-03-05+13%3A05%3A26%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "af3786ddc16d87216c97ce7d9798296426d718b053a269503b9f3b5d554151da",
+            "acquiredAtUtc": "2026-11-01T01:35:32.419Z"
+          },
+          {
+            "file": "v1-jupiter-1979-heliocentric-planet.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27599%27&CENTER=%27500%4010%27&START_TIME=%271979-03-05+11%3A05%3A26%27&STOP_TIME=%271979-03-05+13%3A05%3A26%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "f7a5525ba78b9b3485be26554a4f0aa9745b8712df3bfcc834a032ef2c37a786",
+            "acquiredAtUtc": "2026-11-01T01:35:33.760Z"
+          }
+        ]
+      }
+    },
+    {
+      "eventId": "v2-jupiter-1979",
+      "eventUtc": "1979-07-09T22:29:51Z",
+      "naif": {
+        "probe": "-32",
+        "planet": "599"
+      },
+      "nssdc": {
+        "radiusMultiples": 10.11,
+        "referenceRadiusKm": 71398,
+        "centerDistanceKm": 721833.7799999999
+      },
+      "local": {
+        "distanceKm": 721017.6592572149,
+        "deltaFromNssdcKm": -816.1207427850459,
+        "deltaFromNssdcPercent": -0.11306214330743097,
+        "datasetId": "hist-flyby-v2-jupiter-1979",
+        "hermiteMinusLinearKm": 8.813003181829117,
+        "utcConversionEffectKm": 0.3552851469721645
+      },
+      "horizons": {
+        "directCenterDistanceKm": 721375.8632932594,
+        "directVectorKm": [
+          438201.7768770499,
+          566486.576257106,
+          -86344.06641103612
+        ],
+        "heliocentricSubtractionKm": 721017.6593462542,
+        "heliocentricDifferenceVectorKm": [
+          437994.5309666395,
+          566163.1847913265,
+          -86524.5867913086
+        ],
+        "vectorMismatchKm": 424.40607348924425,
+        "directDeltaFromNssdcKm": -457.9167067405069,
+        "directDeltaFromNssdcPercent": -0.0634379713762505,
+        "minimumOneMinuteGrid": {
+          "index": 59,
+          "utc": "1979-07-09T22:28:51.0000Z",
+          "distanceKm": 721375.4806311723
+        },
+        "directCenterMinusSurfaceKm": 649977.8632932594,
+        "sourceHeaders": {
+          "direct": "Target body name: Voyager 2 (spacecraft) (-32)    {source: Voyager_2_ST+refit2022_m}\nCenter body name: Jupiter (599)                   {source: jup365_merged}",
+          "probeHeliocentric": "Target body name: Voyager 2 (spacecraft) (-32)    {source: Voyager_2_ST+refit2022_m}\nCenter body name: Sun (10)                        {source: Voyager_2_ST+refit2022_m}",
+          "planetHeliocentric": "Target body name: Jupiter (599)                   {source: jup365_merged}\nCenter body name: Sun (10)                        {source: jup365_merged}"
+        },
+        "files": [
+          {
+            "file": "v2-jupiter-1979-relative-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-32%27&CENTER=%27500%40599%27&START_TIME=%271979-07-09+21%3A29%3A51%27&STOP_TIME=%271979-07-09+23%3A29%3A51%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "3a9113e3585b7a6e8f28a6866f8f4e3191904ecd347dc9c0d8cb57f3d5ccd671",
+            "acquiredAtUtc": "2026-11-01T01:35:35.085Z"
+          },
+          {
+            "file": "v2-jupiter-1979-heliocentric-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-32%27&CENTER=%27500%4010%27&START_TIME=%271979-07-09+21%3A29%3A51%27&STOP_TIME=%271979-07-09+23%3A29%3A51%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "3c4cecf2b4bbbd39353f1c69be6fa0c65a9ca86eb6314fab1c0e97d0a0db2396",
+            "acquiredAtUtc": "2026-11-01T01:35:36.426Z"
+          },
+          {
+            "file": "v2-jupiter-1979-heliocentric-planet.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27599%27&CENTER=%27500%4010%27&START_TIME=%271979-07-09+21%3A29%3A51%27&STOP_TIME=%271979-07-09+23%3A29%3A51%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "6cecae78a359747d9dc8b661591f59691be30757e245f8b76fea7183d846fb8e",
+            "acquiredAtUtc": "2026-11-01T01:35:37.757Z"
+          }
+        ]
+      }
+    },
+    {
+      "eventId": "v1-saturn-1980",
+      "eventUtc": "1980-11-12T23:46:30Z",
+      "naif": {
+        "probe": "-31",
+        "planet": "699"
+      },
+      "nssdc": {
+        "radiusMultiples": 3.09,
+        "referenceRadiusKm": 60330,
+        "centerDistanceKm": 186419.69999999998
+      },
+      "local": {
+        "distanceKm": 183545.9098819129,
+        "deltaFromNssdcKm": -2873.790118087083,
+        "deltaFromNssdcPercent": -1.541569972533527,
+        "datasetId": "hist-flyby-v1-saturn-1980",
+        "hermiteMinusLinearKm": 186.89989832011634,
+        "utcConversionEffectKm": 5.13733118181699
+      },
+      "horizons": {
+        "directCenterDistanceKm": 184033.25489166455,
+        "directVectorKm": [
+          -108708.591732664,
+          39616.61865838448,
+          -143112.558902416
+        ],
+        "heliocentricSubtractionKm": 183546.14112735965,
+        "heliocentricDifferenceVectorKm": [
+          -108366.66153717041,
+          38303.89332996309,
+          -143103.68390017003
+        ],
+        "vectorMismatchKm": 1356.5554954126324,
+        "directDeltaFromNssdcKm": -2386.445108335436,
+        "directDeltaFromNssdcPercent": -1.2801464160362002,
+        "minimumOneMinuteGrid": {
+          "index": 59,
+          "utc": "1980-11-12T23:45:30.0000Z",
+          "distanceKm": 184030.0797091254
+        },
+        "directCenterMinusSurfaceKm": 123703.25489166455,
+        "sourceHeaders": {
+          "direct": "Target body name: Voyager 1 (spacecraft) (-31)    {source: Voyager_1_ST+refit2022_m}\nCenter body name: Saturn (699)                    {source: sat441l}",
+          "probeHeliocentric": "Target body name: Voyager 1 (spacecraft) (-31)    {source: Voyager_1_ST+refit2022_m}\nCenter body name: Sun (10)                        {source: Voyager_1_ST+refit2022_m}",
+          "planetHeliocentric": "Target body name: Saturn (699)                    {source: sat441l}\nCenter body name: Sun (10)                        {source: DE441}"
+        },
+        "files": [
+          {
+            "file": "v1-saturn-1980-relative-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-31%27&CENTER=%27500%40699%27&START_TIME=%271980-11-12+22%3A46%3A30%27&STOP_TIME=%271980-11-13+00%3A46%3A30%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "50106b83c302485c43c1bd1815d3a62e7253200956186f6b073d7cfff677ee68",
+            "acquiredAtUtc": "2026-11-01T01:35:39.084Z"
+          },
+          {
+            "file": "v1-saturn-1980-heliocentric-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-31%27&CENTER=%27500%4010%27&START_TIME=%271980-11-12+22%3A46%3A30%27&STOP_TIME=%271980-11-13+00%3A46%3A30%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "6926ef72543cfee9d5dd2d9289f8224daee20c61f28ac6778f5522c5a3ea77ea",
+            "acquiredAtUtc": "2026-11-01T01:35:40.412Z"
+          },
+          {
+            "file": "v1-saturn-1980-heliocentric-planet.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27699%27&CENTER=%27500%4010%27&START_TIME=%271980-11-12+22%3A46%3A30%27&STOP_TIME=%271980-11-13+00%3A46%3A30%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "2c3369ef5d1d8931c8eac94b9b7c1059a15a0bd662d987f1eb101f685f7d63b4",
+            "acquiredAtUtc": "2026-11-01T01:35:41.745Z"
+          }
+        ]
+      }
+    },
+    {
+      "eventId": "v2-saturn-1981",
+      "eventUtc": "1981-08-26T03:24:57Z",
+      "naif": {
+        "probe": "-32",
+        "planet": "699"
+      },
+      "nssdc": {
+        "radiusMultiples": 2.67,
+        "referenceRadiusKm": 60330,
+        "centerDistanceKm": 161081.1
+      },
+      "local": {
+        "distanceKm": 159580.82172240235,
+        "deltaFromNssdcKm": -1500.278277597652,
+        "deltaFromNssdcPercent": -0.9313807005276546,
+        "datasetId": "hist-flyby-v2-saturn-1981",
+        "hermiteMinusLinearKm": 217.41184743342455,
+        "utcConversionEffectKm": 10.006250984442886
+      },
+      "horizons": {
+        "directCenterDistanceKm": 160694.24880321746,
+        "directVectorKm": [
+          -138400.9298415917,
+          80920.94740296758,
+          10937.29805844792
+        ],
+        "heliocentricSubtractionKm": 159581.08765637365,
+        "heliocentricDifferenceVectorKm": [
+          -137887.60456109047,
+          79582.0695810318,
+          10946.517583020031
+        ],
+        "vectorMismatchKm": 1433.939212556264,
+        "directDeltaFromNssdcKm": -386.85119678254705,
+        "directDeltaFromNssdcPercent": -0.24015927180938487,
+        "minimumOneMinuteGrid": {
+          "index": 59,
+          "utc": "1981-08-26T03:23:57.0000Z",
+          "distanceKm": 160691.32020051387
+        },
+        "directCenterMinusSurfaceKm": 100364.24880321746,
+        "sourceHeaders": {
+          "direct": "Target body name: Voyager 2 (spacecraft) (-32)    {source: Voyager_2_ST+refit2022_m}\nCenter body name: Saturn (699)                    {source: sat441l}",
+          "probeHeliocentric": "Target body name: Voyager 2 (spacecraft) (-32)    {source: Voyager_2_ST+refit2022_m}\nCenter body name: Sun (10)                        {source: Voyager_2_ST+refit2022_m}",
+          "planetHeliocentric": "Target body name: Saturn (699)                    {source: sat441l}\nCenter body name: Sun (10)                        {source: DE441}"
+        },
+        "files": [
+          {
+            "file": "v2-saturn-1981-relative-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-32%27&CENTER=%27500%40699%27&START_TIME=%271981-08-26+02%3A24%3A57%27&STOP_TIME=%271981-08-26+04%3A24%3A57%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "3e19c864f886be698b17e8b5dc9fe49d57e24c62b75fee7bf77b0bc8778ad11e",
+            "acquiredAtUtc": "2026-11-01T01:35:43.064Z"
+          },
+          {
+            "file": "v2-saturn-1981-heliocentric-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-32%27&CENTER=%27500%4010%27&START_TIME=%271981-08-26+02%3A24%3A57%27&STOP_TIME=%271981-08-26+04%3A24%3A57%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "996e01d58b9b753bf0dd771d16b5e44e40b76d946708372553e9f42ddd9f4c20",
+            "acquiredAtUtc": "2026-11-01T01:35:44.404Z"
+          },
+          {
+            "file": "v2-saturn-1981-heliocentric-planet.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27699%27&CENTER=%27500%4010%27&START_TIME=%271981-08-26+02%3A24%3A57%27&STOP_TIME=%271981-08-26+04%3A24%3A57%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "66d6b45cf24b7449ef9dc90847859dcd27090c2859514d816bd7ee6cd7aa9dc5",
+            "acquiredAtUtc": "2026-11-01T01:35:45.752Z"
+          }
+        ]
+      }
+    },
+    {
+      "eventId": "v2-uranus-1986",
+      "eventUtc": "1986-01-24T17:59:47Z",
+      "naif": {
+        "probe": "-32",
+        "planet": "799"
+      },
+      "nssdc": {
+        "radiusMultiples": 4.19,
+        "referenceRadiusKm": 25559,
+        "centerDistanceKm": 107092.21
+      },
+      "local": {
+        "distanceKm": 102310.6561829867,
+        "deltaFromNssdcKm": -4781.553817013308,
+        "deltaFromNssdcPercent": -4.464894147775368,
+        "datasetId": "hist-flyby-v2-uranus-1986",
+        "hermiteMinusLinearKm": 12.22142010187963,
+        "utcConversionEffectKm": 22.000527303127456
+      },
+      "horizons": {
+        "directCenterDistanceKm": 107158.1069956267,
+        "directVectorKm": [
+          -101983.1987758826,
+          -25422.92279058845,
+          -20879.70447848286
+        ],
+        "heliocentricSubtractionKm": 102310.65978659266,
+        "heliocentricDifferenceVectorKm": [
+          -96858.84119319916,
+          -26088.22776079178,
+          -20130.582728266716
+        ],
+        "vectorMismatchKm": 5221.38436961209,
+        "directDeltaFromNssdcKm": 65.89699562669557,
+        "directDeltaFromNssdcPercent": 0.0615329496204211,
+        "minimumOneMinuteGrid": {
+          "index": 59,
+          "utc": "1986-01-24T17:58:47.0000Z",
+          "distanceKm": 107154.2130929546
+        },
+        "directCenterMinusSurfaceKm": 81599.1069956267,
+        "sourceHeaders": {
+          "direct": "Target body name: Voyager 2 (spacecraft) (-32)    {source: Voyager_2_ST+refit2022_m}\nCenter body name: Uranus (799)                    {source: ura184_merged}",
+          "probeHeliocentric": "Target body name: Voyager 2 (spacecraft) (-32)    {source: Voyager_2_ST+refit2022_m}\nCenter body name: Sun (10)                        {source: Voyager_2_ST+refit2022_m}",
+          "planetHeliocentric": "Target body name: Uranus (799)                    {source: ura184_merged}\nCenter body name: Sun (10)                        {source: DE441}"
+        },
+        "files": [
+          {
+            "file": "v2-uranus-1986-relative-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-32%27&CENTER=%27500%40799%27&START_TIME=%271986-01-24+16%3A59%3A47%27&STOP_TIME=%271986-01-24+18%3A59%3A47%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "f65202051917df01f3836ed54665464b0f3c3cdd9f0371410e375f673781a082",
+            "acquiredAtUtc": "2026-11-01T01:35:47.097Z"
+          },
+          {
+            "file": "v2-uranus-1986-heliocentric-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-32%27&CENTER=%27500%4010%27&START_TIME=%271986-01-24+16%3A59%3A47%27&STOP_TIME=%271986-01-24+18%3A59%3A47%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "9fff57f9f6a78aade5664422a603b12ead70ac34053083f9b0b6b65dee03c569",
+            "acquiredAtUtc": "2026-11-01T01:35:48.435Z"
+          },
+          {
+            "file": "v2-uranus-1986-heliocentric-planet.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27799%27&CENTER=%27500%4010%27&START_TIME=%271986-01-24+16%3A59%3A47%27&STOP_TIME=%271986-01-24+18%3A59%3A47%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "143aad0df219df9e965b9b3dc53895cec4fe27bcb0af6652c64936a44e0ca80d",
+            "acquiredAtUtc": "2026-11-01T01:35:49.761Z"
+          }
+        ]
+      }
+    },
+    {
+      "eventId": "v2-neptune-1989",
+      "eventUtc": "1989-08-25T03:56:36Z",
+      "naif": {
+        "probe": "-32",
+        "planet": "899"
+      },
+      "nssdc": {
+        "radiusMultiples": 1.18,
+        "referenceRadiusKm": 24760,
+        "centerDistanceKm": 29216.8
+      },
+      "local": {
+        "distanceKm": 34377.100576031786,
+        "deltaFromNssdcKm": 5160.3005760317865,
+        "deltaFromNssdcPercent": 17.662100490237762,
+        "datasetId": "hist-flyby-v2-neptune-1989",
+        "hermiteMinusLinearKm": 389.85365193651523,
+        "utcConversionEffectKm": -275.5528727139026
+      },
+      "horizons": {
+        "directCenterDistanceKm": 29263.539260811995,
+        "directVectorKm": [
+          15982.91614392293,
+          -7155.043313326039,
+          23445.82002809544
+        ],
+        "heliocentricSubtractionKm": 34383.48682007032,
+        "heliocentricDifferenceVectorKm": [
+          25227.472219586372,
+          2809.0547037124634,
+          23192.844219446182
+        ],
+        "vectorMismatchKm": 13594.4497162996,
+        "directDeltaFromNssdcKm": 46.73926081199534,
+        "directDeltaFromNssdcPercent": 0.15997392189423668,
+        "minimumOneMinuteGrid": {
+          "index": 59,
+          "utc": "1989-08-25T03:55:36.0000Z",
+          "distanceKm": 29236.17840195876
+        },
+        "directCenterMinusSurfaceKm": 4503.539260811995,
+        "sourceHeaders": {
+          "direct": "Target body name: Voyager 2 (spacecraft) (-32)    {source: Voyager_2_ST+refit2022_m}\nCenter body name: Neptune (899)                   {source: nep098_merged}",
+          "probeHeliocentric": "Target body name: Voyager 2 (spacecraft) (-32)    {source: Voyager_2_ST+refit2022_m}\nCenter body name: Sun (10)                        {source: Voyager_2_ST+refit2022_m}",
+          "planetHeliocentric": "Target body name: Neptune (899)                   {source: nep098_merged}\nCenter body name: Sun (10)                        {source: nep098_merged}"
+        },
+        "files": [
+          {
+            "file": "v2-neptune-1989-relative-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-32%27&CENTER=%27500%40899%27&START_TIME=%271989-08-25+02%3A56%3A36%27&STOP_TIME=%271989-08-25+04%3A56%3A36%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "15702ed82cbbc56e2b69b6420b1045bee81a89470cebb709b2aafd96e7854774",
+            "acquiredAtUtc": "2026-11-01T01:35:51.101Z"
+          },
+          {
+            "file": "v2-neptune-1989-heliocentric-probe.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-32%27&CENTER=%27500%4010%27&START_TIME=%271989-08-25+02%3A56%3A36%27&STOP_TIME=%271989-08-25+04%3A56%3A36%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "8477c4da306817a4333a89152f0f2cb070763837b43474118b3ea461658485a0",
+            "acquiredAtUtc": "2026-11-01T01:35:52.473Z"
+          },
+          {
+            "file": "v2-neptune-1989-heliocentric-planet.json",
+            "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27899%27&CENTER=%27500%4010%27&START_TIME=%271989-08-25+02%3A56%3A36%27&STOP_TIME=%271989-08-25+04%3A56%3A36%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+            "sha256": "66ebc487b2ef98decb349063584f8f6357e73a616feb26ed575bd558774a846e",
+            "acquiredAtUtc": "2026-11-01T01:35:53.826Z"
+          }
+        ]
+      }
+    }
+  ]
+}

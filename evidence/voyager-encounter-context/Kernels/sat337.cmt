@@ -1,0 +1,59 @@
+                      Satellite Ephemeris File Release
+
+
+Satellite Ephemeris: SAT337
+
+Location: ssd.jpl.nasa.gov/pub/eph/satellites/nio/LINUX_PC/sat337l.nio
+Size(nio): 853041152 bytes
+
+Enter SATEPHMERGE/13 18-Oct-2010 17:21:50.323 linked 01-Apr-2008 09:16:24
+Fit to Earthbased, Voyager, HST, and Cassini data
+Astrometric, Pioneer, Voyager, and Cassini data - SAT337.2
+Ephemeris Version Number: 17
+Timespan from JED  2378502.500(07-JAN-1800) to JED  2524608.500(16-JAN-2200)
+File Epoch Julian Date: 2455470.50
+Master Interval: 18.0000 Days
+Equinox Reference Julian Date: 2451545.00
+Planetary Ephemeris Number: DE-0421/LE-0421
+
+Bodies on the File:
+
+   Name     Number            GM             NDIV   NDEG   Model
+   Mimas      601    2.502634343245008E+00     24     15   SATORB
+   Encela     602    7.210708082152470E+00     24     11   SATORB
+   Tethys     603    4.122325359642318E+01     12     14   SATORB
+   Dione      604    7.311565091900354E+01     12     11   SATORB
+   Rhea       605    1.539436457548578E+02      8     11   SATORB
+   Titan      606    8.978139732536853E+03      4     12   SATORB
+   Hyperi     607    3.713494586984268E-01      4     10   SATORB
+   Iapetu     608    1.205100217318103E+02      2     10   SATORB
+   Phoebe     609    5.528816816630203E-01      1      7   SATORB
+   Helene     612    0.000000000000000E+00     12     11   SATORB
+   Telest     613    0.000000000000000E+00     12     15   SATORB
+   Calyps     614    0.000000000000000E+00     12     15   SATORB
+   Methon     632    0.000000000000000E+00     24     12   SATORB
+   Saturn     699    3.793120755506754E+07      6     10   SATORB
+   System            3.794058512494564E+07
+
+Additional Constants on the File:
+
+  AU       1.495978706996262E+08   RADIUS   6.033000000000000E+04
+  J602     1.629077510246374E-02   J604    -9.346909067039116E-04
+  J606     8.990999096480436E-05   J608    -1.000000000000000E-05
+  POLTIM   2.451545000000000E+06   ZACPL6   4.058241546083615E+01
+  ZDEPL6   8.353760546600776E+01   DACPL6  -2.873337483805195E-02
+  DDEPL6  -5.948334659263850E-03   WPL6     3.890000000000000E+01
+  WDP6     8.107939024000000E+02   GM7      5.794557000000000E+06
+  GM8      6.836528000000000E+06   GM5      1.267127648000000E+08
+  GM10     1.327132332632381E+11
+
+
+Chebyshev interpolation error:  22.20 meters
+
+Release to: NAIF/Horizons                      Time: 13-Feb-2012 16:52: 0
+
+Preparer: R. A. Jacobson
+
+Comments:
+Ephemeris fit to all data through the end of the Cassini Equinox
+Mission.

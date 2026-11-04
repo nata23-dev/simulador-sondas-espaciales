@@ -1,0 +1,3286 @@
+[
+  {
+    "id": "hist-launch-v2-injection-1977",
+    "file": "data/historical/encounters/hist-launch-v2-injection-1977.json",
+    "bodyIds": [
+      "-32",
+      "399"
+    ],
+    "cadenceSeconds": 180,
+    "coverage": {
+      "startJdTdb": 2443376.147916667,
+      "endJdTdb": 2443376.5
+    },
+    "bodyCoverage": {
+      "399": {
+        "startJdTdb": 2443376.147916667,
+        "endJdTdb": 2443376.5
+      },
+      "-32": {
+        "startJdTdb": 2443376.147916667,
+        "endJdTdb": 2443376.5
+      }
+    },
+    "sha256": "69d67a616ff6c00cc533cb52e11990e147bac49fead6ff72d659b1780eecc9b4",
+    "acquisition": {
+      "datasetId": "hist-launch-v2-injection-1977",
+      "configSha256": "09ec2dda503317ceb5edbfcbd619a4bb6ddfda9ba6ea939a56b1122119c4d792",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "399",
+          "solutionId": "DE441"
+        }
+      ],
+      "bodies": {
+        "399": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:38:22.467Z",
+          "solutionId": "DE441",
+          "responseSha256": "5d06003466811a52522dd40af40d3554c19fe17ee45dfdf80eda6e54229abccf",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'399'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-20 15:33'\",\"STOP_TIME\":\"'1977-08-21 00:00'\",\"STEP_SIZE\":\"'3 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:21.079Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "dcea07d7570735b7d829cdc192a3b7247eb7f2f5bfa02a98c48d9ce448c71e4f",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-20 15:33'\",\"STOP_TIME\":\"'1977-08-21 00:00'\",\"STEP_SIZE\":\"'3 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-launch-v2-departure-1977",
+    "file": "data/historical/encounters/hist-launch-v2-departure-1977.json",
+    "bodyIds": [
+      "-32",
+      "399"
+    ],
+    "cadenceSeconds": 3600,
+    "coverage": {
+      "startJdTdb": 2443376.5,
+      "endJdTdb": 2443384.5
+    },
+    "bodyCoverage": {
+      "399": {
+        "startJdTdb": 2443376.5,
+        "endJdTdb": 2443384.5
+      },
+      "-32": {
+        "startJdTdb": 2443376.5,
+        "endJdTdb": 2443384.5
+      }
+    },
+    "sha256": "cb233b8317af293ac46c0e6bb69145abd093b2e0524a049e9e5f4bc8d79cacc2",
+    "acquisition": {
+      "datasetId": "hist-launch-v2-departure-1977",
+      "configSha256": "dfa805cac6d24c8cb4a7a98b02eeab60a687972403242ddb028e8e3625d262d0",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "399",
+          "solutionId": "DE441"
+        }
+      ],
+      "bodies": {
+        "399": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:38:25.274Z",
+          "solutionId": "DE441",
+          "responseSha256": "4d7794edc83fbc6fc0901bd2bcf9918c4487360111d411c7441562b2775794b0",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'399'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-21 00:00'\",\"STOP_TIME\":\"'1977-08-29 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:23.855Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "5ed104a3c221eb913c1458dbf58e944d6dfa184030b7a163f3345266b25da1d6",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-21 00:00'\",\"STOP_TIME\":\"'1977-08-29 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-launch-v1-injection-1977",
+    "file": "data/historical/encounters/hist-launch-v1-injection-1977.json",
+    "bodyIds": [
+      "-31",
+      "-32",
+      "399"
+    ],
+    "cadenceSeconds": 300,
+    "coverage": {
+      "startJdTdb": 2443392.083333333,
+      "endJdTdb": 2443392.5
+    },
+    "bodyCoverage": {
+      "399": {
+        "startJdTdb": 2443392.083333333,
+        "endJdTdb": 2443392.5
+      },
+      "-31": {
+        "startJdTdb": 2443392.083333333,
+        "endJdTdb": 2443392.5
+      },
+      "-32": {
+        "startJdTdb": 2443392.083333333,
+        "endJdTdb": 2443392.5
+      }
+    },
+    "sha256": "4655ddeed2d9e0cb114a741569581528ad7b2d52d298af15b9d549388d541f55",
+    "acquisition": {
+      "datasetId": "hist-launch-v1-injection-1977",
+      "configSha256": "e184c7108c5da71ab7415b9f2500ef2884a287d5a376a48e41cf492343b7741a",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        },
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "399",
+          "solutionId": "DE441"
+        }
+      ],
+      "bodies": {
+        "399": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:38:29.451Z",
+          "solutionId": "DE441",
+          "responseSha256": "af0642b5e9bca4e099617f1763e7a345e0b108164f5a2376822a347d66cb13f6",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'399'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-09-05 14:00'\",\"STOP_TIME\":\"'1977-09-06 00:00'\",\"STEP_SIZE\":\"'5 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:26.677Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "febb6e2c8f06365ff10cbfb3de93ee0d76fe2b20926fb883609ea4c575520935",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-09-05 14:00'\",\"STOP_TIME\":\"'1977-09-06 00:00'\",\"STEP_SIZE\":\"'5 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:28.066Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "4b75fe4ff9bffb906db3f36197c1b374ace1a86eace398cc7538eb8c6a59475d",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-09-05 14:00'\",\"STOP_TIME\":\"'1977-09-06 00:00'\",\"STEP_SIZE\":\"'5 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-launch-v1-departure-1977",
+    "file": "data/historical/encounters/hist-launch-v1-departure-1977.json",
+    "bodyIds": [
+      "-31",
+      "-32",
+      "399"
+    ],
+    "cadenceSeconds": 3600,
+    "coverage": {
+      "startJdTdb": 2443392.5,
+      "endJdTdb": 2443400.5
+    },
+    "bodyCoverage": {
+      "399": {
+        "startJdTdb": 2443392.5,
+        "endJdTdb": 2443400.5
+      },
+      "-31": {
+        "startJdTdb": 2443392.5,
+        "endJdTdb": 2443400.5
+      },
+      "-32": {
+        "startJdTdb": 2443392.5,
+        "endJdTdb": 2443400.5
+      }
+    },
+    "sha256": "c9d06708307e229042a38349f7ccbe72b952066d3147d12f198143900bf8ba6a",
+    "acquisition": {
+      "datasetId": "hist-launch-v1-departure-1977",
+      "configSha256": "3a85ea4af7169e3af741784d8d95d65c22f404918e3ed2408fc8634bd7b45f49",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        },
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "399",
+          "solutionId": "DE441"
+        }
+      ],
+      "bodies": {
+        "399": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:38:33.806Z",
+          "solutionId": "DE441",
+          "responseSha256": "fa052b3f2f22da3eb6adca2fd93686853ae80e570bf059c1ea8aa9211f26fd9f",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'399'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-09-06 00:00'\",\"STOP_TIME\":\"'1977-09-14 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:30.906Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "863d674792c3530a2e29620302bae46ca9c9469df077a083e383af6f98bee35d",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-09-06 00:00'\",\"STOP_TIME\":\"'1977-09-14 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:32.363Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "794c915f8683e098eda5dc82d148e7eb99098b71c7a4d88ec92fb0db2d9bcbdd",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-09-06 00:00'\",\"STOP_TIME\":\"'1977-09-14 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v1-jupiter-1979",
+    "file": "data/historical/encounters/hist-flyby-v1-jupiter-1979.json",
+    "bodyIds": [
+      "-31",
+      "599",
+      "501"
+    ],
+    "cadenceSeconds": 1800,
+    "coverage": {
+      "startJdTdb": 2443933.5,
+      "endJdTdb": 2443942.5
+    },
+    "bodyCoverage": {
+      "501": {
+        "startJdTdb": 2443933.5,
+        "endJdTdb": 2443942.5
+      },
+      "599": {
+        "startJdTdb": 2443933.5,
+        "endJdTdb": 2443942.5
+      },
+      "-31": {
+        "startJdTdb": 2443933.5,
+        "endJdTdb": 2443942.5
+      }
+    },
+    "sha256": "23f6ce5bd0f4e0603d250d493d1f18f2b0778e7e2db45fcfa0f3beb429f4488a",
+    "acquisition": {
+      "datasetId": "hist-flyby-v1-jupiter-1979",
+      "configSha256": "8ab9324c7bafe7cb1f7d76a290effa036f257260d75bce09acb9fd5aedb6bf3f",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        },
+        {
+          "bodyId": "599",
+          "solutionId": "jup365_merged"
+        },
+        {
+          "bodyId": "501",
+          "solutionId": "jup365_merged"
+        }
+      ],
+      "bodies": {
+        "501": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-10-30T23:38:38.160Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "6b22c97c8617376ddffe409500149c86131b5b6e7776822f404c9abe236f2998",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'501'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1979-03-01 00:00'\",\"STOP_TIME\":\"'1979-03-10 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "599": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:38:36.714Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "5796a63d6ad3b30107e39fe7d188058861a57c59cfc1691e3fedeacc0687faa8",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'599'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1979-03-01 00:00'\",\"STOP_TIME\":\"'1979-03-10 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:35.262Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "6f93414d8eca40bf4e5a10df8eaa44eeb515d5b35095d0d9b9601e38668263aa",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1979-03-01 00:00'\",\"STOP_TIME\":\"'1979-03-10 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-jupiter-1979",
+    "file": "data/historical/encounters/hist-flyby-v2-jupiter-1979.json",
+    "bodyIds": [
+      "-32",
+      "599",
+      "501"
+    ],
+    "cadenceSeconds": 1800,
+    "coverage": {
+      "startJdTdb": 2444059.5,
+      "endJdTdb": 2444068.5
+    },
+    "bodyCoverage": {
+      "501": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      },
+      "599": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      },
+      "-32": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      }
+    },
+    "sha256": "67cbe45338e684a283bbb9a80dc4a104526237122e2ee2c0f9b83d1ae420ec9a",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-jupiter-1979",
+      "configSha256": "ba76c118a931d181d8b466ec9ff0e0d556d63f104decb60c82c47c5882ba7fd6",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "599",
+          "solutionId": "jup365_merged"
+        },
+        {
+          "bodyId": "501",
+          "solutionId": "jup365_merged"
+        }
+      ],
+      "bodies": {
+        "501": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-10-30T23:38:42.515Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "f5428b927df42340660709239aa4fb67de550b477903d11d6e3b96321bd43f5c",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'501'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1979-07-05 00:00'\",\"STOP_TIME\":\"'1979-07-14 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "599": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:38:41.061Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "5199db1335b4e9b3d41d490b04e1e1342cdb0c7c0c027839ab68ad794e6cb0b5",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'599'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1979-07-05 00:00'\",\"STOP_TIME\":\"'1979-07-14 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:39.614Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "6ed2cc927a76e94e7d1a5057a46022d2d79cb68e783ca6171a26de6d303ba179",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1979-07-05 00:00'\",\"STOP_TIME\":\"'1979-07-14 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v1-saturn-1980",
+    "file": "data/historical/encounters/hist-flyby-v1-saturn-1980.json",
+    "bodyIds": [
+      "-31",
+      "699",
+      "606"
+    ],
+    "cadenceSeconds": 1200,
+    "coverage": {
+      "startJdTdb": 2444551.5,
+      "endJdTdb": 2444560.5
+    },
+    "bodyCoverage": {
+      "606": {
+        "startJdTdb": 2444551.5,
+        "endJdTdb": 2444560.5
+      },
+      "699": {
+        "startJdTdb": 2444551.5,
+        "endJdTdb": 2444560.5
+      },
+      "-31": {
+        "startJdTdb": 2444551.5,
+        "endJdTdb": 2444560.5
+      }
+    },
+    "sha256": "c076a489fbf102c80b4ce02e9dcb6009dd4cbc16296da5b338e653fad04b601c",
+    "acquisition": {
+      "datasetId": "hist-flyby-v1-saturn-1980",
+      "configSha256": "e488be5f20c27876967aa37239f4d73949334d4a7c1dc18e55d46b2e2069c941",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        },
+        {
+          "bodyId": "699",
+          "solutionId": "sat441l"
+        },
+        {
+          "bodyId": "606",
+          "solutionId": "sat441l"
+        }
+      ],
+      "bodies": {
+        "606": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-10-30T23:38:47.064Z",
+          "solutionId": "sat441l",
+          "responseSha256": "a4464eb35d53bc3cd04b2c3f1c5cbd29c876d97bde1c0d2b9b9d38ab2569ca5e",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'606'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1980-11-08 00:00'\",\"STOP_TIME\":\"'1980-11-17 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "699": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:38:45.551Z",
+          "solutionId": "sat441l",
+          "responseSha256": "7145e8324e30058ea4de9a1f91fd52017fb2261d3e742eca98561db33dee17c7",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'699'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1980-11-08 00:00'\",\"STOP_TIME\":\"'1980-11-17 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:44.039Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "acb1a7bbdc91d9bd612c494987da359e9d70ba306cf18d0351ae436ea8164ad0",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1980-11-08 00:00'\",\"STOP_TIME\":\"'1980-11-17 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-saturn-1981",
+    "file": "data/historical/encounters/hist-flyby-v2-saturn-1981.json",
+    "bodyIds": [
+      "-32",
+      "699",
+      "606"
+    ],
+    "cadenceSeconds": 1200,
+    "coverage": {
+      "startJdTdb": 2444838.5,
+      "endJdTdb": 2444846.5
+    },
+    "bodyCoverage": {
+      "606": {
+        "startJdTdb": 2444838.5,
+        "endJdTdb": 2444846.5
+      },
+      "699": {
+        "startJdTdb": 2444838.5,
+        "endJdTdb": 2444846.5
+      },
+      "-32": {
+        "startJdTdb": 2444838.5,
+        "endJdTdb": 2444846.5
+      }
+    },
+    "sha256": "d833f62581ac2c839708878fa065557450c5975191a5bd6ff0dd4c8097a6a021",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-saturn-1981",
+      "configSha256": "087a419b76a00d357bc99494f0d04d7581fb5f86426bc1f1ebbb29de5738075c",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "699",
+          "solutionId": "sat441l"
+        },
+        {
+          "bodyId": "606",
+          "solutionId": "sat441l"
+        }
+      ],
+      "bodies": {
+        "606": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-10-30T23:38:51.615Z",
+          "solutionId": "sat441l",
+          "responseSha256": "b8a09448b00603583159312cbb06d50493323eb3a07792143d33507892646461",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'606'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1981-08-22 00:00'\",\"STOP_TIME\":\"'1981-08-30 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "699": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:38:50.104Z",
+          "solutionId": "sat441l",
+          "responseSha256": "312d47cfde1a43b5e33f3f8e36b33d0b6f1323e61732e6a656c391897b6b3534",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'699'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1981-08-22 00:00'\",\"STOP_TIME\":\"'1981-08-30 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:48.588Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "30fcc8866b8ff5522c9147812a8d5c05a8a829d9068e54065cb2a606b7afd32d",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1981-08-22 00:00'\",\"STOP_TIME\":\"'1981-08-30 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-uranus-1986",
+    "file": "data/historical/encounters/hist-flyby-v2-uranus-1986.json",
+    "bodyIds": [
+      "-32",
+      "799"
+    ],
+    "cadenceSeconds": 1200,
+    "coverage": {
+      "startJdTdb": 2446450.5,
+      "endJdTdb": 2446459.5
+    },
+    "bodyCoverage": {
+      "799": {
+        "startJdTdb": 2446450.5,
+        "endJdTdb": 2446459.5
+      },
+      "-32": {
+        "startJdTdb": 2446450.5,
+        "endJdTdb": 2446459.5
+      }
+    },
+    "sha256": "9f12ac2e8c978cfc0dda1625be4e13ee570afa156abb17e0bb287a106b1ea395",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-uranus-1986",
+      "configSha256": "b4017fc41088a60a10d20f1fd4271c1996475c0ff6e5b8327198d38478148edd",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "799",
+          "solutionId": "ura184_merged"
+        }
+      ],
+      "bodies": {
+        "799": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:38:54.708Z",
+          "solutionId": "ura184_merged",
+          "responseSha256": "f8e5d36623ef6765c19bc34a7f47ad88214fd071d1b94b3104c186b2bb1c5abd",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'799'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1986-01-20 00:00'\",\"STOP_TIME\":\"'1986-01-29 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:53.140Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "53283def8c8bb4b584cde510bec5a799eeec322f115434da08001edc55faa55a",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1986-01-20 00:00'\",\"STOP_TIME\":\"'1986-01-29 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-neptune-1989",
+    "file": "data/historical/encounters/hist-flyby-v2-neptune-1989.json",
+    "bodyIds": [
+      "-32",
+      "899",
+      "801"
+    ],
+    "cadenceSeconds": 900,
+    "coverage": {
+      "startJdTdb": 2447759.5,
+      "endJdTdb": 2447767.833333333
+    },
+    "bodyCoverage": {
+      "801": {
+        "startJdTdb": 2447759.5,
+        "endJdTdb": 2447767.833333333
+      },
+      "899": {
+        "startJdTdb": 2447759.5,
+        "endJdTdb": 2447767.833333333
+      },
+      "-32": {
+        "startJdTdb": 2447759.5,
+        "endJdTdb": 2447767.833333333
+      }
+    },
+    "sha256": "ac9e4419603bc8e51e0e7c22a0e0d48a2c86b258c37621d82282fd8d729e4aba",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-neptune-1989",
+      "configSha256": "92f24f9fa671dffeb54f447906f74b6663b7258e27bdf50c67b2316b84ab2c80",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "899",
+          "solutionId": "nep098_merged"
+        },
+        {
+          "bodyId": "801",
+          "solutionId": "nep098_merged"
+        }
+      ],
+      "bodies": {
+        "801": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-10-30T23:38:59.247Z",
+          "solutionId": "nep098_merged",
+          "responseSha256": "7a2655ef7c3690846bebd04c576d5c95c16896f0d7787adb8beaa86f14ba2e30",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'801'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1989-08-21 00:00'\",\"STOP_TIME\":\"'1989-08-29 08:00'\",\"STEP_SIZE\":\"'15 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "899": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:38:57.737Z",
+          "solutionId": "nep098_merged",
+          "responseSha256": "92bbced8d8ef4655178e8feaea9dbd8386065c15d3d3640b8a0c204f0e5e0831",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'899'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1989-08-21 00:00'\",\"STOP_TIME\":\"'1989-08-29 08:00'\",\"STEP_SIZE\":\"'15 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:38:56.223Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "a08df38ffb720d70fe5da31e7abddb819cf37223d0ba85d1b20d2ab1e80674dd",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1989-08-21 00:00'\",\"STOP_TIME\":\"'1989-08-29 08:00'\",\"STEP_SIZE\":\"'15 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-event-v1-palebluedot-1990",
+    "file": "data/historical/encounters/hist-event-v1-palebluedot-1990.json",
+    "bodyIds": [
+      "-31",
+      "199",
+      "299",
+      "399",
+      "499",
+      "599",
+      "699",
+      "799",
+      "899"
+    ],
+    "cadenceSeconds": 3600,
+    "coverage": {
+      "startJdTdb": 2447935.5,
+      "endJdTdb": 2447937.5
+    },
+    "bodyCoverage": {
+      "199": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "299": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "399": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "499": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "599": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "699": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "799": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "899": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      },
+      "-31": {
+        "startJdTdb": 2447935.5,
+        "endJdTdb": 2447937.5
+      }
+    },
+    "sha256": "d1c22bba9ae96aa32e35b5ca95c48683b9b915014c0aadd32fc841cc54ab9702",
+    "acquisition": {
+      "datasetId": "hist-event-v1-palebluedot-1990",
+      "configSha256": "71da4da20f21714239d3048c8b6d3c2de1e8720ab845dde8d23829abd26eed55",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        },
+        {
+          "bodyId": "199",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "299",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "399",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "499",
+          "solutionId": "mar099"
+        },
+        {
+          "bodyId": "599",
+          "solutionId": "jup365_merged"
+        },
+        {
+          "bodyId": "699",
+          "solutionId": "sat441l"
+        },
+        {
+          "bodyId": "799",
+          "solutionId": "ura184_merged"
+        },
+        {
+          "bodyId": "899",
+          "solutionId": "nep098_merged"
+        }
+      ],
+      "bodies": {
+        "199": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:02.058Z",
+          "solutionId": "DE441",
+          "responseSha256": "33c7673dc1aabec7c01f1c09f2532eeb92d68e6cda8084d85d67ac100931cb59",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'199'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1990-02-13 00:00'\",\"STOP_TIME\":\"'1990-02-15 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "299": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:03.436Z",
+          "solutionId": "DE441",
+          "responseSha256": "c5ffa64b3f6471b907a5be4b42d87643810e6fe5e273f11732d9efe2ee846c6a",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'299'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1990-02-13 00:00'\",\"STOP_TIME\":\"'1990-02-15 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "399": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:04.812Z",
+          "solutionId": "DE441",
+          "responseSha256": "dffcfe4a6800b05f406134062bc1da5d743df18a45ab09a00304560775e24b91",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'399'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1990-02-13 00:00'\",\"STOP_TIME\":\"'1990-02-15 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "499": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:06.230Z",
+          "solutionId": "mar099",
+          "responseSha256": "ef924f64812badbd6b1546c4a86791a86a398439c2dce635e80fe26baf3656f4",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'499'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1990-02-13 00:00'\",\"STOP_TIME\":\"'1990-02-15 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "599": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:07.619Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "feabf75b9d1a69445e50552f73cd0044d6ada4ed5a7af1b858beb440eccd7430",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'599'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1990-02-13 00:00'\",\"STOP_TIME\":\"'1990-02-15 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "699": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:09.029Z",
+          "solutionId": "sat441l",
+          "responseSha256": "729d3e5a77ba0a2f4de7b603a03d63bcf239047a041c1ef4255e576c227862b6",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'699'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1990-02-13 00:00'\",\"STOP_TIME\":\"'1990-02-15 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "799": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:10.410Z",
+          "solutionId": "ura184_merged",
+          "responseSha256": "062ce81338430b0ea59f5e55364a97e6ab23bcc18c07b025eba64217f1871b91",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'799'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1990-02-13 00:00'\",\"STOP_TIME\":\"'1990-02-15 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "899": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:11.814Z",
+          "solutionId": "nep098_merged",
+          "responseSha256": "fcfd3f1ac91f60367fc6bc46efe2eae8fb94a2323a8b0ca43fc4da0759982a6f",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'899'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1990-02-13 00:00'\",\"STOP_TIME\":\"'1990-02-15 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:00.653Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "647bef8adfe4766b781ea88bce2fa27361289bd777639c9120777d1293032bc5",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1990-02-13 00:00'\",\"STOP_TIME\":\"'1990-02-15 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-cruise-v1-1977-1981",
+    "file": "data/historical/probes/hist-cruise-v1-1977-1981.json",
+    "bodyIds": [
+      "-31"
+    ],
+    "cadenceSeconds": 86400,
+    "coverage": {
+      "startJdTdb": 2443392.5,
+      "endJdTdb": 2444605.5
+    },
+    "bodyCoverage": {
+      "-31": {
+        "startJdTdb": 2443392.5,
+        "endJdTdb": 2444605.5
+      }
+    },
+    "sha256": "8784b8d7a4ec288f004dc47190763cc4b2998faeb2b78b1d6003faf15637225d",
+    "acquisition": {
+      "datasetId": "hist-cruise-v1-1977-1981",
+      "configSha256": "8c1a2c87477145cb6547298dcb320625426ae0010aa2fcac482077a3aea1774a",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:13.395Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "dbba59544d45fa0d02dcd09a985086a4f25c4d636743bab3057d57af0a1d9e9d",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-09-06'\",\"STOP_TIME\":\"'1981-01-01'\",\"STEP_SIZE\":\"'1 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-bridge-v1-1981-min",
+    "file": "data/historical/probes/hist-bridge-v1-1981-min.json",
+    "bodyIds": [
+      "-31"
+    ],
+    "cadenceSeconds": 60,
+    "coverage": {
+      "startJdTdb": 2444605.500694444,
+      "endJdTdb": 2444605.541666667
+    },
+    "bodyCoverage": {
+      "-31": {
+        "startJdTdb": 2444605.500694444,
+        "endJdTdb": 2444605.541666667
+      }
+    },
+    "sha256": "884e4089aaf8cb4175f21a815d74e0b9a7e9a5791bd8e7076b6be2051109505f",
+    "acquisition": {
+      "datasetId": "hist-bridge-v1-1981-min",
+      "configSha256": "81c058661944866d4906116d02b488ac05bc7809a9f2f35dbe93a34bc00b65aa",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:14.777Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "9bf42528dcfe58f82b03ceae98637d062fd75e1f36b501c084d917a4b1952734",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1981-01-01 00:01'\",\"STOP_TIME\":\"'1981-01-01 01:00'\",\"STEP_SIZE\":\"'1 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-bridge-v1-1981-hours",
+    "file": "data/historical/probes/hist-bridge-v1-1981-hours.json",
+    "bodyIds": [
+      "-31"
+    ],
+    "cadenceSeconds": 3600,
+    "coverage": {
+      "startJdTdb": 2444605.541666667,
+      "endJdTdb": 2444606.5
+    },
+    "bodyCoverage": {
+      "-31": {
+        "startJdTdb": 2444605.541666667,
+        "endJdTdb": 2444606.5
+      }
+    },
+    "sha256": "cd9c36650019687e3e5b2ec9453543bb5a90a48f4aea2aa6984a3e471da055b1",
+    "acquisition": {
+      "datasetId": "hist-bridge-v1-1981-hours",
+      "configSha256": "549cddee52d1bab6e979e0e288208226fdfe8ad0f050e332883ffc025e1ea915",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:16.103Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "450d63ce348eaa83c30fe3c89aa020f8a5f36b24b8a846090b554f4856b74d89",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1981-01-01 01:00'\",\"STOP_TIME\":\"'1981-01-02 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-cruise-v1-1981-1996",
+    "file": "data/historical/probes/hist-cruise-v1-1981-1996.json",
+    "bodyIds": [
+      "-31"
+    ],
+    "cadenceSeconds": 432000,
+    "coverage": {
+      "startJdTdb": 2444606.5,
+      "endJdTdb": 2450186.5
+    },
+    "bodyCoverage": {
+      "-31": {
+        "startJdTdb": 2444606.5,
+        "endJdTdb": 2450186.5
+      }
+    },
+    "sha256": "d13c68f3e2412cef83c8b042002826ca9d65fc7b4497473bf848f1a121e86b02",
+    "acquisition": {
+      "datasetId": "hist-cruise-v1-1981-1996",
+      "configSha256": "05b6e8d1e11c81c7f7681552c1a2ff5935434d0fd841e61d9591bb4071f3ee55",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:17.742Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "f8968d22681be6d25a86255a5eb45f3ba05439fc2c15766d11ef5bf564f64117",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1981-01-02'\",\"STOP_TIME\":\"'1996-04-13'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-cruise-v1-1996-2011",
+    "file": "data/historical/probes/hist-cruise-v1-1996-2011.json",
+    "bodyIds": [
+      "-31"
+    ],
+    "cadenceSeconds": 432000,
+    "coverage": {
+      "startJdTdb": 2450186.5,
+      "endJdTdb": 2455766.5
+    },
+    "bodyCoverage": {
+      "-31": {
+        "startJdTdb": 2450186.5,
+        "endJdTdb": 2455766.5
+      }
+    },
+    "sha256": "17e9299abad95dfbc3c18b93b55cbc51294e698a7e7842d24e823292aa1d260e",
+    "acquisition": {
+      "datasetId": "hist-cruise-v1-1996-2011",
+      "configSha256": "97bf0cc09c38c7903ef438c7a8951ec44139db70d979e6c4247cba27a03360b4",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:19.336Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "a5fdc48c2a39c31c91e706ccd10db4e146e42785df6d47951ec3929cba373ccf",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1996-04-13'\",\"STOP_TIME\":\"'2011-07-24'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-cruise-v1-2011-2026",
+    "file": "data/historical/probes/hist-cruise-v1-2011-2026.json",
+    "bodyIds": [
+      "-31"
+    ],
+    "cadenceSeconds": 432000,
+    "coverage": {
+      "startJdTdb": 2455766.5,
+      "endJdTdb": 2461346.5
+    },
+    "bodyCoverage": {
+      "-31": {
+        "startJdTdb": 2455766.5,
+        "endJdTdb": 2461346.5
+      }
+    },
+    "sha256": "95ad2822fedfad7b33214685145616dcbe046d3184bcd098251ec6e2909fb5aa",
+    "acquisition": {
+      "datasetId": "hist-cruise-v1-2011-2026",
+      "configSha256": "ae7d6c72914d9a0ca845da4038cdba469a6dd5d9c343e91972dc9ddcf33a6f2e",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-31": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:20.931Z",
+          "solutionId": "Voyager_1_ST+refit2022_m",
+          "responseSha256": "4a47876ded2ce6e55565f151671e5e9887733d0c4d1ebe829f962f9ee48a0603",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-31'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2011-07-24'\",\"STOP_TIME\":\"'2026-11-02'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-cruise-v2-1977-1989",
+    "file": "data/historical/probes/hist-cruise-v2-1977-1989.json",
+    "bodyIds": [
+      "-32"
+    ],
+    "cadenceSeconds": 86400,
+    "coverage": {
+      "startJdTdb": 2443376.5,
+      "endJdTdb": 2447767.5
+    },
+    "bodyCoverage": {
+      "-32": {
+        "startJdTdb": 2443376.5,
+        "endJdTdb": 2447767.5
+      }
+    },
+    "sha256": "c3cd3332f581ff8ebf4234456f1493774a04250ac6ab2095dbe84b837380b316",
+    "acquisition": {
+      "datasetId": "hist-cruise-v2-1977-1989",
+      "configSha256": "5745355bf7cddd1efa5bf7274027a0ce03ff956af22fd18c954342bc5d38f5ac",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:22.668Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "0569195251b7196842486423abbf9513385adc0478203a749b7c7f2a8001c71e",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-21'\",\"STOP_TIME\":\"'1989-08-29'\",\"STEP_SIZE\":\"'1 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-bridge-v2-1989-min",
+    "file": "data/historical/probes/hist-bridge-v2-1989-min.json",
+    "bodyIds": [
+      "-32"
+    ],
+    "cadenceSeconds": 60,
+    "coverage": {
+      "startJdTdb": 2447767.834027778,
+      "endJdTdb": 2447767.875
+    },
+    "bodyCoverage": {
+      "-32": {
+        "startJdTdb": 2447767.834027778,
+        "endJdTdb": 2447767.875
+      }
+    },
+    "sha256": "083e8b2d2085645268089a5a19d20a2fe7e5e05e94383b7db67094d3ed20a1fc",
+    "acquisition": {
+      "datasetId": "hist-bridge-v2-1989-min",
+      "configSha256": "504a7db4bf52b36a54a67c9b737c94852506e04d794e4465cc0ef5e34122103d",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:24.018Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "7d83e7e3394e2ad92de5ef025f1421855282db78890b29092e18fb45f14ee12a",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1989-08-29 08:01'\",\"STOP_TIME\":\"'1989-08-29 09:00'\",\"STEP_SIZE\":\"'1 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-bridge-v2-1989-hours",
+    "file": "data/historical/probes/hist-bridge-v2-1989-hours.json",
+    "bodyIds": [
+      "-32"
+    ],
+    "cadenceSeconds": 3600,
+    "coverage": {
+      "startJdTdb": 2447767.875,
+      "endJdTdb": 2447771.5
+    },
+    "bodyCoverage": {
+      "-32": {
+        "startJdTdb": 2447767.875,
+        "endJdTdb": 2447771.5
+      }
+    },
+    "sha256": "2ed68e04b75efb3b9ee5ecad272141ecd1189a573d89205a258e685f2ddb9c39",
+    "acquisition": {
+      "datasetId": "hist-bridge-v2-1989-hours",
+      "configSha256": "e0f5fb6368556f9d7b9d4397f6aa9a4ab6819d06ee8c3015e316672789df26ff",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:25.425Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "8496061644c122c45836493899e4f3c6cd633d2f63d8a34146c9abbc7521c8fa",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1989-08-29 09:00'\",\"STOP_TIME\":\"'1989-09-02 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-cruise-v2-1989-2002",
+    "file": "data/historical/probes/hist-cruise-v2-1989-2002.json",
+    "bodyIds": [
+      "-32"
+    ],
+    "cadenceSeconds": 432000,
+    "coverage": {
+      "startJdTdb": 2447771.5,
+      "endJdTdb": 2452296.5
+    },
+    "bodyCoverage": {
+      "-32": {
+        "startJdTdb": 2447771.5,
+        "endJdTdb": 2452296.5
+      }
+    },
+    "sha256": "e262680c056c06b3f955466678c0819a78b79109dd7698699c556e4a3fa1d810",
+    "acquisition": {
+      "datasetId": "hist-cruise-v2-1989-2002",
+      "configSha256": "09304f8fcd4a217644d423e4fe53d5bc41c787621362fe0f8bf650ca382c8b52",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:26.963Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "7194f9d05986c1c598919164bccb6174b181502ab6dc2dfa0561954eafdb4e2e",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1989-09-02'\",\"STOP_TIME\":\"'2002-01-22'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-cruise-v2-2002-2014",
+    "file": "data/historical/probes/hist-cruise-v2-2002-2014.json",
+    "bodyIds": [
+      "-32"
+    ],
+    "cadenceSeconds": 432000,
+    "coverage": {
+      "startJdTdb": 2452296.5,
+      "endJdTdb": 2456821.5
+    },
+    "bodyCoverage": {
+      "-32": {
+        "startJdTdb": 2452296.5,
+        "endJdTdb": 2456821.5
+      }
+    },
+    "sha256": "8f2a7c640af948f28bb46f195639d419ab2fe0976d153eac74bcc670c66a7a3e",
+    "acquisition": {
+      "datasetId": "hist-cruise-v2-2002-2014",
+      "configSha256": "8d02bbb74bf4648fa58cee649d54bbb886271a792d840dfed0221376957f9a81",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:28.503Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "98fd097c9b3a3913854130dc82aa34aec025f6bad2b3a35a15063cd6a8c1ee2c",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2002-01-22'\",\"STOP_TIME\":\"'2014-06-13'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-cruise-v2-2014-2026",
+    "file": "data/historical/probes/hist-cruise-v2-2014-2026.json",
+    "bodyIds": [
+      "-32"
+    ],
+    "cadenceSeconds": 432000,
+    "coverage": {
+      "startJdTdb": 2456821.5,
+      "endJdTdb": 2461346.5
+    },
+    "bodyCoverage": {
+      "-32": {
+        "startJdTdb": 2456821.5,
+        "endJdTdb": 2461346.5
+      }
+    },
+    "sha256": "38b02524a332c4a029df5b394baff00656c220a0bc9e92298b474276beae63ad",
+    "acquisition": {
+      "datasetId": "hist-cruise-v2-2014-2026",
+      "configSha256": "f1814c168f10b785c7bfce06d7d984647615b6fca2fb7d26820cd8e1f9428d72",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        }
+      ],
+      "bodies": {
+        "-32": {
+          "type": "probe",
+          "acquiredAtUtc": "2026-10-30T23:39:30.178Z",
+          "solutionId": "Voyager_2_ST+refit2022_m",
+          "responseSha256": "3c0791ca2b597f2cd2393513659bb2a74b331a6b87e7def1952dab6ef8da9865",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'-32'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2014-06-13'\",\"STOP_TIME\":\"'2026-11-02'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-planets-outer-1977-2002",
+    "file": "data/historical/planets/hist-planets-outer-1977-2002.json",
+    "bodyIds": [
+      "599",
+      "699",
+      "799",
+      "899"
+    ],
+    "cadenceSeconds": 432000,
+    "coverage": {
+      "startJdTdb": 2443375.5,
+      "endJdTdb": 2452360.5
+    },
+    "bodyCoverage": {
+      "599": {
+        "startJdTdb": 2443375.5,
+        "endJdTdb": 2452360.5
+      },
+      "699": {
+        "startJdTdb": 2443375.5,
+        "endJdTdb": 2452360.5
+      },
+      "799": {
+        "startJdTdb": 2443375.5,
+        "endJdTdb": 2452360.5
+      },
+      "899": {
+        "startJdTdb": 2443375.5,
+        "endJdTdb": 2452360.5
+      }
+    },
+    "sha256": "ec5841b05b1fda94e006dca30781fb74e1a111434fc4c22bd6e522485420ab13",
+    "acquisition": {
+      "datasetId": "hist-planets-outer-1977-2002",
+      "configSha256": "7ef41602a0855a7d0faea72761709b2d26654dc2d1a89ebfd3526b1ddef0aad2",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "599",
+          "solutionId": "jup365_merged"
+        },
+        {
+          "bodyId": "699",
+          "solutionId": "sat441l"
+        },
+        {
+          "bodyId": "799",
+          "solutionId": "ura184_merged"
+        },
+        {
+          "bodyId": "899",
+          "solutionId": "nep098_merged"
+        }
+      ],
+      "bodies": {
+        "599": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:31.781Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "a09828650c5fa074e44c3fdfd30dc42442cc2adecfe21194b8acefecf441db43",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'599'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-20'\",\"STOP_TIME\":\"'2002-03-27'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "699": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:33.396Z",
+          "solutionId": "sat441l",
+          "responseSha256": "86cc3b11e073a1dc3422011231ac4b1f80afc7e2091afd0bc0e690f04aa5e380",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'699'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-20'\",\"STOP_TIME\":\"'2002-03-27'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "799": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:34.994Z",
+          "solutionId": "ura184_merged",
+          "responseSha256": "dd8c6f3d2a8b64ba95166fbdb8943bf89b1e6334738e0091907bb5aea876ad91",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'799'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-20'\",\"STOP_TIME\":\"'2002-03-27'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "899": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:36.616Z",
+          "solutionId": "nep098_merged",
+          "responseSha256": "532dd12e6a5b51b4901c294838558cc8ff8bb53f7f0109924af57d94acedfc6f",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'899'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-20'\",\"STOP_TIME\":\"'2002-03-27'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-planets-outer-2002-2026",
+    "file": "data/historical/planets/hist-planets-outer-2002-2026.json",
+    "bodyIds": [
+      "599",
+      "699",
+      "799",
+      "899"
+    ],
+    "cadenceSeconds": 432000,
+    "coverage": {
+      "startJdTdb": 2452360.5,
+      "endJdTdb": 2461350.5
+    },
+    "bodyCoverage": {
+      "599": {
+        "startJdTdb": 2452360.5,
+        "endJdTdb": 2461350.5
+      },
+      "699": {
+        "startJdTdb": 2452360.5,
+        "endJdTdb": 2461350.5
+      },
+      "799": {
+        "startJdTdb": 2452360.5,
+        "endJdTdb": 2461350.5
+      },
+      "899": {
+        "startJdTdb": 2452360.5,
+        "endJdTdb": 2461350.5
+      }
+    },
+    "sha256": "ebc3d70fb8f3ecd3eb3ff991221dd697e03d1136f4ed8db0043b626a1d1f5237",
+    "acquisition": {
+      "datasetId": "hist-planets-outer-2002-2026",
+      "configSha256": "7cdbc40600c79580666ba3dfa8957690604d51fc3b77d10dc5d6dd4c0db9ca31",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "599",
+          "solutionId": "jup365_merged"
+        },
+        {
+          "bodyId": "699",
+          "solutionId": "sat441l"
+        },
+        {
+          "bodyId": "799",
+          "solutionId": "ura184_merged"
+        },
+        {
+          "bodyId": "899",
+          "solutionId": "nep098_merged"
+        }
+      ],
+      "bodies": {
+        "599": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:38.241Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "7dc333d1b3560bfcfeb7515658a69549618db47eb6df2fa54cf8a389fa1d01a4",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'599'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2002-03-27'\",\"STOP_TIME\":\"'2026-11-06'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "699": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:39.860Z",
+          "solutionId": "sat441l",
+          "responseSha256": "07999f6b57c3290a56410d7d34b52fc3093c133631db9574452e17d84e259b20",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'699'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2002-03-27'\",\"STOP_TIME\":\"'2026-11-06'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "799": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:41.460Z",
+          "solutionId": "ura184_merged",
+          "responseSha256": "d4b95da08d6949d0159df7ea4f2cd637b3614f82fd17e5fbb49ee699ff927d04",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'799'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2002-03-27'\",\"STOP_TIME\":\"'2026-11-06'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "899": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:43.060Z",
+          "solutionId": "nep098_merged",
+          "responseSha256": "618e9137d8c86d54178c7636747d5093b0b87a428d1d240d64513a41f5cac014",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'899'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2002-03-27'\",\"STOP_TIME\":\"'2026-11-06'\",\"STEP_SIZE\":\"'5 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-planets-inner-1977-1987",
+    "file": "data/historical/planets/hist-planets-inner-1977-1987.json",
+    "bodyIds": [
+      "199",
+      "299",
+      "399",
+      "499"
+    ],
+    "cadenceSeconds": 172800,
+    "coverage": {
+      "startJdTdb": 2443375.5,
+      "endJdTdb": 2446969.5
+    },
+    "bodyCoverage": {
+      "199": {
+        "startJdTdb": 2443375.5,
+        "endJdTdb": 2446969.5
+      },
+      "299": {
+        "startJdTdb": 2443375.5,
+        "endJdTdb": 2446969.5
+      },
+      "399": {
+        "startJdTdb": 2443375.5,
+        "endJdTdb": 2446969.5
+      },
+      "499": {
+        "startJdTdb": 2443375.5,
+        "endJdTdb": 2446969.5
+      }
+    },
+    "sha256": "924a1597f41fed478a70bc5fa7eeb3d1bd49a69e491a7c554b6beed6e724224c",
+    "acquisition": {
+      "datasetId": "hist-planets-inner-1977-1987",
+      "configSha256": "0f553b4aa146f9f11c04da272162b019a07b373e7bcb4e26b4158786f5ff03f4",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "199",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "299",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "399",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "499",
+          "solutionId": "mar099"
+        }
+      ],
+      "bodies": {
+        "199": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:44.697Z",
+          "solutionId": "DE441",
+          "responseSha256": "78c6989bbfc3c51d0f7763efc9f9046546ac8f5458273b28990a5c6d89fc93a9",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'199'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-20'\",\"STOP_TIME\":\"'1987-06-23'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "299": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:46.326Z",
+          "solutionId": "DE441",
+          "responseSha256": "c3f8d44df1e8173757a008816df5156f8ee20641f6015a5bbb48582b4c74ab10",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'299'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-20'\",\"STOP_TIME\":\"'1987-06-23'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "399": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:47.919Z",
+          "solutionId": "DE441",
+          "responseSha256": "62ec70b4531f88857e024b9c1100fe363715ec5ad32f349a8b0b315dcae0c78a",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'399'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-20'\",\"STOP_TIME\":\"'1987-06-23'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "499": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:49.518Z",
+          "solutionId": "mar099",
+          "responseSha256": "caa7f2ac6e40a766fc9e63223d9b8e7ecc7222a4efe1820fd8a47f2cbc94e2b2",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'499'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1977-08-20'\",\"STOP_TIME\":\"'1987-06-23'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-planets-inner-1987-1997",
+    "file": "data/historical/planets/hist-planets-inner-1987-1997.json",
+    "bodyIds": [
+      "199",
+      "299",
+      "399",
+      "499"
+    ],
+    "cadenceSeconds": 172800,
+    "coverage": {
+      "startJdTdb": 2446969.5,
+      "endJdTdb": 2450563.5
+    },
+    "bodyCoverage": {
+      "199": {
+        "startJdTdb": 2446969.5,
+        "endJdTdb": 2450563.5
+      },
+      "299": {
+        "startJdTdb": 2446969.5,
+        "endJdTdb": 2450563.5
+      },
+      "399": {
+        "startJdTdb": 2446969.5,
+        "endJdTdb": 2450563.5
+      },
+      "499": {
+        "startJdTdb": 2446969.5,
+        "endJdTdb": 2450563.5
+      }
+    },
+    "sha256": "7dc2f038a36165826b0ed90da4503b8001f5f383883e6a9e4da9e1d832fd5b6f",
+    "acquisition": {
+      "datasetId": "hist-planets-inner-1987-1997",
+      "configSha256": "f51235b1c9a5a5feaa9927ccd858de6d5e11a4d275febd2bf439db6406850097",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "199",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "299",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "399",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "499",
+          "solutionId": "mar099"
+        }
+      ],
+      "bodies": {
+        "199": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:51.157Z",
+          "solutionId": "DE441",
+          "responseSha256": "0fe2ff25795623142d7a554580d599a40abe79c4dd87185ea31b1cdca2cd7436",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'199'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1987-06-23'\",\"STOP_TIME\":\"'1997-04-25'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "299": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:52.747Z",
+          "solutionId": "DE441",
+          "responseSha256": "24df0e294ef64ce80a4b27a2bec7f56ee8079d78340391e72228ad85c984431f",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'299'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1987-06-23'\",\"STOP_TIME\":\"'1997-04-25'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "399": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:54.340Z",
+          "solutionId": "DE441",
+          "responseSha256": "e3d090036047a5c9ae4c9d334465671a141d9a4e69773d671874fd0080b5b215",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'399'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1987-06-23'\",\"STOP_TIME\":\"'1997-04-25'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "499": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:55.942Z",
+          "solutionId": "mar099",
+          "responseSha256": "1e9341c4da2273902eac67bb47a6b3c86a7340f36b726f97a8a15c8b863ce10b",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'499'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1987-06-23'\",\"STOP_TIME\":\"'1997-04-25'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-planets-inner-1997-2007",
+    "file": "data/historical/planets/hist-planets-inner-1997-2007.json",
+    "bodyIds": [
+      "199",
+      "299",
+      "399",
+      "499"
+    ],
+    "cadenceSeconds": 172800,
+    "coverage": {
+      "startJdTdb": 2450563.5,
+      "endJdTdb": 2454157.5
+    },
+    "bodyCoverage": {
+      "199": {
+        "startJdTdb": 2450563.5,
+        "endJdTdb": 2454157.5
+      },
+      "299": {
+        "startJdTdb": 2450563.5,
+        "endJdTdb": 2454157.5
+      },
+      "399": {
+        "startJdTdb": 2450563.5,
+        "endJdTdb": 2454157.5
+      },
+      "499": {
+        "startJdTdb": 2450563.5,
+        "endJdTdb": 2454157.5
+      }
+    },
+    "sha256": "2891e30b975257cb8549134e9841c5348fcc167c82d5b31c0403a115797f81ce",
+    "acquisition": {
+      "datasetId": "hist-planets-inner-1997-2007",
+      "configSha256": "6170e204f983186af41c31492b13858beb13c8db156c7437861ba86f402d0b96",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "199",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "299",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "399",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "499",
+          "solutionId": "mar099"
+        }
+      ],
+      "bodies": {
+        "199": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:57.573Z",
+          "solutionId": "DE441",
+          "responseSha256": "48bc1cab40a453a1a12ed13ce2f78f5570a505d0a49483dc9afc411b5f67b4d5",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'199'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1997-04-25'\",\"STOP_TIME\":\"'2007-02-26'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "299": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:39:59.179Z",
+          "solutionId": "DE441",
+          "responseSha256": "f83612d786115332b0230b0f7c05b8b69a302b50c6c65b37209123727e036cf4",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'299'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1997-04-25'\",\"STOP_TIME\":\"'2007-02-26'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "399": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:40:00.777Z",
+          "solutionId": "DE441",
+          "responseSha256": "d8033861d02f94be9d45bd4fb0ea89080e74d2002c79fe84527bdacca21bb723",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'399'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1997-04-25'\",\"STOP_TIME\":\"'2007-02-26'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "499": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:40:02.387Z",
+          "solutionId": "mar099",
+          "responseSha256": "0cbfd7e4d775abd979506a205118cc7cc0171260c358298a46127ca6a9a11cc8",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'499'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'1997-04-25'\",\"STOP_TIME\":\"'2007-02-26'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-planets-inner-2007-2016",
+    "file": "data/historical/planets/hist-planets-inner-2007-2016.json",
+    "bodyIds": [
+      "199",
+      "299",
+      "399",
+      "499"
+    ],
+    "cadenceSeconds": 172800,
+    "coverage": {
+      "startJdTdb": 2454157.5,
+      "endJdTdb": 2457751.5
+    },
+    "bodyCoverage": {
+      "199": {
+        "startJdTdb": 2454157.5,
+        "endJdTdb": 2457751.5
+      },
+      "299": {
+        "startJdTdb": 2454157.5,
+        "endJdTdb": 2457751.5
+      },
+      "399": {
+        "startJdTdb": 2454157.5,
+        "endJdTdb": 2457751.5
+      },
+      "499": {
+        "startJdTdb": 2454157.5,
+        "endJdTdb": 2457751.5
+      }
+    },
+    "sha256": "c08409d69bd075038bc6394b0d28b589e25617839011c6f889ef1226ce92ad41",
+    "acquisition": {
+      "datasetId": "hist-planets-inner-2007-2016",
+      "configSha256": "d25524835e2d4afad35f9c6c3e0a01fe01bddadc85b3abf7d1c6464fb40291ff",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "199",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "299",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "399",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "499",
+          "solutionId": "mar099"
+        }
+      ],
+      "bodies": {
+        "199": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:40:04.036Z",
+          "solutionId": "DE441",
+          "responseSha256": "4665af0d1bd6bc8c0b2a578a257a951292290f307673e827316c21055a5d16cf",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'199'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2007-02-26'\",\"STOP_TIME\":\"'2016-12-29'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "299": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:40:05.689Z",
+          "solutionId": "DE441",
+          "responseSha256": "ecf4dfa5a7a9dcd4b9c4914b8cb97bdb996f45af4b1a22f17260fac76946f09f",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'299'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2007-02-26'\",\"STOP_TIME\":\"'2016-12-29'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "399": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:40:07.301Z",
+          "solutionId": "DE441",
+          "responseSha256": "d4b51cfb84abc0bdedee461db1b107284a64723ff4f2d2fa0c50a088fba93373",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'399'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2007-02-26'\",\"STOP_TIME\":\"'2016-12-29'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "499": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:40:08.915Z",
+          "solutionId": "mar099",
+          "responseSha256": "8e7e46935da84a2e80dd0ad9de8778976fd12aa69980f41641ce0558b61b1c85",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'499'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2007-02-26'\",\"STOP_TIME\":\"'2016-12-29'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-planets-inner-2016-2026",
+    "file": "data/historical/planets/hist-planets-inner-2016-2026.json",
+    "bodyIds": [
+      "199",
+      "299",
+      "399",
+      "499"
+    ],
+    "cadenceSeconds": 172800,
+    "coverage": {
+      "startJdTdb": 2457751.5,
+      "endJdTdb": 2461347.5
+    },
+    "bodyCoverage": {
+      "199": {
+        "startJdTdb": 2457751.5,
+        "endJdTdb": 2461347.5
+      },
+      "299": {
+        "startJdTdb": 2457751.5,
+        "endJdTdb": 2461347.5
+      },
+      "399": {
+        "startJdTdb": 2457751.5,
+        "endJdTdb": 2461347.5
+      },
+      "499": {
+        "startJdTdb": 2457751.5,
+        "endJdTdb": 2461347.5
+      }
+    },
+    "sha256": "6a29039a919b6d3230d161b591587c21bf3d65d843273ec68669ad7e347bbc8a",
+    "acquisition": {
+      "datasetId": "hist-planets-inner-2016-2026",
+      "configSha256": "f2700af48d1dcc2dfd52a87a832728e708f08f431bb459673093d019239f5128",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "199",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "299",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "399",
+          "solutionId": "DE441"
+        },
+        {
+          "bodyId": "499",
+          "solutionId": "mar099"
+        }
+      ],
+      "bodies": {
+        "199": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:40:10.576Z",
+          "solutionId": "DE441",
+          "responseSha256": "630e0da9b47ecc287defd3f25a235a7c5431f05bd8125b681053a88fbd7d3368",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'199'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2016-12-29'\",\"STOP_TIME\":\"'2026-11-03'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "299": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:40:12.167Z",
+          "solutionId": "DE441",
+          "responseSha256": "738d1647ae782cede7fb1b1efdb41072e5e68a92fce41b20b9d4a4f1787bdb7a",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'299'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2016-12-29'\",\"STOP_TIME\":\"'2026-11-03'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "399": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:40:13.779Z",
+          "solutionId": "DE441",
+          "responseSha256": "6b8475c056e869e934af23ea9488ba20f2bb362f502ab6f2fa3be89105875653",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'399'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2016-12-29'\",\"STOP_TIME\":\"'2026-11-03'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        },
+        "499": {
+          "type": "planet",
+          "acquiredAtUtc": "2026-10-30T23:40:15.380Z",
+          "solutionId": "mar099",
+          "responseSha256": "842c9af0302dabcfa647ec5ad42728f29764f99ddda526dc24c9a892ea721f6d",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'499'\",\"CENTER\":\"'500@10'\",\"START_TIME\":\"'2016-12-29'\",\"STOP_TIME\":\"'2026-11-03'\",\"STEP_SIZE\":\"'2 d'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}"
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-launch-v2-injection-1977-moon-301",
+    "file": "data/historical/moons/hist-launch-v2-injection-1977-moon-301.json",
+    "bodyIds": [
+      "301"
+    ],
+    "cadenceSeconds": 180,
+    "coverage": {
+      "startJdTdb": 2443376.147916667,
+      "endJdTdb": 2443376.5
+    },
+    "bodyCoverage": {
+      "301": {
+        "startJdTdb": 2443376.147916667,
+        "endJdTdb": 2443376.5
+      }
+    },
+    "sha256": "af2460ebda12c4efd8be81d7636e90d419d714492b36072d37b5be7c74e3e935",
+    "acquisition": {
+      "datasetId": "hist-launch-v2-injection-1977-moon-301",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "301": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:21.723Z",
+          "solutionId": "DE441",
+          "responseSha256": "c93f350756138700f07d6a3e35682e3934cf96f36ddae619fb376f1876a94e7c",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'301'\",\"CENTER\":\"'500@399'\",\"START_TIME\":\"'1977-08-20 15:33'\",\"STOP_TIME\":\"'1977-08-21 00:00'\",\"STEP_SIZE\":\"'3 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "399",
+            "parentDatasetId": "hist-launch-v2-injection-1977",
+            "parentDatasetSha256": "69d67a616ff6c00cc533cb52e11990e147bac49fead6ff72d659b1780eecc9b4",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-launch-v2-injection-1977-moon-301-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-launch-v2-departure-1977-moon-301",
+    "file": "data/historical/moons/hist-launch-v2-departure-1977-moon-301.json",
+    "bodyIds": [
+      "301"
+    ],
+    "cadenceSeconds": 3600,
+    "coverage": {
+      "startJdTdb": 2443376.5,
+      "endJdTdb": 2443384.5
+    },
+    "bodyCoverage": {
+      "301": {
+        "startJdTdb": 2443376.5,
+        "endJdTdb": 2443384.5
+      }
+    },
+    "sha256": "a9e88bb652e3e2cef25ebd76b32586a70394a10b970eb65747f3906dd798cd61",
+    "acquisition": {
+      "datasetId": "hist-launch-v2-departure-1977-moon-301",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "301": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:22.915Z",
+          "solutionId": "DE441",
+          "responseSha256": "34cb56548f2eebd8cbff47fe207b3e052e10cac6d30ae7731cabcb721044d855",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'301'\",\"CENTER\":\"'500@399'\",\"START_TIME\":\"'1977-08-21 00:00'\",\"STOP_TIME\":\"'1977-08-29 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "399",
+            "parentDatasetId": "hist-launch-v2-departure-1977",
+            "parentDatasetSha256": "cb233b8317af293ac46c0e6bb69145abd093b2e0524a049e9e5f4bc8d79cacc2",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-launch-v2-departure-1977-moon-301-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-launch-v1-injection-1977-moon-301",
+    "file": "data/historical/moons/hist-launch-v1-injection-1977-moon-301.json",
+    "bodyIds": [
+      "301"
+    ],
+    "cadenceSeconds": 300,
+    "coverage": {
+      "startJdTdb": 2443392.083333333,
+      "endJdTdb": 2443392.5
+    },
+    "bodyCoverage": {
+      "301": {
+        "startJdTdb": 2443392.083333333,
+        "endJdTdb": 2443392.5
+      }
+    },
+    "sha256": "0e2ed1b4b671ef65c5afac33f4068ad2c6133e619a4ffad4b3154468c5f0e998",
+    "acquisition": {
+      "datasetId": "hist-launch-v1-injection-1977-moon-301",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "301": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:24.062Z",
+          "solutionId": "DE441",
+          "responseSha256": "7579725bafb624772e91558a266d4d90968c26cf4c72ec2d5680ceb4308af192",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'301'\",\"CENTER\":\"'500@399'\",\"START_TIME\":\"'1977-09-05 14:00'\",\"STOP_TIME\":\"'1977-09-06 00:00'\",\"STEP_SIZE\":\"'5 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "399",
+            "parentDatasetId": "hist-launch-v1-injection-1977",
+            "parentDatasetSha256": "4655ddeed2d9e0cb114a741569581528ad7b2d52d298af15b9d549388d541f55",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-launch-v1-injection-1977-moon-301-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-launch-v1-departure-1977-moon-301",
+    "file": "data/historical/moons/hist-launch-v1-departure-1977-moon-301.json",
+    "bodyIds": [
+      "301"
+    ],
+    "cadenceSeconds": 3600,
+    "coverage": {
+      "startJdTdb": 2443392.5,
+      "endJdTdb": 2443400.5
+    },
+    "bodyCoverage": {
+      "301": {
+        "startJdTdb": 2443392.5,
+        "endJdTdb": 2443400.5
+      }
+    },
+    "sha256": "a8d0c91a3003bb2d3cb8dde64352b39fc7efc18870fe22f58114854d2efe0b81",
+    "acquisition": {
+      "datasetId": "hist-launch-v1-departure-1977-moon-301",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "301": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:25.241Z",
+          "solutionId": "DE441",
+          "responseSha256": "e4486ac2eeb5d0fdd2f969f7660b28ec56d4632911eb2726070e16128277fc9f",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'301'\",\"CENTER\":\"'500@399'\",\"START_TIME\":\"'1977-09-06 00:00'\",\"STOP_TIME\":\"'1977-09-14 00:00'\",\"STEP_SIZE\":\"'1 h'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "399",
+            "parentDatasetId": "hist-launch-v1-departure-1977",
+            "parentDatasetSha256": "c9d06708307e229042a38349f7ccbe72b952066d3147d12f198143900bf8ba6a",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-launch-v1-departure-1977-moon-301-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v1-jupiter-1979-moon-502",
+    "file": "data/historical/moons/hist-flyby-v1-jupiter-1979-moon-502.json",
+    "bodyIds": [
+      "502"
+    ],
+    "cadenceSeconds": 1800,
+    "coverage": {
+      "startJdTdb": 2443933.5,
+      "endJdTdb": 2443942.5
+    },
+    "bodyCoverage": {
+      "502": {
+        "startJdTdb": 2443933.5,
+        "endJdTdb": 2443942.5
+      }
+    },
+    "sha256": "fccab9d80290503f51c1c7a7116d67c9db93e464bacbd407869b616f008d78e7",
+    "acquisition": {
+      "datasetId": "hist-flyby-v1-jupiter-1979-moon-502",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "502": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:26.437Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "1e04cc05d740cc8821f90506dd5e4b26d3ce974ff7d50cccff97d8cde00e4fdc",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'502'\",\"CENTER\":\"'500@599'\",\"START_TIME\":\"'1979-03-01 00:00'\",\"STOP_TIME\":\"'1979-03-10 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "599",
+            "parentDatasetId": "hist-flyby-v1-jupiter-1979",
+            "parentDatasetSha256": "23f6ce5bd0f4e0603d250d493d1f18f2b0778e7e2db45fcfa0f3beb429f4488a",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v1-jupiter-1979-moon-502-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v1-jupiter-1979-moon-503",
+    "file": "data/historical/moons/hist-flyby-v1-jupiter-1979-moon-503.json",
+    "bodyIds": [
+      "503"
+    ],
+    "cadenceSeconds": 1800,
+    "coverage": {
+      "startJdTdb": 2443933.5,
+      "endJdTdb": 2443942.5
+    },
+    "bodyCoverage": {
+      "503": {
+        "startJdTdb": 2443933.5,
+        "endJdTdb": 2443942.5
+      }
+    },
+    "sha256": "720c9d9d7fff9349072976e7365b746b577bdee3c96d093929ee5120773a20cf",
+    "acquisition": {
+      "datasetId": "hist-flyby-v1-jupiter-1979-moon-503",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "503": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:27.656Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "b6474bea6ea9db2046e5fc366a8a3bc1c9b337a3a5dd5ff8ca54dde70903e0a6",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'503'\",\"CENTER\":\"'500@599'\",\"START_TIME\":\"'1979-03-01 00:00'\",\"STOP_TIME\":\"'1979-03-10 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "599",
+            "parentDatasetId": "hist-flyby-v1-jupiter-1979",
+            "parentDatasetSha256": "23f6ce5bd0f4e0603d250d493d1f18f2b0778e7e2db45fcfa0f3beb429f4488a",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v1-jupiter-1979-moon-503-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v1-jupiter-1979-moon-504",
+    "file": "data/historical/moons/hist-flyby-v1-jupiter-1979-moon-504.json",
+    "bodyIds": [
+      "504"
+    ],
+    "cadenceSeconds": 1800,
+    "coverage": {
+      "startJdTdb": 2443933.5,
+      "endJdTdb": 2443942.5
+    },
+    "bodyCoverage": {
+      "504": {
+        "startJdTdb": 2443933.5,
+        "endJdTdb": 2443942.5
+      }
+    },
+    "sha256": "eb6b684eb6ed2809c7e0b646376c79a597f3b4afdfa4cb0fb142bec932e940ca",
+    "acquisition": {
+      "datasetId": "hist-flyby-v1-jupiter-1979-moon-504",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "504": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:28.846Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "b07475342b5f532e4dbb720dc058fb9e9e31ec71b667b4bffffbefbf31eef87f",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'504'\",\"CENTER\":\"'500@599'\",\"START_TIME\":\"'1979-03-01 00:00'\",\"STOP_TIME\":\"'1979-03-10 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "599",
+            "parentDatasetId": "hist-flyby-v1-jupiter-1979",
+            "parentDatasetSha256": "23f6ce5bd0f4e0603d250d493d1f18f2b0778e7e2db45fcfa0f3beb429f4488a",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v1-jupiter-1979-moon-504-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-jupiter-1979-moon-502",
+    "file": "data/historical/moons/hist-flyby-v2-jupiter-1979-moon-502.json",
+    "bodyIds": [
+      "502"
+    ],
+    "cadenceSeconds": 1800,
+    "coverage": {
+      "startJdTdb": 2444059.5,
+      "endJdTdb": 2444068.5
+    },
+    "bodyCoverage": {
+      "502": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      }
+    },
+    "sha256": "fbe0a6d468bd4c35e2ef807e3586fd70e211e8718679379d9fd4de384b655bd8",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-jupiter-1979-moon-502",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "502": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:30.031Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "9739f35d0d6cda93b4be425e455cf27b4361a5be662df371eb4c96fcfcf37ab6",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'502'\",\"CENTER\":\"'500@599'\",\"START_TIME\":\"'1979-07-05 00:00'\",\"STOP_TIME\":\"'1979-07-14 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "599",
+            "parentDatasetId": "hist-flyby-v2-jupiter-1979",
+            "parentDatasetSha256": "67cbe45338e684a283bbb9a80dc4a104526237122e2ee2c0f9b83d1ae420ec9a",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v2-jupiter-1979-moon-502-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-jupiter-1979-moon-503",
+    "file": "data/historical/moons/hist-flyby-v2-jupiter-1979-moon-503.json",
+    "bodyIds": [
+      "503"
+    ],
+    "cadenceSeconds": 1800,
+    "coverage": {
+      "startJdTdb": 2444059.5,
+      "endJdTdb": 2444068.5
+    },
+    "bodyCoverage": {
+      "503": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      }
+    },
+    "sha256": "e9354bf7b8657e730800571e66720d49d14e121ca7bb3892829fbc67362c9b49",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-jupiter-1979-moon-503",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "503": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:31.249Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "fde4fae418625f826bd0dd8dd85189cfc786ecf4e23001037a14e0a58436fa2f",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'503'\",\"CENTER\":\"'500@599'\",\"START_TIME\":\"'1979-07-05 00:00'\",\"STOP_TIME\":\"'1979-07-14 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "599",
+            "parentDatasetId": "hist-flyby-v2-jupiter-1979",
+            "parentDatasetSha256": "67cbe45338e684a283bbb9a80dc4a104526237122e2ee2c0f9b83d1ae420ec9a",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v2-jupiter-1979-moon-503-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-jupiter-1979-moon-504",
+    "file": "data/historical/moons/hist-flyby-v2-jupiter-1979-moon-504.json",
+    "bodyIds": [
+      "504"
+    ],
+    "cadenceSeconds": 1800,
+    "coverage": {
+      "startJdTdb": 2444059.5,
+      "endJdTdb": 2444068.5
+    },
+    "bodyCoverage": {
+      "504": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      }
+    },
+    "sha256": "9dae5dc1d198db63b57567cdf62ee6286ac1c7405d91300295620ff92b79e904",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-jupiter-1979-moon-504",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "504": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:32.448Z",
+          "solutionId": "jup365_merged",
+          "responseSha256": "bc81c3956f08b1c29a5c78ce03a288439ba4dae491173037d40fda894a5d2b06",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'504'\",\"CENTER\":\"'500@599'\",\"START_TIME\":\"'1979-07-05 00:00'\",\"STOP_TIME\":\"'1979-07-14 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "599",
+            "parentDatasetId": "hist-flyby-v2-jupiter-1979",
+            "parentDatasetSha256": "67cbe45338e684a283bbb9a80dc4a104526237122e2ee2c0f9b83d1ae420ec9a",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v2-jupiter-1979-moon-504-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v1-saturn-1980-moon-602",
+    "file": "data/historical/moons/hist-flyby-v1-saturn-1980-moon-602.json",
+    "bodyIds": [
+      "602"
+    ],
+    "cadenceSeconds": 1200,
+    "coverage": {
+      "startJdTdb": 2444551.5,
+      "endJdTdb": 2444560.5
+    },
+    "bodyCoverage": {
+      "602": {
+        "startJdTdb": 2444551.5,
+        "endJdTdb": 2444560.5
+      }
+    },
+    "sha256": "f71a2323f08319df856d426e10bf23d317d7c7affbcb067f237cd1a09851bc48",
+    "acquisition": {
+      "datasetId": "hist-flyby-v1-saturn-1980-moon-602",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "602": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:33.700Z",
+          "solutionId": "sat441l",
+          "responseSha256": "ea923e491b003f703834485beef9bfde73c36d3a964c88e7ca47da3518561298",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'602'\",\"CENTER\":\"'500@699'\",\"START_TIME\":\"'1980-11-08 00:00'\",\"STOP_TIME\":\"'1980-11-17 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "699",
+            "parentDatasetId": "hist-flyby-v1-saturn-1980",
+            "parentDatasetSha256": "c076a489fbf102c80b4ce02e9dcb6009dd4cbc16296da5b338e653fad04b601c",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v1-saturn-1980-moon-602-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-saturn-1981-moon-602",
+    "file": "data/historical/moons/hist-flyby-v2-saturn-1981-moon-602.json",
+    "bodyIds": [
+      "602"
+    ],
+    "cadenceSeconds": 1200,
+    "coverage": {
+      "startJdTdb": 2444838.5,
+      "endJdTdb": 2444846.5
+    },
+    "bodyCoverage": {
+      "602": {
+        "startJdTdb": 2444838.5,
+        "endJdTdb": 2444846.5
+      }
+    },
+    "sha256": "2d4b75d6c2c6d5e21517d01e041873d15b609920a7b384965c651a67c98b42d4",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-saturn-1981-moon-602",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "602": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:34.950Z",
+          "solutionId": "sat441l",
+          "responseSha256": "456586973a7525d06a5f0eee8ca88237ae735f43da1e02f482a84539a1920b8f",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'602'\",\"CENTER\":\"'500@699'\",\"START_TIME\":\"'1981-08-22 00:00'\",\"STOP_TIME\":\"'1981-08-30 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "699",
+            "parentDatasetId": "hist-flyby-v2-saturn-1981",
+            "parentDatasetSha256": "d833f62581ac2c839708878fa065557450c5975191a5bd6ff0dd4c8097a6a021",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v2-saturn-1981-moon-602-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-uranus-1986-moon-703",
+    "file": "data/historical/moons/hist-flyby-v2-uranus-1986-moon-703.json",
+    "bodyIds": [
+      "703"
+    ],
+    "cadenceSeconds": 1200,
+    "coverage": {
+      "startJdTdb": 2446450.5,
+      "endJdTdb": 2446459.5
+    },
+    "bodyCoverage": {
+      "703": {
+        "startJdTdb": 2446450.5,
+        "endJdTdb": 2446459.5
+      }
+    },
+    "sha256": "826c5c2b610741687d587f00f23ab8787c347fff84bcda077fb2854c24895440",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-uranus-1986-moon-703",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "703": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:36.203Z",
+          "solutionId": "ura184_merged",
+          "responseSha256": "274f498126017afb4295d3b379e7b454585a8869292c84f0448a12c46ea38a8d",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'703'\",\"CENTER\":\"'500@799'\",\"START_TIME\":\"'1986-01-20 00:00'\",\"STOP_TIME\":\"'1986-01-29 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "799",
+            "parentDatasetId": "hist-flyby-v2-uranus-1986",
+            "parentDatasetSha256": "9f12ac2e8c978cfc0dda1625be4e13ee570afa156abb17e0bb287a106b1ea395",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v2-uranus-1986-moon-703-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-uranus-1986-moon-705",
+    "file": "data/historical/moons/hist-flyby-v2-uranus-1986-moon-705.json",
+    "bodyIds": [
+      "705"
+    ],
+    "cadenceSeconds": 1200,
+    "coverage": {
+      "startJdTdb": 2446450.5,
+      "endJdTdb": 2446459.5
+    },
+    "bodyCoverage": {
+      "705": {
+        "startJdTdb": 2446450.5,
+        "endJdTdb": 2446459.5
+      }
+    },
+    "sha256": "56deeb1d1cad97fd2ac6b27d2fe890508881cd9e1145612c427dbfffac148fc6",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-uranus-1986-moon-705",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "bodies": {
+        "705": {
+          "type": "moon",
+          "acquiredAtUtc": "2026-11-02T01:43:37.458Z",
+          "solutionId": "ura184_merged",
+          "responseSha256": "1f092e8e1d101096881a3832f2f34ece2724b7385450223d05c3c43de06b40b7",
+          "sourceDistanceUnit": "km",
+          "sourceVelocityUnit": "km/s",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'705'\",\"CENTER\":\"'500@799'\",\"START_TIME\":\"'1986-01-20 00:00'\",\"STOP_TIME\":\"'1986-01-29 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "799",
+            "parentDatasetId": "hist-flyby-v2-uranus-1986",
+            "parentDatasetSha256": "9f12ac2e8c978cfc0dda1625be4e13ee570afa156abb17e0bb287a106b1ea395",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v2-uranus-1986-moon-705-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v1-jupiter-1979-moon-501",
+    "file": "data/historical/moons/hist-flyby-v1-jupiter-1979-moon-501.json",
+    "bodyIds": [
+      "501"
+    ],
+    "cadenceSeconds": 1800,
+    "coverage": {
+      "startJdTdb": 2443933.5,
+      "endJdTdb": 2443942.5
+    },
+    "bodyCoverage": {
+      "501": {
+        "startJdTdb": 2443933.5,
+        "endJdTdb": 2443942.5
+      }
+    },
+    "sha256": "6d4bb3dafc1ade89a486b1364597f39dcdcfdef01dda4f4beb4f6dbef4678d74",
+    "acquisition": {
+      "datasetId": "hist-flyby-v1-jupiter-1979-moon-501",
+      "configSha256": "8ab9324c7bafe7cb1f7d76a290effa036f257260d75bce09acb9fd5aedb6bf3f",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        },
+        {
+          "bodyId": "599",
+          "solutionId": "jup365_merged"
+        },
+        {
+          "bodyId": "501",
+          "solutionId": "jup365_merged"
+        }
+      ],
+      "bodies": {
+        "501": {
+          "solutionId": "jup365_merged",
+          "responseSha256": "da71e65edfc5f483ec342696ff64951431ad94b4f9cb82fd0727061028b8266e",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'501'\",\"CENTER\":\"'500@599'\",\"START_TIME\":\"'1979-03-01 00:00'\",\"STOP_TIME\":\"'1979-03-10 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "599",
+            "parentDatasetId": "hist-flyby-v1-jupiter-1979",
+            "parentDatasetSha256": "23f6ce5bd0f4e0603d250d493d1f18f2b0778e7e2db45fcfa0f3beb429f4488a",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v1-jupiter-1979-moon-501-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-jupiter-1979-moon-501",
+    "file": "data/historical/moons/hist-flyby-v2-jupiter-1979-moon-501.json",
+    "bodyIds": [
+      "501"
+    ],
+    "cadenceSeconds": 1800,
+    "coverage": {
+      "startJdTdb": 2444059.5,
+      "endJdTdb": 2444068.5
+    },
+    "bodyCoverage": {
+      "501": {
+        "startJdTdb": 2444059.5,
+        "endJdTdb": 2444068.5
+      }
+    },
+    "sha256": "440de98bed0291b99e166366cad0af0214b1cb9bdce38332358610a5a84edd6d",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-jupiter-1979-moon-501",
+      "configSha256": "ba76c118a931d181d8b466ec9ff0e0d556d63f104decb60c82c47c5882ba7fd6",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "599",
+          "solutionId": "jup365_merged"
+        },
+        {
+          "bodyId": "501",
+          "solutionId": "jup365_merged"
+        }
+      ],
+      "bodies": {
+        "501": {
+          "solutionId": "jup365_merged",
+          "responseSha256": "7681c2094decb34c7f903de0e1c085357b58d4ff2ed91b63e0e5f63d3363798b",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'501'\",\"CENTER\":\"'500@599'\",\"START_TIME\":\"'1979-07-05 00:00'\",\"STOP_TIME\":\"'1979-07-14 00:00'\",\"STEP_SIZE\":\"'30 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "599",
+            "parentDatasetId": "hist-flyby-v2-jupiter-1979",
+            "parentDatasetSha256": "67cbe45338e684a283bbb9a80dc4a104526237122e2ee2c0f9b83d1ae420ec9a",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v2-jupiter-1979-moon-501-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v1-saturn-1980-moon-606",
+    "file": "data/historical/moons/hist-flyby-v1-saturn-1980-moon-606.json",
+    "bodyIds": [
+      "606"
+    ],
+    "cadenceSeconds": 1200,
+    "coverage": {
+      "startJdTdb": 2444551.5,
+      "endJdTdb": 2444560.5
+    },
+    "bodyCoverage": {
+      "606": {
+        "startJdTdb": 2444551.5,
+        "endJdTdb": 2444560.5
+      }
+    },
+    "sha256": "08818f6aec80587bc8f800b9af436937d2691f5581b6de4377349855d7a59a88",
+    "acquisition": {
+      "datasetId": "hist-flyby-v1-saturn-1980-moon-606",
+      "configSha256": "e488be5f20c27876967aa37239f4d73949334d4a7c1dc18e55d46b2e2069c941",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-31",
+          "solutionId": "Voyager_1_ST+refit2022_m"
+        },
+        {
+          "bodyId": "699",
+          "solutionId": "sat441l"
+        },
+        {
+          "bodyId": "606",
+          "solutionId": "sat441l"
+        }
+      ],
+      "bodies": {
+        "606": {
+          "solutionId": "sat441l",
+          "responseSha256": "b45e354e7a3c345c156cc9d746dd5631a60819085baebc5ad30a86de0f371f88",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'606'\",\"CENTER\":\"'500@699'\",\"START_TIME\":\"'1980-11-08 00:00'\",\"STOP_TIME\":\"'1980-11-17 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "699",
+            "parentDatasetId": "hist-flyby-v1-saturn-1980",
+            "parentDatasetSha256": "c076a489fbf102c80b4ce02e9dcb6009dd4cbc16296da5b338e653fad04b601c",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v1-saturn-1980-moon-606-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-saturn-1981-moon-606",
+    "file": "data/historical/moons/hist-flyby-v2-saturn-1981-moon-606.json",
+    "bodyIds": [
+      "606"
+    ],
+    "cadenceSeconds": 1200,
+    "coverage": {
+      "startJdTdb": 2444838.5,
+      "endJdTdb": 2444846.5
+    },
+    "bodyCoverage": {
+      "606": {
+        "startJdTdb": 2444838.5,
+        "endJdTdb": 2444846.5
+      }
+    },
+    "sha256": "f7bf8c63f9ace872764c9313be954fd011b57e82d6ebcc91f549a3a529a51bc3",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-saturn-1981-moon-606",
+      "configSha256": "087a419b76a00d357bc99494f0d04d7581fb5f86426bc1f1ebbb29de5738075c",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "699",
+          "solutionId": "sat441l"
+        },
+        {
+          "bodyId": "606",
+          "solutionId": "sat441l"
+        }
+      ],
+      "bodies": {
+        "606": {
+          "solutionId": "sat441l",
+          "responseSha256": "713cadb48e0c2af98de5cc191b0f0c80c193125b1da38a3e15223fa4b11c24f9",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'606'\",\"CENTER\":\"'500@699'\",\"START_TIME\":\"'1981-08-22 00:00'\",\"STOP_TIME\":\"'1981-08-30 00:00'\",\"STEP_SIZE\":\"'20 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "699",
+            "parentDatasetId": "hist-flyby-v2-saturn-1981",
+            "parentDatasetSha256": "d833f62581ac2c839708878fa065557450c5975191a5bd6ff0dd4c8097a6a021",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v2-saturn-1981-moon-606-planetocentric.json"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "hist-flyby-v2-neptune-1989-moon-801",
+    "file": "data/historical/moons/hist-flyby-v2-neptune-1989-moon-801.json",
+    "bodyIds": [
+      "801"
+    ],
+    "cadenceSeconds": 900,
+    "coverage": {
+      "startJdTdb": 2447759.5,
+      "endJdTdb": 2447767.833333333
+    },
+    "bodyCoverage": {
+      "801": {
+        "startJdTdb": 2447759.5,
+        "endJdTdb": 2447767.833333333
+      }
+    },
+    "sha256": "8dbb8fb9e9e2611986b3ee8fdeb33ff78fa68c9dd53a946633c24a3cc40a152f",
+    "acquisition": {
+      "datasetId": "hist-flyby-v2-neptune-1989-moon-801",
+      "configSha256": "92f24f9fa671dffeb54f447906f74b6663b7258e27bdf50c67b2316b84ab2c80",
+      "apiVersion": "1.2",
+      "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "origin": "SUN_CENTER",
+      "originCode": "500@10",
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "referencePlane": "ECLIPTIC",
+      "referenceSystem": "ICRF",
+      "timeScale": "TDB",
+      "correction": "NONE",
+      "solutionIds": [
+        {
+          "bodyId": "-32",
+          "solutionId": "Voyager_2_ST+refit2022_m"
+        },
+        {
+          "bodyId": "899",
+          "solutionId": "nep098_merged"
+        },
+        {
+          "bodyId": "801",
+          "solutionId": "nep098_merged"
+        }
+      ],
+      "bodies": {
+        "801": {
+          "solutionId": "nep098_merged",
+          "responseSha256": "d7d80a6e4ed4ccf327bcbe5c0c41f4ead35766f0e3d8553f43b249b2a715c706",
+          "queryParameters": "{\"format\":\"json\",\"OBJ_DATA\":\"'NO'\",\"MAKE_EPHEM\":\"'YES'\",\"EPHEM_TYPE\":\"'VECTORS'\",\"COMMAND\":\"'801'\",\"CENTER\":\"'500@899'\",\"START_TIME\":\"'1989-08-21 00:00'\",\"STOP_TIME\":\"'1989-08-29 08:00'\",\"STEP_SIZE\":\"'15 m'\",\"TIME_TYPE\":\"'TDB'\",\"REF_PLANE\":\"'ECLIPTIC'\",\"REF_SYSTEM\":\"'ICRF'\",\"OUT_UNITS\":\"'KM-S'\",\"VEC_TABLE\":\"'2'\",\"VEC_LABELS\":\"'NO'\",\"VEC_CORR\":\"'NONE'\",\"CSV_FORMAT\":\"'YES'\"}",
+          "composition": {
+            "method": "parent_heliocentric_plus_direct_moon_minus_parent",
+            "parentId": "899",
+            "parentDatasetId": "hist-flyby-v2-neptune-1989",
+            "parentDatasetSha256": "ac9e4419603bc8e51e0e7c22a0e0d48a2c86b258c37621d82282fd8d729e4aba",
+            "relativeOriginal": "evidence/stage6/Horizons-original/hist-flyby-v2-neptune-1989-moon-801-planetocentric.json"
+          }
+        }
+      }
+    }
+  }
+]

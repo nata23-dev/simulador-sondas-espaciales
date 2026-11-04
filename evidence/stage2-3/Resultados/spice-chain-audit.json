@@ -1,0 +1,247 @@
+{
+  "method": "CSPICE_N0067 via spiceypy; ECLIPJ2000; NONE; km and km/s; NAIF TLS; all files checked by SHA-256",
+  "encounters": [
+    {
+      "eventId": "v1-jupiter-1979",
+      "utc": "1979-03-05 12:05:26Z",
+      "probeId": "-31",
+      "planetId": "599",
+      "barycenterId": "5",
+      "mergedKernel": "Voyager_1.a54206u_V0.2_merged.bsp",
+      "specializedKernel": "vgr1_jup230.bsp",
+      "nssdcDistanceKm": 349136.22,
+      "spiceMergedChainDistanceKm": 348437.03238470404,
+      "spiceVsHorizonsDirectPositionResidualKm": 7.615027728451598e-05,
+      "spiceVsHorizonsDirectVelocityResidualKmS": 2.7364369968003355e-09,
+      "mergedSpkVsHorizonsHeliocentricProbeKm": 9.461698554310298e-05,
+      "oldVsDe441BarycenterPositionKm": 383.44772690668043,
+      "horizonsBarycenterChainClosureKm": 3.253907165344266e-11,
+      "commonBarycenterBetweenVoyagerKernelsResidualKm": 0.0,
+      "specializedKernelDistanceKm": null,
+      "specializedOverlayBoundaries": [
+        {
+          "side": "start",
+          "utc": "1979-01-31T23:59:09.815",
+          "joinResidualKm": 10769.243156452945
+        },
+        {
+          "side": "end",
+          "utc": "1979-03-18T23:59:09.814",
+          "joinResidualKm": 1637.670848003448
+        }
+      ]
+    },
+    {
+      "eventId": "v2-jupiter-1979",
+      "utc": "1979-07-09 22:29:51Z",
+      "probeId": "-32",
+      "planetId": "599",
+      "barycenterId": "5",
+      "mergedKernel": "Voyager_2.m05016u.merged.bsp",
+      "specializedKernel": "vgr2_jup230.bsp",
+      "nssdcDistanceKm": 721833.7799999999,
+      "spiceMergedChainDistanceKm": 721375.8632933802,
+      "spiceVsHorizonsDirectPositionResidualKm": 0.00016398192694799062,
+      "spiceVsHorizonsDirectVelocityResidualKmS": 1.9735937677765344e-09,
+      "mergedSpkVsHorizonsHeliocentricProbeKm": 0.00020428928332493667,
+      "oldVsDe441BarycenterPositionKm": 424.4061640661641,
+      "horizonsBarycenterChainClosureKm": 1.1999816708318134e-10,
+      "commonBarycenterBetweenVoyagerKernelsResidualKm": 0.0,
+      "specializedKernelDistanceKm": null,
+      "specializedOverlayBoundaries": [
+        {
+          "side": "start",
+          "utc": "1979-06-04T16:59:09.815",
+          "joinResidualKm": 3939.833252845012
+        },
+        {
+          "side": "end",
+          "utc": "1979-07-20T23:59:09.816",
+          "joinResidualKm": 533.7471288895285
+        }
+      ]
+    },
+    {
+      "eventId": "v1-saturn-1980",
+      "utc": "1980-11-12 23:46:30Z",
+      "probeId": "-31",
+      "planetId": "699",
+      "barycenterId": "6",
+      "mergedKernel": "Voyager_1.a54206u_V0.2_merged.bsp",
+      "specializedKernel": "vgr1_sat337.bsp",
+      "nssdcDistanceKm": 186419.69999999998,
+      "spiceMergedChainDistanceKm": 184033.254888182,
+      "spiceVsHorizonsDirectPositionResidualKm": 0.0007180362523294364,
+      "spiceVsHorizonsDirectVelocityResidualKmS": 3.177389096308267e-08,
+      "mergedSpkVsHorizonsHeliocentricProbeKm": 0.0008712491730480696,
+      "oldVsDe441BarycenterPositionKm": 1356.5552304776484,
+      "horizonsBarycenterChainClosureKm": 1.138867507870493e-10,
+      "commonBarycenterBetweenVoyagerKernelsResidualKm": 0.0,
+      "specializedKernelDistanceKm": null,
+      "specializedOverlayBoundaries": [
+        {
+          "side": "start",
+          "utc": "1980-08-06T23:59:08.817",
+          "joinResidualKm": 15032.916279682382
+        },
+        {
+          "side": "end",
+          "utc": "1980-11-19T23:59:08.817",
+          "joinResidualKm": 9714.499533703625
+        }
+      ]
+    },
+    {
+      "eventId": "v2-saturn-1981",
+      "utc": "1981-08-26 03:24:57Z",
+      "probeId": "-32",
+      "planetId": "699",
+      "barycenterId": "6",
+      "mergedKernel": "Voyager_2.m05016u.merged.bsp",
+      "specializedKernel": "vgr2_sat337.bsp",
+      "nssdcDistanceKm": 161081.1,
+      "spiceMergedChainDistanceKm": 160694.24880555214,
+      "spiceVsHorizonsDirectPositionResidualKm": 0.000499249451553219,
+      "spiceVsHorizonsDirectVelocityResidualKmS": 3.029318196220546e-08,
+      "mergedSpkVsHorizonsHeliocentricProbeKm": 0.0006646854054200319,
+      "oldVsDe441BarycenterPositionKm": 1433.9394060475477,
+      "horizonsBarycenterChainClosureKm": 3.258987429429711e-11,
+      "commonBarycenterBetweenVoyagerKernelsResidualKm": 0.0,
+      "specializedKernelDistanceKm": null,
+      "specializedOverlayBoundaries": [
+        {
+          "side": "start",
+          "utc": "1981-06-07T23:59:08.815",
+          "joinResidualKm": 5443.493829497293
+        },
+        {
+          "side": "end",
+          "utc": "1981-09-21T23:59:07.818",
+          "joinResidualKm": 10670.488712567596
+        }
+      ]
+    },
+    {
+      "eventId": "v2-uranus-1986",
+      "utc": "1986-01-24 17:59:47Z",
+      "probeId": "-32",
+      "planetId": "799",
+      "barycenterId": "7",
+      "mergedKernel": "Voyager_2.m05016u.merged.bsp",
+      "specializedKernel": "vgr2.ura182.bsp",
+      "nssdcDistanceKm": 107092.21,
+      "spiceMergedChainDistanceKm": 107158.10699676909,
+      "spiceVsHorizonsDirectPositionResidualKm": 0.0001461796384754373,
+      "spiceVsHorizonsDirectVelocityResidualKmS": 4.090862336844164e-09,
+      "mergedSpkVsHorizonsHeliocentricProbeKm": 0.0001784448788818465,
+      "oldVsDe441BarycenterPositionKm": 5265.629065799651,
+      "horizonsBarycenterChainClosureKm": 7.275957614183426e-12,
+      "commonBarycenterBetweenVoyagerKernelsResidualKm": 0.0,
+      "specializedKernelDistanceKm": 107156.91517805007,
+      "specializedOverlayBoundaries": [
+        {
+          "side": "start",
+          "utc": "1985-08-21T23:59:04.817",
+          "joinResidualKm": 12497.507986736588
+        },
+        {
+          "side": "end",
+          "utc": "1986-02-13T23:59:04.815",
+          "joinResidualKm": 8992.759038080698
+        }
+      ]
+    },
+    {
+      "eventId": "v2-neptune-1989",
+      "utc": "1989-08-25 03:56:36Z",
+      "probeId": "-32",
+      "planetId": "899",
+      "barycenterId": "8",
+      "mergedKernel": "Voyager_2.m05016u.merged.bsp",
+      "specializedKernel": "vgr2_nep097.bsp",
+      "nssdcDistanceKm": 29216.8,
+      "spiceMergedChainDistanceKm": 29263.539240878737,
+      "spiceVsHorizonsDirectPositionResidualKm": 0.0005536642924060034,
+      "spiceVsHorizonsDirectVelocityResidualKmS": 1.6062155799767794e-07,
+      "mergedSpkVsHorizonsHeliocentricProbeKm": 0.0005685182005957453,
+      "oldVsDe441BarycenterPositionKm": 13594.372442892582,
+      "horizonsBarycenterChainClosureKm": 5.4569682106375694e-12,
+      "commonBarycenterBetweenVoyagerKernelsResidualKm": 0.0,
+      "specializedKernelDistanceKm": 29268.97505048762,
+      "specializedOverlayBoundaries": [
+        {
+          "side": "start",
+          "utc": "1988-11-12T23:59:03.817",
+          "joinResidualKm": 13686.983377213266
+        },
+        {
+          "side": "end",
+          "utc": "1989-10-01T11:59:03.818",
+          "joinResidualKm": 580.5677399834168
+        }
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "name": "v1-handoff-1981-1s",
+      "tdb": "1981-01-01 00:00:00 TDB",
+      "currentOneSecondJumpResidualKm": 63902.66493702504,
+      "oldMergedOneSecondResidualKm": 4.595641837023155e-08,
+      "currentPositionDeltaKm": 63901.85611291206,
+      "currentSpeedDeltaKmS": 0.014879855907743888
+    },
+    {
+      "name": "v2-handoff-1989-1s",
+      "tdb": "1989-08-29 08:00:00 TDB",
+      "currentOneSecondJumpResidualKm": 609.9417310568244,
+      "oldMergedOneSecondResidualKm": 9.342931145388855e-10,
+      "currentPositionDeltaKm": 594.1484177780977,
+      "currentSpeedDeltaKmS": 0.001692321810086371
+    }
+  ],
+  "holdouts": [
+    {
+      "probeId": "-31",
+      "tdb": "1981-01-01 00:01:00",
+      "datasetId": "hist-bridge-v1-1981-min",
+      "oldVsCurrentPositionKm": 65177.718676136225,
+      "oldVsCurrentVelocityKmS": 0.014882621508884938
+    },
+    {
+      "probeId": "-31",
+      "tdb": "1990-02-14 04:48:00",
+      "datasetId": "hist-event-v1-palebluedot-1990",
+      "oldVsCurrentPositionKm": 2102.181243474339,
+      "oldVsCurrentVelocityKmS": 4.365520941724885e-05
+    },
+    {
+      "probeId": "-31",
+      "tdb": "2025-01-01 00:00:00",
+      "datasetId": "hist-cruise-v1-2011-2026",
+      "oldVsCurrentPositionKm": 282613.6936984072,
+      "oldVsCurrentVelocityKmS": 0.00045370237492147706
+    },
+    {
+      "probeId": "-32",
+      "tdb": "1989-08-29 08:01:00",
+      "datasetId": "hist-bridge-v2-1989-min",
+      "oldVsCurrentPositionKm": 13362.114912157316,
+      "oldVsCurrentVelocityKmS": 0.0016765077499208047
+    },
+    {
+      "probeId": "-32",
+      "tdb": "1990-02-14 04:48:00",
+      "datasetId": "hist-cruise-v2-1989-2002",
+      "oldVsCurrentPositionKm": 578.5756478081553,
+      "oldVsCurrentVelocityKmS": 8.598051979656032e-06
+    },
+    {
+      "probeId": "-32",
+      "tdb": "2025-01-01 00:00:00",
+      "datasetId": "hist-cruise-v2-2014-2026",
+      "oldVsCurrentPositionKm": 295174.7470043916,
+      "oldVsCurrentVelocityKmS": 0.0006020408684566793
+    }
+  ]
+}

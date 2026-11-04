@@ -1,0 +1,7 @@
+{
+  "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/vgr1.x2100.bsp",
+  "httpStatus": 200,
+  "bytes": 16286720,
+  "sha256": "aa8f37673b5ef60296d210566d01cc49f7b32711f37003393c3327616c9fc6d0",
+  "acquiredAtUtc": "2026-11-02T02:54:59.769890+00:00"
+}

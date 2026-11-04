@@ -147,7 +147,8 @@ test('Validación cuantitativa frente a las 13 muestras independientes retenidas
       assert.ok(velErrKmS < 1e-6, `Error de velocidad de crucero excesivo en ${cp.id}: ${velErrKmS} km/s`);
     } else if (cp.id.includes('neptune')) {
       maxEncounterPosErrKm = Math.max(maxEncounterPosErrKm, posErrKm);
-      // Paso polar rasante a 1,18 R_N (~29 240 km) con fuerte gradiente J2 y asistencia hacia Tritón
+      // Muestra independiente de la sonda cerca del encuentro; la distancia a
+      // Neptuno en los vectores locales difiere de los 1,18 R_N de NSSDCA.
       assert.ok(posErrKm < 25.0, `Error en periapsis rasante de Neptuno fuera de tolerancia: ${posErrKm} km`);
     } else {
       maxEncounterPosErrKm = Math.max(maxEncounterPosErrKm, posErrKm);
@@ -158,17 +159,16 @@ test('Validación cuantitativa frente a las 13 muestras independientes retenidas
   console.log(`VOYAGER_HOLDOUT_VALIDATION count=13 maxCruiseErrKm=${maxCruisePosErrKm.toExponential(3)} maxEncounterErrKm=${maxEncounterPosErrKm.toFixed(4)}`);
 });
 
-test('Encuentros planetarios y satelitales coinciden con hitos NSSDCA sin atravesar planetas ni extrapolar ni cruzar uniones SPK', async () => {
+test('Encuentros planetarios se contrastan con NSSDCA sin ocultar la discrepancia de Neptuno', async () => {
   const resolver = createHistoricalEphemerisResolver({ loadJson: loadPublicJson });
 
   const verificacionesPeriapsis = [
-    { eventId: 'v1-jupiter-1979', target: 'Jupiter', isMoon: false, expectedKm: 348890, tolKm: 3500 },
-    { eventId: 'v2-jupiter-1979', target: 'Jupiter', isMoon: false, expectedKm: 721670, tolKm: 5000 },
+    { eventId: 'v1-jupiter-1979', target: 'Jupiter', isMoon: false, expectedKm: 4.89 * 71398, tolKm: 3500 },
+    { eventId: 'v2-jupiter-1979', target: 'Jupiter', isMoon: false, expectedKm: 10.11 * 71398, tolKm: 5000 },
     { eventId: 'v1-titan-1980', target: 'Titan', isMoon: true, expectedKm: 5569, tolKm: 300 },
-    { eventId: 'v1-saturn-1980', target: 'Saturno', isMoon: false, expectedKm: 185000, tolKm: 4000 },
-    { eventId: 'v2-saturn-1981', target: 'Saturno', isMoon: false, expectedKm: 161000, tolKm: 3500 },
-    { eventId: 'v2-uranus-1986', target: 'Urano', isMoon: false, expectedKm: 102311, tolKm: 5000 },
-    { eventId: 'v2-neptune-1989', target: 'Neptuno', isMoon: false, expectedKm: 34377, tolKm: 5500 }
+    { eventId: 'v1-saturn-1980', target: 'Saturno', isMoon: false, expectedKm: 3.09 * 60330, tolKm: 4000 },
+    { eventId: 'v2-saturn-1981', target: 'Saturno', isMoon: false, expectedKm: 2.67 * 60330, tolKm: 3500 },
+    { eventId: 'v2-uranus-1986', target: 'Urano', isMoon: false, expectedKm: 4.19 * 25559, tolKm: 5000 }
   ];
 
   for (const item of verificacionesPeriapsis) {
@@ -195,9 +195,18 @@ test('Encuentros planetarios y satelitales coinciden con hitos NSSDCA sin atrave
     }
     assert.ok(
       Math.abs(distKm - item.expectedKm) <= item.tolKm,
-      `${item.eventId}: distancia calculada ${distKm.toFixed(1)} km vs oficial ${item.expectedKm} km`
+      `${item.eventId}: distancia calculada ${distKm.toFixed(1)} km vs referencia NSSDCA ${item.expectedKm} km`
     );
   }
+
+  const neptuneEvent = getHistoricalEventById('v2-neptune-1989');
+  const neptuneSnapshot = await resolver.queryHistoricalSnapshot(neptuneEvent.jdTdb);
+  const v2 = neptuneSnapshot.probes[VOYAGER_2_ID].positionKm;
+  const neptune = neptuneSnapshot.planets.Neptuno.state.position;
+  const neptuneDistanceKm = Math.hypot(v2.x - neptune.x, v2.y - neptune.y, v2.z - neptune.z);
+  const nssdcNeptuneKm = 1.18 * 24760;
+  assert.ok(neptuneDistanceKm - nssdcNeptuneKm > 4000,
+    'La diferencia de Neptuno con NSSDCA debe permanecer visible hasta auditar una solución independiente');
 
   // Pale Blue Dot (14 feb 1990 04:48 UTC): ~40,47 AU a la Tierra, ~5 h 36 min luz y ~32° al norte de la eclíptica
   const pbdEv = getHistoricalEventById('v1-pale-blue-dot-1990');
@@ -234,8 +243,34 @@ test('Encuentros planetarios y satelitales coinciden con hitos NSSDCA sin atrave
   assert.equal(outRes.state, null);
 });
 
+test('Transiciones SPK: ningún estado de otra época se presenta como válido', async () => {
+  const resolver = createHistoricalEphemerisResolver({ loadJson: loadPublicJson });
+  for (const mission of Object.values(HISTORICAL_MISSIONS_CATALOG)) {
+    const splice = mission.spkSegmentSplice;
+    for (const fraction of [0.01, 0.25, 0.5, 0.75, 0.99]) {
+      const jdTdb = splice.beforeJdTdb + fraction * (splice.afterJdTdb - splice.beforeJdTdb);
+      const resolution = await resolver.resolveProbeState(mission.id, jdTdb);
+      assert.equal(resolution.status, 'spk_segment_transition');
+      assert.equal(resolution.state, null);
+      assert.equal(resolution.isRealData, false);
+      assert.deepEqual(resolution.samples, []);
+      assert.equal(resolution.reason, splice.note);
+      const snapshot = await resolver.queryHistoricalSnapshot(jdTdb);
+      assert.equal(snapshot.probes[mission.id].state, null);
+      assert.equal(snapshot.probes[mission.id].isRealData, false);
+      assert.equal(snapshot.probes[mission.id].jdTdb, jdTdb);
+    }
+    for (const jdTdb of [splice.beforeJdTdb, splice.afterJdTdb]) {
+      const resolution = await resolver.resolveProbeState(mission.id, jdTdb);
+      assert.ok(resolution.state);
+      assert.equal(resolution.state.time.jdTdb, jdTdb);
+      assert.equal(resolution.isRealData, true);
+    }
+  }
+});
+
 test('Catálogo de fotografías auténticas NASA/JPL: integridad SHA-256 local, miniaturas, fidelidad explícita y apagado de cámaras ISS', async () => {
-  assert.equal(VOYAGER_PHOTO_CATALOG.length, 8);
+  assert.equal(VOYAGER_PHOTO_CATALOG.length, 16);
 
   for (const photo of VOYAGER_PHOTO_CATALOG) {
     assert.equal(photo.recreationFidelity, 'geometric_approximation');
@@ -294,12 +329,12 @@ test('Motor de reproducción histórica y pipeline visual: velocidades, retroces
     initialSpeedId: '5y_s'
   });
 
-  // Incluso a 5 años/s, un paso grande de 0,1 s reales (medio año) NO salta por encima del encuentro de Júpiter de Voyager 1
+  // Incluso a 5 años/s, un paso grande de 0,1 s reales no salta la primera observación lunar de Voyager 1.
   engine.setPlaying(true);
   const stepRes = engine.step(0.1);
-  const jupEv = getHistoricalEventById('v1-jupiter-1979');
+  const jupEv = getHistoricalEventById('v1-callisto-1979');
   assert.equal(engine.isPlaying(), false);
-  assert.equal(stepRes.triggeredEvent?.id, 'v1-jupiter-1979');
+  assert.equal(stepRes.triggeredEvent?.id, 'v1-callisto-1979');
   assert.ok(Math.abs(engine.getJdTdb() - jupEv.jdTdb) < 1e-9);
 
   // Omitir evento y continuar avanza limpiamente más allá de ese instante

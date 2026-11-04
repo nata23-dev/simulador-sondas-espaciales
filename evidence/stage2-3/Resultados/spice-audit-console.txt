@@ -1,0 +1,8 @@
+﻿v1-jupiter-1979 SPICE-Horizons 0.076 m specialized=None
+v2-jupiter-1979 SPICE-Horizons 0.164 m specialized=None
+v1-saturn-1980 SPICE-Horizons 0.718 m specialized=None
+v2-saturn-1981 SPICE-Horizons 0.499 m specialized=None
+v2-uranus-1986 SPICE-Horizons 0.146 m specialized=107156.91517805007
+v2-neptune-1989 SPICE-Horizons 0.554 m specialized=29268.97505048762
+v1-handoff-1981-1s current jump=63902.665 km old kernel residual=0.000000 km
+v2-handoff-1989-1s current jump=609.942 km old kernel residual=0.000000 km

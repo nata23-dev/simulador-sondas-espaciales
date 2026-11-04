@@ -1,0 +1,1234 @@
+{
+  "checks": [
+    "ExploraciÃ³n cargada",
+    "Luna: selecciÃ³n y cÃ¡mara",
+    "Luna: center and axis mapping",
+    "Luna: foco completo",
+    "Moon canvas click selects Luna",
+    "Luna: volver al planeta",
+    "Europa: selecciÃ³n y cÃ¡mara",
+    "Europa: center and axis mapping",
+    "Europa: foco completo",
+    "Europa: volver al planeta",
+    "Titan: selecciÃ³n y cÃ¡mara",
+    "Titan: center and axis mapping",
+    "Titan: foco completo",
+    "Titan: volver al planeta",
+    "Titania: selecciÃ³n y cÃ¡mara",
+    "Titania: center and axis mapping",
+    "Titania: foco completo",
+    "Orbit camera around Titania",
+    "Titania: volver al planeta",
+    "Triton: selecciÃ³n y cÃ¡mara",
+    "Triton: center and axis mapping",
+    "Triton: foco completo",
+    "Triton: volver al planeta",
+    "Vista general",
+    "Europa antes de cambiar fecha",
+    "Europa arrival before date change",
+    "Exploratory scale keeps physical moon distance and local planet size",
+    "Moon date changes relative vector and camera follows",
+    "MÃ³vil sin desbordamiento",
+    "Mobile scene unobscured",
+    "Panel mÃ³vil de luna",
+    "Regreso mÃ³vil a vista general"
+  ],
+  "captures": [
+    {
+      "name": "desktop-luna",
+      "state": {
+        "mode": "exploracion",
+        "moons": {
+          "seleccionada": "Luna",
+          "estados": {
+            "Luna": {
+              "positionKm": [
+                -380477.6331243345,
+                -55767.48595162506,
+                -22026.98759293144
+              ],
+              "velocityKmS": [
+                0.110469446269799,
+                -1.017201960574928,
+                -0.0725693727015948
+              ],
+              "distanceKm": 385173.2467081268,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.08138674837421135,
+                -0.011929043789872619,
+                -0.004711722163394443
+              ]
+            },
+            "Europa": {
+              "positionKm": [
+                289008.5549143044,
+                609745.5719594068,
+                24209.02301000187
+              ],
+              "velocityKmS": [
+                -12.38108299134942,
+                5.76594080936748,
+                -0.0760398044294841
+              ],
+              "distanceKm": 675204.9201041544,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                0.06182089166097831,
+                0.1304287167417619,
+                0.005178474350571488
+              ]
+            },
+            "Titan": {
+              "positionKm": [
+                -881536.9352522208,
+                -737412.2445313381,
+                467920.8942852982
+              ],
+              "velocityKmS": [
+                3.923932072621539,
+                -3.553092343885581,
+                1.441741823590956
+              ],
+              "distanceKm": 1240900.5398932574,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.18856673424611162,
+                -0.1577374845951121,
+                0.10009145549375485
+              ]
+            },
+            "Titania": {
+              "positionKm": [
+                -423048.1497277358,
+                83800.81770184654,
+                -63597.37163708486
+              ],
+              "velocityKmS": [
+                -0.4268308815037395,
+                0.5921341391421879,
+                3.573321595411879
+              ],
+              "distanceKm": 435932.26505353366,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.09049287084062452,
+                0.017925563739050528,
+                -0.013603909486572096
+              ]
+            },
+            "Triton": {
+              "positionKm": [
+                -292390.3927662128,
+                -57912.67339899929,
+                192340.2024902377
+              ],
+              "velocityKmS": [
+                0.9015929342783164,
+                3.539668487207123,
+                2.435408519711892
+              ],
+              "distanceKm": 354740.43047866,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.06254428973312125,
+                -0.01238791394621085,
+                0.04114287490114394
+              ]
+            }
+          },
+          "visibles": {
+            "Luna": {
+              "visible": true,
+              "position": [
+                30.589655330972633,
+                -0.0053871382051320265,
+                -8.978490008079289
+              ],
+              "parentPosition": [
+                30.671042079346844,
+                -0.000675416041737584,
+                -8.990419051869162
+              ],
+              "screen": [
+                877.0000000070254,
+                377.4999999985574
+              ],
+              "radiusScene": 0.00037164165331933437,
+              "parentRadiusScene": 0.0013628019426081312
+            },
+            "Europa": {
+              "visible": true,
+              "position": [
+                -113.28708025455404,
+                2.015444272804948,
+                -126.69787299333031
+              ],
+              "parentPosition": [
+                -113.34890114621501,
+                2.0102657984543764,
+                -126.56744427658855
+              ],
+              "screen": [
+                -7316.9153000704455,
+                148.668465443053
+              ],
+              "radiusScene": 0.00033386571457397093,
+              "parentRadiusScene": 0.0149544374497571
+            },
+            "Titan": {
+              "visible": true,
+              "position": [
+                295.7099723307488,
+                -12.690482331822626,
+                -57.95014025378089
+              ],
+              "parentPosition": [
+                295.89853906499496,
+                -12.790573787316381,
+                -58.107877738376
+              ],
+              "screen": [
+                1785.1949590344948,
+                299.1246387289963
+              ],
+              "radiusScene": 0.000550758641245821,
+              "parentRadiusScene": 0.01245622007372596
+            },
+            "Titania": {
+              "visible": true,
+              "position": [
+                284.6762948144825,
+                -1.651921772292223,
+                -553.0771016760156
+              ],
+              "parentPosition": [
+                284.76678768532315,
+                -1.638317862805651,
+                -553.0591761122765
+              ],
+              "screen": [
+                753.1382803494191,
+                241.84178763000932
+              ],
+              "radiusScene": 0.00016875106498424246,
+              "parentRadiusScene": 0.005425103955039115
+            },
+            "Triton": {
+              "visible": true,
+              "position": [
+                954.6899700967812,
+                -22.88904670538088,
+                -45.06022078781299
+              ],
+              "parentPosition": [
+                954.7525143865142,
+                -22.930189580282025,
+                -45.0726087017592
+              ],
+              "screen": [
+                2100.3188777967544,
+                276.9749602031968
+              ],
+              "radiusScene": 0.0002893303213305696,
+              "parentRadiusScene": 0.005266812931983798
+            }
+          }
+        },
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Luna",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            30.588811311362186,
+            -0.005139697192134918,
+            -8.97719560555737
+          ],
+          "objetivoEscena": [
+            30.58965533097262,
+            -0.005387138205133368,
+            -8.97849000807929
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "panel": "half",
+        "width": 1366,
+        "height": 768
+      }
+    },
+    {
+      "name": "desktop-titania",
+      "state": {
+        "mode": "exploracion",
+        "moons": {
+          "seleccionada": "Titania",
+          "estados": {
+            "Luna": {
+              "positionKm": [
+                -380477.6331243345,
+                -55767.48595162506,
+                -22026.98759293144
+              ],
+              "velocityKmS": [
+                0.110469446269799,
+                -1.017201960574928,
+                -0.0725693727015948
+              ],
+              "distanceKm": 385173.2467081268,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.08138674837421135,
+                -0.011929043789872619,
+                -0.004711722163394443
+              ]
+            },
+            "Europa": {
+              "positionKm": [
+                289008.5549143044,
+                609745.5719594068,
+                24209.02301000187
+              ],
+              "velocityKmS": [
+                -12.38108299134942,
+                5.76594080936748,
+                -0.0760398044294841
+              ],
+              "distanceKm": 675204.9201041544,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                0.06182089166097831,
+                0.1304287167417619,
+                0.005178474350571488
+              ]
+            },
+            "Titan": {
+              "positionKm": [
+                -881536.9352522208,
+                -737412.2445313381,
+                467920.8942852982
+              ],
+              "velocityKmS": [
+                3.923932072621539,
+                -3.553092343885581,
+                1.441741823590956
+              ],
+              "distanceKm": 1240900.5398932574,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.18856673424611162,
+                -0.1577374845951121,
+                0.10009145549375485
+              ]
+            },
+            "Titania": {
+              "positionKm": [
+                -423048.1497277358,
+                83800.81770184654,
+                -63597.37163708486
+              ],
+              "velocityKmS": [
+                -0.4268308815037395,
+                0.5921341391421879,
+                3.573321595411879
+              ],
+              "distanceKm": 435932.26505353366,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.09049287084062452,
+                0.017925563739050528,
+                -0.013603909486572096
+              ]
+            },
+            "Triton": {
+              "positionKm": [
+                -292390.3927662128,
+                -57912.67339899929,
+                192340.2024902377
+              ],
+              "velocityKmS": [
+                0.9015929342783164,
+                3.539668487207123,
+                2.435408519711892
+              ],
+              "distanceKm": 354740.43047866,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.06254428973312125,
+                -0.01238791394621085,
+                0.04114287490114394
+              ]
+            }
+          },
+          "visibles": {
+            "Luna": {
+              "visible": true,
+              "position": [
+                30.589655330972633,
+                -0.0053871382051320265,
+                -8.978490008079289
+              ],
+              "parentPosition": [
+                30.671042079346844,
+                -0.000675416041737584,
+                -8.990419051869162
+              ],
+              "screen": [
+                1014.6531330449059,
+                94.16923395990729
+              ],
+              "radiusScene": 0.00037164165331933437,
+              "parentRadiusScene": 0.0013628019426081312
+            },
+            "Europa": {
+              "visible": true,
+              "position": [
+                -113.28708025455404,
+                2.015444272804948,
+                -126.69787299333031
+              ],
+              "parentPosition": [
+                -113.34890114621501,
+                2.0102657984543764,
+                -126.56744427658855
+              ],
+              "screen": [
+                1331.2773659288275,
+                98.23399629437333
+              ],
+              "radiusScene": 0.00033386571457397093,
+              "parentRadiusScene": 0.0149544374497571
+            },
+            "Titan": {
+              "visible": true,
+              "position": [
+                295.7099723307488,
+                -12.690482331822626,
+                -57.95014025378089
+              ],
+              "parentPosition": [
+                295.89853906499496,
+                -12.790573787316381,
+                -58.107877738376
+              ],
+              "screen": [
+                584.9821894196872,
+                68.94575930401747
+              ],
+              "radiusScene": 0.000550758641245821,
+              "parentRadiusScene": 0.01245622007372596
+            },
+            "Titania": {
+              "visible": true,
+              "position": [
+                284.6762948144825,
+                -1.651921772292223,
+                -553.0771016760156
+              ],
+              "parentPosition": [
+                284.76678768532315,
+                -1.638317862805651,
+                -553.0591761122765
+              ],
+              "screen": [
+                876.9999999655033,
+                377.5
+              ],
+              "radiusScene": 0.00016875106498424246,
+              "parentRadiusScene": 0.005425103955039115
+            },
+            "Triton": {
+              "visible": true,
+              "position": [
+                954.6899700967812,
+                -22.88904670538088,
+                -45.06022078781299
+              ],
+              "parentPosition": [
+                954.7525143865142,
+                -22.930189580282025,
+                -45.0726087017592
+              ],
+              "screen": [
+                -1578.0749515798825,
+                21.65184652186666
+              ],
+              "radiusScene": 0.0002893303213305696,
+              "parentRadiusScene": 0.005266812931983798
+            }
+          }
+        },
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Titania",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            284.676104268367,
+            -1.6516981249006004,
+            -553.0764546663679
+          ],
+          "objetivoEscena": [
+            284.6762948144825,
+            -1.6519217722922228,
+            -553.0771016760156
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "panel": "half",
+        "width": 1366,
+        "height": 768
+      }
+    },
+    {
+      "name": "desktop-triton",
+      "state": {
+        "mode": "exploracion",
+        "moons": {
+          "seleccionada": "Triton",
+          "estados": {
+            "Luna": {
+              "positionKm": [
+                -380477.6331243345,
+                -55767.48595162506,
+                -22026.98759293144
+              ],
+              "velocityKmS": [
+                0.110469446269799,
+                -1.017201960574928,
+                -0.0725693727015948
+              ],
+              "distanceKm": 385173.2467081268,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.08138674837421135,
+                -0.011929043789872619,
+                -0.004711722163394443
+              ]
+            },
+            "Europa": {
+              "positionKm": [
+                289008.5549143044,
+                609745.5719594068,
+                24209.02301000187
+              ],
+              "velocityKmS": [
+                -12.38108299134942,
+                5.76594080936748,
+                -0.0760398044294841
+              ],
+              "distanceKm": 675204.9201041544,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                0.06182089166097831,
+                0.1304287167417619,
+                0.005178474350571488
+              ]
+            },
+            "Titan": {
+              "positionKm": [
+                -881536.9352522208,
+                -737412.2445313381,
+                467920.8942852982
+              ],
+              "velocityKmS": [
+                3.923932072621539,
+                -3.553092343885581,
+                1.441741823590956
+              ],
+              "distanceKm": 1240900.5398932574,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.18856673424611162,
+                -0.1577374845951121,
+                0.10009145549375485
+              ]
+            },
+            "Titania": {
+              "positionKm": [
+                -423048.1497277358,
+                83800.81770184654,
+                -63597.37163708486
+              ],
+              "velocityKmS": [
+                -0.4268308815037395,
+                0.5921341391421879,
+                3.573321595411879
+              ],
+              "distanceKm": 435932.26505353366,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.09049287084062452,
+                0.017925563739050528,
+                -0.013603909486572096
+              ]
+            },
+            "Triton": {
+              "positionKm": [
+                -292390.3927662128,
+                -57912.67339899929,
+                192340.2024902377
+              ],
+              "velocityKmS": [
+                0.9015929342783164,
+                3.539668487207123,
+                2.435408519711892
+              ],
+              "distanceKm": 354740.43047866,
+              "status": "exact",
+              "jdTdb": 2461323.5,
+              "positionSceneOffset": [
+                -0.06254428973312125,
+                -0.01238791394621085,
+                0.04114287490114394
+              ]
+            }
+          },
+          "visibles": {
+            "Luna": {
+              "visible": true,
+              "position": [
+                30.589655330972633,
+                -0.0053871382051320265,
+                -8.978490008079289
+              ],
+              "parentPosition": [
+                30.671042079346844,
+                -0.000675416041737584,
+                -8.990419051869162
+              ],
+              "screen": [
+                124.43088705764735,
+                249.23545714225241
+              ],
+              "radiusScene": 0.00037164165331933437,
+              "parentRadiusScene": 0.0013628019426081312
+            },
+            "Europa": {
+              "visible": true,
+              "position": [
+                -113.28708025455404,
+                2.015444272804948,
+                -126.69787299333031
+              ],
+              "parentPosition": [
+                -113.34890114621501,
+                2.0102657984543764,
+                -126.56744427658855
+              ],
+              "screen": [
+                284.13882191304896,
+                245.19971084181321
+              ],
+              "radiusScene": 0.00033386571457397093,
+              "parentRadiusScene": 0.0149544374497571
+            },
+            "Titan": {
+              "visible": true,
+              "position": [
+                295.7099723307488,
+                -12.690482331822626,
+                -57.95014025378089
+              ],
+              "parentPosition": [
+                295.89853906499496,
+                -12.790573787316381,
+                -58.107877738376
+              ],
+              "screen": [
+                207.75710464191758,
+                237.5822238920627
+              ],
+              "radiusScene": 0.000550758641245821,
+              "parentRadiusScene": 0.01245622007372596
+            },
+            "Titania": {
+              "visible": true,
+              "position": [
+                284.6762948144825,
+                -1.651921772292223,
+                -553.0771016760156
+              ],
+              "parentPosition": [
+                284.76678768532315,
+                -1.638317862805651,
+                -553.0591761122765
+              ],
+              "screen": [
+                855.5863478828524,
+                242.6850653614176
+              ],
+              "radiusScene": 0.00016875106498424246,
+              "parentRadiusScene": 0.005425103955039115
+            },
+            "Triton": {
+              "visible": true,
+              "position": [
+                954.6899700967812,
+                -22.88904670538088,
+                -45.06022078781299
+              ],
+              "parentPosition": [
+                954.7525143865142,
+                -22.930189580282025,
+                -45.0726087017592
+              ],
+              "screen": [
+                876.9999999195201,
+                377.5
+              ],
+              "radiusScene": 0.0002893303213305696,
+              "parentRadiusScene": 0.005266812931983798
+            }
+          }
+        },
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Triton",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            954.6890330552371,
+            -22.888828207090302,
+            -45.060968168447324
+          ],
+          "objetivoEscena": [
+            954.6899700967812,
+            -22.88904670538088,
+            -45.060220787812966
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "panel": "half",
+        "width": 1366,
+        "height": 768
+      }
+    },
+    {
+      "name": "mobile-europa",
+      "state": {
+        "mode": "exploracion",
+        "moons": {
+          "seleccionada": "Europa",
+          "estados": {
+            "Luna": {
+              "positionKm": [
+                -361234.6808385928,
+                -141481.7484311409,
+                -27666.74115839239
+              ],
+              "velocityKmS": [
+                0.3319313521617083,
+                -0.9585809717695524,
+                -0.05748446981944788
+              ],
+              "distanceKm": 388938.3348887304,
+              "status": "exact",
+              "jdTdb": 2461324.5,
+              "positionSceneOffset": [
+                -0.07727055026081311,
+                -0.03026390635516251,
+                -0.005918103733200773
+              ]
+            },
+            "Europa": {
+              "positionKm": [
+                -646550.4870213778,
+                158099.3905500139,
+                -8278.278278504571
+              ],
+              "velocityKmS": [
+                -3.220825881041215,
+                -13.46513056731398,
+                -0.470751731555219
+              ],
+              "distanceKm": 665651.1694957975,
+              "status": "exact",
+              "jdTdb": 2461324.5,
+              "positionSceneOffset": [
+                -0.13830153790206381,
+                0.0338185328034916,
+                -0.0017707799160014803
+              ]
+            },
+            "Titan": {
+              "positionKm": [
+                -485791.4317414629,
+                -982253.7529206101,
+                554801.301582546
+              ],
+              "velocityKmS": [
+                5.127832163930488,
+                -2.035537072546275,
+                0.5394895264854729
+              ],
+              "distanceKm": 1228259.0258238406,
+              "status": "exact",
+              "jdTdb": 2461324.5,
+              "positionSceneOffset": [
+                -0.10391408475927467,
+                -0.2101107452023348,
+                0.1186757643512467
+              ]
+            },
+            "Titania": {
+              "positionKm": [
+                -351233.0807057106,
+                109719.26488152,
+                234883.0944249227
+              ],
+              "velocityKmS": [
+                2.014667418632876,
+                -0.01800292183699304,
+                3.033784606605677
+              ],
+              "distanceKm": 436546.7467692235,
+              "status": "exact",
+              "jdTdb": 2461324.5,
+              "positionSceneOffset": [
+                -0.07513114010240214,
+                0.023469695522936613,
+                0.05024308826340485
+              ]
+            },
+            "Triton": {
+              "positionKm": [
+                -76691.58475009359,
+                222948.3574688358,
+                265017.9551471982
+              ],
+              "velocityKmS": [
+                3.606463692964938,
+                2.330095966028261,
+                -0.9166172991032577
+              ],
+              "distanceKm": 354714.09024725104,
+              "status": "exact",
+              "jdTdb": 2461324.5,
+              "positionSceneOffset": [
+                -0.01640485055381871,
+                0.047690167016546624,
+                0.056689139524700095
+              ]
+            }
+          },
+          "visibles": {
+            "Luna": {
+              "visible": true,
+              "position": [
+                30.425377529487314,
+                -0.0066099938963863885,
+                -9.485259376410987
+              ],
+              "parentPosition": [
+                30.502648079748127,
+                -0.0006918901631856156,
+                -9.51552328276615
+              ],
+              "screen": [
+                780.8802005250767,
+                252.21205003543244
+              ],
+              "radiusScene": 0.00037164165331933437,
+              "parentRadiusScene": 0.0017803389162724334
+            },
+            "Europa": {
+              "visible": true,
+              "position": [
+                -113.66992083334434,
+                2.0132079033053456,
+                -126.45119520337774
+              ],
+              "parentPosition": [
+                -113.53161929544227,
+                2.014978683221347,
+                -126.41737667057424
+              ],
+              "screen": [
+                195.01928666030233,
+                407.8397006170607
+              ],
+              "radiusScene": 0.00033386571457397093,
+              "parentRadiusScene": 0.0149544374497571
+            },
+            "Titan": {
+              "visible": true,
+              "position": [
+                295.7502525205204,
+                -12.673179794239381,
+                -58.07249246481994
+              ],
+              "parentPosition": [
+                295.85416660527966,
+                -12.791855558590628,
+                -58.28260321002227
+              ],
+              "screen": [
+                225.25412513811304,
+                230.09378930025778
+              ],
+              "radiusScene": 0.000550758641245821,
+              "parentRadiusScene": 0.013352335915325834
+            },
+            "Titania": {
+              "visible": true,
+              "position": [
+                284.57863342320286,
+                -1.586416570699375,
+                -553.13430920037
+              ],
+              "parentPosition": [
+                284.6537645633053,
+                -1.6366596589627798,
+                -553.110839504847
+              ],
+              "screen": [
+                -1158.9829924058188,
+                254.2431349246217
+              ],
+              "radiusScene": 0.00016875106498424246,
+              "parentRadiusScene": 0.006098505126681174
+            },
+            "Triton": {
+              "visible": true,
+              "position": [
+                954.7305213505537,
+                -22.875454070211948,
+                -45.22114052941962
+              ],
+              "parentPosition": [
+                954.7469262011075,
+                -22.932143209736648,
+                -45.173450362403074
+              ],
+              "screen": [
+                138.9296021973347,
+                241.96014217697658
+              ],
+              "radiusScene": 0.0002893303213305696,
+              "parentRadiusScene": 0.005940267214969631
+            }
+          }
+        },
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Europa",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -113.66710287569009,
+            2.0136376315211972,
+            -126.45081496357302
+          ],
+          "objetivoEscena": [
+            -113.66992083334434,
+            2.0132079033053456,
+            -126.45119520337774
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "panel": "closed",
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "name": "mobile-europa-datos",
+      "state": {
+        "mode": "exploracion",
+        "moons": {
+          "seleccionada": "Europa",
+          "estados": {
+            "Luna": {
+              "positionKm": [
+                -361234.6808385928,
+                -141481.7484311409,
+                -27666.74115839239
+              ],
+              "velocityKmS": [
+                0.3319313521617083,
+                -0.9585809717695524,
+                -0.05748446981944788
+              ],
+              "distanceKm": 388938.3348887304,
+              "status": "exact",
+              "jdTdb": 2461324.5,
+              "positionSceneOffset": [
+                -0.07727055026081311,
+                -0.03026390635516251,
+                -0.005918103733200773
+              ]
+            },
+            "Europa": {
+              "positionKm": [
+                -646550.4870213778,
+                158099.3905500139,
+                -8278.278278504571
+              ],
+              "velocityKmS": [
+                -3.220825881041215,
+                -13.46513056731398,
+                -0.470751731555219
+              ],
+              "distanceKm": 665651.1694957975,
+              "status": "exact",
+              "jdTdb": 2461324.5,
+              "positionSceneOffset": [
+                -0.13830153790206381,
+                0.0338185328034916,
+                -0.0017707799160014803
+              ]
+            },
+            "Titan": {
+              "positionKm": [
+                -485791.4317414629,
+                -982253.7529206101,
+                554801.301582546
+              ],
+              "velocityKmS": [
+                5.127832163930488,
+                -2.035537072546275,
+                0.5394895264854729
+              ],
+              "distanceKm": 1228259.0258238406,
+              "status": "exact",
+              "jdTdb": 2461324.5,
+              "positionSceneOffset": [
+                -0.10391408475927467,
+                -0.2101107452023348,
+                0.1186757643512467
+              ]
+            },
+            "Titania": {
+              "positionKm": [
+                -351233.0807057106,
+                109719.26488152,
+                234883.0944249227
+              ],
+              "velocityKmS": [
+                2.014667418632876,
+                -0.01800292183699304,
+                3.033784606605677
+              ],
+              "distanceKm": 436546.7467692235,
+              "status": "exact",
+              "jdTdb": 2461324.5,
+              "positionSceneOffset": [
+                -0.07513114010240214,
+                0.023469695522936613,
+                0.05024308826340485
+              ]
+            },
+            "Triton": {
+              "positionKm": [
+                -76691.58475009359,
+                222948.3574688358,
+                265017.9551471982
+              ],
+              "velocityKmS": [
+                3.606463692964938,
+                2.330095966028261,
+                -0.9166172991032577
+              ],
+              "distanceKm": 354714.09024725104,
+              "status": "exact",
+              "jdTdb": 2461324.5,
+              "positionSceneOffset": [
+                -0.01640485055381871,
+                0.047690167016546624,
+                0.056689139524700095
+              ]
+            }
+          },
+          "visibles": {
+            "Luna": {
+              "visible": true,
+              "position": [
+                30.425377529487314,
+                -0.0066099938963863885,
+                -9.485259376410987
+              ],
+              "parentPosition": [
+                30.502648079748127,
+                -0.0006918901631856156,
+                -9.51552328276615
+              ],
+              "screen": [
+                780.8542415456648,
+                78.55972955096668
+              ],
+              "radiusScene": 0.00037164165331933437,
+              "parentRadiusScene": 0.0013639459908940576
+            },
+            "Europa": {
+              "visible": true,
+              "position": [
+                -113.66992083334434,
+                2.0132079033053456,
+                -126.45119520337774
+              ],
+              "parentPosition": [
+                -113.53161929544227,
+                2.014978683221347,
+                -126.41737667057424
+              ],
+              "screen": [
+                195.00001976808397,
+                234.18889587697245
+              ],
+              "radiusScene": 0.00033386571457397093,
+              "parentRadiusScene": 0.0149544374497571
+            },
+            "Titan": {
+              "visible": true,
+              "position": [
+                295.7502525205204,
+                -12.673179794239381,
+                -58.07249246481994
+              ],
+              "parentPosition": [
+                295.85416660527966,
+                -12.791855558590628,
+                -58.28260321002227
+              ],
+              "screen": [
+                225.2298585227261,
+                56.441422752965885
+              ],
+              "radiusScene": 0.000550758641245821,
+              "parentRadiusScene": 0.012458675424646327
+            },
+            "Titania": {
+              "visible": true,
+              "position": [
+                284.57863342320286,
+                -1.586416570699375,
+                -553.13430920037
+              ],
+              "parentPosition": [
+                284.6537645633053,
+                -1.6366596589627798,
+                -553.110839504847
+              ],
+              "screen": [
+                -1159.0175249010927,
+                80.59070027425437
+              ],
+              "radiusScene": 0.00016875106498424246,
+              "parentRadiusScene": 0.0054269490693756904
+            },
+            "Triton": {
+              "visible": true,
+              "position": [
+                954.7305213505537,
+                -22.875454070211948,
+                -45.22114052941962
+              ],
+              "parentPosition": [
+                954.7469262011075,
+                -22.932143209736648,
+                -45.173450362403074
+              ],
+              "screen": [
+                138.90530797842257,
+                68.30776998143538
+              ],
+              "radiusScene": 0.0002893303213305696,
+              "parentRadiusScene": 0.005268658191845071
+            }
+          }
+        },
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Europa",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -113.66710287834469,
+            2.013637636063808,
+            -126.45081494903391
+          ],
+          "objetivoEscena": [
+            -113.66992083334434,
+            2.0132079033053456,
+            -126.45119520337774
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "panel": "half",
+        "width": 390,
+        "height": 844
+      }
+    }
+  ],
+  "errors": []
+}

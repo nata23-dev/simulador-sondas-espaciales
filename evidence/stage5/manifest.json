@@ -1,0 +1,49 @@
+{
+  "totalChecks": 23,
+  "passedChecks": 23,
+  "captures": [
+    {
+      "name": "desktop-luna",
+      "path": "C:\\Users\\PC\\simulador-sondas-espaciales\\simulador-sondas-espaciales\\evidence\\stage5\\desktop-luna.png",
+      "viewport": "1366x768"
+    },
+    {
+      "name": "desktop-europa",
+      "path": "C:\\Users\\PC\\simulador-sondas-espaciales\\simulador-sondas-espaciales\\evidence\\stage5\\desktop-europa.png",
+      "viewport": "1366x768"
+    },
+    {
+      "name": "desktop-titan",
+      "path": "C:\\Users\\PC\\simulador-sondas-espaciales\\simulador-sondas-espaciales\\evidence\\stage5\\desktop-titan.png",
+      "viewport": "1366x768"
+    },
+    {
+      "name": "desktop-titania",
+      "path": "C:\\Users\\PC\\simulador-sondas-espaciales\\simulador-sondas-espaciales\\evidence\\stage5\\desktop-titania.png",
+      "viewport": "1366x768"
+    },
+    {
+      "name": "desktop-triton",
+      "path": "C:\\Users\\PC\\simulador-sondas-espaciales\\simulador-sondas-espaciales\\evidence\\stage5\\desktop-triton.png",
+      "viewport": "1366x768"
+    },
+    {
+      "name": "mobile-europa",
+      "path": "C:\\Users\\PC\\simulador-sondas-espaciales\\simulador-sondas-espaciales\\evidence\\stage5\\mobile-europa.png",
+      "viewport": "390x844"
+    },
+    {
+      "name": "mobile-europa-datos",
+      "path": "C:\\Users\\PC\\simulador-sondas-espaciales\\simulador-sondas-espaciales\\evidence\\stage5\\mobile-europa-datos.png",
+      "viewport": "390x844"
+    },
+    {
+      "name": "mobile-titan",
+      "path": "C:\\Users\\PC\\simulador-sondas-espaciales\\simulador-sondas-espaciales\\evidence\\stage5\\mobile-titan.png",
+      "viewport": "390x844"
+    }
+  ],
+  "consoleErrors": [],
+  "networkErrors": [],
+  "glError": 0
+}

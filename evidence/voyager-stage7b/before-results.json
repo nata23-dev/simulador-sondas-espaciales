@@ -1,0 +1,959 @@
+{
+  "phase": "before",
+  "url": "http://127.0.0.1:5173/",
+  "shots": [
+    {
+      "name": "overview-1366x768",
+      "file": "evidence/voyager-stage7b/before/overview-1366x768.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 76.75169750399756,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          11.910241569593467,
+          270.3783734572707,
+          508.6950870839617
+        ],
+        "objetivoEscena": [
+          185.81272916329527,
+          25.82800027862755,
+          57.635509887797696
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 77.69999999999982,
+      "p95FrameMs": 83.30000000000018
+    },
+    {
+      "name": "planet-mercurio-1366x768",
+      "file": "evidence/voyager-stage7b/before/planet-mercurio-1366x768.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": "Mercurio",
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 76.75169750399756,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          5.5889125839784555,
+          -1.5741391350832714,
+          12.99267328324214
+        ],
+        "objetivoEscena": [
+          5.590830628026623,
+          -1.5746619051375816,
+          12.993609141284026
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 44.5,
+      "p95FrameMs": 122.29999999999927
+    },
+    {
+      "name": "planet-venus-1366x768",
+      "file": "evidence/voyager-stage7b/before/planet-venus-1366x768.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": "Venus",
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 76.75169750399756,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          22.979479366886068,
+          -1.2817416141070543,
+          -3.144491676159298
+        ],
+        "objetivoEscena": [
+          22.983028186944665,
+          -1.2828216669563977,
+          -3.1484859303488353
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 61.10000000000218,
+      "p95FrameMs": 88.89999999999964
+    },
+    {
+      "name": "planet-tierra-1366x768",
+      "file": "evidence/voyager-stage7b/before/planet-tierra-1366x768.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": "Tierra",
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 76.75169750399756,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          30.667945319328997,
+          0.0002313240075069165,
+          -8.985673533974722
+        ],
+        "objetivoEscena": [
+          30.671042079346844,
+          -0.0006754160417374866,
+          -8.990419051869162
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 50,
+      "p95FrameMs": 88.79999999999927
+    },
+    {
+      "name": "planet-marte-1366x768",
+      "file": "evidence/voyager-stage7b/before/planet-marte-1366x768.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": "Marte",
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 76.75169750399756,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          0.20150265072321358,
+          1.0476260974116507,
+          -50.20128746194179
+        ],
+        "objetivoEscena": [
+          0.19954759143623943,
+          1.0471904437178023,
+          -50.20359162908192
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 72.20000000000073,
+      "p95FrameMs": 94.40000000000146
+    },
+    {
+      "name": "planet-jupiter-1366x768",
+      "file": "evidence/voyager-stage7b/before/planet-jupiter-1366x768.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": "Jupiter",
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 76.75169750399756,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -113.28668845388633,
+          2.019755150143592,
+          -126.56967826720206
+        ],
+        "objetivoEscena": [
+          -113.34890114621501,
+          2.0102657984543764,
+          -126.56744427658856
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 22.299999999999272,
+      "p95FrameMs": 33.39999999999782
+    },
+    {
+      "name": "planet-saturno-1366x768",
+      "file": "evidence/voyager-stage7b/before/planet-saturno-1366x768.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": "Saturno",
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 76.75169750399756,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          295.8328554283657,
+          -12.763992612065127,
+          -58.14496564036611
+        ],
+        "objetivoEscena": [
+          295.89853906499496,
+          -12.790573787316378,
+          -58.10787773837599
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 55.400000000001455,
+      "p95FrameMs": 72.20000000000073
+    },
+    {
+      "name": "planet-urano-1366x768",
+      "file": "evidence/voyager-stage7b/before/planet-urano-1366x768.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": "Urano",
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 76.75169750399756,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          284.771972485042,
+          -1.634664613418881,
+          -553.0372295870906
+        ],
+        "objetivoEscena": [
+          284.76678768532315,
+          -1.6383178628056516,
+          -553.0591761122765
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 38.80000000000291,
+      "p95FrameMs": 61.099999999998545
+    },
+    {
+      "name": "planet-neptuno-1366x768",
+      "file": "evidence/voyager-stage7b/before/planet-neptuno-1366x768.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": "Neptuno",
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 76.75169750399756,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          954.3512249424452,
+          -22.914092408634687,
+          -45.377178999843295
+        ],
+        "objetivoEscena": [
+          954.3684546711804,
+          -22.917984319983425,
+          -45.36380472086495
+        ],
+        "transicionActiva": true,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 27.80000000000291,
+      "p95FrameMs": 61.099999999998545
+    },
+    {
+      "name": "cinematic-1366x768",
+      "file": "evidence/voyager-stage7b/before/cinematic-1366x768.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": "Neptuno",
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 76.75169750399756,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          954.7352718016022,
+          -22.926297532045268,
+          -45.08600323949531
+        ],
+        "objetivoEscena": [
+          954.7525143865141,
+          -22.930189580282022,
+          -45.072608701759194
+        ],
+        "transicionActiva": false,
+        "modoVista": "cinematografica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 33.30000000000291,
+      "p95FrameMs": 38.80000000000291
+    },
+    {
+      "name": "moon-io-1366x768",
+      "file": "evidence/voyager-stage7b/before/moon-io-1366x768.png",
+      "mode": "historico",
+      "camera": {
+        "modo": "first_person",
+        "idSondaObservador": "voyager-1",
+        "idSondaExterior": "voyager-1",
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": "Io",
+        "fovGrados": 2.091471698194994,
+        "fovReferenciaGrados": 2.091471698194994,
+        "fovHorizontalGrados": 3.7190941665667574,
+        "fovTipo": "contextual_vertical",
+        "encuadreObjetivo": {
+          "diametroEsferaGrados": 1.3109618411991555,
+          "incluyeAnillos": false,
+          "fovVerticalNecesarioGrados": 2.091471698194994,
+          "cabeEnAreaLibre": true
+        },
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -103.1022500276897,
+          1.7540345785828158,
+          -134.28592054386098
+        ],
+        "objetivoEscena": [
+          -165.49004134188988,
+          25.059533772043697,
+          -208.88228240071967
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "apuntado_geometrico",
+        "contextoGeometria": "encuentro_local",
+        "fuenteContextoLocal": "NASA/JPL Horizons, vector directo luna–nave",
+        "datasetContextoLocal": "v1-io-encounter-1979",
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": 2443938.004353998,
+      "exposure": null,
+      "medianFrameMs": 38.799999999995634,
+      "p95FrameMs": 66.69999999999709
+    },
+    {
+      "name": "moon-titan-1366x768",
+      "file": "evidence/voyager-stage7b/before/moon-titan-1366x768.png",
+      "mode": "historico",
+      "camera": {
+        "modo": "first_person",
+        "idSondaObservador": "voyager-1",
+        "idSondaExterior": "voyager-1",
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": "Titan",
+        "fovGrados": 67.51264332895167,
+        "fovReferenciaGrados": 67.51264332895167,
+        "fovHorizontalGrados": 99.85696411495472,
+        "fovTipo": "contextual_vertical",
+        "encuadreObjetivo": {
+          "diametroEsferaGrados": 45.457124421509775,
+          "incluyeAnillos": false,
+          "fovVerticalNecesarioGrados": 67.51264332895167,
+          "cabeEnAreaLibre": true
+        },
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -303.7975930094377,
+          12.212965439089936,
+          11.45681211343101
+        ],
+        "objetivoEscena": [
+          -235.95552554581212,
+          36.62630878283784,
+          80.74925433508427
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "apuntado_geometrico",
+        "contextoGeometria": "encuentro_local",
+        "fuenteContextoLocal": "NASA/JPL Horizons, vector directo luna–nave",
+        "datasetContextoLocal": "v1-titan-1980",
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": 2444555.7376410034,
+      "exposure": null,
+      "medianFrameMs": 44.39999999999418,
+      "p95FrameMs": 72.19999999999709
+    },
+    {
+      "name": "moon-titania-1366x768",
+      "file": "evidence/voyager-stage7b/before/moon-titania-1366x768.png",
+      "mode": "historico",
+      "camera": {
+        "modo": "first_person",
+        "idSondaObservador": "voyager-2",
+        "idSondaExterior": "voyager-2",
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": "Titania",
+        "fovGrados": 0.35,
+        "fovReferenciaGrados": 0.35,
+        "fovHorizontalGrados": 0.6225218534012976,
+        "fovTipo": "contextual_vertical",
+        "encuadreObjetivo": {
+          "diametroEsferaGrados": 0.1423482358636442,
+          "incluyeAnillos": false,
+          "fovVerticalNecesarioGrados": 0.22711350804450883,
+          "cabeEnAreaLibre": true
+        },
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -117.47146024940933,
+          -0.7052053609401738,
+          600.3960174075515
+        ],
+        "objetivoEscena": [
+          -152.66800705482376,
+          31.731820627685675,
+          688.1971702359027
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "apuntado_geometrico",
+        "contextoGeometria": "encuentro_local",
+        "fuenteContextoLocal": "NASA/JPL Horizons, vector directo luna–nave",
+        "datasetContextoLocal": "v2-titania-1986",
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": 2446454.750638711,
+      "exposure": null,
+      "medianFrameMs": 27.80000000000291,
+      "p95FrameMs": 50
+    },
+    {
+      "name": "moon-miranda-1366x768",
+      "file": "evidence/voyager-stage7b/before/moon-miranda-1366x768.png",
+      "mode": "historico",
+      "camera": {
+        "modo": "first_person",
+        "idSondaObservador": "voyager-2",
+        "idSondaExterior": "voyager-2",
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": "Miranda",
+        "fovGrados": 0.35,
+        "fovReferenciaGrados": 0.35,
+        "fovHorizontalGrados": 0.6225218534012976,
+        "fovTipo": "contextual_vertical",
+        "encuadreObjetivo": {
+          "diametroEsferaGrados": 0.07619418874604936,
+          "incluyeAnillos": false,
+          "fovVerticalNecesarioGrados": 0.12156623655552794,
+          "cabeEnAreaLibre": true
+        },
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -117.43778688702025,
+          -0.7074714844610401,
+          600.4749734064033
+        ],
+        "objetivoEscena": [
+          -101.85074893521875,
+          -24.938723978273927,
+          696.2345194081997
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "apuntado_geometrico",
+        "contextoGeometria": "encuentro_local",
+        "fuenteContextoLocal": "NASA/JPL Horizons, vector directo luna–nave",
+        "datasetContextoLocal": "v2-miranda-1986",
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": 2446455.000638711,
+      "exposure": null,
+      "medianFrameMs": 27.700000000004366,
+      "p95FrameMs": 44.5
+    },
+    {
+      "name": "moon-triton-1366x768",
+      "file": "evidence/voyager-stage7b/before/moon-triton-1366x768.png",
+      "mode": "historico",
+      "camera": {
+        "modo": "first_person",
+        "idSondaObservador": "voyager-2",
+        "idSondaExterior": "voyager-2",
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": "Triton",
+        "fovGrados": 6.221132812701515,
+        "fovReferenciaGrados": 6.221132812701515,
+        "fovHorizontalGrados": 11.041774883723592,
+        "fovTipo": "contextual_vertical",
+        "encuadreObjetivo": {
+          "diametroEsferaGrados": 3.9015516322278954,
+          "incluyeAnillos": false,
+          "fovVerticalNecesarioGrados": 6.221132812701515,
+          "cabeEnAreaLibre": true
+        },
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          192.03388013557355,
+          15.03805982188205,
+          947.5118120955664
+        ],
+        "objetivoEscena": [
+          182.9789293775069,
+          -50.44220076468638,
+          872.4761982826303
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "apuntado_geometrico",
+        "contextoGeometria": "encuentro_local",
+        "fuenteContextoLocal": "NASA/JPL Horizons, vector directo luna–nave",
+        "datasetContextoLocal": "v2-triton-1989",
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": 2447763.8825947074,
+      "exposure": null,
+      "medianFrameMs": 33.299999999995634,
+      "p95FrameMs": 50
+    },
+    {
+      "name": "overview-390x844",
+      "file": "evidence/voyager-stage7b/before/overview-390x844.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 23.25091859669417,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -593.0250725486455,
+          1375.7465551708792,
+          2336.3553011127624
+        ],
+        "objetivoEscena": [
+          291.8302699238214,
+          131.41872981897274,
+          41.26175657480137
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 38.900000000000546,
+      "p95FrameMs": 44.5
+    },
+    {
+      "name": "planet-tierra-390x844",
+      "file": "evidence/voyager-stage7b/before/planet-tierra-390x844.png",
+      "mode": "exploracion",
+      "camera": {
+        "modo": "exterior",
+        "idSondaObservador": null,
+        "idSondaExterior": null,
+        "objetoExteriorSeleccionado": "Tierra",
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": null,
+        "fovGrados": 48,
+        "fovReferenciaGrados": 48,
+        "fovHorizontalGrados": 23.25091859669417,
+        "fovTipo": "exterior_vertical",
+        "encuadreObjetivo": null,
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -12.344798210582098,
+          94.87226837256662,
+          152.75312748995293
+        ],
+        "objetivoEscena": [
+          48.680523185192556,
+          9.061976955296075,
+          -5.525040420809958
+        ],
+        "transicionActiva": true,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "orbita_exterior",
+        "contextoGeometria": "trayectoria_global",
+        "fuenteContextoLocal": null,
+        "datasetContextoLocal": null,
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": null,
+      "exposure": null,
+      "medianFrameMs": 61.100000000000364,
+      "p95FrameMs": 111.19999999999982
+    },
+    {
+      "name": "moon-io-390x844",
+      "file": "evidence/voyager-stage7b/before/moon-io-390x844.png",
+      "mode": "historico",
+      "camera": {
+        "modo": "first_person",
+        "idSondaObservador": "voyager-1",
+        "idSondaExterior": "voyager-1",
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": "Io",
+        "fovGrados": 3.977472911541245,
+        "fovReferenciaGrados": 3.977472911541245,
+        "fovHorizontalGrados": 1.838512487471859,
+        "fovTipo": "contextual_vertical",
+        "encuadreObjetivo": {
+          "diametroEsferaGrados": 1.3109618411991555,
+          "incluyeAnillos": false,
+          "fovVerticalNecesarioGrados": 3.977472911541245,
+          "cabeEnAreaLibre": true
+        },
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -103.1022500276897,
+          1.7540345785828158,
+          -134.28592054386098
+        ],
+        "objetivoEscena": [
+          -165.49004134188988,
+          25.059533772043697,
+          -208.88228240071967
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "apuntado_geometrico",
+        "contextoGeometria": "encuentro_local",
+        "fuenteContextoLocal": "NASA/JPL Horizons, vector directo luna–nave",
+        "datasetContextoLocal": "v1-io-encounter-1979",
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": 2443938.004353998,
+      "exposure": null,
+      "medianFrameMs": 22.19999999999891,
+      "p95FrameMs": 33.19999999999891
+    },
+    {
+      "name": "moon-titan-390x844",
+      "file": "evidence/voyager-stage7b/before/moon-titan-390x844.png",
+      "mode": "historico",
+      "camera": {
+        "modo": "first_person",
+        "idSondaObservador": "voyager-1",
+        "idSondaExterior": "voyager-1",
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": "Titan",
+        "fovGrados": 103.6268872671049,
+        "fovReferenciaGrados": 103.6268872671049,
+        "fovHorizontalGrados": 60.867557968487844,
+        "fovTipo": "contextual_vertical",
+        "encuadreObjetivo": {
+          "diametroEsferaGrados": 45.457124421509775,
+          "incluyeAnillos": false,
+          "fovVerticalNecesarioGrados": 103.6268872671049,
+          "cabeEnAreaLibre": true
+        },
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -303.7975930094377,
+          12.212965439089936,
+          11.45681211343101
+        ],
+        "objetivoEscena": [
+          -235.95552554581212,
+          36.62630878283784,
+          80.74925433508427
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "apuntado_geometrico",
+        "contextoGeometria": "encuentro_local",
+        "fuenteContextoLocal": "NASA/JPL Horizons, vector directo luna–nave",
+        "datasetContextoLocal": "v1-titan-1980",
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": 2444555.7376410034,
+      "exposure": null,
+      "medianFrameMs": 16.700000000000728,
+      "p95FrameMs": 22.299999999999272
+    },
+    {
+      "name": "moon-titania-390x844",
+      "file": "evidence/voyager-stage7b/before/moon-titania-390x844.png",
+      "mode": "historico",
+      "camera": {
+        "modo": "first_person",
+        "idSondaObservador": "voyager-2",
+        "idSondaExterior": "voyager-2",
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": "Titania",
+        "fovGrados": 0.4320389945395075,
+        "fovReferenciaGrados": 0.4320389945395075,
+        "fovHorizontalGrados": 0.1996396158489976,
+        "fovTipo": "contextual_vertical",
+        "encuadreObjetivo": {
+          "diametroEsferaGrados": 0.1423482358636442,
+          "incluyeAnillos": false,
+          "fovVerticalNecesarioGrados": 0.4320389945395075,
+          "cabeEnAreaLibre": true
+        },
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -117.47146024940933,
+          -0.7052053609401738,
+          600.3960174075515
+        ],
+        "objetivoEscena": [
+          -152.66800705482376,
+          31.731820627685675,
+          688.1971702359027
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "apuntado_geometrico",
+        "contextoGeometria": "encuentro_local",
+        "fuenteContextoLocal": "NASA/JPL Horizons, vector directo luna–nave",
+        "datasetContextoLocal": "v2-titania-1986",
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": 2446454.750638711,
+      "exposure": null,
+      "medianFrameMs": 22.200000000000728,
+      "p95FrameMs": 22.299999999999272
+    },
+    {
+      "name": "moon-miranda-390x844",
+      "file": "evidence/voyager-stage7b/before/moon-miranda-390x844.png",
+      "mode": "historico",
+      "camera": {
+        "modo": "first_person",
+        "idSondaObservador": "voyager-2",
+        "idSondaExterior": "voyager-2",
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": "Miranda",
+        "fovGrados": 0.35,
+        "fovReferenciaGrados": 0.35,
+        "fovHorizontalGrados": 0.16173025335680338,
+        "fovTipo": "contextual_vertical",
+        "encuadreObjetivo": {
+          "diametroEsferaGrados": 0.07619418874604936,
+          "incluyeAnillos": false,
+          "fovVerticalNecesarioGrados": 0.23125653580457356,
+          "cabeEnAreaLibre": true
+        },
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          -117.43778688702025,
+          -0.7074714844610401,
+          600.4749734064033
+        ],
+        "objetivoEscena": [
+          -101.85074893521875,
+          -24.938723978273927,
+          696.2345194081997
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "apuntado_geometrico",
+        "contextoGeometria": "encuentro_local",
+        "fuenteContextoLocal": "NASA/JPL Horizons, vector directo luna–nave",
+        "datasetContextoLocal": "v2-miranda-1986",
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": 2446455.000638711,
+      "exposure": null,
+      "medianFrameMs": 16.700000000000728,
+      "p95FrameMs": 16.799999999999272
+    },
+    {
+      "name": "moon-triton-390x844",
+      "file": "evidence/voyager-stage7b/before/moon-triton-390x844.png",
+      "mode": "historico",
+      "camera": {
+        "modo": "first_person",
+        "idSondaObservador": "voyager-2",
+        "idSondaExterior": "voyager-2",
+        "objetoExteriorSeleccionado": null,
+        "sondaExperimentalEnfocada": false,
+        "objetivoMirada": "Triton",
+        "fovGrados": 11.804237706493799,
+        "fovReferenciaGrados": 11.804237706493799,
+        "fovHorizontalGrados": 5.469782540191466,
+        "fovTipo": "contextual_vertical",
+        "encuadreObjetivo": {
+          "diametroEsferaGrados": 3.9015516322278954,
+          "incluyeAnillos": false,
+          "fovVerticalNecesarioGrados": 11.804237706493799,
+          "cabeEnAreaLibre": true
+        },
+        "fotoUsaFovContexto": false,
+        "posicionEscena": [
+          192.03388013557355,
+          15.03805982188205,
+          947.5118120955664
+        ],
+        "objetivoEscena": [
+          182.9789293775069,
+          -50.44220076468638,
+          872.4761982826303
+        ],
+        "transicionActiva": false,
+        "modoVista": "cientifica",
+        "tipoOrientacion": "apuntado_geometrico",
+        "contextoGeometria": "encuentro_local",
+        "fuenteContextoLocal": "NASA/JPL Horizons, vector directo luna–nave",
+        "datasetContextoLocal": "v2-triton-1989",
+        "objetivoSinContextoLocal": false,
+        "fotoRecreacionId": null
+      },
+      "historicalJdTdb": 2447763.8825947074,
+      "exposure": null,
+      "medianFrameMs": 16.700000000000728,
+      "p95FrameMs": 22.30000000000291
+    }
+  ],
+  "errors": []
+}

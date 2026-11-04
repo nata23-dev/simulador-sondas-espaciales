@@ -1,5 +1,6 @@
 import { createStaticJsonReader } from '../science/EphemerisFileReader.js';
 import { createHistoricalEphemerisResolver } from '../science/HistoricalEphemerisResolver.js';
+import { createHistoricalEncounterContextResolver } from '../science/HistoricalEncounterContext.js';
 import { eclipticToSceneAxes } from '../science/Frames.js';
 import { KM_PER_AU } from '../science/Units.js';
 import {
@@ -26,10 +27,15 @@ export function createHistoricalVisualPipeline({
 } = {}) {
   const loadJson = createStaticJsonReader({ baseUrl, fetchImpl });
   const resolver = createHistoricalEphemerisResolver({ loadJson });
+  const encounterResolver = createHistoricalEncounterContextResolver({ loadJson });
   const visualBackboneCache = new Map();
 
   async function queryVisualHistoricalSnapshot(jdTdb) {
-    const snapshot = await resolver.queryHistoricalSnapshot(jdTdb);
+    const [snapshot, planetContexts, moonContexts] = await Promise.all([
+      resolver.queryHistoricalSnapshot(jdTdb),
+      encounterResolver.resolveAvailable(jdTdb),
+      encounterResolver.resolveAvailableMoons(jdTdb)
+    ]);
 
     const visualPlanets = {};
     for (const [name, res] of Object.entries(snapshot.planets)) {
@@ -55,13 +61,51 @@ export function createHistoricalVisualPipeline({
       });
     }
 
+    // A local view has its own target-anchored observer. These coordinates are
+    // never inserted into the global probe state or its trajectory backbone.
+    const localFrames = {};
+    for(const result of Object.values(planetContexts)) {
+      const state=result.state;
+      if(!state)continue;
+      const target=snapshot.planets[state.planet]?.state.position;
+      if(!target)continue;
+      const p=state.positionKm,v=state.velocityKmS;
+      const observerKm={x:target.x+p.x,y:target.y+p.y,z:target.z+p.z};
+      localFrames[`${state.missionId}:${state.planet}`]=Object.freeze({
+        missionId:state.missionId,target:state.planet,kind:'planet',
+        observerPositionScene:physicalKmToScenePosition(observerKm),
+        targetMinusObserverKm:Object.freeze({x:-p.x,y:-p.y,z:-p.z}),
+        targetMinusObserverVelocityKmS:Object.freeze({x:-v.x,y:-v.y,z:-v.z}),
+        distanceKm:Math.hypot(p.x,p.y,p.z),source:state.source,
+        datasetId:state.datasetId,sourceSha256:state.sourceSha256,
+        sampleJdTdbs:state.sampleJdTdbs,coordinateContext:'local target anchored'
+      });
+    }
+    for(const result of Object.values(moonContexts)) {
+      const state=result.state;
+      if(!state)continue;
+      const target=snapshot.moons[state.moon]?.state.position;
+      if(!target)continue;
+      const p=state.positionKm,v=state.velocityKmS;
+      const observerKm={x:target.x-p.x,y:target.y-p.y,z:target.z-p.z};
+      localFrames[`${state.missionId}:${state.moon}`]=Object.freeze({
+        missionId:state.missionId,target:state.moon,kind:'moon',
+        observerPositionScene:physicalKmToScenePosition(observerKm),
+        targetMinusObserverKm:p,targetMinusObserverVelocityKmS:v,
+        distanceKm:Math.hypot(p.x,p.y,p.z),source:state.source,
+        datasetId:state.datasetId,sourceSha256:state.sourceSha256,
+        sampleJdTdbs:state.sampleJdTdbs,coordinateContext:'local target anchored'
+      });
+    }
+
     return Object.freeze({
       jdTdb: snapshot.jdTdb,
       timeLabels: snapshot.timeLabels,
       planets: Object.freeze(visualPlanets),
       rawPlanets: snapshot.planets,
       moons: Object.freeze(visualMoons),
-      probes: Object.freeze(visualProbes)
+      probes: Object.freeze(visualProbes),
+      localFrames: Object.freeze(localFrames)
     });
   }
 
@@ -73,6 +117,7 @@ export function createHistoricalVisualPipeline({
         const scenePos = physicalKmToScenePosition({ x: k.xKm, y: k.yKm, z: k.zKm });
         return Object.freeze({
           jdTdb: k.jdTdb,
+          breakBefore: k.breakBefore,
           x: scenePos.x,
           y: scenePos.y,
           z: scenePos.z

@@ -1,0 +1,171 @@
+{
+  "results": [
+    {
+      "width": 1366,
+      "height": 768,
+      "experimental": {
+        "mode": "experimental",
+        "illumination": {
+          "solarPointIntensity": 4180.992,
+          "exposure": 1.05,
+          "toneMapping": 4,
+          "outputColorSpace": "srgb",
+          "planetas": {
+            "Mercurio": {
+              "distanceAU": 0.4447730567546498,
+              "irradianceWm2": 6879.885071735526
+            },
+            "Venus": {
+              "distanceAU": 0.7260352117063004,
+              "irradianceWm2": 2581.9198558763082
+            },
+            "Tierra": {
+              "distanceAU": 0.9987983294673364,
+              "irradianceWm2": 1364.276852551973
+            },
+            "Marte": {
+              "distanceAU": 1.5692158918269943,
+              "irradianceWm2": 552.7041555026389
+            },
+            "Jupiter": {
+              "distanceAU": 5.309864466691316,
+              "irradianceWm2": 48.271551010011954
+            },
+            "Saturno": {
+              "distanceAU": 9.431914202395648,
+              "irradianceWm2": 15.298837867489347
+            },
+            "Urano": {
+              "distanceAU": 19.439641655929886,
+              "irradianceWm2": 3.6014850403122267
+            },
+            "Neptuno": {
+              "distanceAU": 29.877838799760493,
+              "irradianceWm2": 1.524613516298379
+            }
+          }
+        }
+      },
+      "titan": {
+        "moon": "Titan",
+        "mode": "exploracion",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Titan",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            295.70855914044444,
+            -12.690044864578338,
+            -57.94835414163836
+          ],
+          "objetivoEscena": [
+            295.7099723307488,
+            -12.690482331822626,
+            -57.95014025378088
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "contextoGeometria": "trayectoria_global",
+          "fuenteContextoLocal": null,
+          "datasetContextoLocal": null,
+          "objetivoSinContextoLocal": false,
+          "fotoRecreacionId": null
+        }
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "experimental": {
+        "mode": "experimental",
+        "illumination": {
+          "solarPointIntensity": 4180.992,
+          "exposure": 1.05,
+          "toneMapping": 4,
+          "outputColorSpace": "srgb",
+          "planetas": {
+            "Mercurio": {
+              "distanceAU": 0.4447730567546498,
+              "irradianceWm2": 6879.885071735526
+            },
+            "Venus": {
+              "distanceAU": 0.7260352117063004,
+              "irradianceWm2": 2581.9198558763082
+            },
+            "Tierra": {
+              "distanceAU": 0.9987983294673364,
+              "irradianceWm2": 1364.276852551973
+            },
+            "Marte": {
+              "distanceAU": 1.5692158918269943,
+              "irradianceWm2": 552.7041555026389
+            },
+            "Jupiter": {
+              "distanceAU": 5.309864466691316,
+              "irradianceWm2": 48.271551010011954
+            },
+            "Saturno": {
+              "distanceAU": 9.431914202395648,
+              "irradianceWm2": 15.298837867489347
+            },
+            "Urano": {
+              "distanceAU": 19.439641655929886,
+              "irradianceWm2": 3.6014850403122267
+            },
+            "Neptuno": {
+              "distanceAU": 29.877838799760493,
+              "irradianceWm2": 1.524613516298379
+            }
+          }
+        }
+      },
+      "titan": {
+        "moon": "Titan",
+        "mode": "exploracion",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Titan",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            295.70708159412385,
+            -12.689587475283348,
+            -57.946486690796
+          ],
+          "objetivoEscena": [
+            295.7099723307488,
+            -12.690482331822626,
+            -57.95014025378088
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "contextoGeometria": "trayectoria_global",
+          "fuenteContextoLocal": null,
+          "datasetContextoLocal": null,
+          "objetivoSinContextoLocal": false,
+          "fotoRecreacionId": null
+        }
+      }
+    }
+  ],
+  "errors": []
+}

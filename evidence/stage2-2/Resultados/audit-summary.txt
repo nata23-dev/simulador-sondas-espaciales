@@ -1,0 +1,6 @@
+﻿v1-jupiter-1979: local=348092.8 Horizons-directo=348437.0 heliocéntrico=348093.0 NSSDCA=349136.2 mínimo=348435.3 km @1979-03-05T12:04:26.0000Z
+v2-jupiter-1979: local=721017.7 Horizons-directo=721375.9 heliocéntrico=721017.7 NSSDCA=721833.8 mínimo=721375.5 km @1979-07-09T22:28:51.0000Z
+v1-saturn-1980: local=183545.9 Horizons-directo=184033.3 heliocéntrico=183546.1 NSSDCA=186419.7 mínimo=184030.1 km @1980-11-12T23:45:30.0000Z
+v2-saturn-1981: local=159580.8 Horizons-directo=160694.2 heliocéntrico=159581.1 NSSDCA=161081.1 mínimo=160691.3 km @1981-08-26T03:23:57.0000Z
+v2-uranus-1986: local=102310.7 Horizons-directo=107158.1 heliocéntrico=102310.7 NSSDCA=107092.2 mínimo=107154.2 km @1986-01-24T17:58:47.0000Z
+v2-neptune-1989: local=34377.1 Horizons-directo=29263.5 heliocéntrico=34383.5 NSSDCA=29216.8 mínimo=29236.2 km @1989-08-25T03:55:36.0000Z

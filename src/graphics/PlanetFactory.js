@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { aplicarMapaColor, cargarTextura } from './TextureLoader.js';
-import { crearAtmosferaTierra } from './Atmosphere.js';
+import { crearAtmosferaTierra, crearAtmosferaUrano } from './Atmosphere.js';
 
 // Oblicuidad aproximada en grados, según la ficha de datos planetarios de la NASA.
 // El giro es visual; no modifica las efemérides ni modela la orientación a una fecha dada.
@@ -46,7 +46,7 @@ function agregarCapaNubes(grupo, radio, nombre, opacidad) {
   return capa;
 }
 
-function agregarAnillos(grupo, radio, centroPlaneta) {
+function agregarAnillos(grupo, radio, centroPlaneta, uniformeMapaSombra) {
   const interior = radio * 1.32;
   const exterior = radio * 2.02;
   const geometria = new THREE.RingGeometry(interior, exterior, 128, 1);
@@ -97,7 +97,50 @@ function agregarAnillos(grupo, radio, centroPlaneta) {
     material.color.set(0xffffff);
     material.opacity = 1;
     material.needsUpdate = true;
+    uniformeMapaSombra.value = texture;
   });
+}
+
+function agregarSombraAnillosSobreSaturno(material, centroPlaneta) {
+  // The same observed radial alpha strip as the visible ring controls attenuation.
+  const empty = new THREE.DataTexture(new Uint8Array([255, 255, 255, 0]), 1, 1,
+    THREE.RGBAFormat);
+  empty.needsUpdate = true;
+  const ringMap = { value: empty };
+  material.onBeforeCompile = shader => {
+    shader.uniforms.saturnCenter = { value: centroPlaneta };
+    shader.uniforms.saturnRingMap = ringMap;
+    shader.vertexShader = `varying vec3 vSaturnSurfaceWorld;
+      varying vec3 vSaturnRingNormal; varying float vSaturnRadiusWorld;\n${shader.vertexShader}`
+      .replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
+        vSaturnSurfaceWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;
+        vSaturnRingNormal = normalize(mat3(modelMatrix) * vec3(0.0, 1.0, 0.0));
+        vSaturnRadiusWorld = length(modelMatrix[0].xyz);`);
+    shader.fragmentShader = `varying vec3 vSaturnSurfaceWorld;
+      varying vec3 vSaturnRingNormal; varying float vSaturnRadiusWorld;
+      uniform vec3 saturnCenter; uniform sampler2D saturnRingMap;\n${shader.fragmentShader}`
+      .replace('#include <opaque_fragment>', `
+        vec3 fromCenter = vSaturnSurfaceWorld - saturnCenter;
+        vec3 sunRay = normalize(-vSaturnSurfaceWorld);
+        vec3 ringNormal = normalize(vSaturnRingNormal);
+        float rayDotPlane = dot(sunRay, ringNormal);
+        if (abs(rayDotPlane) > 1e-5) {
+          float rayLength = -dot(fromCenter, ringNormal) / rayDotPlane;
+          if (rayLength > 0.0) {
+            float ringRadius = length(fromCenter + sunRay * rayLength);
+            float inner = vSaturnRadiusWorld * 1.32;
+            float outer = vSaturnRadiusWorld * 2.02;
+            if (ringRadius >= inner && ringRadius <= outer) {
+              float radialU = (ringRadius - inner) / (outer - inner);
+              float ringOpacity = texture2D(saturnRingMap, vec2(radialU, 0.5)).a;
+              outgoingLight *= 1.0 - 0.48 * ringOpacity;
+            }
+          }
+        }
+        #include <opaque_fragment>`);
+  };
+  material.customProgramCacheKey = () => 'saturn-ring-shadow-v1';
+  return ringMap;
 }
 
 export function crearPlaneta(planeta) {
@@ -112,7 +155,7 @@ export function crearPlaneta(planeta) {
     : THREE.MeshStandardMaterial;
   const material = new MaterialSuperficie({
     color: planeta.color,
-    roughness: planeta.nombre === 'Tierra' ? 0.72 : 0.88,
+    roughness: planeta.nombre === 'Tierra' ? 0.72 : 1,
     metalness: 0,
     ...(planeta.nombre === 'Tierra' ? { specularIntensity: 0.42 } : {})
   });
@@ -152,7 +195,40 @@ export function crearPlaneta(planeta) {
     agregarCapaNubes(eje, planeta.radio, 'venus_atmosphere.jpg', 0.88);
   }
 
-  if (planeta.nombre === 'Saturno') agregarAnillos(eje, planeta.radio, posicion.position);
+  if (planeta.nombre === 'Saturno') {
+    const ringMap = agregarSombraAnillosSobreSaturno(material, posicion.position);
+    agregarAnillos(eje, planeta.radio, posicion.position, ringMap);
+  }
+
+  if (planeta.nombre === 'Urano') {
+    eje.add(crearAtmosferaUrano(planeta.radio));
+    material.onBeforeCompile = shader => {
+      shader.vertexShader = `
+        varying vec3 vNormalMundoUrano;
+        varying vec3 vPosicionMundoUrano;
+        ${shader.vertexShader}
+      `.replace('#include <worldpos_vertex>', `
+        #include <worldpos_vertex>
+        vNormalMundoUrano = normalize(mat3(modelMatrix) * normal);
+        vPosicionMundoUrano = (modelMatrix * vec4(transformed, 1.0)).xyz;
+      `);
+      shader.fragmentShader = `
+        varying vec3 vNormalMundoUrano;
+        varying vec3 vPosicionMundoUrano;
+        ${shader.fragmentShader}
+      `.replace('#include <dithering_fragment>', `
+        #include <dithering_fragment>
+        vec3 haciaSolU = normalize(-vPosicionMundoUrano);
+        vec3 vistaU = normalize(cameraPosition - vPosicionMundoUrano);
+        float nDotLU = dot(vNormalMundoUrano, haciaSolU);
+        float nDotVU = dot(vNormalMundoUrano, vistaU);
+        float rimU = pow(clamp(1.0 - max(0.0, nDotVU), 0.0, 1.0), 2.5);
+        float solLimbU = smoothstep(-0.2, 0.4, nDotLU);
+        gl_FragColor.rgb += vec3(0.34, 0.74, 0.84) * rimU * solLimbU * 0.25;
+      `);
+    };
+    material.customProgramCacheKey = () => 'urano-crescente-v1';
+  }
 
   // El eje > 90° ya representa el sentido retrógrado de Venus y Urano.
   // Un día terrestre se muestra en unos 140 s; la proporción entre planetas se conserva.

@@ -1,0 +1,315 @@
+[
+  {
+    "exceptionId": 2862,
+    "text": "Uncaught (in promise)",
+    "lineNumber": 422,
+    "columnNumber": 14,
+    "scriptId": "55",
+    "url": "http://127.0.0.1:5173/src/science/HistoricalEphemerisResolver.js",
+    "stackTrace": {
+      "callFrames": [
+        {
+          "functionName": "queryHistoricalSnapshot",
+          "scriptId": "55",
+          "url": "http://127.0.0.1:5173/src/science/HistoricalEphemerisResolver.js",
+          "lineNumber": 422,
+          "columnNumber": 14
+        }
+      ]
+    },
+    "exception": {
+      "type": "object",
+      "subtype": "error",
+      "className": "Error",
+      "description": "Error: Falta estado histórico para Tierra en JD 2443376.1479166667: missing (outside_coverage)\n    at Object.queryHistoricalSnapshot (http://127.0.0.1:5173/src/science/HistoricalEphemerisResolver.js:423:15)\n    at async Object.queryVisualHistoricalSnapshot (http://127.0.0.1:5173/src/integration/HistoricalVisualPipeline.js:32:22)\n    at async aplicarInstanteHistorico (http://127.0.0.1:5173/src/main.js?t=1793466914335:541:20)",
+      "objectId": "-6997953557231402052.51.1",
+      "preview": {
+        "type": "object",
+        "subtype": "error",
+        "description": "Error: Falta estado histórico para Tierra en JD 2443376.1479166667: missing (outside_coverage)\n    at Object.queryHistoricalSnapshot (http://127.0.0.1:5173/src/science/HistoricalEphemerisResolver.js:423:15)\n    at async Object.queryVisualHistoricalSnapshot (http://127.0.0.1:5173/src/integration/HistoricalVisualPipeline.js:32:22)\n    at async aplicarInstanteHistorico (http://127.0.0.1:5173/src/main.js?t=1793466914335:541:20)",
+        "overflow": false,
+        "properties": [
+          {
+            "name": "stack",
+            "type": "string",
+            "value": "Error: Falta estado histórico para Tierra en JD 24…27.0.0.1:5173/src/main.js?t=1793466914335:541:20)"
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "value": "Falta estado histórico para Tierra en JD 2443376.1479166667: missing (outside_coverage)"
+          }
+        ]
+      }
+    },
+    "executionContextId": 51
+  },
+  {
+    "exceptionId": 2863,
+    "text": "Uncaught",
+    "lineNumber": 972,
+    "columnNumber": 6,
+    "scriptId": "3151",
+    "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+    "stackTrace": {
+      "callFrames": [
+        {
+          "functionName": "ejecutarHitoGuiado",
+          "scriptId": "3151",
+          "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+          "lineNumber": 972,
+          "columnNumber": 6
+        },
+        {
+          "functionName": "",
+          "scriptId": "3151",
+          "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+          "lineNumber": 1411,
+          "columnNumber": 4
+        },
+        {
+          "functionName": "",
+          "scriptId": "3422",
+          "url": "",
+          "lineNumber": 4,
+          "columnNumber": 7
+        },
+        {
+          "functionName": "",
+          "scriptId": "3422",
+          "url": "",
+          "lineNumber": 6,
+          "columnNumber": 4
+        }
+      ]
+    },
+    "exception": {
+      "type": "object",
+      "subtype": "error",
+      "className": "TypeError",
+      "description": "TypeError: hud.anunciar is not a function\n    at ejecutarHitoGuiado (http://127.0.0.1:5173/src/main.js?t=1793466914335:973:7)\n    at HTMLButtonElement.<anonymous> (http://127.0.0.1:5173/src/main.js?t=1793466914335:1412:5)\n    at <anonymous>:5:8\n    at <anonymous>:7:5",
+      "objectId": "-6997953557231402052.51.2",
+      "preview": {
+        "type": "object",
+        "subtype": "error",
+        "description": "TypeError: hud.anunciar is not a function\n    at ejecutarHitoGuiado (http://127.0.0.1:5173/src/main.js?t=1793466914335:973:7)\n    at HTMLButtonElement.<anonymous> (http://127.0.0.1:5173/src/main.js?t=1793466914335:1412:5)\n    at <anonymous>:5:8\n    at <anonymous>:7:5",
+        "overflow": false,
+        "properties": [
+          {
+            "name": "stack",
+            "type": "string",
+            "value": "TypeError: hud.anunciar is not a function\n    at e…:5)\n    at <anonymous>:5:8\n    at <anonymous>:7:5"
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "value": "hud.anunciar is not a function"
+          }
+        ]
+      }
+    },
+    "executionContextId": 51
+  },
+  {
+    "exceptionId": 2876,
+    "text": "Uncaught",
+    "lineNumber": 945,
+    "columnNumber": 6,
+    "scriptId": "3151",
+    "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+    "stackTrace": {
+      "callFrames": [
+        {
+          "functionName": "alCompletarLanzamiento",
+          "scriptId": "3151",
+          "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+          "lineNumber": 945,
+          "columnNumber": 6
+        },
+        {
+          "functionName": "alFinalizarLanzamiento",
+          "scriptId": "3151",
+          "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+          "lineNumber": 1015,
+          "columnNumber": 6
+        },
+        {
+          "functionName": "finalizar",
+          "scriptId": "344",
+          "url": "http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556",
+          "lineNumber": 324,
+          "columnNumber": 28
+        },
+        {
+          "functionName": "saltar",
+          "scriptId": "344",
+          "url": "http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556",
+          "lineNumber": 138,
+          "columnNumber": 4
+        },
+        {
+          "functionName": "saltarLanzamiento",
+          "scriptId": "2565",
+          "url": "http://127.0.0.1:5173/src/graphics/SolarSystem.js?t=1793465630249",
+          "lineNumber": 720,
+          "columnNumber": 52
+        },
+        {
+          "functionName": "alSaltar",
+          "scriptId": "3151",
+          "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+          "lineNumber": 1302,
+          "columnNumber": 28
+        },
+        {
+          "functionName": "",
+          "scriptId": "1679",
+          "url": "http://127.0.0.1:5173/src/ui/LaunchCinematicOverlay.js?t=1793463049734",
+          "lineNumber": 107,
+          "columnNumber": 14
+        },
+        {
+          "functionName": "",
+          "scriptId": "3438",
+          "url": "",
+          "lineNumber": 4,
+          "columnNumber": 7
+        },
+        {
+          "functionName": "",
+          "scriptId": "3438",
+          "url": "",
+          "lineNumber": 6,
+          "columnNumber": 4
+        }
+      ]
+    },
+    "exception": {
+      "type": "object",
+      "subtype": "error",
+      "className": "TypeError",
+      "description": "TypeError: hud.anunciar is not a function\n    at alCompletarLanzamiento (http://127.0.0.1:5173/src/main.js?t=1793466914335:946:7)\n    at alFinalizarLanzamiento (http://127.0.0.1:5173/src/main.js?t=1793466914335:1016:7)\n    at finalizar (http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556:325:29)\n    at Object.saltar (http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556:139:5)\n    at Object.saltarLanzamiento (http://127.0.0.1:5173/src/graphics/SolarSystem.js?t=1793465630249:721:53)\n    at alSaltar (http://127.0.0.1:5173/src/main.js?t=1793466914335:1303:29)\n    at HTMLButtonElement.<anonymous> (http://127.0.0.1:5173/src/ui/LaunchCinematicOverlay.js?t=1793463049734:108:15)\n    at <anonymous>:5:8\n    at <anonymous>:7:5",
+      "objectId": "-6997953557231402052.51.27",
+      "preview": {
+        "type": "object",
+        "subtype": "error",
+        "description": "TypeError: hud.anunciar is not a function\n    at alCompletarLanzamiento (http://127.0.0.1:5173/src/main.js?t=1793466914335:946:7)\n    at alFinalizarLanzamiento (http://127.0.0.1:5173/src/main.js?t=1793466914335:1016:7)\n    at finalizar (http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556:325:29)\n    at Object.saltar (http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556:139:5)\n    at Object.saltarLanzamiento (http://127.0.0.1:5173/src/graphics/SolarSystem.js?t=1793465630249:721:53)\n    at alSaltar (http://127.0.0.1:5173/src/main.js?t=1793466914335:1303:29)\n    at HTMLButtonElement.<anonymous> (http://127.0.0.1:5173/src/ui/LaunchCinematicOverlay.js?t=1793463049734:108:15)\n    at <anonymous>:5:8\n    at <anonymous>:7:5",
+        "overflow": false,
+        "properties": [
+          {
+            "name": "stack",
+            "type": "string",
+            "value": "TypeError: hud.anunciar is not a function\n    at a…15)\n    at <anonymous>:5:8\n    at <anonymous>:7:5"
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "value": "hud.anunciar is not a function"
+          }
+        ]
+      }
+    },
+    "executionContextId": 51
+  },
+  {
+    "exceptionId": 2877,
+    "text": "Uncaught",
+    "lineNumber": 945,
+    "columnNumber": 6,
+    "scriptId": "3151",
+    "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+    "stackTrace": {
+      "callFrames": [
+        {
+          "functionName": "alCompletarLanzamiento",
+          "scriptId": "3151",
+          "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+          "lineNumber": 945,
+          "columnNumber": 6
+        },
+        {
+          "functionName": "alFinalizarLanzamiento",
+          "scriptId": "3151",
+          "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+          "lineNumber": 1015,
+          "columnNumber": 6
+        },
+        {
+          "functionName": "finalizar",
+          "scriptId": "344",
+          "url": "http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556",
+          "lineNumber": 324,
+          "columnNumber": 28
+        },
+        {
+          "functionName": "saltar",
+          "scriptId": "344",
+          "url": "http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556",
+          "lineNumber": 138,
+          "columnNumber": 4
+        },
+        {
+          "functionName": "saltarLanzamiento",
+          "scriptId": "2565",
+          "url": "http://127.0.0.1:5173/src/graphics/SolarSystem.js?t=1793465630249",
+          "lineNumber": 720,
+          "columnNumber": 52
+        },
+        {
+          "functionName": "alSaltar",
+          "scriptId": "3151",
+          "url": "http://127.0.0.1:5173/src/main.js?t=1793466914335",
+          "lineNumber": 1302,
+          "columnNumber": 28
+        },
+        {
+          "functionName": "",
+          "scriptId": "1679",
+          "url": "http://127.0.0.1:5173/src/ui/LaunchCinematicOverlay.js?t=1793463049734",
+          "lineNumber": 107,
+          "columnNumber": 14
+        },
+        {
+          "functionName": "",
+          "scriptId": "3438",
+          "url": "",
+          "lineNumber": 4,
+          "columnNumber": 7
+        },
+        {
+          "functionName": "",
+          "scriptId": "3438",
+          "url": "",
+          "lineNumber": 6,
+          "columnNumber": 4
+        }
+      ]
+    },
+    "exception": {
+      "type": "object",
+      "subtype": "error",
+      "className": "TypeError",
+      "description": "TypeError: hud.anunciar is not a function\n    at alCompletarLanzamiento (http://127.0.0.1:5173/src/main.js?t=1793466914335:946:7)\n    at alFinalizarLanzamiento (http://127.0.0.1:5173/src/main.js?t=1793466914335:1016:7)\n    at finalizar (http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556:325:29)\n    at Object.saltar (http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556:139:5)\n    at Object.saltarLanzamiento (http://127.0.0.1:5173/src/graphics/SolarSystem.js?t=1793465630249:721:53)\n    at alSaltar (http://127.0.0.1:5173/src/main.js?t=1793466914335:1303:29)\n    at HTMLButtonElement.<anonymous> (http://127.0.0.1:5173/src/ui/LaunchCinematicOverlay.js?t=1793463049734:108:15)\n    at <anonymous>:5:8\n    at <anonymous>:7:5",
+      "objectId": "-6997953557231402052.51.28",
+      "preview": {
+        "type": "object",
+        "subtype": "error",
+        "description": "TypeError: hud.anunciar is not a function\n    at alCompletarLanzamiento (http://127.0.0.1:5173/src/main.js?t=1793466914335:946:7)\n    at alFinalizarLanzamiento (http://127.0.0.1:5173/src/main.js?t=1793466914335:1016:7)\n    at finalizar (http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556:325:29)\n    at Object.saltar (http://127.0.0.1:5173/src/graphics/LaunchCinematicController.js?t=1793461117556:139:5)\n    at Object.saltarLanzamiento (http://127.0.0.1:5173/src/graphics/SolarSystem.js?t=1793465630249:721:53)\n    at alSaltar (http://127.0.0.1:5173/src/main.js?t=1793466914335:1303:29)\n    at HTMLButtonElement.<anonymous> (http://127.0.0.1:5173/src/ui/LaunchCinematicOverlay.js?t=1793463049734:108:15)\n    at <anonymous>:5:8\n    at <anonymous>:7:5",
+        "overflow": false,
+        "properties": [
+          {
+            "name": "stack",
+            "type": "string",
+            "value": "TypeError: hud.anunciar is not a function\n    at a…15)\n    at <anonymous>:5:8\n    at <anonymous>:7:5"
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "value": "hud.anunciar is not a function"
+          }
+        ]
+      }
+    },
+    "executionContextId": 51
+  }
+]

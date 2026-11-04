@@ -1,4 +1,5 @@
 import { PLANETAS } from '../astronomy/Ephemerides.js';
+import { MOONS } from '../science/PlanetaryMoons.js';
 
 const ETIQUETAS = { Jupiter: 'Júpiter' };
 
@@ -13,6 +14,19 @@ export function crearSelectorPlanetas({ alElegir, alExplorar, alVistaGeneral }) 
     opcion.value = nombre;
     opcion.textContent = ETIQUETAS[nombre] ?? nombre;
     selector.append(opcion);
+    const moons = Object.entries(MOONS).filter(([, moon]) => moon.parent === nombre);
+    if (moons.length) {
+      const group = document.createElement('optgroup');
+      group.label = `Lunas de ${ETIQUETAS[nombre] ?? nombre}`;
+      for (const [key, moon] of moons) {
+        const item = document.createElement('option');
+        item.value = key;
+        item.dataset.kind = 'moon';
+        item.textContent = `${moon.name} · ${moon.id}`;
+        group.append(item);
+      }
+      selector.append(group);
+    }
   }
 
   // Elegir un destino y comenzar a explorarlo son acciones separadas.
@@ -25,7 +39,7 @@ export function crearSelectorPlanetas({ alElegir, alExplorar, alVistaGeneral }) 
   function actualizar(nombre) {
     selector.value = nombre ?? '';
     seleccionado.textContent = nombre
-      ? `Seleccionado · ${ETIQUETAS[nombre] ?? nombre}`
+      ? `Seleccionado · ${MOONS[nombre] ? `${MOONS[nombre].name} (${MOONS[nombre].parent})` : ETIQUETAS[nombre] ?? nombre}`
       : 'Ningún planeta seleccionado';
     explorar.disabled = !nombre;
   }

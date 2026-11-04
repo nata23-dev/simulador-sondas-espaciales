@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "frame": "ICRF_ECLIPTIC_J2000",
+  "timeScale": "TDB",
+  "units": "km, km/s",
+  "correction": "NONE",
+  "origin": "planet-center",
+  "source": "NASA/JPL Horizons direct geometric vectors",
+  "contexts": [
+    {
+      "id": "v1-jupiter",
+      "missionId": "voyager-1",
+      "probeNaifId": "-31",
+      "planet": "Jupiter",
+      "planetNaifId": "599",
+      "eventIds": [
+        "v1-callisto-1979",
+        "v1-europa-1979",
+        "v1-io-encounter-1979",
+        "v1-ganymede-1979"
+      ],
+      "file": "data/historical/encounter-relative/v1-jupiter.json",
+      "sha256": "f8b6867a77ddd430eacba3ec34e7f62051aa7c03dc3b363906738ca1a2e643f3",
+      "startJdTdb": 2443935,
+      "endJdTdb": 2443939.250694444,
+      "sampleCount": 2373,
+      "minIntervalSeconds": 60,
+      "maxIntervalSeconds": 300
+    },
+    {
+      "id": "v2-jupiter",
+      "missionId": "voyager-2",
+      "probeNaifId": "-32",
+      "planet": "Jupiter",
+      "planetNaifId": "599",
+      "eventIds": [
+        "v2-europa-1979"
+      ],
+      "file": "data/historical/encounter-relative/v2-jupiter.json",
+      "sha256": "ae5120419871bdf14946b9cfd0f9e65e34e3a52a0d06f4a776e1d515fc84ce12",
+      "startJdTdb": 2444063,
+      "endJdTdb": 2444065.000694444,
+      "sampleCount": 866,
+      "minIntervalSeconds": 60,
+      "maxIntervalSeconds": 300
+    },
+    {
+      "id": "v1-saturn",
+      "missionId": "voyager-1",
+      "probeNaifId": "-31",
+      "planet": "Saturno",
+      "planetNaifId": "699",
+      "eventIds": [
+        "v1-titan-1980"
+      ],
+      "file": "data/historical/encounter-relative/v1-saturn.json",
+      "sha256": "080fa526ecc76587424748cca2a95670b38a1c495a630d4b40c609b1b18df8d8",
+      "startJdTdb": 2444554.7375,
+      "endJdTdb": 2444556.738194444,
+      "sampleCount": 1346,
+      "minIntervalSeconds": 60,
+      "maxIntervalSeconds": 300
+    },
+    {
+      "id": "v2-uranus",
+      "missionId": "voyager-2",
+      "probeNaifId": "-32",
+      "planet": "Urano",
+      "planetNaifId": "799",
+      "eventIds": [
+        "v2-titania-1986",
+        "v2-miranda-1986"
+      ],
+      "file": "data/historical/encounter-relative/v2-uranus.json",
+      "sha256": "ee1e72e387ade6edf705bfcc90566dd2603fed4a286f2c3b02d405d42a76628b",
+      "startJdTdb": 2446453.75,
+      "endJdTdb": 2446456.000694444,
+      "sampleCount": 1226,
+      "minIntervalSeconds": 60,
+      "maxIntervalSeconds": 300
+    },
+    {
+      "id": "v2-neptune",
+      "missionId": "voyager-2",
+      "probeNaifId": "-32",
+      "planet": "Neptuno",
+      "planetNaifId": "899",
+      "eventIds": [
+        "v2-triton-1989"
+      ],
+      "file": "data/historical/encounter-relative/v2-neptune.json",
+      "sha256": "3e946baa29d418b737c9f7ea6cf694b3e04805f7f861c40e5697ccb3884b5349",
+      "startJdTdb": 2447762.881944444,
+      "endJdTdb": 2447764.882638889,
+      "sampleCount": 1346,
+      "minIntervalSeconds": 60,
+      "maxIntervalSeconds": 300
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { crearPlaneta } from './PlanetFactory.js';
+import { crearLunasPlanetarias } from './MoonVisuals.js';
 import { crearControladorCamara } from './CameraController.js';
 import { crearSol } from './Sun.js';
 import { crearProteccionTransitosSolares } from './SolarTransitGuard.js';
@@ -16,6 +17,8 @@ import {
 } from './ScaleModeConfig.js';
 import { crearEtiquetasPlanetas } from '../ui/PlanetLabels.js';
 import { UNIDADES_POR_AU, posicionEscenaProporcional } from './SpatialScale.js';
+import { distanciaHeliocentricaAU, exposicionFotografica, irradianciaSolar } from './SolarIllumination.js';
+import { crearControladorLanzamientoCinematografico } from './LaunchCinematicController.js';
 import {
   HISTORICAL_MISSIONS_CATALOG,
   VOYAGER_1_ID,
@@ -129,7 +132,7 @@ function crearVisualizadorMedicionDistancia() {
 
 export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda = null, opcionesExtra = {}) {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x02040c);
+  scene.background = new THREE.Color(0x030406);
 
   const camera = new THREE.PerspectiveCamera(48, 1, 0.05, 36000);
   camera.position.set(320, 450, 830);
@@ -151,7 +154,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   controls.minDistance = 0.25;
   controls.maxDistance = 24000;
 
-  scene.add(new THREE.AmbientLight(0x8398b6, 0.16));
+  // Space has no uniform ambient source. Sunlight comes from the solar PointLight.
 
   let modoEscala = MODOS_ESCALA_VISUAL.CIENTIFICA;
   const observadoresModoEscala = new Set();
@@ -181,6 +184,17 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     objetos.set(planeta.nombre, objeto);
   }
 
+  const lunasPlanetarias = crearLunasPlanetarias(scene, objetos);
+  function ajustarPadresDeLunas(nombreLuna) {
+    for (const [key, moon] of lunasPlanetarias.moons) {
+      const parent = objetos.get(moon.definition.parent);
+      if (key === nombreLuna) parent.posicion.scale.setScalar(
+        factorEscalaCientificaCuerpo(moon.definition.parent, parent.planeta.radio)
+      );
+      else if (modoEscala === MODOS_ESCALA_VISUAL.EXPLORATORIA) parent.posicion.scale.setScalar(1);
+    }
+  }
+
   function obtenerZonaEncuadre() {
     const lienzo = renderer.domElement.getBoundingClientRect();
     const destinoEl = document.querySelector('.destination-panel > summary');
@@ -190,10 +204,55 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     const ancho = container.clientWidth;
     const alto = container.clientHeight;
     const movil = ancho <= 760;
-    const left = movil ? 24 : Math.min(ancho * 0.26, destino.right - lienzo.left + 24);
-    const top = movil ? destino.bottom - lienzo.top + 22 : 104;
-    const bottom = Math.max(top + 80, Math.min(alto - 32, tiempo.top - lienzo.top - 30));
-    return { width: ancho, height: alto, left, right: ancho - (movil ? 24 : 44), top, bottom };
+    let left = movil ? 16 : 92;
+    const top = movil ? 126 : 104;
+    let right = ancho - (movil ? 16 : 28);
+    if (movil && document.querySelector('#app')?.dataset.appMode === 'historico') {
+      const herramientas = document.querySelector('#workspace-dock');
+      if (herramientas?.getClientRects().length) {
+        right = Math.min(right, herramientas.getBoundingClientRect().left - lienzo.left - 8);
+      }
+    }
+    let bottom = Math.max(top + 80, Math.min(alto - 24, tiempo.top - lienzo.top - 20));
+    const inspector = document.querySelector('#context-inspector');
+    if (inspector && inspector.dataset.state !== 'closed' && inspector.getClientRects().length) {
+      const rect = inspector.getBoundingClientRect();
+      if (movil) bottom = Math.max(top + 48, Math.min(bottom, rect.top - lienzo.top - 14));
+      else if (rect.left - lienzo.left < ancho / 2) {
+        const panelRight = rect.right - lienzo.left + 20;
+        left = Math.min(Math.max(left, panelRight), ancho - 180);
+      } else right = Math.max(left + 80, Math.min(right, rect.left - lienzo.left - 20));
+    }
+    return { width: ancho, height: alto, left, right, top, bottom };
+  }
+
+  let desplazamientoProyeccionX = 0;
+  let desplazamientoProyeccionY = 0;
+  // Desplazar el centro óptico conserva las posiciones físicas y el objetivo
+  // orbital. Las cámaras de instrumentos conservan siempre su FOV exacto.
+  function componerObjetoEnAreaLibre(segundos) {
+    const instrumento = controladorCamara.requiereEscalaFisicaUnoAUno();
+    // El panel móvil modifica el área libre después de elegir un acontecimiento.
+    // Recalcular el FOV contextual conserva distancia y radio; el FOV manual no se toca.
+    controladorCamara.actualizarFovContextualAutomatico();
+    const estadoCamara = controladorCamara.obtenerEstadoCamaraHistorica();
+    const contextualPrimeraPersona = estadoCamara.modo === 'first_person'
+      && estadoCamara.fovTipo === 'contextual_vertical' && estadoCamara.objetivoMirada;
+    const enfocando = contextualPrimeraPersona || (!instrumento && (controladorCamara.nombreSeleccionado()
+      || controladorCamara.sondaSeleccionada() || controladorCamara.sondaHistoricaSeleccionada()));
+    const zona = obtenerZonaEncuadre();
+    const objetivoX = enfocando ? (zona.width - zona.left - zona.right) / 2 : 0;
+    const objetivoY = enfocando ? (zona.height - zona.top - zona.bottom) / 2 : 0;
+    const reducirMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const mezcla = instrumento || reducirMovimiento ? 1 : 1 - Math.exp(-segundos * 7);
+    desplazamientoProyeccionX = THREE.MathUtils.lerp(desplazamientoProyeccionX, objetivoX, mezcla);
+    desplazamientoProyeccionY = THREE.MathUtils.lerp(desplazamientoProyeccionY, objetivoY, mezcla);
+    // El inspector desplaza el centro del encuadre; reducir el zoom hacía
+    // desaparecer las sondas y los planetas pequeños en la escala científica.
+    camera.zoom = 1;
+    camera.setViewOffset(zona.width, zona.height, desplazamientoProyeccionX,
+      desplazamientoProyeccionY, zona.width, zona.height);
+    camera.updateProjectionMatrix();
   }
 
   // Sonda Experimental 01 (modo simulación experimental)
@@ -248,6 +307,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   scene.add(medidorDistancia.grupo);
 
   let etiquetas = null;
+  let etiquetasHabilitadas = false;
   const observadoresCamaraHistorica = new Set();
 
   let controladorCamara = null;
@@ -273,6 +333,12 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     alSeleccionarSonda,
     sondasHistoricas,
     satelites: satelitesEncuentro.satelites,
+    lunasPlanetarias: lunasPlanetarias.moons,
+    alSeleccionarLuna: nombre => {
+      ajustarPadresDeLunas(nombre);
+      if (etiquetas) etiquetas.mostrar(!nombre && etiquetasHabilitadas);
+      opcionesExtra.alSeleccionarLuna?.(nombre);
+    },
     alSeleccionarSondaHistorica: opcionesExtra.alSeleccionarSondaHistorica ?? null,
     alCambiarEstadoCamaraHistorica: estado => {
       const unoAUno = controladorCamara.requiereEscalaFisicaUnoAUno();
@@ -299,6 +365,16 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
 
   const fondoEstelar = crearFondoEstelar(camera, renderer.getPixelRatio());
   scene.add(fondoEstelar.grupo);
+
+  const controladorLanzamiento = crearControladorLanzamientoCinematografico({
+    scene,
+    camera,
+    controls,
+    tierraMesh: objetos.get('Tierra')?.posicion,
+    alFinalizarLanzamiento: opcionesExtra.alFinalizarLanzamiento ?? null,
+    alCambiarFase: opcionesExtra.alCambiarFaseLanzamiento ?? null
+  });
+
   etiquetas = crearEtiquetasPlanetas(container, camera, objetos, sonda, {
     sondasHistoricas: [
       { id: VOYAGER_1_ID, etiqueta: 'Voyager 1', colorCss: metaV1.markerCssColor, sonda: sondaVoyager1 },
@@ -332,6 +408,14 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   }
 
   function actualizarPlanosProfundidad() {
+    if (controladorLanzamiento.estaActivo()) {
+      if (camera.near !== 0.05 || camera.far !== 2000) {
+        camera.near = 0.05;
+        camera.far = 2000;
+        camera.updateProjectionMatrix();
+      }
+      return;
+    }
     let menorDistanciaSuperficie = camera.position.length() - sol.radioActualEscena();
     for (const [nombre, objeto] of objetos) {
       const radioEfectivo = objeto.planeta.radio * objeto.posicion.scale.x
@@ -343,6 +427,11 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       if (!sat.posicion.visible) continue;
       const distSat = camera.position.distanceTo(sat.posicion.position) - sat.posicion.scale.x * 1.04;
       if (distSat < menorDistanciaSuperficie) menorDistanciaSuperficie = distSat;
+    }
+    for (const moon of lunasPlanetarias.moons.values()) {
+      if (!moon.posicion.visible) continue;
+      menorDistanciaSuperficie = Math.min(menorDistanciaSuperficie,
+        camera.position.distanceTo(moon.posicion.position) - moon.radioEscena);
     }
     if (sonda.posicion.visible && sonda.visual.visible) {
       const distSonda = camera.position.distanceTo(sonda.posicion.position)
@@ -395,6 +484,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
         : 1;
       obj.posicion.scale.setScalar(factorInmediato);
     }
+    ajustarPadresDeLunas(lunasPlanetarias.moons.has(seleccionado) ? seleccionado : null);
 
     controladorCamara.alCambiarModoEscala(anterior, nuevoModo);
     actualizarPlanosProfundidad();
@@ -411,7 +501,10 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     heliosferaConceptual
   } = {}) {
     if (typeof verOrbitas === 'boolean') orbitasVisibles = verOrbitas;
-    if (typeof mostrarEtiquetas === 'boolean') etiquetas.mostrar(mostrarEtiquetas);
+    if (typeof mostrarEtiquetas === 'boolean') {
+      etiquetasHabilitadas = mostrarEtiquetas;
+      etiquetas.mostrar(mostrarEtiquetas && !lunasPlanetarias.moons.has(controladorCamara.nombreSeleccionado()));
+    }
     if (typeof estrellas === 'boolean') fondoEstelar.grupo.visible = estrellas;
     if (typeof trayectoriaSonda === 'boolean') sonda.mostrarTrayectoria(trayectoriaSonda);
     if (typeof trayectoriasHistoricas === 'boolean') {
@@ -431,9 +524,33 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     return controladorCamara.explorarSeleccionado();
   }
 
+  function seleccionarLuna(nombre) {
+    if (!lunasPlanetarias.moons.get(nombre)?.posicion.visible
+      && !satelitesEncuentro.satelites.get(nombre)?.posicion.visible) return false;
+    if (controladorCamara.requiereEscalaFisicaUnoAUno()) {
+      const apuntado = controladorCamara.apuntarPrimeraPersonaHacia(nombre);
+      if (apuntado) {
+        const observador = controladorCamara.obtenerEstadoCamaraHistorica().idSondaObservador;
+        controladorCamara.establecerFovPrimeraPersona(
+          controladorCamara.obtenerFovContextualParaObjetivo(observador, nombre));
+      }
+      return apuntado;
+    }
+    controladorCamara.seleccionar(nombre);
+    return controladorCamara.explorarSeleccionado();
+  }
+
+  function actualizarLunas(states, visible = true) {
+    const seleccionado = controladorCamara.nombreSeleccionado();
+    const old = lunasPlanetarias.moons.get(seleccionado)?.posicion.visible
+      ? lunasPlanetarias.moons.get(seleccionado).posicion.position.clone() : null;
+    lunasPlanetarias.actualizar(states, visible);
+    if (old) controladorCamara.alActualizarLuna(old);
+  }
+
   function actualizarPosiciones(estados, opciones = {}) {
     const seleccionado = controladorCamara.nombreSeleccionado();
-    const centroAnterior = seleccionado
+    const centroAnterior = seleccionado && objetos.has(seleccionado)
       ? objetos.get(seleccionado).posicion.position.clone()
       : null;
 
@@ -479,23 +596,33 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     const total = knotsEscena.length;
     const vertices = new Float32Array(total * 3);
     const tiemposJd = new Float64Array(total);
+    const cortes = new Uint8Array(total);
     for (let i = 0; i < total; i++) {
       const k = knotsEscena[i];
       vertices[i * 3] = k.x;
       vertices[i * 3 + 1] = k.y;
       vertices[i * 3 + 2] = k.z;
       tiemposJd[i] = k.jdTdb;
+      cortes[i] = k.breakBefore ? 1 : 0;
     }
-    sHist.establecerTrayectoria(vertices, tiemposJd);
+    sHist.establecerTrayectoria(vertices, tiemposJd, cortes);
   }
 
   function actualizarEscenaHistorica({
     probesVisual,
     moonsVisual,
+    localFrames = {},
     jdTdb,
     visibilityMode = 'both'
   }) {
+    const seleccionado = controladorCamara.nombreSeleccionado();
+    const centroAnteriorLuna = satelitesEncuentro.satelites.get(seleccionado)?.posicion.visible
+      ? satelitesEncuentro.satelites.get(seleccionado).posicion.position.clone() : null;
     satelitesEncuentro.actualizarEstados(moonsVisual);
+    controladorCamara.establecerContextosLocales(localFrames);
+    if (centroAnteriorLuna && satelitesEncuentro.satelites.get(seleccionado)?.posicion.visible) {
+      controladorCamara.alActualizarLuna(centroAnteriorLuna);
+    }
     const posicionTierra = objetos.get('Tierra')?.posicion.position ?? null;
 
     for (const [idMision, sHist] of sondasHistoricas.entries()) {
@@ -521,6 +648,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
 
   function ocultarModoHistoricoEscena() {
     controladorCamara.salirDePrimeraPersonaHaciaExterior();
+    lunasPlanetarias.ocultar();
     for (const sHist of sondasHistoricas.values()) {
       sHist.mostrarSonda(false);
     }
@@ -537,6 +665,23 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   }
 
   function restablecerCamara() {
+    const estado = controladorCamara.obtenerEstadoCamaraHistorica();
+    if (estado.modo === 'first_person' && estado.objetivoMirada) {
+      if (controladorCamara.apuntarPrimeraPersonaHacia(estado.objetivoMirada)) return;
+    }
+    const historica = controladorCamara.sondaHistoricaSeleccionada();
+    if (historica && controladorCamara.enfocarSondaHistorica(historica)) {
+      publicarVista();
+      return;
+    }
+    if (controladorCamara.sondaSeleccionada() && controladorCamara.enfocarSonda()) {
+      publicarVista();
+      return;
+    }
+    if (controladorCamara.nombreSeleccionado() && controladorCamara.explorarSeleccionado()) {
+      publicarVista();
+      return;
+    }
     vistaGeneral();
   }
 
@@ -557,21 +702,42 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     const nombreObjetivo = controladorCamara.requiereEscalaFisicaUnoAUno()
       ? estadoCamHist.objetivoMirada
       : controladorCamara.nombreSeleccionado();
-    const objeto = objetos.get(nombreObjetivo);
+    const sateliteLocal = satelitesEncuentro.satelites.get(nombreObjetivo);
+    const lunaGlobal = lunasPlanetarias.moons.get(nombreObjetivo);
+    const objeto = objetos.get(nombreObjetivo)
+      ?? (sateliteLocal?.posicion.visible ? sateliteLocal : null)
+      ?? (lunaGlobal?.posicion.visible ? lunaGlobal : null);
     let objetivo = 1.05;
     if (objeto) {
-      const radioEfectivo = Math.max(objeto.planeta.radio * objeto.posicion.scale.x, 1e-6);
+      const radioEfectivo = Math.max(objeto.planeta
+        ? objeto.planeta.radio * objeto.posicion.scale.x
+        : objeto.radioEscena ?? objeto.radioFisicoEscena, 1e-6);
       const distancia = camera.position.distanceTo(objeto.posicion.position);
       const relacion = distancia / radioEfectivo;
       const umbralRel = controladorCamara.requiereEscalaFisicaUnoAUno() ? 950 : 35;
       const cercano = THREE.MathUtils.clamp((umbralRel - relacion) / Math.max(umbralRel * 0.65, 1), 0, 1);
       const adaptacion = cercano * cercano * (3 - 2 * cercano);
-      const distanciaAU = objeto.posicion.position.length() / UNIDADES_POR_AU;
-      objetivo *= 1 + adaptacion * (Math.min(12, Math.pow(Math.max(distanciaAU, 1), 0.85)) - 1);
+      const distanciaAU = distanciaHeliocentricaAU(objeto.posicion.position);
+      objetivo *= 1 + adaptacion * (exposicionFotografica(distanciaAU) - 1);
     }
     renderer.toneMappingExposure = THREE.MathUtils.damp(
       renderer.toneMappingExposure, objetivo, 2.5, segundos
     );
+  }
+
+  function obtenerEstadoIluminacion() {
+    const planetas = {};
+    for (const [nombre, objeto] of objetos) {
+      const distanceAU = distanciaHeliocentricaAU(objeto.posicion.position);
+      planetas[nombre] = { distanceAU, irradianceWm2: irradianciaSolar(distanceAU) };
+    }
+    return {
+      solarPointIntensity: sol.luz.intensity,
+      exposure: renderer.toneMappingExposure,
+      toneMapping: renderer.toneMapping,
+      outputColorSpace: renderer.outputColorSpace,
+      planetas
+    };
   }
 
   function animar(tiempo) {
@@ -582,7 +748,15 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
 
     for (const objeto of objetos.values()) objeto.actualizarGiro(dtClamped);
     sol.actualizar(dtClamped, camera);
-    controladorCamara.actualizar(delta);
+    lunasPlanetarias.actualizarEfectos(tiempo / 1000);
+    satelitesEncuentro.actualizarEfectos(tiempo / 1000);
+
+    if (controladorLanzamiento.estaActivo()) {
+      controladorLanzamiento.actualizar(dtClamped);
+    } else {
+      controladorCamara.actualizar(delta);
+      componerObjetoEnAreaLibre(dtClamped);
+    }
 
     sonda.actualizarEscalaVisual(dtClamped, camera, controladorCamara.sondaSeleccionada());
     const idHistSel = controladorCamara.sondaHistoricaSeleccionada();
@@ -597,6 +771,15 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     fondoEstelar.actualizar();
 
     const estadoCamHist = controladorCamara.obtenerEstadoCamaraHistorica();
+    // Las líneas de recorrido permanecen configuradas, pero se ocultan durante
+    // la observación desde la sonda para no atravesar visualmente el disco planetario.
+    if (estadoCamHist.modo !== 'exterior') {
+      for (const sHist of sondasHistoricas.values()) sHist.trayectoriaGrupo.visible = false;
+    } else {
+      for (const sHist of sondasHistoricas.values()) {
+        sHist.trayectoriaGrupo.visible = trayectoriasHistoricasVisibles && sHist.posicion.visible;
+      }
+    }
     etiquetas.actualizar(
       controladorCamara.nombreSeleccionado(),
       controladorCamara.sondaSeleccionada(),
@@ -604,7 +787,9 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       {
         idSondaActiva: idHistSel,
         modoPrimeraPersona: controladorCamara.requiereEscalaFisicaUnoAUno(),
-        objetivoMirada: estadoCamHist.objetivoMirada
+        objetivoMirada: estadoCamHist.objetivoMirada,
+        lanzamientoActivo: controladorLanzamiento.estaActivo(),
+        comparadorActivo: Boolean(opcionesExtra.obtenerComparadorActivo?.())
       }
     );
     renderer.render(scene, camera);
@@ -618,6 +803,21 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
 
   return {
     actualizarPosiciones,
+    actualizarLunas,
+    seleccionarLuna,
+    obtenerEstadoVisualLunas: () => Object.fromEntries([...lunasPlanetarias.moons].map(([key, moon]) => [key, {
+      visible: moon.posicion.visible,
+      position: moon.posicion.position.toArray(),
+      parentPosition: objetos.get(moon.definition.parent).posicion.position.toArray(),
+      screen: (() => {
+        const p = moon.posicion.position.clone().project(camera);
+        const rect = renderer.domElement.getBoundingClientRect();
+        return [(p.x + 1) * rect.width / 2 + rect.left, (1 - p.y) * rect.height / 2 + rect.top];
+      })(),
+      radiusScene: moon.radioEscena,
+      parentRadiusScene: objetos.get(moon.definition.parent).planeta.radio
+        * objetos.get(moon.definition.parent).posicion.scale.x
+    }])),
     configurarTrayectoriaSonda,
     actualizarEstadoSonda,
     ocultarSonda,
@@ -646,6 +846,8 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     encuadrarSalidaTierra1977: controladorCamara.encuadrarSalidaTierra1977,
     activarPrimeraPersona: controladorCamara.activarPrimeraPersona,
     activarRecreacionFotografica: controladorCamara.activarRecreacionFotografica,
+    obtenerFovContextualParaObjetivo: controladorCamara.obtenerFovContextualParaObjetivo,
+    restaurarEstadoCamaraHistorica: controladorCamara.restaurarEstadoCamaraHistorica,
     salirDePrimeraPersona: controladorCamara.salirDePrimeraPersonaHaciaExterior,
     apuntarPrimeraPersonaHacia: controladorCamara.apuntarPrimeraPersonaHacia,
     establecerFovPrimeraPersona: controladorCamara.establecerFovPrimeraPersona,
@@ -655,9 +857,18 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       fn(controladorCamara.obtenerEstadoCamaraHistorica());
       return () => observadoresCamaraHistorica.delete(fn);
     },
+    iniciarLanzamientoCinematografico: misionId => controladorLanzamiento.iniciar(misionId),
+    pausarLanzamiento: () => controladorLanzamiento.pausar(),
+    reanudarLanzamiento: () => controladorLanzamiento.reanudar(),
+    saltarLanzamiento: () => controladorLanzamiento.saltar(),
+    cancelarLanzamiento: () => controladorLanzamiento.cancelar(),
+    reiniciarLanzamiento: () => controladorLanzamiento.reiniciar(),
+    estaEnLanzamiento: () => controladorLanzamiento.estaActivo(),
+    obtenerFaseLanzamiento: () => controladorLanzamiento.obtenerFaseActual(),
     actualizarLineaDistancia: medidorDistancia.actualizar,
     establecerModoEscala,
     modoEscalaActual: () => modoEscala,
+    obtenerEstadoIluminacion,
     alCambiarModoEscala(fn) {
       observadoresModoEscala.add(fn);
       fn(modoEscala);

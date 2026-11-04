@@ -14,16 +14,17 @@ import {
   resolveMissionPhase
 } from './VoyagerHistoricalMissions.js';
 import { findPreviousAndNextEvents } from './VoyagerHistoricalEvents.js';
+import { MOON_CATALOG as MOONS } from './MoonCatalog.js';
 
 export const SPEED_OF_LIGHT_KM_S = 299792.458; // Definición exacta SI / UAI
 export const HISTORICAL_CATALOG_PATH = 'data/historical-ephemerides-catalog-v1.json';
 const COVERAGE_TOLERANCE_DAYS = 1e-8;
 
-export const HISTORICAL_ENCOUNTER_MOONS = Object.freeze({
-  Io: Object.freeze({ id: '501', key: 'Io', name: 'Ío', parentPlanet: 'Jupiter', radiusKm: 1821.6 }),
-  Titan: Object.freeze({ id: '606', key: 'Titan', name: 'Titán', parentPlanet: 'Saturno', radiusKm: 2574.7 }),
-  Triton: Object.freeze({ id: '801', key: 'Triton', name: 'Tritón', parentPlanet: 'Neptuno', radiusKm: 1353.4 })
-});
+export const HISTORICAL_ENCOUNTER_MOONS = Object.freeze(Object.fromEntries(
+  Object.entries(MOONS).map(([key, moon]) => [key, Object.freeze({
+    id: moon.id, key, name: moon.name, parentPlanet: moon.parent, radiusKm: moon.radiusKm
+  })])
+));
 
 export function formatLightTimeHms(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return '—';
@@ -75,6 +76,9 @@ export function selectBestHistoricalDataset(datasets, bodyId, jdTdb) {
   candidates.sort((a, b) => {
     if (a.entry.cadenceSeconds !== b.entry.cadenceSeconds) {
       return a.entry.cadenceSeconds - b.entry.cadenceSeconds;
+    }
+    if ((a.entry.referencePriority ?? 0) !== (b.entry.referencePriority ?? 0)) {
+      return (b.entry.referencePriority ?? 0) - (a.entry.referencePriority ?? 0);
     }
     const spanA = a.cov.endJdTdb - a.cov.startJdTdb;
     const spanB = b.cov.endJdTdb - b.cov.startJdTdb;
@@ -347,35 +351,16 @@ export function createHistoricalEphemerisResolver({
     if (splice
       && jdTdb > splice.beforeJdTdb + COVERAGE_TOLERANCE_DAYS
       && jdTdb < splice.afterJdTdb - COVERAGE_TOLERANCE_DAYS) {
-      const nearestBoundaryJd = (jdTdb - splice.beforeJdTdb) <= (splice.afterJdTdb - jdTdb)
-        ? splice.beforeJdTdb
-        : splice.afterJdTdb;
-      let boundary = await resolveStandardBody(mission.naifId, nearestBoundaryJd);
-      if (!boundary.state) {
-        const altBoundaryJd = nearestBoundaryJd === splice.beforeJdTdb ? splice.afterJdTdb : splice.beforeJdTdb;
-        boundary = await resolveStandardBody(mission.naifId, altBoundaryJd);
-      }
-      if (!boundary.state) {
-        return Object.freeze({
-          status: 'spk_segment_gap',
-          missionId,
-          naifId: mission.naifId,
-          state: null,
-          isRealData: false,
-          reason: splice.note
-        });
-      }
-      // Ajusta la etiqueta temporal del estado retenido al instante consultado sin inventar interpolación Hermite
+      // Una muestra del extremo pertenece a otra época: no es un estado válido
+      // para este instante. Tampoco se interpola una unión de soluciones distintas.
       return Object.freeze({
         status: 'spk_segment_transition',
         missionId,
         naifId: mission.naifId,
-        state: boundary.state,
-        samples: Object.freeze([boundary.state]),
-        datasetId: boundary.datasetId,
-        file: boundary.file,
-        cadenceSeconds: boundary.cadenceSeconds,
-        isRealData: true,
+        state: null,
+        samples: Object.freeze([]),
+        isRealData: false,
+        reason: splice.note,
         spliceWarning: splice.note
       });
     }
@@ -526,10 +511,20 @@ export function createHistoricalEphemerisResolver({
         uniqueKnots.push(knot);
       }
 
+      // A refit boundary has two valid endpoint samples but no certified
+      // trajectory between them. Keep the samples and flag the absent edge.
+      const splice = mission.spkSegmentSplice;
+      const certifiedKnots = uniqueKnots.map((knot, index) => Object.freeze({
+        ...knot,
+        breakBefore: Boolean(splice && index > 0
+          && uniqueKnots[index - 1].jdTdb <= splice.beforeJdTdb + COVERAGE_TOLERANCE_DAYS
+          && knot.jdTdb >= splice.afterJdTdb - COVERAGE_TOLERANCE_DAYS)
+      }));
+
       return Object.freeze({
         missionId,
         naifId: mission.naifId,
-        knots: Object.freeze(uniqueKnots)
+        knots: Object.freeze(certifiedKnots)
       });
     })();
 

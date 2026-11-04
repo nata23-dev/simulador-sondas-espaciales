@@ -1,0 +1,10 @@
+﻿import fs from 'node:fs/promises';
+const target=await fetch('http://127.0.0.1:9338/json/new?http://127.0.0.1:5173/',{method:'PUT'}).then(r=>r.json());
+const ws=new WebSocket(target.webSocketDebuggerUrl);await new Promise(r=>ws.onopen=r);let id=0;const jobs=new Map();ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.id){jobs.get(m.id)?.(m.result);jobs.delete(m.id)}};
+const call=(method,params={})=>new Promise(r=>{const n=++id;jobs.set(n,r);ws.send(JSON.stringify({id:n,method,params}))});
+await call('Page.enable');await call('Runtime.enable');await call('Emulation.setDeviceMetricsOverride',{width:1280,height:720,deviceScaleFactor:1,mobile:false});
+await new Promise(r=>setTimeout(r,6000));
+console.log(JSON.stringify(await call('Runtime.evaluate',{expression:'JSON.stringify({ready:!!window.__SIMULADOR_DIAGNOSTICO__,title:document.title,body:document.body.innerText.slice(-800)})',returnByValue:true})));
+let shot=await call('Page.captureScreenshot',{format:'png'});await fs.writeFile('evidencias/rediseno-profesional/review-desktop.png',Buffer.from(shot.data,'base64'));
+await call('Emulation.setDeviceMetricsOverride',{width:320,height:568,deviceScaleFactor:1,mobile:false});await new Promise(r=>setTimeout(r,3000));shot=await call('Page.captureScreenshot',{format:'png'});await fs.writeFile('evidencias/rediseno-profesional/review-mobile.png',Buffer.from(shot.data,'base64'));
+ws.close();

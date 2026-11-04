@@ -1,0 +1,33 @@
+{
+  "source": "NASA/JPL Horizons API",
+  "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27-31%27&CENTER=%27500%40599%27&START_TIME=%271979-03-05+11%3A05%3A26%27&STOP_TIME=%271979-03-05+13%3A05%3A26%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27UT%27&TIME_DIGITS=%27SECONDS%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+  "parameters": {
+    "format": "json",
+    "OBJ_DATA": "'NO'",
+    "MAKE_EPHEM": "'YES'",
+    "EPHEM_TYPE": "'VECTORS'",
+    "COMMAND": "'-31'",
+    "CENTER": "'500@599'",
+    "START_TIME": "'1979-03-05 11:05:26'",
+    "STOP_TIME": "'1979-03-05 13:05:26'",
+    "STEP_SIZE": "'1 m'",
+    "TIME_TYPE": "'UT'",
+    "TIME_DIGITS": "'SECONDS'",
+    "REF_PLANE": "'ECLIPTIC'",
+    "REF_SYSTEM": "'ICRF'",
+    "OUT_UNITS": "'KM-S'",
+    "VEC_TABLE": "'2'",
+    "VEC_LABELS": "'NO'",
+    "VEC_CORR": "'NONE'",
+    "CSV_FORMAT": "'YES'"
+  },
+  "acquiredAtUtc": "2026-11-01T01:35:30.907Z",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "sha256": "49091cb7286c5263692b84efd08d3b7e41fa3f24257415f55b02f2ff49b2c199",
+  "bytes": 29449,
+  "eventId": "v1-jupiter-1979",
+  "eventDateUtc": "1979-03-05T12:05:26Z",
+  "targetId": "-31",
+  "centerId": "500@599"
+}

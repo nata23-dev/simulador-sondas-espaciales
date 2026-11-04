@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=" /><!-- prevent favicon.ico noise -->
+  <link rel="stylesheet" href="/css/font-awesome.min.css" />
+  <!--<link rel="stylesheet" href="/css/dataTables.fontAwesome.css" />-->
+  <link rel="stylesheet" href="/css/dataTables.bootstrap.min.css" />
+  <link rel="stylesheet" href="/css/responsive.bootstrap.min.css" />
+
+
+  <link rel="stylesheet" href="/css/styles.css" />
+  <title>Horizons System</title>
+</head>
+
+  <body>
+<a class="sr-only sr-only-focusable" href="#main_content">Skip Navigation</a>
+
+
+
+
+<div id="banner" class="top-banner">
+  <img class="img-responsive banner" src="/images/ssd_banner.png" alt="banner" />
+  <img class="img-responsive banner-small" src="/images/ssd_banner_small.png" alt="banner" />
+  <img src="/images/logo_nasa_trio.png" alt="Trio-Logo" class="overlay-trilogo" />
+  <a id="link_nasa" class="hide-ext-link" href="https://www.nasa.gov/" title="NASA"
+    ><span class="sr-only">NASA</span></a>
+  <a id="link_jpl" class="hide-ext-link" href="https://www.jpl.nasa.gov/" title="JPL"
+    ><span class="sr-only">JPL</span></a>
+  <a id="link_caltech" class="hide-ext-link" href="https://www.caltech.edu/" title="Caltech"
+    ><span class="sr-only">Caltech</span></a>
+  <img src="/images/ssd_title_overlay.png" alt="SSD Solar System Dynamics" class="overlay-ssd-title" />
+</div>
+
+<!-- Beginning of navigation bar -->
+
+
+<div id="topnav">
+
+<nav class="navbar navbar-default navbar-inverse">
+  <div class="container-fluid">
+
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">
+        <span class="home-menu">Home</span>
+        
+        <img class="home-menu-mobile" src="/images/ssd_title_overlay.png" alt="SSD Solar System Dynamics Home" />
+      </a>
+    </div>
+
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+      
+      <!--DEBUG: join=About<br/>  rec=About-->
+        
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle"
+          data-toggle="dropdown">About<br/>&nbsp;<span class="caret"></span></a>
+          
+          <ul class="dropdown-menu dropdown-menu-left">
+          
+          
+            
+            <li><a href="/about/" class="">What does SSD do?</a></li>
+            
+          
+            
+            <li><a href="/faq.html" class="">FAQ</a></li>
+            
+          
+            
+            <li><a href="/sitemap.html" class="">Sitemap</a></li>
+            
+          
+            
+            <li><a href="/contact/" class="">Contact Us</a></li>
+            
+          
+          </ul>
+        </li>
+        
+      
+      <!--DEBUG: join=Orbits &amp;<br/>Ephemerides  rec=Orbits &amp;Ephemerides-->
+        
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle"
+          data-toggle="dropdown">Orbits &amp;<br/>Ephemerides&nbsp;<span class="caret"></span></a>
+          
+          <ul class="dropdown-menu dropdown-menu-left">
+          
+          
+            
+            <li><a href="/orbits.html" class="landing-page-item">Introduction</a></li>
+            
+          
+            
+          
+            
+            <li><a href="/horizons/" class="">Horizons System</a></li>
+            
+          
+            
+            <li><a href="/planets/orbits.html" class="">Planets</a></li>
+            
+          
+            
+            <li><a href="/sats/orbits.html" class="">Planetary Satellites</a></li>
+            
+          
+            
+            <li><a href="/sb/orbits.html" class="">Small Bodies</a></li>
+            
+          
+            
+            <li><a href="/tools/orbit_viewer.html" class="">Orbit Viewer</a></li>
+            
+          
+            
+            <li><a href="/ephem.html" class="">Download Ephemerides</a></li>
+            
+          
+          </ul>
+        </li>
+        
+      
+      <!--DEBUG: join=Planets<br/>  rec=Planets-->
+        
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle"
+          data-toggle="dropdown">Planets<br/>&nbsp;<span class="caret"></span></a>
+          
+          <ul class="dropdown-menu dropdown-menu-left">
+          
+          
+            
+            <li><a href="/planets/" class="landing-page-item">Introduction</a></li>
+            
+          
+            
+            <li><a href="/planets/orbits.html" class="">Orbits &amp; Ephemerides</a></li>
+            
+          
+            
+            <li><a href="/planets/phys_par.html" class="">Physical Parameters</a></li>
+            
+          
+            
+            <li><a href="/tools/gravity.html" class="">Gravity Fields</a></li>
+            
+          
+            
+            <li><a href="/planets/obs_data.html" class="">Observational Data</a></li>
+            
+          
+            
+            <li><a href="/planets/discovery.html" class="">Discovery Circumstances</a></li>
+            
+          
+            
+          
+            
+          
+            
+          
+          </ul>
+        </li>
+        
+      
+      <!--DEBUG: join=Planetary<br/>Satellites  rec=PlanetarySatellites-->
+        
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle"
+          data-toggle="dropdown">Planetary<br/>Satellites&nbsp;<span class="caret"></span></a>
+          
+          <ul class="dropdown-menu dropdown-menu-left">
+          
+          
+            
+            <li><a href="/sats/" class="landing-page-item">Introduction</a></li>
+            
+          
+            
+            <li><a href="/sats/orbits.html" class="">Orbits &amp; Ephemerides</a></li>
+            
+          
+            
+          
+            
+            <li><a href="/sats/phys_par/" class="">Physical Parameters</a></li>
+            
+          
+            
+            <li><a href="/sats/obs_data.html" class="">Observational Data</a></li>
+            
+          
+            
+            <li><a href="/sats/discovery.html" class="">Discovery Circumstances</a></li>
+            
+          
+          </ul>
+        </li>
+        
+      
+      <!--DEBUG: join=Small Bodies<br/>  rec=Small Bodies-->
+        
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle"
+          data-toggle="dropdown">Small Bodies<br/>&nbsp;<span class="caret"></span></a>
+          
+          <ul class="dropdown-menu dropdown-menu-left">
+          
+          
+            
+            <li><a href="/sb/" class="landing-page-item">Introduction</a></li>
+            
+          
+            
+            <li><a href="/sb/orbits.html" class="">Orbits &amp; Ephemerides</a></li>
+            
+          
+            
+          
+            
+            <li><a href="/tools/sbdb_lookup.html" class="">Database Lookup</a></li>
+            
+          
+            
+            <li><a href="/tools/sbdb_query.html" class="">Database Query</a></li>
+            
+          
+            
+            <li><a href="/tools/mdesign.html" class="">Mission Design</a></li>
+            
+          
+            
+            <li><a href="/tools/sb_ident.html" class="">Identification</a></li>
+            
+          
+            
+            <li><a href="/tools/sbwobs.html" class="">What&apos;s Observable?</a></li>
+            
+          
+            
+            <li><a href="/sb/meteor_streams.html" class="">Meteor Streams</a></li>
+            
+          
+            
+            <li><a href="/sb/targets.html" class="">Mission Targets</a></li>
+            
+          
+            
+            <li><a href="/sb/sats.html" class="">Satellites</a></li>
+            
+          
+            
+            <li><a href="/sb/radar.html" class="">Radar Astrometry</a></li>
+            
+          
+            
+            <li><a href="/diagrams/" class="">Diagrams and Charts</a></li>
+            
+          
+            
+            <li><a href="/tools/gravity.html" class="">Gravity Fields</a></li>
+            
+          
+            
+            <li><a href="/sb/great_comets.html" class="">Great Comets</a></li>
+            
+          
+            
+            <li><a href="/sb/neos.html" class="">Near-Earth Objects</a></li>
+            
+          
+            
+          
+            
+          
+          </ul>
+        </li>
+        
+      
+      <!--DEBUG: join=Tools<br/>  rec=Tools-->
+        
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle"
+          data-toggle="dropdown">Tools<br/>&nbsp;<span class="caret"></span></a>
+          
+          <ul class="dropdown-menu">
+          
+          
+            
+            <li><a href="/tools/" class="landing-page-item">Description of Tools</a></li>
+            
+          
+            
+            <li><a href="/horizons/" class="">Horizons System</a></li>
+            
+          
+            
+            <li><a href="/ephem.html" class="">Download Ephemerides</a></li>
+            
+          
+            
+            <li><a href="/tools/sbdb_lookup.html" class="">Small-Body Database Lookup</a></li>
+            
+          
+            
+            <li><a href="/tools/sbdb_query.html" class="">Small-Body Database Query</a></li>
+            
+          
+            
+            <li><a href="/tools/mdesign.html" class="">Small-Body Mission Design</a></li>
+            
+          
+            
+            <li><a href="/tools/sb_ident.html" class="">Small-Body Identification</a></li>
+            
+          
+            
+            <li><a href="/tools/sbwobs.html" class="">Small-Body Observability</a></li>
+            
+          
+            
+            <li><a href="/tools/orbit_viewer.html" class="">Orbit Viewer</a></li>
+            
+          
+            
+            <li><a href="/tools/gravity.html" class="">Gravity Field Visualization</a></li>
+            
+          
+            
+            <li><a href="/tools/jdc/" class="">JD Date/Time Converter</a></li>
+            
+          
+            
+            <li><a href="/api.html" class="">APIs</a></li>
+            
+          
+          </ul>
+        </li>
+        
+      
+      <!--DEBUG: join=Extras<br/>  rec=Extras-->
+        
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle"
+          data-toggle="dropdown">Extras<br/>&nbsp;<span class="caret"></span></a>
+          
+          <ul class="dropdown-menu">
+          
+          
+            
+            <li><a href="/extras.html" class="landing-page-item">Description of Extras</a></li>
+            
+          
+            
+            <li><a href="/astro_par.html" class="">Astrodynamic Parameters</a></li>
+            
+          
+            
+            <li><a href="/diagrams/" class="">Diagrams and Charts</a></li>
+            
+          
+            
+            <li><a href="/obs_data.html" class="">Observational Data</a></li>
+            
+          
+            
+            <li><a href="/tools/periodic_orbits.html" class="">Three-Body Periodic Orbits</a></li>
+            
+          
+            
+            <li><a href="/tools/orbit_diagram.html" class="">Custom Orbit Visualization</a></li>
+            
+          
+            
+            <li><a href="/api.html" class="">APIs</a></li>
+            
+          
+            
+            <li><a href="/doc/" class="">Technical Documents</a></li>
+            
+          
+            
+            <li><a href="/discovery.html" class="">Discovery Circumstances</a></li>
+            
+          
+            
+            <li><a href="/announcements/" class="">Announcements</a></li>
+            
+          
+            
+            <li><a href="/email_list.html" class="">Email Lists</a></li>
+            
+          
+            
+            <li><a href="/glossary/" class="">Glossary</a></li>
+            
+          
+            
+            <li><a href="/links.html" class="">Related Sites</a></li>
+            
+          
+            
+            <li><a href="/faq.html" class="">FAQ</a></li>
+            
+          
+            
+            <li><a href="/sitemap.html" class="">Sitemap</a></li>
+            
+          
+            
+            <li><a href="/contact/" class="">Contact Us</a></li>
+            
+          
+          </ul>
+        </li>
+        
+      
+      </ul>
+    </div>
+
+  </div>
+
+</nav>
+<!-- End of navigation bar -->
+
+<!-- Breadcrumbs -->
+
+<ol id="breadcrumb" class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  
+  <li><a href="/tools/">Tools</a></li>
+  
+  
+  <li class="active">Horizons System</li>
+  
+</ol>
+
+<!-- End of Breadcrumbs -->
+
+
+
+
+<div class="fixed-content-margin"></div>
+
+</div>
+
+
+<!-- page content: begin -->
+<div id="main_content" tabindex="-1" class="container-fluid hide-tabindex"> <!-- begin main container -->
+
+  <!-- check for JavaScript -->
+  <noscript>
+    <div class="alert alert-danger">
+<h4>Please enable JavaScript for this website.</h4>
+
+<p>
+This website makes extensive use of JavaScript.
+The top menus will not function without it
+and most tools will also not work.
+</p>
+
+<p>
+If you do not know how to enable JavaScript in your web browser,
+you should be able find instructions by searching the web for
+"enable javascript in my browser" (or similar).
+</p>
+
+    </div>
+  </noscript>
+
+  
+
+<h1 class="no-top-margin">Horizons System</h1>
+
+
+
+  
+  
+<!-- subnav: start -->
+<div class="row">
+  <div class="col-xs-12">
+<ul class="nav nav-tabs" role="tablist">
+<li role="presentation"><a href="/horizons/" aria-controls="about" role="tab">About</a>
+<li role="presentation"><a href="/horizons/app.html" aria-controls="app" role="tab">App</a>
+<li role="presentation"><a href="/horizons/manual.html" aria-controls="man" role="tab">Manual</a>
+<li role="presentation"><a href="/horizons/tutorial.html" aria-controls="tut" role="tab">Tutorial</a>
+<li role="presentation"><a href="/horizons/time_spans.html" aria-controls="span" role="tab">Time Spans</a>
+<li role="presentation" class="active"><a href="/horizons/news.html" aria-controls="news" role="tab">News</a>
+</ul>
+
+  </div>
+</div>
+<!-- subnav: end -->
+
+
+
+
+<div id="horizons_news" class="horizons-news-container">
+  <em>Loading...</em>
+</div>
+
+<!-- end of page content -->
+
+
+
+
+
+<div id="footer" class="container-fluid footer">
+  <div class="row">
+    <div class="col-sm-5 col-xs-12">
+      <img class="ssd-logo" src="/images/ssd_logo.png" alt="SSD Logo" />
+    </div>
+    <div class="col-sm-3 col-xs-12">
+      <div class="link-inv">
+        <a href="/sitemap.html"><i class="fa-fw fa fa-list-alt"></i> Site Map</a>
+      </div>
+      <div class="link-inv">
+        <a href="https://www.jpl.nasa.gov/caltechjpl-privacy-policies-and-important-notices"><i class="fa-fw fa fa-user-secret"></i> Privacy</a>
+      </div>
+      <div class="link-inv">
+        <a href="https://www.jpl.nasa.gov/jpl-image-use-policy"><i class="fa-fw fa fa-picture-o"></i> Image Policy</a>
+      </div>
+    </div>
+    <div class="col-sm-4 col-xs-12">
+      <div class=" link-inv">
+        <a href="/contact/"><i class="fa-fw fa fa-envelope"></i> Contact Us</a>
+      </div>
+      <div class="text-smaller">
+        <span class="footer-label text-nowrap">Site Manager:</span>
+        <span class="text-nowrap">Ryan Park</span>
+      </div>
+      <div class="text-smaller2">
+        <span class="footer-label text-nowrap">Site Design:</span>
+        <span class="text-nowrap">Alan B. Chamberlin</span>
+        
+      </div>
+      <div class="text-smaller2">
+        <span class="footer-label text-nowrap">URS Clearance:</span>
+        <span class="text-nowrap">CL#21-4165</span>
+      </div>
+    </div>
+  </div>
+  <!-- Full-width sponsor row at the bottom -->
+  <div class="row" style="margin-top:10px;">
+    <div class="col-xs-12 text-center link-inv" style="font-size:16px;">
+      The JPL Solar System Dynamics group’s ephemeris development, maintenance, and improvement tasks are primarily supported by
+      NASA’s <a href="https://ammos.nasa.gov/">Advanced Multi-Mission Operations System</a>,
+      which is funded by
+      <a href="https://science.nasa.gov/solar-system">NASA’s Science Mission Directorate </a>.
+    </div>
+  </div>
+  
+    
+  <script id="_fed_an_ua_tag" type="text/javascript" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=NASA&subagency=JPL&sdor=false"></script>
+    
+  
+</div>
+
+
+
+</div> <!-- end of main container -->
+
+
+
+<script src="/js/jquery-3.6.0.min.js"></script>
+<script src="/js/sprintf.min.js"></script>
+<script src="/js/bootstrap.js"></script>
+
+<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/dataTables.bootstrap.min.js"></script>
+<script src="/js/dataTables.responsive.min.js"></script>
+<script src="/js/dataTables.conditionalPaging.js"></script>
+<script src="/js/dataTables.select.min.js"></script>
+<script src="/tools/common/js/vendor/dataTables.select.min.js"></script>
+
+<script src="/js/responsive.bootstrap.min.js"></script>
+
+
+<script src="/js/angular.min.js"></script>
+<script src="/js/angular-sanitize.min.js"></script>
+
+
+
+
+
+
+
+
+<script>
+$(function() {
+  $("a[class='anchor-modal']").click( function(e) {
+    e.preventDefault();
+    var href = $(this).attr('href');
+    $(href).modal('toggle');
+  });
+});
+</script>
+
+<script src="/js/script.js"></script>
+
+
+<script src="news.js"></script>
+
+
+
+  </body>
+</html>

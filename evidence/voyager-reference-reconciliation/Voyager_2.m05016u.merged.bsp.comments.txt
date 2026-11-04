@@ -1,0 +1,193 @@
+
+This SPK was provided by Jon Giorgini on 01/21/15. It is a merge of at
+least two files:
+
+#1) 1977-Sep-5 to 1989-10-01:
+
+    The Voyager 2 "supertrajectory" nio file obtained from George Lewis
+    by Chuck Acton on 23 May 1996. The original producer was S.
+    Mastousek who last updated it in 1987 on the VAX ("Groucho")
+    system.
+
+    This section is is a patched conic mission-design type trajectory
+    in which the conics are constrained to match specific events
+    (satellite encounters), providing a rough accuracy, which was used
+    throughout the Voyager mission. The file started shortly after
+    launch and originally extended to 2050. See IOM Voy-NAV-87-16,
+    dated 31 Mar 87.
+
+#2) 1989-10-01 to 2030-Dec-31
+
+    "pfile_m05016u_V0.2", based on tracking data Oct 1989 - Oct 1990.
+    Note that the previously used solution  "m05208" used in the merged
+    SPK file "voyager_2.ST+1992_m05208u.merged.bsp" was based on Jan
+    1990 - Oct 1992 data and included modeling of additional maneuver
+    delta-v's that occurred over the two year span since m05016u, so
+    using the "pfile_m05016u_V0.2" in this merged SPK is a regression
+    to an older trajectory that runs out longer.
+
+The planetary ephemeris used in this SPK is DE118.
+
+BVS/NAIF, 01/21/15.
+
+------
+
+The original comments from Jon's SPK:
+
+; Voyager_2.m05016u.merged.bsp LOG FILE
+
+; Created 2015-01-21/14:06:10.58.
+;
+; BEGIN SPKMERGE COMMANDS
+
+LEAPSECONDS_KERNEL   = /disk/data/leap-kernel
+
+SPK_KERNEL           = Voyager_2.m05016u.merged.bsp
+  LOG_FILE           = Voyager_2.m05016u.merged.log
+  SOURCE_SPK_KERNEL  = vgr2_st.bsp
+    INCLUDE_COMMENTS = YES
+    BODIES           = -32, 499, 299, 199, 399, 301, 10, 9, 8, 7, 6, 5, 4, 3,
+                       2, 1
+    BEGIN_TIME       = 1977 AUG 20 15:31:44.000
+    END_TIME         = 1989 SEP 30 23:59:03.818
+  SOURCE_SPK_KERNEL  = vgr2_st.bsp
+    INCLUDE_COMMENTS = NO
+    BODIES           = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 199, 299, 301, 399, 499
+    BEGIN_TIME       = 1989 SEP 30 23:59:03.818
+    END_TIME         = 2030 DEC 31 23:58:51.816
+  SOURCE_SPK_KERNEL  = pfile_m05016u.bsp_V0.2
+    INCLUDE_COMMENTS = YES
+    BODIES           = -32
+    BEGIN_TIME       = 1989 SEP 30 23:59:03.818
+    END_TIME         = 2030 DEC 31 23:58:51.816
+
+; END SPKMERGE COMMANDS
+
+; vgr2_st.bsp LOG FILE
+;
+; Created 1996-06-04/10:55:44.00.
+;
+; BEGIN NIOSPK COMMANDS
+
+LEAPSECONDS_FILE    = /kernels/gen/lsk/naif0005.tls
+SPK_FILE            = vgr2_st.bsp
+  SOURCE_NIO_FILE   = de118.nio
+    BODIES          = 1 2 3 4 5 6 7 8 9 10 301 399 199 299 499
+    BEGIN_TIME      = CAL-ET 1977 AUG 20 15:32:32.182
+    END_TIME        = CAL-ET 2049 DEC 31 00:00:00.183
+  SOURCE_NIO_FILE   = vgr2_st.nio
+    BODIES          = -32
+    BEGIN_TIME      = CAL-ET 1977 AUG 20 15:32:32.182
+    END_TIME        = CAL-ET 2049 DEC 31 00:00:00.183
+
+; END NIOSPK COMMANDS
+
+PRODUCER_ID = Jeff Bytof    jbytof@clove.jpl.nasa.gov
+
+COMMENTS =
+
+[The Voyager 2 "supertrajectory" nio file was obtained from
+George Lewis by Chuck Acton on 23 May 1996; below are Lewis'
+comments.]
+
+"The file voy2_st.ftp is the Voyager 2 supertrajectory (i.e. a
+P file in ftp format) with a corrected Neptune encounter. The SEPV
+target parameters were the Neptune periapsis time and the Triton
+B-plane coordinates. The Neptune B-plane coordinates are
+both within 10 km of the achieved coordinates. The Triton
+periapsis time is within two seconds of the achieved periapsis
+time.
+
+"The M04513 satellite ephemeris was substituted
+for the NEP004 satellite ephemeris. The planetary ephemeris
+DE118 was retained. The NEP004 ephemeris should be used with
+the 1987 version of the Voyager 2 supertrajectory.
+
+"A fictitious instantaneous delta-v of about 4 m/s
+was used at 1 Oct 89 00:00:00 ET to correct the outgoing
+asymptote. The SEPV target parameters were the position
+vector components at 1 Jan 2031 as given by the M05016U
+trajectory.
+
+GDL
+1 Jun 95
+
+"N.B. "Supertrajectory" was used as a handy label to denote
+the approximate Voyager 1 and Voyager 2 trajectories that
+were constructed beginning at Earth departure and extending
+to 2050. The files provide approximate trajectory information
+throughout the Voyager mission. The last maintenance effort
+was made by S. E. Matousek in 1987 as described in IOM
+Voy-NAV-87-16, dated 31 Mar 87. "
+
+END_COMMENTS
+
+BRIEF_SUMMARY = Brief.  Version: 2.0   Summary for: vgr2_st.bsp
+
+Body: VOYAGER 2 (-32) w.r.t. JUPITER BARYCENTER (5)
+      Start of Interval (ET)              End of Interval (ET)
+      --------------------------------    ------------------------
+      1979 MAY 03 21:42:56.180            1979 SEP 15 11:07:25.029
+
+Body: VOYAGER 2 (-32) w.r.t. SATURN BARYCENTER (6)
+      Start of Interval (ET)              End of Interval (ET)
+      --------------------------------    ------------------------
+      1981 JUL 04 11:59:48.682            1981 OCT 17 18:43:56.352
+
+Body: VOYAGER 2 (-32) w.r.t. URANUS BARYCENTER (7)
+      Start of Interval (ET)              End of Interval (ET)
+      --------------------------------    ------------------------
+      1986 JAN 04 11:58:08.565            1986 FEB 14 00:01:30.505
+
+Body: VOYAGER 2 (-32) w.r.t. NEPTUNE BARYCENTER (8)
+      Start of Interval (ET)              End of Interval (ET)
+      --------------------------------    ------------------------
+      1989 AUG 02 10:57:30.716            1989 SEP 16 20:56:57.938
+
+Body: VOYAGER 2 (-32) w.r.t. SUN (10)
+      Start of Interval (ET)              End of Interval (ET)
+      --------------------------------    ------------------------
+      1977 AUG 23 11:29:10.841            1979 MAY 03 21:42:56.180
+      1979 SEP 15 11:07:25.029            1981 JUL 04 11:59:48.682
+      1981 OCT 17 18:43:56.352            1986 JAN 04 11:58:08.565
+      1986 FEB 14 00:01:30.505            1989 AUG 02 10:57:30.716
+      1989 SEP 16 20:56:57.938            2049 DEC 31 00:00:00.000
+
+Body: VOYAGER 2 (-32) w.r.t. EARTH (399)
+      Start of Interval (ET)              End of Interval (ET)
+      --------------------------------    ------------------------
+      1977 AUG 20 15:32:31.779            1977 AUG 23 11:29:10.841
+
+Bodies: MERCURY BARYCENTER (1) w.r.t. SOLAR SYSTEM BARYCENTER (0)
+        VENUS BARYCENTER (2) w.r.t. SOLAR SYSTEM BARYCENTER (0)
+        EARTH BARYCENTER (3) w.r.t. SOLAR SYSTEM BARYCENTER (0)
+        MARS BARYCENTER (4) w.r.t. SOLAR SYSTEM BARYCENTER (0)
+        JUPITER BARYCENTER (5) w.r.t. SOLAR SYSTEM BARYCENTER (0)
+        SATURN BARYCENTER (6) w.r.t. SOLAR SYSTEM BARYCENTER (0)
+        URANUS BARYCENTER (7) w.r.t. SOLAR SYSTEM BARYCENTER (0)
+        NEPTUNE BARYCENTER (8) w.r.t. SOLAR SYSTEM BARYCENTER (0)
+        PLUTO BARYCENTER (9) w.r.t. SOLAR SYSTEM BARYCENTER (0)
+        SUN (10) w.r.t. SOLAR SYSTEM BARYCENTER (0)
+        MERCURY (199) w.r.t. MERCURY BARYCENTER (1)
+        VENUS (299) w.r.t. VENUS BARYCENTER (2)
+        MOON (301) w.r.t. EARTH BARYCENTER (3)
+        EARTH (399) w.r.t. EARTH BARYCENTER (3)
+        MARS (499) w.r.t. MARS BARYCENTER (4)
+        Start of Interval (ET)              End of Interval (ET)
+        --------------------------------    ------------------------
+        1977 AUG 20 15:32:32.182            2049 DEC 31 00:00:00.183
+
+END_BRIEF_SUMMARY
+; pfile_m05016u.bsp LOG FILE
+;
+; Created 2014-10-28/09:29:40.69.
+;
+; BEGIN NIOSPK COMMANDS
+
+SPK_FILE            = pfile_m05016u.bsp
+  SOURCE_NIO_FILE   = pfile_m05016u.nio
+    BEGIN_TIME      = CAL-ET 1989 OCT 01 00:00:00.000
+    END_TIME        = CAL-ET 2031 JAN 01 00:00:00.000
+
+; END NIOSPK COMMANDS
+

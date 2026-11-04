@@ -172,8 +172,8 @@
             <div class="hist-pill-bar" role="group" aria-label="Modo de cámara histórica">
               <span class="hist-bar-tag">CÁMARA</span>
               <button type="button" id="hist-cam-exterior-btn" aria-pressed="true" title="Cámara exterior alrededor de las naves o planetas">Exterior</button>
-              <button type="button" id="hist-cam-fp-btn" aria-pressed="false" title="Situar cámara en la posición histórica exacta de Voyager (escala angular 1:1)">
-                <svg class="icon"><use href="#icon-eye"></use></svg>Primera persona
+              <button type="button" id="hist-cam-fp-btn" aria-pressed="false" title="Situar la cámara en la trayectoria local de Voyager; apuntado geométrico sin CK/IK">
+                <svg class="icon"><use href="#icon-eye"></use></svg>Desde Voyager
               </button>
             </div>
 
@@ -212,23 +212,31 @@
                   <option value="Venus">Venus</option>
                   <option value="Marte">Marte</option>
                   <option value="Io">Ío (en encuentro)</option>
+                  <option value="Luna">Luna (en ventana disponible)</option>
+                  <option value="Europa">Europa (en encuentro)</option>
+                  <option value="Ganymede">Ganímedes (en encuentro)</option>
+                  <option value="Callisto">Calisto (en encuentro)</option>
                   <option value="Titan">Titán (en encuentro)</option>
+                  <option value="Enceladus">Encélado (en encuentro)</option>
+                  <option value="Titania">Titania (en encuentro)</option>
+                  <option value="Miranda">Miranda (en encuentro)</option>
                   <option value="Triton">Tritón (en encuentro)</option>
                   <option value="voyager-1">Voyager 1 (-31)</option>
                   <option value="voyager-2">Voyager 2 (-32)</option>
                 </select>
+                <button type="button" id="fp-reframe-btn" title="Volver a centrar el objetivo elegido">Reencuadrar objetivo</button>
               </div>
 
               <div class="fp-group fp-fov-group" role="group" aria-label="Campo visual angular (FOV)">
                 <span class="eyebrow" id="fp-fov-readout">FOV 45,0°</span>
                 <button type="button" data-fp-fov="0.424" title="Campo de visión cámara ISS ángulo estrecho (0,424°)">ISS 0,42°</button>
-                <button type="button" data-fp-fov="3.18" title="Campo de visión cámara ISS gran angular (3,18°)">WAC 3,2°</button>
+                <button type="button" data-fp-fov="3.2" title="Campo cuadrado aproximado cámara ISS gran angular (3,2° por lado)">WAC 3,2°</button>
                 <button type="button" data-fp-fov="18" title="Campo intermedio (18°)">18°</button>
                 <button type="button" data-fp-fov="45" title="Campo panorámico humano (45°)">45°</button>
               </div>
             </div>
             <div class="fp-disclosure-row">
-              <span id="fp-fidelity-badge" class="fp-fidelity-badge">Posición real del observador (NASA/JPL Horizons) · Escala angular física 1:1 · Apuntado geométrico al centro del cuerpo</span>
+              <span id="fp-fidelity-badge" class="fp-fidelity-badge">Geometría Voyager · escala angular física · orientación CK/IK no validada</span>
             </div>
           </div>
         </div>
@@ -345,8 +353,7 @@
             </summary>
             <div class="hist-card-body">
               <div class="hist-event-picker-row">
-                <select id="historical-event-select" aria-label="Seleccionar acontecimiento histórico Voyager"></select>
-                <button type="button" id="historical-event-go-btn" class="button-primary">Ir</button>
+                <input id="historical-event-select" type="hidden" />
               </div>
               <article class="hist-event-detail" id="historical-event-detail">
                 <div class="hist-event-badges">
@@ -503,6 +510,7 @@
             <dl class="comparator-meta">
               <div><dt>Misión e instrumento</dt><dd id="comp-photo-instrument">—</dd></div>
               <div><dt>Fecha documentada</dt><dd id="comp-photo-date">—</dd></div>
+              <div><dt>Fecha del recorrido</dt><dd id="comp-session-date">—</dd></div>
               <div><dt>Procedencia oficial</dt><dd><a id="comp-photo-link" class="hist-source-link" href="https://science.nasa.gov/mission/voyager/" target="_blank" rel="noopener noreferrer">—</a></dd></div>
             </dl>
           </article>
@@ -578,22 +586,10 @@
         <section class="historical-timeline-panel hud-secondary" id="historical-timeline-panel" aria-label="Línea temporal histórica Voyager 1977–2026" hidden>
           <div class="hist-event-pause-toast" id="hist-event-pause-toast" hidden>
             <span id="hist-toast-text">Hito alcanzado</span>
-            <button type="button" id="hist-skip-event-btn" class="button-primary">Omitir y continuar ▶</button>
+            <button type="button" id="hist-skip-event-btn" class="button-primary">Omitir y continuar</button>
           </div>
 
-          <div class="hist-decade-bar" role="group" aria-label="Saltos históricos por época y encuentro">
-            <button type="button" data-hist-jump="v2-launch-1977">1977 Lanz.</button>
-            <button type="button" data-hist-jump="v1-jupiter-1979">1979 Júpiter</button>
-            <button type="button" data-hist-jump="v1-saturn-1980">1980 Saturno V1</button>
-            <button type="button" data-hist-jump="v2-saturn-1981">1981 Saturno V2</button>
-            <button type="button" data-hist-jump="v2-uranus-1986">1986 Urano</button>
-            <button type="button" data-hist-jump="v2-neptune-1989">1989 Neptuno</button>
-            <button type="button" data-hist-jump="v1-pale-blue-dot-1990">1990 Pale Blue Dot</button>
-            <button type="button" data-hist-jump="v1-termination-shock-2004">2004 Choque</button>
-            <button type="button" data-hist-jump="v1-heliopause-2012">2012 Heliopausa V1</button>
-            <button type="button" data-hist-jump="v2-heliopause-2018">2018 Heliopausa V2</button>
-            <button type="button" data-hist-jump="latest-2026">2026 Actual</button>
-          </div>
+          <div class="hist-decade-bar" role="group" aria-label="Acontecimientos históricos en orden cronológico"></div>
 
           <div class="range-row hist-range-row">
             <span>20 AGO 1977</span>

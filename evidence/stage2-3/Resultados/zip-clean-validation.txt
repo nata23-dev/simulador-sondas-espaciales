@@ -1,0 +1,7 @@
+Etapa 02.3 — validación de extracción limpia del ZIP
+833 archivos verificados con SHA-256 antes de instalar dependencias; la entrega final añade este registro al manifiesto.
+npm ci: código 0; 16 paquetes añadidos; 0 vulnerabilidades.
+node --test tests/*.test.mjs: código 0; 94/94 pruebas aprobadas.
+npm run build: código 0; 74 módulos transformados; compilación correcta.
+Vite mantiene la advertencia conocida de un bloque superior a 500 kB.
+Archivo ZIP revisado con zipfile: 0 rutas con barra inversa, testzip sin error; 8 kernels BSP incluidos.

@@ -1,0 +1,584 @@
+{
+  "checks": [
+    "Entrada histórica móvil",
+    "Acceso inicial visible sin menú ni duplicación",
+    "Recorrido iniciado desde escena",
+    "Avance de hito",
+    "Retroceso de hito",
+    "Panel ampliado con acción de contraer",
+    "Panel contraído sin perder paso",
+    "Datos móviles legibles y fuera de la línea temporal",
+    "Cerrar deja acceso a continuar",
+    "Reabrir conserva el paso",
+    "Acontecimiento v2-neptune-1989",
+    "Neptuno desde Voyager 2",
+    "Acontecimiento v2-neptune-1989",
+    "Comparador abierto con foto",
+    "Comparador restaura estado anterior",
+    "Iconos diferenciados y con ayuda contextual",
+    "Reencuadrar mantiene observador, objetivo y FOV",
+    "Exterior sale de primera persona",
+    "Vista general cambia el encuadre exterior",
+    "Escritorio 1366 sin acceso flotante residual",
+    "Escritorio 1920 sin desbordamiento"
+  ],
+  "errors": [],
+  "captures": [
+    {
+      "name": "01-entrada-movil",
+      "file": "01-entrada-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -581.5772953871447,
+            1350.3608784941493,
+            2293.5628107866983
+          ],
+          "objetivoEscena": [
+            286.9506367330134,
+            128.99373734688345,
+            40.81900491320452
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "inspector": "closed",
+        "tab": "explore",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "event": "v2-launch-1977",
+        "tourButton": {
+          "label": "Iniciar recorrido",
+          "floating": true,
+          "visible": true,
+          "rect": {
+            "x": 12,
+            "y": 650,
+            "width": 123.546875,
+            "height": 44,
+            "top": 650,
+            "right": 135.546875,
+            "bottom": 694,
+            "left": 12
+          }
+        },
+        "panelRect": {
+          "x": 8,
+          "y": 352.40625,
+          "width": 374,
+          "height": 337.59375,
+          "top": 352.40625,
+          "right": 382,
+          "bottom": 690,
+          "left": 8
+        },
+        "timelineRect": {
+          "x": 8,
+          "y": 717,
+          "width": 374,
+          "height": 119,
+          "top": 717,
+          "right": 382,
+          "bottom": 836,
+          "left": 8
+        },
+        "comparatorOpen": false,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "name": "02-recorrido-movil",
+      "file": "02-recorrido-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -574.3600802399679,
+            1334.3565583848465,
+            2266.5844196973494
+          ],
+          "objetivoEscena": [
+            283.8742873177049,
+            127.46490846120153,
+            40.53987351909766
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "inspector": "half",
+        "tab": "history",
+        "step": "Paso 1 de 12 · acontecimiento 1 de 14",
+        "event": "v2-launch-1977",
+        "tourButton": {
+          "label": "Continuar recorrido",
+          "floating": false,
+          "visible": true,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        },
+        "panelRect": {
+          "x": 8,
+          "y": 277.765625,
+          "width": 374,
+          "height": 388.234375,
+          "top": 277.765625,
+          "right": 382,
+          "bottom": 666,
+          "left": 8
+        },
+        "timelineRect": {
+          "x": 8,
+          "y": 717,
+          "width": 374,
+          "height": 119,
+          "top": 717,
+          "right": 382,
+          "bottom": 836,
+          "left": 8
+        },
+        "comparatorOpen": false,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "name": "03-datos-movil",
+      "file": "03-datos-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -443.5984416200097,
+            1090.3315334702663,
+            1964.5092428346247
+          ],
+          "objetivoEscena": [
+            256.5032004141772,
+            105.8020792566148,
+            148.60861971391108
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "inspector": "half",
+        "tab": "telemetry",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "event": "v2-neptune-1989",
+        "tourButton": {
+          "label": "Continuar recorrido",
+          "floating": false,
+          "visible": true,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        },
+        "panelRect": {
+          "x": 8,
+          "y": 362.171875,
+          "width": 374,
+          "height": 303.828125,
+          "top": 362.171875,
+          "right": 382,
+          "bottom": 666,
+          "left": 8
+        },
+        "timelineRect": {
+          "x": 8,
+          "y": 717,
+          "width": 374,
+          "height": 119,
+          "top": 717,
+          "right": 382,
+          "bottom": 836,
+          "left": 8
+        },
+        "comparatorOpen": false,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "name": "04-neptuno-movil-despejado",
+      "file": "04-neptuno-movil-despejado.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 150,
+          "fovReferenciaGrados": 150,
+          "fovHorizontalGrados": 119.78372129473975,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 140.02775375249897,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "inspector": "closed",
+        "tab": "navigation",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "event": "v2-neptune-1989",
+        "tourButton": {
+          "label": "Continuar recorrido",
+          "floating": true,
+          "visible": true,
+          "rect": {
+            "x": 12,
+            "y": 650,
+            "width": 145.953125,
+            "height": 44,
+            "top": 650,
+            "right": 157.953125,
+            "bottom": 694,
+            "left": 12
+          }
+        },
+        "panelRect": {
+          "x": 8,
+          "y": 386.171875,
+          "width": 374,
+          "height": 303.828125,
+          "top": 386.171875,
+          "right": 382,
+          "bottom": 690,
+          "left": 8
+        },
+        "timelineRect": {
+          "x": 8,
+          "y": 717,
+          "width": 374,
+          "height": 119,
+          "top": 717,
+          "right": 382,
+          "bottom": 836,
+          "left": 8
+        },
+        "comparatorOpen": false,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "name": "05-comparador-restaurado-movil",
+      "file": "05-comparador-restaurado-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "mode": "historico",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 150,
+          "fovReferenciaGrados": 150,
+          "fovHorizontalGrados": 119.78372129473975,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 164.0655499554755,
+            "cabeEnAreaLibre": false
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "inspector": "half",
+        "tab": "history",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "event": "v2-neptune-1989",
+        "tourButton": {
+          "label": "Continuar recorrido",
+          "floating": false,
+          "visible": true,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        },
+        "panelRect": {
+          "x": 8,
+          "y": 277.765625,
+          "width": 374,
+          "height": 388.234375,
+          "top": 277.765625,
+          "right": 382,
+          "bottom": 666,
+          "left": 8
+        },
+        "timelineRect": {
+          "x": 8,
+          "y": 717,
+          "width": 374,
+          "height": 119,
+          "top": 717,
+          "right": 382,
+          "bottom": 836,
+          "left": 8
+        },
+        "comparatorOpen": false,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "name": "06-escritorio-1366",
+      "file": "06-escritorio-1366.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -19.369216917015507,
+            172.14154765910519,
+            1040.074090383374
+          ],
+          "objetivoEscena": [
+            209.81203292557615,
+            -150.14837596178418,
+            445.6282162626624
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "inspector": "closed",
+        "tab": "history",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "event": "v2-neptune-1989",
+        "tourButton": {
+          "label": "Continuar recorrido",
+          "floating": false,
+          "visible": true,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        },
+        "panelRect": {
+          "x": -4,
+          "y": 80,
+          "width": 380,
+          "height": 548,
+          "top": 80,
+          "right": 376,
+          "bottom": 628,
+          "left": -4
+        },
+        "timelineRect": {
+          "x": 273,
+          "y": 671,
+          "width": 820,
+          "height": 85,
+          "top": 671,
+          "right": 1093,
+          "bottom": 756,
+          "left": 273
+        },
+        "comparatorOpen": false,
+        "scrollWidth": 1366
+      }
+    },
+    {
+      "name": "07-escritorio-1920",
+      "file": "07-escritorio-1920.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "mode": "historico",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.7244737832658,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -48.70866514674913,
+            202.14196129411243,
+            1047.871053624007
+          ],
+          "objetivoEscena": [
+            265.65112714537764,
+            -239.92649661669094,
+            232.50034236630336
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "inspector": "closed",
+        "tab": "history",
+        "step": "Paso 8 de 12 · acontecimiento 9 de 14",
+        "event": "v2-neptune-1989",
+        "tourButton": {
+          "label": "Continuar recorrido",
+          "floating": false,
+          "visible": true,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        },
+        "panelRect": {
+          "x": -4,
+          "y": 80,
+          "width": 380,
+          "height": 860,
+          "top": 80,
+          "right": 376,
+          "bottom": 940,
+          "left": -4
+        },
+        "timelineRect": {
+          "x": 550,
+          "y": 983,
+          "width": 820,
+          "height": 85,
+          "top": 983,
+          "right": 1370,
+          "bottom": 1068,
+          "left": 550
+        },
+        "comparatorOpen": false,
+        "scrollWidth": 1920
+      }
+    }
+  ]
+}

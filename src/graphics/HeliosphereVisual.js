@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { UNIDADES_POR_AU } from './SceneScale.js';
 import { KM_PER_AU } from '../science/Units.js';
-import { MODOS_ESCALA_VISUAL } from './ScaleModeConfig.js';
 import { HISTORICAL_ENCOUNTER_MOONS } from '../science/HistoricalEphemerisResolver.js';
+import { crearMaterialSuperficie, crearNeblinaTitan } from './MoonVisuals.js';
+import { crearPenachoIo } from './IoVolcanism.js';
 
 /**
  * Dirección aproximada de proa del viento interestelar local en coordenadas eclípticas J2000:
@@ -148,7 +149,7 @@ export function crearHeliosferaConceptual() {
 }
 
 /**
- * Representación 3D de los satélites naturales prioritarios (Ío, Titán, Tritón)
+ * Representación 3D de las lunas con cobertura histórica local
  * posicionados estrictamente cuando el instante histórico dispone de vectores
  * verificados de JPL Horizons en ventanas de sobrevuelo.
  */
@@ -156,36 +157,25 @@ export function crearSatelitesEncuentroVisual() {
   const grupo = new THREE.Group();
   grupo.name = 'SatelitesEncuentroHistorico';
 
-  const APARIENCIA = {
-    Io: { color: 0xe3c261, roughness: 0.76, emissive: 0x1c1504 },
-    Titan: { color: 0xd99b4e, roughness: 0.62, emissive: 0x1f1204 },
-    Triton: { color: 0xd8cfd2, roughness: 0.68, emissive: 0x141216 }
-  };
-
-  const geometriaEsfera = new THREE.SphereGeometry(1, 32, 24);
+  const geometriaEsfera = new THREE.SphereGeometry(1, 48, 32);
   const mapaSatelites = new Map();
+  let penachoIo = null;
 
   for (const meta of Object.values(HISTORICAL_ENCOUNTER_MOONS)) {
-    const estilo = APARIENCIA[meta.key] ?? { color: 0xcccccc, roughness: 0.7, emissive: 0x111111 };
     const radioFisicoEscena = (meta.radiusKm / KM_PER_AU) * UNIDADES_POR_AU;
-    const radioExploratorioEscena = Math.max(radioFisicoEscena * 900, 0.22);
 
     const nodoPosicion = new THREE.Group();
     nodoPosicion.name = `Satelite_${meta.key}`;
     nodoPosicion.visible = false;
 
-    const malla = new THREE.Mesh(
-      geometriaEsfera,
-      new THREE.MeshStandardMaterial({
-        color: estilo.color,
-        roughness: estilo.roughness,
-        metalness: 0.05,
-        emissive: estilo.emissive,
-        emissiveIntensity: 0.22
-      })
-    );
+    const malla = new THREE.Mesh(geometriaEsfera, crearMaterialSuperficie(meta.key));
     malla.userData.nombreSatelite = meta.key;
     nodoPosicion.add(malla);
+    if (meta.key === 'Titan') malla.add(crearNeblinaTitan(geometriaEsfera, 1));
+    if (meta.key === 'Io') {
+      penachoIo = crearPenachoIo();
+      malla.add(penachoIo.mesh);
+    }
     nodoPosicion.scale.setScalar(radioFisicoEscena);
     grupo.add(nodoPosicion);
 
@@ -193,18 +183,13 @@ export function crearSatelitesEncuentroVisual() {
       meta,
       posicion: nodoPosicion,
       malla,
-      radioFisicoEscena,
-      radioExploratorioEscena
+      radioFisicoEscena
     });
   }
 
-  let modoEscala = MODOS_ESCALA_VISUAL.CIENTIFICA;
-  let forzarEscalaUnoAUno = false;
-
   function aplicarEscalas() {
-    const usarFisica = forzarEscalaUnoAUno || modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA;
     for (const item of mapaSatelites.values()) {
-      item.posicion.scale.setScalar(usarFisica ? item.radioFisicoEscena : item.radioExploratorioEscena);
+      item.posicion.scale.setScalar(item.radioFisicoEscena);
     }
   }
 
@@ -229,12 +214,10 @@ export function crearSatelitesEncuentroVisual() {
   }
 
   function establecerModoEscala(nuevoModo) {
-    modoEscala = nuevoModo;
     aplicarEscalas();
   }
 
   function establecerForzarUnoAUno(forzar) {
-    forzarEscalaUnoAUno = Boolean(forzar);
     aplicarEscalas();
   }
 
@@ -243,6 +226,7 @@ export function crearSatelitesEncuentroVisual() {
     satelites: mapaSatelites,
     actualizarEstados,
     ocultarTodos,
+    actualizarEfectos: time => { if (mapaSatelites.get('Io')?.posicion.visible) penachoIo?.actualizar(time); },
     establecerModoEscala,
     establecerForzarUnoAUno
   };

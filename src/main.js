@@ -1,9 +1,12 @@
 import './style.css';
+import { crearWorkspaceLayout } from './ui/WorkspaceLayout.js';
 
 import { cargarEfemerides, obtenerEstados } from './astronomy/Ephemerides.js';
 import { createSolarSystem } from './graphics/SolarSystem.js';
 import { MODOS_ESCALA_VISUAL } from './graphics/ScaleModeConfig.js';
 import { crearPanelInfoPlaneta } from './ui/PlanetInfoPanel.js';
+import { crearPanelInfoLuna } from './ui/MoonInfoPanel.js';
+import { MOONS, queryMoon, validateMoonDataset } from './science/PlanetaryMoons.js';
 import { crearSelectorPlanetas } from './ui/PlanetSelector.js';
 import { crearControlesTemporales } from './ui/TimelineControls.js';
 import { crearControlesVisualizacion } from './ui/VisualizationControls.js';
@@ -44,6 +47,11 @@ import {
   VOYAGER_HISTORICAL_EVENTS,
   getHistoricalEventById
 } from './science/VoyagerHistoricalEvents.js';
+import { crearModalBienvenidaHistorica } from './ui/HistoricalWelcomeModal.js';
+import { crearRecorridoHistoricoGuiado, HITOS_RECORRIDO_GUIADO } from './ui/HistoricalGuidedTour.js';
+import { getVoyagerPhotoById } from './science/VoyagerPhotoCatalog.js';
+import { crearSuperficieLanzamientoCinematografico } from './ui/LaunchCinematicOverlay.js';
+import { METADATOS_HISTORICOS_LANZAMIENTO } from './graphics/LaunchCinematicController.js';
 
 const ETIQUETAS_CUERPOS = {
   Jupiter: 'Júpiter',
@@ -59,6 +67,10 @@ const fechaEscena = document.querySelector('#scene-date');
 const tituloEscena = document.querySelector('#scene-title');
 const etiquetaModoVista = document.querySelector('#view-mode-label');
 const panelInfo = crearPanelInfoPlaneta();
+const panelLuna = crearPanelInfoLuna({
+  alPlaneta: () => { if (lunaSeleccionada) simulador.seleccionarPlaneta(MOONS[lunaSeleccionada].parent); },
+  alVistaGeneral: () => simulador.vistaGeneral()
+});
 const hud = crearControlesHUD();
 
 let modoOperacion = 'exploracion'; // 'exploracion' | 'historico' | 'experimental'
@@ -67,6 +79,9 @@ let estadosActuales = null;
 let instanteCientificoActivo = null;
 let estadoVisualSondaActual = null;
 let planetaSeleccionado = null;
+let lunaSeleccionada = null;
+let datosLunas = null;
+let estadosLunas = {};
 let proveedorCientifico = null;
 let trayectoriaSonda = null;
 let tiempoMisionSegundos = 0;
@@ -104,13 +119,42 @@ function detenerBucleHistorico() {
 }
 
 function actualizarPanel(fecha) {
-  const planetaParaFicha = modoOperacion === 'historico' ? null : planetaSeleccionado;
+  const planetaParaFicha = modoOperacion === 'historico' || lunaSeleccionada ? null : planetaSeleccionado;
   panelInfo.actualizar(
     planetaParaFicha,
     estadosActuales?.[planetaParaFicha],
     datosAstronomicos?.metadatos,
     fecha
   );
+  let estadoPanelLuna = estadosLunas[lunaSeleccionada];
+  if (modoOperacion === 'historico' && lunaSeleccionada && ultimoSnapshotHistorico) {
+    const lunar = ultimoSnapshotHistorico.moons?.[lunaSeleccionada]?.state;
+    const parent = ultimoSnapshotHistorico.planets?.[MOONS[lunaSeleccionada].parent]?.state;
+    if (lunar && parent) {
+      estadoPanelLuna = {
+        distanceKm: Math.hypot(lunar.position.x - parent.position.x,
+          lunar.position.y - parent.position.y, lunar.position.z - parent.position.z),
+        status: 'Horizons · vector directo luna–planeta + planeta local',
+        jdTdb: ultimoSnapshotHistorico.jdTdb
+      };
+    } else estadoPanelLuna = null;
+  }
+  panelLuna.actualizar(lunaSeleccionada, estadoPanelLuna);
+}
+
+function actualizarLunasExploracion(jdTdb) {
+  estadosLunas = {};
+  if (modoOperacion !== 'historico' && datosLunas) {
+    for (const key of Object.keys(MOONS)) {
+      const state = queryMoon(datosLunas, key, jdTdb);
+      if (state) estadosLunas[key] = state;
+    }
+  }
+  simulador.actualizarLunas(estadosLunas, modoOperacion !== 'historico');
+  if (lunaSeleccionada && !estadosLunas[lunaSeleccionada]) {
+    simulador.vistaGeneral();
+    estadoDatos.textContent = 'La luna seleccionada está fuera de la cobertura verificada.';
+  }
 }
 
 function obtenerDescriptorCientificoCuerpo(idCuerpo) {
@@ -488,9 +532,9 @@ function actualizarEncabezadoHistorico(snapshot) {
   const estadoCam = simulador.obtenerEstadoCamaraHistorica();
   const vis = motorHistorico.getVisibilityMode();
 
-  if (estadoCam.modo === 'recreacion_fotografica') {
+  if (estadoCam.modo === 'photo_recreation') {
     etiquetaModoVista.innerHTML = 'CÁMARA FOTOGRÁFICA ISS <span class="heading-divider">/</span> HISTÓRICO';
-  } else if (estadoCam.modo === 'primera_persona') {
+  } else if (estadoCam.modo === 'first_person') {
     etiquetaModoVista.innerHTML = 'PRIMERA PERSONA · ESCALA 1:1 <span class="heading-divider">/</span> HISTÓRICO';
   } else {
     etiquetaModoVista.innerHTML = 'MISIONES HISTÓRICAS NASA <span class="heading-divider">/</span> 1977–2026';
@@ -504,9 +548,33 @@ function actualizarEncabezadoHistorico(snapshot) {
     tituloEscena.textContent = 'Voyager 1 y Voyager 2';
   }
 
+  const observedEl = document.querySelector('#observed-body');
+  if (observedEl) {
+    if (estadoCam.modo === 'first_person' || estadoCam.modo === 'photo_recreation') {
+      const probeName = estadoCam.idSondaObservador === VOYAGER_1_ID ? 'Voyager 1' : 'Voyager 2';
+      const targetName = ETIQUETAS_CUERPOS[estadoCam.objetivoMirada] || estadoCam.objetivoMirada || 'Espacio profundo';
+      const fase = snapshot?.probes?.[estadoCam.idSondaObservador]?.phase;
+      observedEl.textContent = `Desde ${probeName} → ${targetName}${fase ? ` · ${fase}` : ''} · apuntado geométrico`;
+    } else if (vis === VOYAGER_1_ID) {
+      observedEl.textContent = `Vista exterior · Voyager 1${snapshot?.probes?.[VOYAGER_1_ID]?.phase ? ` · ${snapshot.probes[VOYAGER_1_ID].phase}` : ''}`;
+    } else if (vis === VOYAGER_2_ID) {
+      observedEl.textContent = `Vista exterior · Voyager 2${snapshot?.probes?.[VOYAGER_2_ID]?.phase ? ` · ${snapshot.probes[VOYAGER_2_ID].phase}` : ''}`;
+    } else {
+      observedEl.textContent = 'Exploración exterior · Voyager 1 y 2';
+    }
+  }
+
+  actualizarDockMision(vis);
+
   if (snapshot) {
     fechaEscena.textContent = snapshot.timeLabels.labelUtc;
-    estadoDatos.textContent = `NASA/JPL Horizons · Catálogo histórico multianual (1977–2026) · ${snapshot.timeLabels.shortLabelTdb}`;
+    const cameraGeometry=simulador.obtenerEstadoCamaraHistorica();
+    const contextNote=cameraGeometry.contextoGeometria==='encuentro_local'
+      ? `Geometría local verificada: ${cameraGeometry.fuenteContextoLocal} · trayectoria global separada`
+      : cameraGeometry.objetivoSinContextoLocal
+        ? 'Vista global: sin vector nave–objetivo validado para esta fecha'
+        : 'Catálogo histórico global (1977–2026)';
+    estadoDatos.textContent = `NASA/JPL Horizons · ${contextNote} · ${snapshot.timeLabels.shortLabelTdb}`;
   }
 }
 
@@ -530,6 +598,7 @@ async function aplicarInstanteHistorico(jdTdb, {
   simulador.actualizarEscenaHistorica({
     probesVisual: snapshot.probes,
     moonsVisual: snapshot.moons,
+    localFrames: snapshot.localFrames,
     jdTdb: snapshot.jdTdb,
     visibilityMode: motorHistorico.getVisibilityMode()
   });
@@ -546,6 +615,9 @@ async function aplicarInstanteHistorico(jdTdb, {
     snapshot,
     engineState: obtenerEstadoMotorHistoricoPlano()
   });
+  controlesHistoricos.actualizarEstadoCamaraHistorica(simulador.obtenerEstadoCamaraHistorica());
+  if (lunaSeleccionada) actualizarPanel(controlesTemporales.obtenerFecha());
+  actualizarOrientacionHistorica();
   controlesDistancia.actualizar();
   return snapshot;
 }
@@ -554,6 +626,16 @@ function enfocarEscenaParaEvento(ev, snapshot = ultimoSnapshotHistorico) {
   if (!ev || !simulador) return;
   controlesHistoricos.seleccionarPestanaFicha(ev.missionId);
 
+  const camaraActual = simulador.obtenerEstadoCamaraHistorica();
+  if (camaraActual.modo === 'first_person' && snapshot?.probes?.[ev.missionId]?.state) {
+    const objetivo = objetivoContextualEvento(ev);
+    simulador.activarPrimeraPersona(ev.missionId, {
+      objetivo,
+      fovGrados: simulador.obtenerFovContextualParaObjetivo(ev.missionId, objetivo)
+    });
+    return;
+  }
+
   if (ev.kind === EVENT_KINDS.LAUNCH) {
     simulador.encuadrarSalidaTierra1977();
     hud.actualizarSeleccionSonda(true, `${ev.probeName} · Lanzamiento 1977`);
@@ -561,9 +643,10 @@ function enfocarEscenaParaEvento(ev, snapshot = ultimoSnapshotHistorico) {
   }
 
   if (ev.recommendedCameraMode === 'first_person') {
+    const objetivo = objetivoContextualEvento(ev);
     const ok = simulador.activarPrimeraPersona(ev.missionId, {
-      objetivo: ev.focusTarget || 'Tierra',
-      fovGrados: 18
+      objetivo,
+      fovGrados: simulador.obtenerFovContextualParaObjetivo(ev.missionId, objetivo)
     });
     if (ok) {
       hud.actualizarSeleccionSonda(true, `${ev.probeName} · Vista hacia ${ev.focusTarget || 'Tierra'}`);
@@ -592,6 +675,10 @@ function enfocarEscenaParaEvento(ev, snapshot = ultimoSnapshotHistorico) {
   if (snapshot?.probes?.[ev.missionId]?.state) {
     simulador.enfocarSondaHistorica(ev.missionId);
   }
+}
+
+function objetivoContextualEvento(ev) {
+  return ev?.focusTarget?.startsWith('voyager-') ? 'Sol' : (ev?.focusTarget || 'Sol');
 }
 
 function bucleReproduccionHistorica(ahora) {
@@ -710,6 +797,9 @@ async function cambiarModoOperacion(nuevoModo) {
   modoOperacion = nuevoModo;
 
   if (nuevoModo === 'historico') {
+    lunaSeleccionada = null;
+    simulador.actualizarLunas({}, false);
+    simulador.vistaGeneral();
     controlesTemporales.detener();
     detenerBucleMision();
     if (modoEjecucionMision === 'simulando') {
@@ -721,6 +811,9 @@ async function cambiarModoOperacion(nuevoModo) {
     selectorPlanetas.actualizar(null);
     actualizarPanel(controlesTemporales.obtenerFecha());
 
+    const dockHist = document.querySelector('#hist-mission-dock');
+    if (dockHist) dockHist.hidden = false;
+
     try {
       await inicializarModoHistoricoSiNecesario();
       if (modoOperacion !== 'historico') return;
@@ -730,6 +823,9 @@ async function cambiarModoOperacion(nuevoModo) {
       await aplicarInstanteHistorico(jdActual, {
         reencuadrarEvento: esInicio1977 ? VOYAGER_HISTORICAL_EVENTS[0] : motorHistorico.getTriggeredEvent()
       });
+      if (esInicio1977) sincronizarAcontecimientoHistorico(VOYAGER_HISTORICAL_EVENTS[0]);
+      else actualizarOrientacionHistorica(motorHistorico.getTriggeredEvent());
+      modalBienvenida?.abrir(false);
     } catch (err) {
       console.error(err);
       estadoDatos.textContent = `No fue posible inicializar el Modo Histórico: ${err.message}`;
@@ -742,6 +838,13 @@ async function cambiarModoOperacion(nuevoModo) {
     detenerBucleHistorico();
     ++consultaHistToken;
     simulador.ocultarModoHistoricoEscena();
+    recorridoGuiado?.mostrar(false);
+    overlayLanzamiento?.mostrar(false);
+    simulador.cancelarLanzamiento();
+    const dockHist = document.querySelector('#hist-mission-dock');
+    if (dockHist) dockHist.hidden = true;
+    const fpIndicator = document.querySelector('#fp-scene-indicator');
+    if (fpIndicator) fpIndicator.hidden = true;
   }
 
   const fecha2026 = controlesTemporales.obtenerFecha() || '2026-10-10';
@@ -753,6 +856,7 @@ async function cambiarModoOperacion(nuevoModo) {
     };
     const estados = obtenerEstados(datosAstronomicos, fecha2026);
     simulador.actualizarPosiciones(estados, { reencuadrarVista: modoPrevio === 'historico' });
+    actualizarLunasExploracion(jdFecha);
     estadosActuales = estados;
     fechaEscena.textContent = `${fecha2026} · 00:00 TDB`;
     estadoDatos.textContent = `NASA/JPL Horizons · muestra diaria ${fecha2026} (TDB)`;
@@ -760,6 +864,11 @@ async function cambiarModoOperacion(nuevoModo) {
 
   if (nuevoModo === 'experimental') {
     controlesDistancia.configurarModoOperacion('experimental');
+    tituloEscena.textContent = 'Sistema Solar';
+    const observedEl = document.querySelector('#observed-body');
+    if (observedEl) observedEl.textContent = 'Observando · Sonda Experimental 01';
+    etiquetaModoVista.textContent = 'DINÁMICA ORBITAL / EXPERIMENTAL';
+    hud.actualizarSeleccionSonda(true, 'Sonda Experimental 01');
     sincronizarSondaConFechaDiaria(fecha2026);
     if (trayectoriaSonda) {
       simulador.mostrarTrayectoriaSonda(controlesMision.trayectoriaMarcada());
@@ -772,6 +881,11 @@ async function cambiarModoOperacion(nuevoModo) {
     }
     simulador.ocultarSonda();
     controlesDistancia.configurarModoOperacion('exploracion');
+    tituloEscena.textContent = 'Sistema Solar';
+    const observedEl = document.querySelector('#observed-body');
+    if (observedEl) observedEl.textContent = 'Observando · Vista General';
+    etiquetaModoVista.textContent = 'EXPLORADOR ESPACIAL / VISTA GENERAL';
+    hud.actualizarSeleccionSonda(false);
   }
 
   if (modoPrevio === 'historico') {
@@ -832,13 +946,19 @@ const controlesMision = crearControlesMision({
 
 const selectorPlanetas = crearSelectorPlanetas({
   alElegir: nombre => {
+    if (MOONS[nombre]) {
+      if (!simulador.seleccionarLuna(nombre)) {
+        estadoDatos.textContent = `${MOONS[nombre].name} no está disponible en esta fecha o modo.`;
+      }
+      return;
+    }
     if (!simulador.seleccionarPlaneta(nombre)) {
       estadoDatos.textContent = `No se pudo iniciar el viaje hacia ${nombre}. Puedes explorar el planeta seleccionado con los controles de cámara.`;
     }
   },
   alExplorar: () => {
     if (!simulador.explorarSeleccionado()) {
-      estadoDatos.textContent = 'No se pudo calcular una ruta segura hacia el planeta seleccionado.';
+      estadoDatos.textContent = 'No se pudo calcular una ruta segura hacia el objeto seleccionado.';
     }
   },
   alVistaGeneral: () => simulador.vistaGeneral()
@@ -855,6 +975,7 @@ const controlesTemporales = crearControlesTemporales(fecha => {
   };
   const estados = obtenerEstados(datosAstronomicos, fecha);
   simulador.actualizarPosiciones(estados);
+  actualizarLunasExploracion(jdFecha);
   estadosActuales = estados;
   fechaEscena.textContent = `${fecha} · 00:00 TDB`;
   estadoDatos.textContent = proveedorCientifico
@@ -868,6 +989,7 @@ const controlesTemporales = crearControlesTemporales(fecha => {
       .then(({ states, status }) => {
         if (solicitud !== consultaActual || modoOperacion === 'historico') return;
         simulador.actualizarPosiciones(states);
+        actualizarLunasExploracion(jdFecha);
         estadosActuales = states;
         actualizarPanel(fecha);
         controlesDistancia.actualizar();
@@ -885,13 +1007,105 @@ controlesTemporales.alCambiarVelocidad(factor => {
   }
 });
 
+let comparadorAbierto = false;
+let estadoPrevioComparador = null;
+let snapshotComparador = null;
+let consultaComparadorToken = 0;
+let comparadorUsaContextoActual = false;
+let overlayLanzamiento = null;
+let modalBienvenida = null;
+let recorridoGuiado = null;
+let eventoSeleccionadoHistorico = null;
+
+function actualizarOrientacionHistorica(ev = eventoSeleccionadoHistorico) {
+  if (ev) eventoSeleccionadoHistorico = ev;
+  const paso = recorridoGuiado?.obtenerHitoActual();
+  const actual = eventoSeleccionadoHistorico;
+  const enFechaDelEvento = actual && ultimoSnapshotHistorico
+    && Math.abs(actual.jdTdb - ultimoSnapshotHistorico.jdTdb) * 86400 < 5;
+  const compartido = enFechaDelEvento && paso?.idEvento === actual.id;
+  const estado = document.querySelector('#historical-journey-status');
+  const accion = document.querySelector('#hist-start-tour-btn');
+  if (estado) {
+    estado.textContent = actual && !enFechaDelEvento
+      ? `Tiempo libre · ${ultimoSnapshotHistorico.timeLabels.labelUtc} · Recorrido en paso ${paso?.indice ?? 1} de 12`
+      : actual
+      ? compartido ? `${actual.probeName} · Paso ${paso.indice} de 12` : `${actual.title} · ${actual.probeName} · Exploración libre`
+      : '12 pasos guiados · 14 acontecimientos para explorar';
+  }
+  if (accion) accion.textContent = recorridoGuiado?.haComenzado() ? 'Continuar recorrido' : 'Iniciar recorrido';
+}
+
+function sincronizarAcontecimientoHistorico(ev) {
+  if (!ev) return;
+  const indice = HITOS_RECORRIDO_GUIADO.findIndex(hito => hito.idEvento === ev.id);
+  if (indice >= 0) recorridoGuiado?.establecerHito(indice);
+  controlesHistoricos?.seleccionarPestanaFicha(ev.missionId);
+  actualizarOrientacionHistorica(ev);
+}
+
+function continuarRecorridoHistorico() {
+  if (modoOperacion !== 'historico' || !motorHistorico) return;
+  recorridoGuiado.mostrar(true);
+  ejecutarHitoGuiado(recorridoGuiado.obtenerHitoActual());
+  actualizarOrientacionHistorica();
+}
+
+function alCompletarLanzamiento({ misionId }) {
+  overlayLanzamiento?.mostrar(false);
+  if (!motorHistorico) return;
+  const launchJd = HISTORICAL_MISSIONS_CATALOG[misionId].launchJdTdb;
+  motorHistorico.setTimeJdTdb(launchJd);
+  motorHistorico.setVisibilityMode(misionId);
+  actualizarDockMision(misionId);
+  aplicarInstanteHistorico(launchJd, {
+    accionPosteriorEscena: () => simulador.encuadrarSalidaTierra1977(misionId)
+  }).catch(console.error);
+}
+
+function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
+  if (modoOperacion !== 'historico') return;
+  detenerBucleHistorico();
+  recorridoGuiado?.mostrar(false);
+  overlayLanzamiento?.mostrar(true, METADATOS_HISTORICOS_LANZAMIENTO[misionId]);
+  simulador.iniciarLanzamientoCinematografico(misionId);
+}
+
+function ejecutarHitoGuiado(hito) {
+  if (!hito || !motorHistorico) return;
+  detenerBucleHistorico();
+
+  if (hito.idEvento) {
+    const ev = motorHistorico.jumpToEvent(hito.idEvento);
+    if (ev) {
+      sincronizarAcontecimientoHistorico(ev);
+      motorHistorico.setVisibilityMode(hito.misionId);
+      actualizarDockMision(hito.misionId);
+      aplicarInstanteHistorico(motorHistorico.getJdTdb(), {
+        reencuadrarEvento: ev
+      }).catch(console.error);
+    }
+  }
+
+}
+
+function actualizarDockMision(choice) {
+  const dock = document.querySelector('#hist-mission-dock');
+  if (!dock) return;
+  for (const btn of dock.querySelectorAll('[data-mission-choice]')) {
+    btn.setAttribute('aria-pressed', String(btn.dataset.missionChoice === choice));
+  }
+}
+
 const simulador = createSolarSystem(
   document.querySelector('#solar-system'),
   nombre => {
     planetaSeleccionado = nombre;
+    lunaSeleccionada = null;
     selectorPlanetas.actualizar(nombre);
     actualizarPanel(controlesTemporales.obtenerFecha());
     hud.actualizarSeleccion(nombre);
+    if (nombre) document.dispatchEvent(new CustomEvent('sim:object-selected', { detail: { id: nombre } }));
   },
   activa => {
     if (activa) {
@@ -901,8 +1115,18 @@ const simulador = createSolarSystem(
     }
     controlesMision.actualizarEnfoqueSonda(activa);
     hud.actualizarSeleccionSonda(activa, EXPERIMENTAL_PROBE_01_DEFINITION.name);
+    if (activa) document.dispatchEvent(new CustomEvent('sim:object-selected', { detail: { id: 'experimental-probe' } }));
   },
   {
+    alSeleccionarLuna: nombre => {
+      lunaSeleccionada = nombre;
+      if (nombre) {
+        selectorPlanetas.actualizar(nombre);
+        hud.actualizarSeleccion(MOONS[nombre].name);
+        document.dispatchEvent(new CustomEvent('sim:object-selected', { detail: { id: nombre } }));
+      }
+      actualizarPanel(controlesTemporales.obtenerFecha());
+    },
     alSeleccionarSondaHistorica: idSondaHist => {
       if (!idSondaHist) {
         if (modoOperacion === 'historico') hud.actualizarSeleccionSonda(false);
@@ -912,7 +1136,15 @@ const simulador = createSolarSystem(
       controlesHistoricos?.seleccionarPestanaFicha(idSondaHist);
       const m = HISTORICAL_MISSIONS_CATALOG[idSondaHist];
       hud.actualizarSeleccionSonda(true, m?.name ?? idSondaHist);
-    }
+      document.dispatchEvent(new CustomEvent('sim:object-selected', { detail: { id: idSondaHist } }));
+    },
+    alFinalizarLanzamiento: datos => {
+      alCompletarLanzamiento(datos);
+    },
+    alCambiarFaseLanzamiento: datos => {
+      overlayLanzamiento?.actualizarFase(datos);
+    },
+    obtenerComparadorActivo: () => comparadorAbierto
   }
 );
 
@@ -981,7 +1213,10 @@ const controlesHistoricos = crearControlesModoHistorico({
         motorHistorico.setTimeJdTdb(m.firstValidJdTdb);
         aplicarInstanteHistorico(motorHistorico.getJdTdb(), {
           accionPosteriorEscena: () => {
-            simulador.activarPrimeraPersona(m.id, { objetivo, fovGrados: 45 });
+            simulador.activarPrimeraPersona(m.id, {
+              objetivo,
+              fovGrados: simulador.obtenerFovContextualParaObjetivo(m.id, objetivo)
+            });
             actualizarEncabezadoHistorico(ultimoSnapshotHistorico);
           }
         });
@@ -992,13 +1227,19 @@ const controlesHistoricos = crearControlesModoHistorico({
       motorHistorico.setVisibilityMode('both');
       aplicarInstanteHistorico(motorHistorico.getJdTdb(), {
         accionPosteriorEscena: () => {
-          simulador.activarPrimeraPersona(idElegida, { objetivo, fovGrados: 45 });
+          simulador.activarPrimeraPersona(idElegida, {
+            objetivo,
+            fovGrados: simulador.obtenerFovContextualParaObjetivo(idElegida, objetivo)
+          });
           actualizarEncabezadoHistorico(ultimoSnapshotHistorico);
         }
       });
       return;
     }
-    simulador.activarPrimeraPersona(idElegida, { objetivo, fovGrados: 45 });
+    simulador.activarPrimeraPersona(idElegida, {
+      objetivo,
+      fovGrados: simulador.obtenerFovContextualParaObjetivo(idElegida, objetivo)
+    });
     actualizarEncabezadoHistorico(ultimoSnapshotHistorico);
   },
   alCambiarSondaPrimeraPersona: idMision => {
@@ -1012,14 +1253,27 @@ const controlesHistoricos = crearControlesModoHistorico({
       accionPosteriorEscena: () => {
         simulador.activarPrimeraPersona(idMision, {
           objetivo: camActual.objetivoMirada || 'Tierra',
-          fovGrados: camActual.fovGrados || 45
+          fovGrados: camActual.fovReferenciaGrados || 45
         });
         actualizarEncabezadoHistorico(ultimoSnapshotHistorico);
       }
     });
   },
   alApuntarPrimeraPersona: idObjetivo => {
-    simulador.apuntarPrimeraPersonaHacia(idObjetivo);
+    const apuntado = simulador.apuntarPrimeraPersonaHacia(idObjetivo);
+    if (apuntado && MOONS[idObjetivo]) {
+      const observador = simulador.obtenerEstadoCamaraHistorica().idSondaObservador;
+      simulador.establecerFovPrimeraPersona(simulador.obtenerFovContextualParaObjetivo(observador, idObjetivo), { automatico: true });
+    }
+    actualizarEncabezadoHistorico(ultimoSnapshotHistorico);
+  },
+  alReencuadrarPrimeraPersona: () => {
+    const objetivo = eventoSeleccionadoHistorico
+      ? objetivoContextualEvento(eventoSeleccionadoHistorico)
+      : (simulador.obtenerEstadoCamaraHistorica().objetivoMirada || 'Sol');
+    const observador = simulador.obtenerEstadoCamaraHistorica().idSondaObservador;
+    simulador.establecerFovPrimeraPersona(simulador.obtenerFovContextualParaObjetivo(observador, objetivo), { automatico: true });
+    simulador.apuntarPrimeraPersonaHacia(objetivo);
     actualizarEncabezadoHistorico(ultimoSnapshotHistorico);
   },
   alCambiarFovPrimeraPersona: grados => {
@@ -1076,6 +1330,7 @@ const controlesHistoricos = crearControlesModoHistorico({
     if (!motorHistorico) return;
     detenerBucleHistorico();
     const ev = motorHistorico.jumpToPreviousEvent();
+    sincronizarAcontecimientoHistorico(ev);
     aplicarInstanteHistorico(motorHistorico.getJdTdb(), {
       reencuadrarEvento: ev ?? VOYAGER_HISTORICAL_EVENTS[0]
     });
@@ -1084,6 +1339,7 @@ const controlesHistoricos = crearControlesModoHistorico({
     if (!motorHistorico) return;
     detenerBucleHistorico();
     const ev = motorHistorico.jumpToNextEvent();
+    sincronizarAcontecimientoHistorico(ev);
     aplicarInstanteHistorico(motorHistorico.getJdTdb(), {
       reencuadrarEvento: ev,
       accionPosteriorEscena: !ev ? () => simulador.encuadrarComparativaHistorica() : null
@@ -1094,6 +1350,7 @@ const controlesHistoricos = crearControlesModoHistorico({
     detenerBucleHistorico();
     const ev = motorHistorico.jumpToEvent(eventId);
     if (ev) {
+      sincronizarAcontecimientoHistorico(ev);
       aplicarInstanteHistorico(motorHistorico.getJdTdb(), { reencuadrarEvento: ev });
     }
   },
@@ -1159,40 +1416,293 @@ const controlesHistoricos = crearControlesModoHistorico({
     });
   },
   alActivarComparadorFoto: (photo, { usarFovContexto }) => {
-    if (!motorHistorico || !photo) return;
-    detenerBucleHistorico();
-    if (motorHistorico.getVisibilityMode() !== 'both' && motorHistorico.getVisibilityMode() !== photo.missionId) {
-      motorHistorico.setVisibilityMode('both');
+    if (!motorHistorico || !photo || !ultimoSnapshotHistorico) return;
+    if (!estadoPrevioComparador) {
+      estadoPrevioComparador = {
+        motor: obtenerEstadoMotorHistoricoPlano(),
+        snapshot: ultimoSnapshotHistorico,
+        camara: simulador.obtenerEstadoCamaraHistorica(),
+        evento: eventoSeleccionadoHistorico
+      };
     }
-    motorHistorico.setSelectedProbeId(photo.missionId);
-    motorHistorico.setTimeJdTdb(photo.jdTdb);
-    aplicarInstanteHistorico(motorHistorico.getJdTdb(), {
-      accionPosteriorEscena: () => {
-        simulador.activarRecreacionFotografica(photo, { usarFovContexto });
-        actualizarEncabezadoHistorico(ultimoSnapshotHistorico);
+    comparadorAbierto = true;
+    comparadorUsaContextoActual = usarFovContexto;
+    detenerBucleHistorico();
+    ++consultaHistToken;
+    const token = ++consultaComparadorToken;
+    document.querySelector('#comp-session-date').textContent = estadoPrevioComparador.snapshot.timeLabels.labelUtc;
+    pipelineHistorico.queryVisualHistoricalSnapshot(photo.jdTdb).then(snapshot => {
+      if (token !== consultaComparadorToken || !comparadorAbierto || modoOperacion !== 'historico') return;
+      snapshotComparador = snapshot;
+      simulador.actualizarPosiciones(snapshot.planets, { reencuadrarVista: false });
+      simulador.actualizarEscenaHistorica({
+        probesVisual: snapshot.probes,
+        moonsVisual: snapshot.moons,
+        localFrames: snapshot.localFrames,
+        jdTdb: snapshot.jdTdb,
+        visibilityMode: 'both'
+      });
+      if (!simulador.activarRecreacionFotografica(photo, { usarFovContexto: comparadorUsaContextoActual })) {
+        document.querySelector('#comp-geometry-telemetry').textContent = 'Vista 3D no disponible: la sonda carece de posición en la fecha documentada.';
+      } else {
+        controlesHistoricos.actualizarTelemetriaComparador(snapshot);
+      }
+    }).catch(error => {
+      if (token === consultaComparadorToken) {
+        document.querySelector('#comp-geometry-telemetry').textContent = `Vista 3D no disponible: ${error.message}`;
       }
     });
   },
   alCambiarFovComparador: (photo, { usarFovContexto }) => {
-    if (!photo) return;
+    comparadorUsaContextoActual = usarFovContexto;
+    if (!photo || !snapshotComparador) return;
     simulador.activarRecreacionFotografica(photo, { usarFovContexto });
-    if (ultimoSnapshotHistorico) {
-      controlesHistoricos.actualizarDesdeMotor({
-        snapshot: ultimoSnapshotHistorico,
-        engineState: obtenerEstadoMotorHistoricoPlano()
-      });
-    }
+    controlesHistoricos.actualizarTelemetriaComparador(snapshotComparador);
   },
-  alCerrarComparadorFoto: () => {
-    simulador.salirDePrimeraPersona();
-    actualizarEncabezadoHistorico(ultimoSnapshotHistorico);
+  alCerrarComparadorFoto: ({ reanudar = true } = {}) => {
+    comparadorAbierto = false;
+    ++consultaComparadorToken;
+    const previo = estadoPrevioComparador;
+    estadoPrevioComparador = null;
+    snapshotComparador = null;
+    if (!previo || !motorHistorico || modoOperacion !== 'historico') return;
+    motorHistorico.setTimeJdTdb(previo.motor.jdTdb);
+    motorHistorico.setVisibilityMode(previo.motor.visibilityMode);
+    motorHistorico.setSelectedProbeId(previo.motor.selectedProbeId);
+    motorHistorico.setDirection(previo.motor.direction);
+    ultimoSnapshotHistorico = previo.snapshot;
+    eventoSeleccionadoHistorico = previo.evento;
+    simulador.actualizarPosiciones(previo.snapshot.planets, { reencuadrarVista: false });
+    simulador.actualizarEscenaHistorica({
+      probesVisual: previo.snapshot.probes,
+      moonsVisual: previo.snapshot.moons,
+      localFrames: previo.snapshot.localFrames,
+      jdTdb: previo.snapshot.jdTdb,
+      visibilityMode: previo.motor.visibilityMode
+    });
+    simulador.restaurarEstadoCamaraHistorica(
+      previo.camara,
+      previo.camara.fotoRecreacionId ? getVoyagerPhotoById(previo.camara.fotoRecreacionId) : null
+    );
+    controlesHistoricos.actualizarDesdeMotor({
+      snapshot: previo.snapshot,
+      engineState: obtenerEstadoMotorHistoricoPlano()
+    });
+    actualizarEncabezadoHistorico(previo.snapshot);
+    actualizarOrientacionHistorica();
+    if (reanudar && previo.motor.playing) iniciarReproduccionHistorica();
   }
 });
 
+overlayLanzamiento = crearSuperficieLanzamientoCinematografico({
+  alPausar: () => simulador.pausarLanzamiento(),
+  alReanudar: () => simulador.reanudarLanzamiento(),
+  alSaltar: () => simulador.saltarLanzamiento(),
+  alReiniciar: () => simulador.reiniciarLanzamiento()
+});
+
+modalBienvenida = crearModalBienvenidaHistorica({
+  alIniciarRecorridoGuiado: () => {
+    continuarRecorridoHistorico();
+  },
+  alExplorarLibremente: () => {},
+  alVerLanzamiento: misionId => {
+    iniciarLanzamientoHistorico(misionId || VOYAGER_2_ID);
+  }
+});
+
+recorridoGuiado = crearRecorridoHistoricoGuiado({
+  alIrAHito: hito => {
+    ejecutarHitoGuiado(hito);
+  },
+  alVerLanzamiento: misionId => {
+    iniciarLanzamientoHistorico(misionId);
+  },
+  alAbrirFoto: foto => {
+    controlesHistoricos.abrirComparadorAB(foto);
+  },
+  alCerrarRecorrido: () => { detenerBucleHistorico(); actualizarOrientacionHistorica(); }
+});
+
+function crearDocksEscenarioHistorico() {
+  const scenePanel = document.querySelector('.scene-panel');
+  if (!scenePanel || document.querySelector('#hist-mission-dock')) return;
+
+  const missionDock = document.createElement('nav');
+  missionDock.id = 'hist-mission-dock';
+  missionDock.className = 'hist-mission-dock hud-secondary';
+  missionDock.setAttribute('aria-label', 'Selector de misión y accesos históricos');
+  missionDock.hidden = true;
+  missionDock.innerHTML = `
+    <div class="hist-mission-selector" role="group" aria-label="Misión visible">
+      <button type="button" class="hist-mission-btn" data-mission-choice="voyager-2" aria-pressed="false" title="Centrar y seguir Voyager 2 (-32)">
+        <span class="v-dot v-dot--v2"></span>Voyager 2
+      </button>
+      <button type="button" class="hist-mission-btn" data-mission-choice="voyager-1" aria-pressed="false" title="Centrar y seguir Voyager 1 (-31)">
+        <span class="v-dot v-dot--v1"></span>Voyager 1
+      </button>
+      <button type="button" class="hist-mission-btn" data-mission-choice="both" aria-pressed="true" title="Encuadrar simultáneamente ambas Voyager">
+        <span class="v-dot v-dot--both"></span>Ambas
+      </button>
+    </div>
+    <div class="hist-mission-quick-actions">
+      <button type="button" id="hist-start-tour-btn" class="hist-quick-btn hist-quick-btn--tour" title="Recorrido guiado paso a paso por 12 hitos clave (1977–2026)">
+        Recorrido guiado
+      </button>
+      <button type="button" id="hist-launch-cinematic-btn" class="hist-quick-btn hist-quick-btn--launch" title="Ver despegue cinematográfico Titan IIIE-Centaur en 3D">
+        Lanzamiento 3D
+      </button>
+      <button type="button" id="hist-welcome-open-btn" class="hist-quick-btn hist-quick-btn--help" title="Explicación y bienvenida histórica">
+        ¿Cómo funciona?
+      </button>
+    </div>
+  `;
+  scenePanel.append(missionDock);
+
+  const fpIndicator = document.createElement('div');
+  fpIndicator.id = 'fp-scene-indicator';
+  fpIndicator.className = 'fp-scene-indicator hud-secondary';
+  fpIndicator.setAttribute('role', 'status');
+  fpIndicator.hidden = true;
+  fpIndicator.innerHTML = `
+    <div class="fp-scene-indicator-info">
+      <span class="fp-dot"></span>
+      <strong id="fp-indicator-probe">Voyager 2</strong>
+      <span class="fp-sep">·</span>
+      <span id="fp-indicator-target">Hacia Urano</span>
+      <span class="fp-sep">·</span>
+      <span id="fp-indicator-fov">FOV: 0,42°</span>
+      <span class="fp-fidelity-tag">Apuntado geométrico</span>
+    </div>
+    <button type="button" id="fp-exit-btn" class="fp-exit-btn" title="Regresar a cámara exterior orbital">
+      Exterior ↗
+    </button>
+  `;
+  scenePanel.append(fpIndicator);
+  const footprint = document.createElement('div');
+  footprint.id = 'iss-square-footprint';
+  footprint.className = 'iss-square-footprint';
+  footprint.setAttribute('aria-hidden', 'true');
+  footprint.hidden = true;
+  footprint.innerHTML = '<span>Campo ISS · fotograma cuadrado</span>';
+  scenePanel.append(footprint);
+  const cameraCut = document.createElement('div');
+  cameraCut.id = 'camera-cut-mask';
+  cameraCut.setAttribute('aria-hidden', 'true');
+  cameraCut.hidden = true;
+  scenePanel.append(cameraCut);
+  const ajustarHuellaIss = () => {
+    const side = Math.min(scenePanel.clientWidth, scenePanel.clientHeight);
+    footprint.style.width = `${side}px`;
+    footprint.style.height = `${side}px`;
+  };
+  ajustarHuellaIss();
+  window.addEventListener('resize', ajustarHuellaIss);
+
+  for (const btn of missionDock.querySelectorAll('[data-mission-choice]')) {
+    btn.addEventListener('click', () => {
+      const choice = btn.dataset.missionChoice;
+      if (!motorHistorico) return;
+      motorHistorico.setVisibilityMode(choice);
+      actualizarDockMision(choice);
+      aplicarInstanteHistorico(motorHistorico.getJdTdb(), {
+        accionPosteriorEscena: () => {
+          if (choice === 'both') simulador.encuadrarComparativaHistorica();
+          else simulador.enfocarSondaHistorica(choice);
+        }
+      }).catch(console.error);
+      for (const btnVis of document.querySelectorAll('[data-hist-vis]')) {
+        btnVis.setAttribute('aria-pressed', String(btnVis.dataset.histVis === choice));
+      }
+    });
+  }
+
+  missionDock.querySelector('#hist-start-tour-btn').addEventListener('click', () => {
+    continuarRecorridoHistorico();
+  });
+
+  missionDock.querySelector('#hist-launch-cinematic-btn').addEventListener('click', () => {
+    const misionActiva = motorHistorico?.getVisibilityMode() === VOYAGER_1_ID ? VOYAGER_1_ID : VOYAGER_2_ID;
+    iniciarLanzamientoHistorico(misionActiva);
+  });
+
+  missionDock.querySelector('#hist-welcome-open-btn').addEventListener('click', () => {
+    modalBienvenida.abrir(true);
+  });
+
+  fpIndicator.querySelector('#fp-exit-btn').addEventListener('click', () => {
+    simulador.salirDePrimeraPersona();
+  });
+}
+
+crearDocksEscenarioHistorico();
+
+let ultimoModoCamaraNotificado = null;
+let ultimoObservadorNotificado = null;
+let temporizadorCorteCamara = null;
+let secuenciaCorteCamara = 0;
 simulador.alCambiarCamaraHistorica(estadoCam => {
+  const cambioDePuntoDeVista = ultimoModoCamaraNotificado !== null
+    && (ultimoModoCamaraNotificado !== estadoCam.modo
+      || (estadoCam.modo !== 'exterior' && ultimoObservadorNotificado !== estadoCam.idSondaObservador));
+  ultimoModoCamaraNotificado = estadoCam.modo;
+  ultimoObservadorNotificado = estadoCam.idSondaObservador;
+  if (cambioDePuntoDeVista && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const mask = document.querySelector('#camera-cut-mask');
+    clearTimeout(temporizadorCorteCamara);
+    mask.hidden = false;
+    mask.style.transition = 'none';
+    mask.style.opacity = '0.88';
+    const secuencia = ++secuenciaCorteCamara;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (secuencia !== secuenciaCorteCamara) return;
+      mask.style.transition = 'opacity 220ms ease-out';
+      mask.style.opacity = '0';
+    }));
+    temporizadorCorteCamara = setTimeout(() => {
+      if (secuencia === secuenciaCorteCamara) mask.hidden = true;
+    }, 270);
+  }
   controlesHistoricos.actualizarEstadoCamaraHistorica(estadoCam);
+  const cameraContext = document.querySelector('#camera-context');
+  if (cameraContext) {
+    const nave = estadoCam.idSondaObservador === VOYAGER_1_ID ? 'Voyager 1' : 'Voyager 2';
+    const objetivo = ETIQUETAS_CUERPOS[estadoCam.objetivoMirada] || estadoCam.objetivoMirada || 'espacio profundo';
+    cameraContext.textContent = estadoCam.modo === 'exterior'
+      ? 'Vista exterior · explora alrededor de las sondas. Pulsa «Desde Voyager» para mirar desde una de ellas.'
+      : `${estadoCam.modo === 'photo_recreation' ? 'Comparación fotográfica' : 'Vista desde la sonda'} · ${nave} → ${objetivo}. Apuntado geométrico sin orientación CK/IK.`;
+  }
   if (modoOperacion === 'historico') {
     actualizarEncabezadoHistorico(ultimoSnapshotHistorico);
+  }
+  const fpIndicator = document.querySelector('#fp-scene-indicator');
+  const footprint = document.querySelector('#iss-square-footprint');
+  if (footprint) footprint.hidden = estadoCam.fovTipo !== 'instrumento_cuadrado';
+  if (fpIndicator) {
+    const enFp = estadoCam.modo === 'first_person' || estadoCam.modo === 'photo_recreation';
+    fpIndicator.hidden = !enFp;
+    if (enFp) {
+      const elProbe = fpIndicator.querySelector('#fp-indicator-probe');
+      const elTarget = fpIndicator.querySelector('#fp-indicator-target');
+      const elFov = fpIndicator.querySelector('#fp-indicator-fov');
+      if (elProbe) elProbe.textContent = estadoCam.idSondaObservador === VOYAGER_1_ID ? 'Desde Voyager 1' : 'Desde Voyager 2';
+      if (elTarget) {
+        const nombreObjetivo = ETIQUETAS_CUERPOS[estadoCam.objetivoMirada] || estadoCam.objetivoMirada || 'Espacio profundo';
+        const notaPaleBlueDot = estadoCam.modo === 'first_person'
+          && eventoSeleccionadoHistorico?.id === 'v1-pale-blue-dot-1990'
+          && estadoCam.objetivoMirada === 'Tierra'
+          ? ' · punto subpíxel'
+          : '';
+        const notaEncuadre = estadoCam.modo === 'first_person'
+          && estadoCam.fovTipo === 'contextual_vertical'
+          && estadoCam.encuadreObjetivo?.cabeEnAreaLibre === false
+          ? ' · encuadre parcial' : '';
+        elTarget.textContent = `→ ${nombreObjetivo}${notaPaleBlueDot}${notaEncuadre}`;
+      }
+      if (elFov) elFov.textContent = estadoCam.fovTipo === 'instrumento_cuadrado'
+        ? `FOV ISS: ${estadoCam.fovReferenciaGrados.toFixed(estadoCam.fovReferenciaGrados < 1 ? 3 : 1).replace('.', ',')}° por lado`
+        : `FOV: ${estadoCam.fovReferenciaGrados.toFixed(estadoCam.fovReferenciaGrados < 2 ? 2 : 1).replace('.', ',')}° vertical`;
+    }
   }
 });
 
@@ -1222,6 +1732,25 @@ async function iniciar() {
 
   try {
     datosAstronomicos = await cargarEfemerides();
+    try {
+      const moonFiles = ['moons-2026-10.json', 'moons-stage6-2026-10.json'];
+      const moonSets = [];
+      for (const file of moonFiles) {
+        try {
+          const response = await fetch(`${import.meta.env.BASE_URL}data/${file}`);
+          if (!response.ok) throw Error(`HTTP ${response.status}`);
+          moonSets.push(await response.json());
+        } catch (error) { console.error(`Efemérides lunares ${file} no disponibles:`, error); }
+      }
+      if (!moonSets.length) throw Error('Sin conjuntos de efemérides lunares locales');
+      const loadedMoons = { ...moonSets[0], moons: Object.assign({}, ...moonSets.map(set => set.moons)) };
+      const validated = validateMoonDataset(loadedMoons, { isolate: true });
+      datosLunas = validated.data;
+      for (const [key, reason] of Object.entries(validated.invalid)) console.error(`Luna ${key} no disponible: ${reason}`);
+    } catch (moonError) {
+      datosLunas = null;
+      console.error('Lunas no disponibles:', moonError);
+    }
     proveedorCientifico = null;
     trayectoriaSonda = null;
     estadoVisualSondaActual = null;
@@ -1292,10 +1821,54 @@ async function iniciar() {
 // Diagnóstico de solo lectura para verificación automatizada E2E
 window.__SIMULADOR_DIAGNOSTICO__ = Object.freeze({
   obtenerModoOperacion: () => modoOperacion,
+  obtenerEstadoIluminacion: () => simulador.obtenerEstadoIluminacion(),
   obtenerSnapshotHistorico: () => ultimoSnapshotHistorico,
+  obtenerEstadoMotorHistorico: () => obtenerEstadoMotorHistoricoPlano(),
+  obtenerSnapshotComparador: () => snapshotComparador,
   obtenerEstadoCamaraHistorica: () => simulador.obtenerEstadoCamaraHistorica(),
+  obtenerLunas: () => ({ seleccionada: lunaSeleccionada, estados: estadosLunas,
+    visibles: simulador.obtenerEstadoVisualLunas() }),
   obtenerEstadoModelosHistoricos: () => simulador.obtenerEstadoModelosHistoricos(),
-  obtenerEstadoModeloExperimental: () => simulador.obtenerEstadoModeloSonda()
+  obtenerEstadoModeloExperimental: () => simulador.obtenerEstadoModeloSonda(),
+  obtenerEstadoLanzamiento: () => ({
+    activo: simulador.estaEnLanzamiento(),
+    fase: simulador.obtenerFaseLanzamiento?.()
+  }),
+  obtenerEstadoRecorridoGuiado: () => ({
+    activo: recorridoGuiado?.esVisible() ?? false,
+    hito: recorridoGuiado?.obtenerHitoActual() ?? null
+  }),
+  iniciarLanzamiento: id => iniciarLanzamientoHistorico(id),
+  iniciarRecorrido: (idx = 0) => {
+    recorridoGuiado?.mostrar(true, idx);
+    ejecutarHitoGuiado(HITOS_RECORRIDO_GUIADO[idx]);
+  }
 });
 
+crearWorkspaceLayout({
+  alBuscarDestino: id => {
+    if (id === 'experimental-probe') {
+      const focus = document.querySelector('#mission-focus-button');
+      if (focus.disabled) return false;
+      focus.click();
+      return true;
+    }
+    if (id === 'voyager-1' || id === 'voyager-2' || id === 'both') {
+      if (!motorHistorico) return false;
+      document.querySelector(`[data-mission-choice="${id}"]`).click();
+      return true;
+    }
+    if (modoOperacion === 'historico') {
+      simulador.salirDePrimeraPersona();
+      return simulador.seleccionarPlaneta(id);
+    }
+    if (MOONS[id]) return simulador.seleccionarLuna(id);
+    const selector = document.querySelector('#planet-select');
+    if (selector.disabled) return false;
+    selector.value = id;
+    selector.dispatchEvent(new Event('change', { bubbles: true }));
+    return true;
+  }
+});
+actualizarOrientacionHistorica();
 iniciar();

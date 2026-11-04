@@ -317,13 +317,15 @@ export function crearSondaVisual({
   const trayectoriaGrupo = new THREE.Group();
   trayectoriaGrupo.name = `${nombreGrupo}_Trayectoria`;
 
-  const bufferPredicho = new Float32Array(maxMuestrasTrayectoria * 3);
+  // One independent line segment per adjacent pair. A degenerate pair marks
+  // an uncertified SPK handoff without drawing a fictional connecting chord.
+  const bufferPredicho = new Float32Array(Math.max(0, maxMuestrasTrayectoria - 1) * 6);
   const attrPredicho = new THREE.BufferAttribute(bufferPredicho, 3);
   const geoPredicha = new THREE.BufferGeometry();
   geoPredicha.setAttribute('position', attrPredicho);
   geoPredicha.setDrawRange(0, 0);
 
-  const lineaPredicha = new THREE.Line(
+  const lineaPredicha = new THREE.LineSegments(
     geoPredicha,
     new THREE.LineBasicMaterial({
       color: colorPendiente,
@@ -335,14 +337,14 @@ export function crearSondaVisual({
   lineaPredicha.frustumCulled = false;
   trayectoriaGrupo.add(lineaPredicha);
 
-  const bufferRecorrido = new Float32Array((maxMuestrasTrayectoria + 1) * 3);
+  const bufferRecorrido = new Float32Array(Math.max(0, maxMuestrasTrayectoria - 1) * 6);
   const attrRecorrido = new THREE.BufferAttribute(bufferRecorrido, 3);
   attrRecorrido.setUsage(THREE.DynamicDrawUsage);
   const geoRecorrida = new THREE.BufferGeometry();
   geoRecorrida.setAttribute('position', attrRecorrido);
   geoRecorrida.setDrawRange(0, 0);
 
-  const lineaRecorrida = new THREE.Line(
+  const lineaRecorrida = new THREE.LineSegments(
     geoRecorrida,
     new THREE.LineBasicMaterial({
       color: colorRecorrido,
@@ -384,6 +386,7 @@ export function crearSondaVisual({
 
   let tiemposMuestras = null;
   let verticesBase = null;
+  let cortesMuestras = null;
   let cantidadMuestras = 0;
   let trayectoriaVisible = true;
   let ultimoIndiceRecorrido = -1;
@@ -514,19 +517,28 @@ export function crearSondaVisual({
     return radioBaseObservacion * escalaInspeccionCercana();
   }
 
-  function establecerTrayectoria(verticesEscenaFloat32, tiemposFloat64) {
+  function establecerTrayectoria(verticesEscenaFloat32, tiemposFloat64, cortes = null) {
     const total = Math.min(tiemposFloat64.length, maxMuestrasTrayectoria);
     cantidadMuestras = total;
     tiemposMuestras = tiemposFloat64;
     verticesBase = verticesEscenaFloat32;
+    cortesMuestras = cortes;
     ultimoIndiceRecorrido = -1;
 
-    bufferPredicho.set(verticesEscenaFloat32.subarray(0, total * 3), 0);
-    bufferRecorrido.set(verticesEscenaFloat32.subarray(0, total * 3), 0);
+    for (let i = 0; i < total - 1; i++) {
+      const from = i * 3;
+      const to = (i + 1) * 3;
+      const edge = i * 6;
+      const end = cortes?.[i + 1] ? from : to;
+      for (const buffer of [bufferPredicho, bufferRecorrido]) {
+        buffer.set(verticesEscenaFloat32.subarray(from, from + 3), edge);
+        buffer.set(verticesEscenaFloat32.subarray(end, end + 3), edge + 3);
+      }
+    }
     attrPredicho.needsUpdate = true;
     attrRecorrido.needsUpdate = true;
-    geoPredicha.setDrawRange(0, total);
-    geoPredicha.computeBoundingSphere();
+    geoPredicha.setDrawRange(0, Math.max(0, total - 1) * 2);
+    if (total > 1) geoPredicha.computeBoundingSphere();
     geoRecorrida.setDrawRange(0, 0);
 
     if (total > 0) {
@@ -582,22 +594,24 @@ export function crearSondaVisual({
       else high = mid;
     }
 
-    if (ultimoIndiceRecorrido >= 0 && ultimoIndiceRecorrido < cantidadMuestras) {
-      const prevOffset = ultimoIndiceRecorrido * 3;
-      bufferRecorrido[prevOffset] = verticesBase[prevOffset];
-      bufferRecorrido[prevOffset + 1] = verticesBase[prevOffset + 1];
-      bufferRecorrido[prevOffset + 2] = verticesBase[prevOffset + 2];
+    if (ultimoIndiceRecorrido >= 0 && ultimoIndiceRecorrido < cantidadMuestras - 1) {
+      const previousEdge = ultimoIndiceRecorrido * 6 + 3;
+      const previousEnd = (cortesMuestras?.[ultimoIndiceRecorrido + 1]
+        ? ultimoIndiceRecorrido : ultimoIndiceRecorrido + 1) * 3;
+      bufferRecorrido.set(verticesBase.subarray(previousEnd, previousEnd + 3), previousEdge);
     }
 
-    const tipIndex = low + 1;
-    const tipOffset = tipIndex * 3;
-    bufferRecorrido[tipOffset] = posicionEscena.x;
-    bufferRecorrido[tipOffset + 1] = posicionEscena.y;
-    bufferRecorrido[tipOffset + 2] = posicionEscena.z;
-    ultimoIndiceRecorrido = tipIndex;
+    const tipEdge = Math.min(low, cantidadMuestras - 2);
+    const tipOffset = tipEdge * 6 + 3;
+    if (!cortesMuestras?.[tipEdge + 1]) {
+      bufferRecorrido[tipOffset] = posicionEscena.x;
+      bufferRecorrido[tipOffset + 1] = posicionEscena.y;
+      bufferRecorrido[tipOffset + 2] = posicionEscena.z;
+    }
+    ultimoIndiceRecorrido = tipEdge;
 
     attrRecorrido.needsUpdate = true;
-    geoRecorrida.setDrawRange(0, tipIndex + 1);
+    geoRecorrida.setDrawRange(0, (tipEdge + 1) * 2);
   }
 
   function mostrarTrayectoria(valor) {

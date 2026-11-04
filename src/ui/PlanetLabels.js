@@ -178,7 +178,8 @@ export function crearEtiquetasPlanetas(
     seleccionado,
     sondaSeleccionada = false,
     radioSolActual = 0.15,
-    { idSondaActiva = null, modoPrimeraPersona = false, objetivoMirada = null } = {}
+    { idSondaActiva = null, modoPrimeraPersona = false, objetivoMirada = null,
+      lanzamientoActivo = false, comparadorActivo = false, modoRecreacionFotografica = false } = {}
   ) {
     objetivosPantalla = [];
     if (!visible) return;
@@ -197,12 +198,33 @@ export function crearEtiquetasPlanetas(
       objetoSeleccionado &&
       camera.position.distanceTo(objetoSeleccionado.posicion.position) < radioSelEfectivo * 12
     );
+    const vistaTierraDistante = modoPrimeraPersona && objetivoMirada === 'Tierra'
+      && camera.position.distanceTo(objetos.get('Tierra').posicion.position) > 100;
 
     for (const [nombre, objeto] of objetos) {
       const elemento = elementos.get(nombre);
       const marcador = marcadores.get(nombre);
       const posicion = objeto.posicion.position;
       const distancia = camera.position.distanceTo(posicion);
+
+      if (lanzamientoActivo) {
+        elemento.hidden = true;
+        marcador.hidden = true;
+        continue;
+      }
+      if (vistaTierraDistante && nombre !== 'Tierra') {
+        elemento.hidden = true;
+        marcador.hidden = true;
+        continue;
+      }
+
+      if (comparadorActivo || modoRecreacionFotografica) {
+        if (nombre === objetivoMirada || nombre === 'Urano' || nombre === seleccionado) {
+          elemento.hidden = true;
+          marcador.hidden = true;
+          continue;
+        }
+      }
 
       if (ocultoPorDisco(nombre, posicion, distancia, radioSolActual)) {
         elemento.hidden = true;
@@ -247,7 +269,7 @@ export function crearEtiquetasPlanetas(
         marcador.hidden = true;
       }
 
-      const ocultarEtiquetaPorCercania = (esProtagonista && radioPx > 42 && !modoPrimeraPersona)
+      const ocultarEtiquetaPorCercania = (esProtagonista && radioPx > 20)
         || (observacionCercana && !esProtagonista && radioPx > 18);
 
       const yEtiqueta = yCentro - Math.min(Math.max(radioPx, 4), 32) - 6;
@@ -310,7 +332,7 @@ export function crearEtiquetasPlanetas(
     }
 
     // Rótulo discreto del Sol en primera persona
-    if (modoPrimeraPersona) {
+    if (modoPrimeraPersona && !vistaTierraDistante) {
       const distSol = camera.position.length();
       proyectado.copy(centroSol).sub(camera.position);
       if (proyectado.dot(haciaDelante) > 0) {

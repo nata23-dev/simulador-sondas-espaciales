@@ -1,0 +1,137 @@
+{
+  "epoch": "2026-10-10 00:00 TDB",
+  "frame": "ICRF Ecliptic J2000",
+  "units": "km, km/s",
+  "rows": [
+    {
+      "moon": "Luna",
+      "naif": "301",
+      "parentCenter": "399",
+      "heliocentricDifferenceVsDirectRelativeKm": 1.4697921087330774e-8,
+      "heliocentricDifferenceVsDirectRelativeKmS": 2.0774543105390688e-15,
+      "localPlanetVsCurrentHorizonsPlanetKm": 7.450580610801616e-9,
+      "localPlanetVsCurrentHorizonsPlanetKmS": 0,
+      "absoluteMoonPlacementVsCurrentHorizonsKm": 1.4906436483974136e-8,
+      "sources": [
+        {
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27301%27&CENTER=%27500%4010%27&START_TIME=%272026-10-10+00%3A00+TDB%27&STOP_TIME=%272026-10-10+00%3A01%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27TDB%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+          "rawFile": "evidence/stage4/Horizons-original/Luna-sun-absolute-check.json",
+          "sha256": "ddafff8ca4b3335b73bfd6b01a99c1f129b649c53099c4fa01963f38f2dd9ec6",
+          "target": "Moon (301)                      {source: DE441}",
+          "center": "Sun (10)                        {source: DE441}"
+        },
+        {
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27399%27&CENTER=%27500%4010%27&START_TIME=%272026-10-10+00%3A00+TDB%27&STOP_TIME=%272026-10-10+00%3A01%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27TDB%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+          "rawFile": "evidence/stage4/Horizons-original/Luna-planet-sun-absolute-check.json",
+          "sha256": "93016695b4dca2e406baf978b6885a7d535e2f8f7733bb4248048792d8db1371",
+          "target": "Earth (399)                     {source: DE441}",
+          "center": "Sun (10)                        {source: DE441}"
+        }
+      ]
+    },
+    {
+      "moon": "Europa",
+      "naif": "502",
+      "parentCenter": "599",
+      "heliocentricDifferenceVsDirectRelativeKm": 1.1574837066404379e-7,
+      "heliocentricDifferenceVsDirectRelativeKmS": 2.009357990855139e-15,
+      "localPlanetVsCurrentHorizonsPlanetKm": 1.6859768348751402e-7,
+      "localPlanetVsCurrentHorizonsPlanetKmS": 5.551115123125783e-17,
+      "absoluteMoonPlacementVsCurrentHorizonsKm": 2.672100639407232e-7,
+      "sources": [
+        {
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27502%27&CENTER=%27500%4010%27&START_TIME=%272026-10-10+00%3A00+TDB%27&STOP_TIME=%272026-10-10+00%3A01%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27TDB%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+          "rawFile": "evidence/stage4/Horizons-original/Europa-sun-absolute-check.json",
+          "sha256": "9aa19b8faacfe449c3af63cbb56194c45c1dd363083dda7080c8fca33c779533",
+          "target": "Europa (502)                    {source: jup365_merged}",
+          "center": "Sun (10)                        {source: jup365_merged}"
+        },
+        {
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27599%27&CENTER=%27500%4010%27&START_TIME=%272026-10-10+00%3A00+TDB%27&STOP_TIME=%272026-10-10+00%3A01%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27TDB%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+          "rawFile": "evidence/stage4/Horizons-original/Europa-planet-sun-absolute-check.json",
+          "sha256": "76c18a08b1ce4890c33c6e268ffa28604336fc3a19fa442d2302c7ed40ef2bb9",
+          "target": "Jupiter (599)                   {source: jup365_merged}",
+          "center": "Sun (10)                        {source: jup365_merged}"
+        }
+      ]
+    },
+    {
+      "moon": "Titan",
+      "naif": "606",
+      "parentCenter": "699",
+      "heliocentricDifferenceVsDirectRelativeKm": 2.7010893602823783e-7,
+      "heliocentricDifferenceVsDirectRelativeKmS": 1.0877919644084146e-15,
+      "localPlanetVsCurrentHorizonsPlanetKm": 4.768953623117584e-7,
+      "localPlanetVsCurrentHorizonsPlanetKmS": 1.9860273225978185e-15,
+      "absoluteMoonPlacementVsCurrentHorizonsKm": 2.394640249012142e-7,
+      "sources": [
+        {
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27606%27&CENTER=%27500%4010%27&START_TIME=%272026-10-10+00%3A00+TDB%27&STOP_TIME=%272026-10-10+00%3A01%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27TDB%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+          "rawFile": "evidence/stage4/Horizons-original/Titan-sun-absolute-check.json",
+          "sha256": "c05a88c220752b3b815611d5edcd493eaa8aaddc845acbdc3212ba706d9b2c44",
+          "target": "Titan (606)                     {source: sat441l}",
+          "center": "Sun (10)                        {source: DE441}"
+        },
+        {
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27699%27&CENTER=%27500%4010%27&START_TIME=%272026-10-10+00%3A00+TDB%27&STOP_TIME=%272026-10-10+00%3A01%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27TDB%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+          "rawFile": "evidence/stage4/Horizons-original/Titan-planet-sun-absolute-check.json",
+          "sha256": "5a628c887dbaee30f4bd7aa56f3e128cfeff192b0961471d87bacf4a505f3b15",
+          "target": "Saturn (699)                    {source: sat441l}",
+          "center": "Sun (10)                        {source: DE441}"
+        }
+      ]
+    },
+    {
+      "moon": "Titania",
+      "naif": "703",
+      "parentCenter": "799",
+      "heliocentricDifferenceVsDirectRelativeKm": 5.60606136817882e-7,
+      "heliocentricDifferenceVsDirectRelativeKmS": 4.0029660424867215e-16,
+      "localPlanetVsCurrentHorizonsPlanetKm": 5.331234038672398e-7,
+      "localPlanetVsCurrentHorizonsPlanetKmS": 9.930136612989092e-16,
+      "absoluteMoonPlacementVsCurrentHorizonsKm": 9.96515154838562e-8,
+      "sources": [
+        {
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27703%27&CENTER=%27500%4010%27&START_TIME=%272026-10-10+00%3A00+TDB%27&STOP_TIME=%272026-10-10+00%3A01%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27TDB%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+          "rawFile": "evidence/stage4/Horizons-original/Titania-sun-absolute-check.json",
+          "sha256": "bf2efabca5264cc7842c8c78e0ac76d5363cab63b80640a509db2e7e88e22389",
+          "target": "Titania (703)                   {source: ura184_merged}",
+          "center": "Sun (10)                        {source: DE441}"
+        },
+        {
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27799%27&CENTER=%27500%4010%27&START_TIME=%272026-10-10+00%3A00+TDB%27&STOP_TIME=%272026-10-10+00%3A01%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27TDB%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+          "rawFile": "evidence/stage4/Horizons-original/Titania-planet-sun-absolute-check.json",
+          "sha256": "30b0f7488d99d253c2fb5ba4fa5b136c9da7d5f2b304e442e7838d894fcf26c2",
+          "target": "Uranus (799)                    {source: ura184_merged}",
+          "center": "Sun (10)                        {source: DE441}"
+        }
+      ]
+    },
+    {
+      "moon": "Triton",
+      "naif": "801",
+      "parentCenter": "899",
+      "heliocentricDifferenceVsDirectRelativeKm": 2.1807484818888277e-7,
+      "heliocentricDifferenceVsDirectRelativeKmS": 6.377745716588144e-16,
+      "localPlanetVsCurrentHorizonsPlanetKm": 6.664001874625056e-8,
+      "localPlanetVsCurrentHorizonsPlanetKmS": 8.882868333007365e-16,
+      "absoluteMoonPlacementVsCurrentHorizonsKm": 6.143906154658885e-8,
+      "sources": [
+        {
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27801%27&CENTER=%27500%4010%27&START_TIME=%272026-10-10+00%3A00+TDB%27&STOP_TIME=%272026-10-10+00%3A01%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27TDB%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+          "rawFile": "evidence/stage4/Horizons-original/Triton-sun-absolute-check.json",
+          "sha256": "3cf6fb25ca0227f0f0558d7a4b8100a8a326076557159bd35b3251d75fbd2067",
+          "target": "Triton (801)                    {source: nep098_merged}",
+          "center": "Sun (10)                        {source: nep098_merged}"
+        },
+        {
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&COMMAND=%27899%27&CENTER=%27500%4010%27&START_TIME=%272026-10-10+00%3A00+TDB%27&STOP_TIME=%272026-10-10+00%3A01%27&STEP_SIZE=%271+m%27&TIME_TYPE=%27TDB%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&OUT_UNITS=%27KM-S%27&VEC_TABLE=%272%27&VEC_LABELS=%27NO%27&VEC_CORR=%27NONE%27&CSV_FORMAT=%27YES%27",
+          "rawFile": "evidence/stage4/Horizons-original/Triton-planet-sun-absolute-check.json",
+          "sha256": "3f1d624a48a0dd0de5a1b932098e5703c5ec3234ea56d06fd7a6fb6a26f9b3a8",
+          "target": "Neptune (899)                   {source: nep098_merged}",
+          "center": "Sun (10)                        {source: nep098_merged}"
+        }
+      ]
+    }
+  ]
+}

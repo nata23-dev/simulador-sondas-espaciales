@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { INTENSIDAD_SOL_ESCENA } from './SolarIllumination.js';
 import {
   MODOS_ESCALA_VISUAL,
   calcularEscalaObjetivoSol
@@ -150,9 +151,9 @@ export function crearSol() {
   destelloLejano.renderOrder = 2;
   grupo.add(destelloLejano);
 
-  // La intensidad se calibra para las unidades de la escena; las posiciones
-  // heliocéntricas siguen proporcionales y la luz no simula luminosidad física.
-  const luz = new THREE.PointLight(0xfff3db, 4300, 0, 2);
+  // La caída 1/r² usa la distancia heliocéntrica. La conversión de irradiancia
+  // bolométrica a RGB es visual; no es una calibración fotométrica.
+  const luz = new THREE.PointLight(0xfff3db, INTENSIDAD_SOL_ESCENA, 0, 2);
   grupo.add(luz);
 
   let modoEscala = MODOS_ESCALA_VISUAL.CIENTIFICA;

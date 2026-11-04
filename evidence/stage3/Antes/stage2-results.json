@@ -1,0 +1,3516 @@
+{
+  "checks": [
+    "Modo histórico cargado",
+    "Recorrido de 12 pasos",
+    "Narración desplazable y navegación en flujo",
+    "Siguiente pulsado a 390",
+    "Navegación móvil completamente visible",
+    "Anterior pulsado a 390",
+    "Sin scroll horizontal a 390",
+    "Catálogo único de 14 legible",
+    "Progreso conservado entre secciones",
+    "Acontecimiento v2-launch-1977",
+    "Acontecimiento v1-launch-1977",
+    "Acontecimiento v1-jupiter-1979",
+    "Acontecimiento v2-jupiter-1979",
+    "Acontecimiento v1-titan-1980",
+    "Acontecimiento v1-saturn-1980",
+    "Acontecimiento v2-saturn-1981",
+    "Acontecimiento v2-uranus-1986",
+    "Acontecimiento v2-neptune-1989",
+    "Acontecimiento v1-pale-blue-dot-1990",
+    "Acontecimiento v1-termination-shock-2004",
+    "Acontecimiento v2-termination-shock-2007",
+    "Acontecimiento v1-heliopause-2012",
+    "Acontecimiento v2-heliopause-2018",
+    "Selección sincronizada con recorrido",
+    "Sin scroll horizontal a 1920",
+    "Sin scroll horizontal a 768",
+    "Sin scroll horizontal a 1366",
+    "Acontecimiento v1-jupiter-1979",
+    "Cámara 07-v1-jupiter",
+    "Acontecimiento v2-jupiter-1979",
+    "Cámara 08-v2-jupiter",
+    "Acontecimiento v1-saturn-1980",
+    "Cámara 09-v1-saturno",
+    "Acontecimiento v2-saturn-1981",
+    "Cámara 10-v2-saturno",
+    "Acontecimiento v2-uranus-1986",
+    "Cámara 11-v2-urano",
+    "Acontecimiento v2-neptune-1989",
+    "Cámara 12-v2-neptuno",
+    "Acontecimiento v1-pale-blue-dot-1990",
+    "Cámara 13-pale-blue-dot",
+    "Acontecimiento v1-termination-shock-2004",
+    "Cámara 14-v1-interestelar",
+    "Acontecimiento v2-heliopause-2018",
+    "Cámara 15-v2-interestelar",
+    "Acontecimiento v2-neptune-1989",
+    "Cámara 12a-neptuno-movil-panel",
+    "Recorte anunciado 12a-neptuno-movil-panel",
+    "Neptuno móvil con panel declara recorte",
+    "Neptuno móvil sin panel cabe en área libre",
+    "Acontecimiento v2-heliopause-2018",
+    "Cambio a Voyager 1 desde primera persona",
+    "Regreso a Voyager 2",
+    "Seguimiento al cambiar fecha con deslizador",
+    "Acontecimiento v1-jupiter-1979",
+    "Cambio manual de objetivo",
+    "Reencuadre contextual",
+    "FOV ISS cuadrado",
+    "FOV adaptado a retrato",
+    "FOV contextual vertical",
+    "Salida a exterior",
+    "Acontecimiento v1-jupiter-1979",
+    "Comparador abierto con foto y snapshot local",
+    "Fecha global no alterada",
+    "FOV contextual en comparador",
+    "Fecha, misión, cámara y progreso restaurados",
+    "Recorrido reanudable",
+    "Comparador móvil abierto",
+    "Comparador móvil legible en bloques verticales",
+    "FOV comparador móvil pulsable",
+    "Comparador móvil cerrado",
+    "Acontecimiento v1-jupiter-1979",
+    "Reproducción activa antes de comparar",
+    "Comparador pausa reproducción sin mover fecha global",
+    "Fecha pausada estable durante comparación",
+    "Reproducción recuperada al cerrar",
+    "Pausa manual posterior",
+    "Modo experimental conservado",
+    "Modo exploración conservado",
+    "Modo histórico recuperable"
+  ],
+  "captures": [
+    {
+      "name": "01-movil-siguiente-pulsado",
+      "file": "Despues/01-movil-siguiente-pulsado.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "tour",
+        "event": "v1-launch-1977",
+        "step": "Paso 2 de 12",
+        "date": "1977-09-05 · 12:56:00 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -665.5120729989839,
+            929.4732721490928,
+            2517.2881078090977
+          ],
+          "objetivoEscena": [
+            210.50652952342853,
+            -302.4277552071038,
+            245.1150941552016
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443392.0394465574,
+          "progress": 0.0008867593507700046,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "voyager-1",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-launch-1977",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Lanzamiento de Voyager 1",
+            "dateUtc": "1977-09-05T12:56:00Z",
+            "displayDateUtc": "5 sep 1977 · 12:56:00 UTC",
+            "kind": "launch",
+            "encounterWindowUtc": "1977-09-05",
+            "description": "Despegue desde Cabo Cañaveral (SLC-41) mediante un Titan IIIE-Centaur en una trayectoria más rápida y directa que adelantó a Voyager 2 el 19 de diciembre de 1977 rumbo a Júpiter. Primera muestra heliocéntrica Horizons disponible: 1977-09-05 14:00 TDB.",
+            "officialSource": "NASA Science · Voyager 1 Mission & JPL Horizons (-31)",
+            "officialUrl": "https://science.nasa.gov/mission/voyager/voyager-1/",
+            "relatedBodies": [
+              "Tierra"
+            ],
+            "focusTarget": "Tierra",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [],
+            "kindLabel": "Lanzamiento oficial",
+            "jdTdb": 2443392.0394465574,
+            "taiMinusUtcSeconds": 16,
+            "tdbMinusUtcSeconds": 48.182555650190984
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "02-movil-anterior-pulsado",
+      "file": "Despues/02-movil-anterior-pulsado.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "tour",
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -659.1432112671782,
+            920.9309729540753,
+            2494.3096541823425
+          ],
+          "objetivoEscena": [
+            208.82446123619107,
+            -299.6483044050042,
+            243.0189947618645
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443376.104029894,
+          "progress": 0,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "voyager-2",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-launch-1977",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Lanzamiento de Voyager 2",
+            "dateUtc": "1977-08-20T14:29:00Z",
+            "displayDateUtc": "20 ago 1977 · 14:29:00 UTC",
+            "kind": "launch",
+            "encounterWindowUtc": "1977-08-20",
+            "description": "Despegue desde Cabo Cañaveral (SLC-41) a bordo de un Titan IIIE-Centaur. Aunque lleva el número 2, partió 16 días antes que Voyager 1 en una trayectoria capaz de aprovechar la alineación planetaria hacia Urano y Neptuno. Primera muestra heliocéntrica Horizons disponible: 1977-08-20 15:33 TDB.",
+            "officialSource": "NASA Science · Voyager 2 Mission & JPL Horizons (-32)",
+            "officialUrl": "https://science.nasa.gov/mission/voyager/voyager-2/",
+            "relatedBodies": [
+              "Tierra"
+            ],
+            "focusTarget": "Tierra",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [],
+            "kindLabel": "Lanzamiento oficial",
+            "jdTdb": 2443376.104029894,
+            "taiMinusUtcSeconds": 16,
+            "tdbMinusUtcSeconds": 48.18282479077616
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "03-catalogo-movil",
+      "file": "Despues/03-catalogo-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v2-launch-1977",
+        "step": "Paso 1 de 12",
+        "date": "1977-08-20 · 14:29:00 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": "Tierra",
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -623.603836060179,
+            873.2565452908041,
+            2366.0789413530656
+          ],
+          "objetivoEscena": [
+            199.4317338371693,
+            -284.1362373907591,
+            231.33235106152682
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443376.104029894,
+          "progress": 0,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "voyager-2",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-launch-1977",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Lanzamiento de Voyager 2",
+            "dateUtc": "1977-08-20T14:29:00Z",
+            "displayDateUtc": "20 ago 1977 · 14:29:00 UTC",
+            "kind": "launch",
+            "encounterWindowUtc": "1977-08-20",
+            "description": "Despegue desde Cabo Cañaveral (SLC-41) a bordo de un Titan IIIE-Centaur. Aunque lleva el número 2, partió 16 días antes que Voyager 1 en una trayectoria capaz de aprovechar la alineación planetaria hacia Urano y Neptuno. Primera muestra heliocéntrica Horizons disponible: 1977-08-20 15:33 TDB.",
+            "officialSource": "NASA Science · Voyager 2 Mission & JPL Horizons (-32)",
+            "officialUrl": "https://science.nasa.gov/mission/voyager/voyager-2/",
+            "relatedBodies": [
+              "Tierra"
+            ],
+            "focusTarget": "Tierra",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [],
+            "kindLabel": "Lanzamiento oficial",
+            "jdTdb": 2443376.104029894,
+            "taiMinusUtcSeconds": 16,
+            "tdbMinusUtcSeconds": 48.18282479077616
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "04-catalogo-escritorio",
+      "file": "Despues/04-catalogo-escritorio.png",
+      "state": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Sol",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.734351410049,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            1051.0100945192971,
+            -2265.3572117220338,
+            2875.5235700409185
+          ],
+          "objetivoEscena": [
+            1023.4140711575669,
+            -2205.8764789837455,
+            2800.0219016650794
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2458427.500800724,
+          "progress": 0.8375662281381203,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "effectiveSpeed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-heliopause-2018",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Cruce de la heliopausa y entrada al espacio interestelar",
+            "dateUtc": "2018-11-05T00:00:00Z",
+            "displayDateUtc": "5 nov 2018 (fecha oficial NASA/JPL)",
+            "kind": "retrospective_boundary_crossing",
+            "encounterWindowUtc": "5 nov 2018 (~119,0 AU del Sol)",
+            "description": "El 5 de noviembre de 2018 Voyager 2 cruzó la heliopausa a ~119,0 AU del Sol con su instrumento de plasma PLS operativo, proporcionando las primeras mediciones directas in situ de densidad, velocidad y temperatura en la transición al medio interestelar.",
+            "officialSource": "NASA/JPL · Voyager 2 Enters Interstellar Space (5 Nov 2018)",
+            "officialUrl": "https://science.nasa.gov/mission/voyager/interstellar-mission/",
+            "relatedBodies": [
+              "Sol"
+            ],
+            "focusTarget": "voyager-2",
+            "recommendedSpeedId": "30d_s",
+            "photoIds": [],
+            "kindLabel": "Cruce de frontera confirmado retrospectivamente",
+            "jdTdb": 2458427.500800724,
+            "taiMinusUtcSeconds": 37,
+            "tdbMinusUtcSeconds": 69.18255912332205
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "05-catalogo-tableta",
+      "file": "Despues/05-catalogo-tableta.png",
+      "state": {
+        "width": 768,
+        "height": 1024,
+        "scrollWidth": 768,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Sol",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 34.5158770189817,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            1051.0100945192971,
+            -2265.3572117220338,
+            2875.5235700409185
+          ],
+          "objetivoEscena": [
+            1023.4140711575669,
+            -2205.8764789837455,
+            2800.0219016650794
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2458427.500800724,
+          "progress": 0.8375662281381203,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "effectiveSpeed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-heliopause-2018",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Cruce de la heliopausa y entrada al espacio interestelar",
+            "dateUtc": "2018-11-05T00:00:00Z",
+            "displayDateUtc": "5 nov 2018 (fecha oficial NASA/JPL)",
+            "kind": "retrospective_boundary_crossing",
+            "encounterWindowUtc": "5 nov 2018 (~119,0 AU del Sol)",
+            "description": "El 5 de noviembre de 2018 Voyager 2 cruzó la heliopausa a ~119,0 AU del Sol con su instrumento de plasma PLS operativo, proporcionando las primeras mediciones directas in situ de densidad, velocidad y temperatura en la transición al medio interestelar.",
+            "officialSource": "NASA/JPL · Voyager 2 Enters Interstellar Space (5 Nov 2018)",
+            "officialUrl": "https://science.nasa.gov/mission/voyager/interstellar-mission/",
+            "relatedBodies": [
+              "Sol"
+            ],
+            "focusTarget": "voyager-2",
+            "recommendedSpeedId": "30d_s",
+            "photoIds": [],
+            "kindLabel": "Cruce de frontera confirmado retrospectivamente",
+            "jdTdb": 2458427.500800724,
+            "taiMinusUtcSeconds": 37,
+            "tdbMinusUtcSeconds": 69.18255912332205
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "06-catalogo-portatil",
+      "file": "Despues/06-catalogo-portatil.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Sol",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            1051.0100945192971,
+            -2265.3572117220338,
+            2875.5235700409185
+          ],
+          "objetivoEscena": [
+            1023.4140711575669,
+            -2205.8764789837455,
+            2800.0219016650794
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2458427.500800724,
+          "progress": 0.8375662281381203,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "effectiveSpeed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-heliopause-2018",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Cruce de la heliopausa y entrada al espacio interestelar",
+            "dateUtc": "2018-11-05T00:00:00Z",
+            "displayDateUtc": "5 nov 2018 (fecha oficial NASA/JPL)",
+            "kind": "retrospective_boundary_crossing",
+            "encounterWindowUtc": "5 nov 2018 (~119,0 AU del Sol)",
+            "description": "El 5 de noviembre de 2018 Voyager 2 cruzó la heliopausa a ~119,0 AU del Sol con su instrumento de plasma PLS operativo, proporcionando las primeras mediciones directas in situ de densidad, velocidad y temperatura en la transición al medio interestelar.",
+            "officialSource": "NASA/JPL · Voyager 2 Enters Interstellar Space (5 Nov 2018)",
+            "officialUrl": "https://science.nasa.gov/mission/voyager/interstellar-mission/",
+            "relatedBodies": [
+              "Sol"
+            ],
+            "focusTarget": "voyager-2",
+            "recommendedSpeedId": "30d_s",
+            "photoIds": [],
+            "kindLabel": "Cruce de frontera confirmado retrospectivamente",
+            "jdTdb": 2458427.500800724,
+            "taiMinusUtcSeconds": 37,
+            "tdbMinusUtcSeconds": 69.18255912332205
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "07-v1-jupiter",
+      "file": "Despues/07-v1-jupiter.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Jupiter",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 23.172179700395407,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 36.22597114905973,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.10230102364685,
+            1.7540054880664828,
+            -134.2858632197578
+          ],
+          "objetivoEscena": [
+            -155.40108131552682,
+            7.905869473533575,
+            -49.27414550104575
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-jupiter-1979",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-03-05T12:05:26Z",
+            "displayDateUtc": "5 mar 1979 · 12:05:26 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "6 ene – 13 abr 1979 (observación)",
+            "officialPeriapseNote": "4,89 R_J (~349 136 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis joviano a 4,89 radios de Júpiter, seguido del sobrevuelo cercano de Ío donde se descubrió por primera vez vulcanismo activo fuera de la Tierra y del tenue sistema de anillos de Júpiter. La asistencia gravitacional aceleró la nave hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-jupiter-grs-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2443938.004353998,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18545505013401
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      },
+      "geometry": {
+        "utc": "1979-03-05 · 12:05:26 UTC",
+        "tdb": "1979-03-05 · 12:06:16 TDB",
+        "observer": "voyager-1",
+        "target": "Jupiter",
+        "sourceStatus": "interpolated",
+        "vectorKm": {
+          "x": -182048.31117087603,
+          "y": -295919.70508778095,
+          "z": 21414.19824432768
+        },
+        "vectorScene": {
+          "x": -0.03894136948746052,
+          "y": 0.004580642362167486,
+          "z": 0.06329923359535883
+        },
+        "distanceKm": 348092.8429971733,
+        "scenePositionError": 0,
+        "directionDot": 0.9999999999999999,
+        "fovVerticalDeg": 45,
+        "fovHorizontalDeg": 72.76106262930988,
+        "fovReferenceDeg": 45,
+        "fovKind": "contextual_vertical",
+        "angularDiameterDeg": 23.17217970039069
+      }
+    },
+    {
+      "name": "08-v2-jupiter",
+      "file": "Despues/08-v2-jupiter.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v2-jupiter-1979",
+        "step": "Paso 4 de 12",
+        "date": "1979-07-09 · 22:29:51 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Jupiter",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 11.128460927575691,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 17.66986804191489,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -125.87819756960707,
+            2.330680434656394,
+            -115.10439788444783
+          ],
+          "objetivoEscena": [
+            -186.62491089660512,
+            14.331022683667225,
+            -36.58160752474319
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2444064.4379766653,
+          "progress": 0.03830377182097168,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-jupiter-1979",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-07-09T22:29:51Z",
+            "displayDateUtc": "9 jul 1979 · 22:29:51 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "25 abr – 5 ago 1979 (observación)",
+            "officialPeriapseNote": "10,11 R_J (~721 834 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Segundo sobrevuelo histórico del sistema joviano a 10,11 radios de Júpiter, obteniendo imágenes de alta resolución de la corteza helada fracturada de Europa, la actividad volcánica persistente en Ío y la dinámica atmosférica joviana antes de recibir impulso gravitacional hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v2-jupiter-europa-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2444064.4379766653,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18386827922212
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      },
+      "geometry": {
+        "utc": "1979-07-09 · 22:29:51 UTC",
+        "tdb": "1979-07-09 · 22:30:41 TDB",
+        "observer": "voyager-2",
+        "target": "Jupiter",
+        "sourceStatus": "interpolated",
+        "vectorKm": {
+          "x": -437994.5305060148,
+          "y": -566163.1850349903,
+          "z": 86524.58678667061
+        },
+        "vectorScene": {
+          "x": -0.09369000314381992,
+          "y": 0.018508196435000457,
+          "z": 0.1211061483451914
+        },
+        "distanceKm": 721017.6592572149,
+        "scenePositionError": 0,
+        "directionDot": 1.0000000000000002,
+        "fovVerticalDeg": 45,
+        "fovHorizontalDeg": 72.76106262930988,
+        "fovReferenceDeg": 45,
+        "fovKind": "contextual_vertical",
+        "angularDiameterDeg": 11.128460927575203
+      }
+    },
+    {
+      "name": "09-v1-saturno",
+      "file": "Despues/09-v1-saturno.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-saturn-1980",
+        "step": "Paso 5 de 12",
+        "date": "1980-11-12 · 23:46:30 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Saturno",
+          "fovGrados": 93.5110107318184,
+          "fovReferenciaGrados": 93.5110107318184,
+          "fovHorizontalGrados": 124.26138345657527,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 36.994751826399515,
+            "incluyeAnillos": true,
+            "fovVerticalNecesarioGrados": 93.5110107318184,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -304.054889317003,
+            12.252454082065887,
+            11.670770463756433
+          ],
+          "objetivoEscena": [
+            -245.0143398345332,
+            90.21851230727589,
+            32.53958168124559
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2444556.4912173925,
+          "progress": 0.06568509616940015,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-saturn-1980",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Saturno y salida del plano eclíptico",
+            "dateUtc": "1980-11-12T23:46:30Z",
+            "displayDateUtc": "12 nov 1980 · 23:46:30 UTC",
+            "kind": "closest_approach",
+            "secondaryKind": "trajectory_deflection",
+            "encounterWindowUtc": "22 ago – 15 dic 1980 (observación)",
+            "officialPeriapseNote": "3,09 R_S (~186 420 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis bajo el hemisferio sur de Saturno a 3,09 radios saturnianos. Reveló la estructura fina trenzada de los anillos y pastores lunares, e inclinó definitivamente la trayectoria heliocéntrica de Voyager 1 unos 35° hacia el norte del plano de la eclíptica.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Saturno",
+              "Titan"
+            ],
+            "focusTarget": "Saturno",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-saturn-system-1980"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2444556.4912173925,
+            "taiMinusUtcSeconds": 19,
+            "tdbMinusUtcSeconds": 51.18270259154061
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      },
+      "geometry": {
+        "utc": "1980-11-12 · 23:46:30 UTC",
+        "tdb": "1980-11-12 · 23:47:21 TDB",
+        "observer": "voyager-1",
+        "target": "Saturno",
+        "sourceStatus": "interpolated",
+        "vectorKm": {
+          "x": 108366.51374697685,
+          "y": -38303.849430665374,
+          "z": 143103.51096845418
+        },
+        "vectorScene": {
+          "x": 0.023180332872868803,
+          "y": 0.030610812370275298,
+          "z": 0.008193453396399875
+        },
+        "distanceKm": 183545.9098819129,
+        "scenePositionError": 0,
+        "directionDot": 0.9999999999999999,
+        "fovVerticalDeg": 93.5110107318184,
+        "fovHorizontalDeg": 124.26138345657527,
+        "fovReferenceDeg": 93.5110107318184,
+        "fovKind": "contextual_vertical",
+        "angularDiameterDeg": 36.994751826379826
+      }
+    },
+    {
+      "name": "10-v2-saturno",
+      "file": "Despues/10-v2-saturno.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v2-saturn-1981",
+        "step": "Paso 6 de 12",
+        "date": "1981-08-26 · 03:24:57 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Saturno",
+          "fovGrados": 115.32311598395148,
+          "fovReferenciaGrados": 115.32311598395148,
+          "fovHorizontalGrados": 140.81338326834174,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 42.80359631391594,
+            "incluyeAnillos": true,
+            "fovVerticalNecesarioGrados": 115.32311598395148,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -300.582655134684,
+            13.034341836268638,
+            62.476459201164694
+          ],
+          "objetivoEscena": [
+            -214.1766811646571,
+            6.174808630101452,
+            112.34583323457852
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2444842.6429303554,
+          "progress": 0.08160860244265686,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-saturn-1981",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Máximo acercamiento a Saturno",
+            "dateUtc": "1981-08-26T03:24:57Z",
+            "displayDateUtc": "26 ago 1981 · 03:24:57 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "5 jun – 25 sep 1981 (observación)",
+            "officialPeriapseNote": "2,67 R_S (~161 081 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Sobrevuelo a 2,67 radios de Saturno con estudios fotométricos detallados de los anillos, Encélado, Tetis, Jápeto y Titán. La asistencia gravitacional mantuvo a Voyager 2 cerca del plano orbital rumbo al primer encuentro histórico con Urano.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Saturno"
+            ],
+            "focusTarget": "Saturno",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v2-saturn-rings-1981"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2444842.6429303554,
+            "taiMinusUtcSeconds": 20,
+            "tdbMinusUtcSeconds": 52.182721339879656
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      },
+      "geometry": {
+        "utc": "1981-08-26 · 03:24:57 UTC",
+        "tdb": "1981-08-26 · 03:25:49 TDB",
+        "observer": "voyager-2",
+        "target": "Saturno",
+        "sourceStatus": "interpolated",
+        "vectorKm": {
+          "x": 137887.3632786274,
+          "y": -79581.95687031746,
+          "z": -10946.499456718564
+        },
+        "vectorScene": {
+          "x": 0.029495042972655483,
+          "y": -0.0023415305376737194,
+          "z": 0.017023120769927402
+        },
+        "distanceKm": 159580.82172240235,
+        "scenePositionError": 0,
+        "directionDot": 1,
+        "fovVerticalDeg": 115.32311598395148,
+        "fovHorizontalDeg": 140.81338326834174,
+        "fovReferenceDeg": 115.32311598395148,
+        "fovKind": "contextual_vertical",
+        "angularDiameterDeg": 42.803596313901814
+      }
+    },
+    {
+      "name": "11-v2-urano",
+      "file": "Despues/11-v2-urano.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v2-uranus-1986",
+        "step": "Paso 7 de 12",
+        "date": "1986-01-24 · 17:59:47 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Urano",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 28.705621069199456,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 44.41538967714576,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -117.39875208758801,
+            -0.7089148106244225,
+            600.5593351016504
+          ],
+          "objetivoEscena": [
+            -22.727442601355122,
+            18.967023933469232,
+            575.060303851413
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2446455.2504882477,
+          "progress": 0.17134549864544044,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-uranus-1986",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Máximo acercamiento a Urano",
+            "dateUtc": "1986-01-24T17:59:47Z",
+            "displayDateUtc": "24 ene 1986 · 17:59:47 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "4 nov 1985 – 25 feb 1986 (observación)",
+            "officialPeriapseNote": "Al UTC oficial: NSSDCA ~107 092 km al centro; Horizons directo ~107 158 km; geometría local ~102 311 km. La resta heliocéntrica mezcla referencias baricéntricas; la trayectoria sigue pendiente.",
+            "description": "Primer y único encuentro de una nave espacial con Urano (4,19 radios uranianos). Descubrió 11 lunas nuevas, 2 nuevos anillos, un campo magnético fuertemente inclinado (59°) y fotografió de cerca los cañones tectónicos de Miranda antes de curvar su ruta hacia Neptuno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Urano"
+            ],
+            "focusTarget": "Urano",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v2-uranus-crescent-1986"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2446455.2504882477,
+            "taiMinusUtcSeconds": 23,
+            "tdbMinusUtcSeconds": 55.18461044292597
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      },
+      "geometry": {
+        "utc": "1986-01-24 · 17:59:47 UTC",
+        "tdb": "1986-01-24 · 18:00:42 TDB",
+        "observer": "voyager-2",
+        "target": "Urano",
+        "sourceStatus": "interpolated",
+        "vectorKm": {
+          "x": 96858.83795237541,
+          "y": 26088.226192474365,
+          "z": 20130.582039252855
+        },
+        "vectorScene": {
+          "x": 0.020718762907350197,
+          "y": 0.004306068142827413,
+          "z": -0.005580448667160454
+        },
+        "distanceKm": 102310.6561829867,
+        "scenePositionError": 0,
+        "directionDot": 1,
+        "fovVerticalDeg": 45,
+        "fovHorizontalDeg": 72.76106262930988,
+        "fovReferenceDeg": 45,
+        "fovKind": "contextual_vertical",
+        "angularDiameterDeg": 28.705621069210984
+      }
+    },
+    {
+      "name": "12-v2-neptuno",
+      "file": "Despues/12-v2-neptuno.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 117.17563267055476,
+          "fovReferenciaGrados": 117.17563267055476,
+          "fovHorizontalGrados": 142.10038545805665,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 117.17563267055476,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2447763.6649558186,
+          "progress": 0.24415493866820864,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-neptune-1989",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Máximo acercamiento a Neptuno y Tritón",
+            "dateUtc": "1989-08-25T03:56:36Z",
+            "displayDateUtc": "25 ago 1989 · 03:56:36 UTC",
+            "kind": "closest_approach",
+            "secondaryKind": "trajectory_deflection",
+            "encounterWindowUtc": "5 jun – 2 oct 1989 (observación; Tritón 09:10 UTC)",
+            "officialPeriapseNote": "Al UTC oficial: NSSDCA ~29 217 km al centro; Horizons directo ~29 264 km; geometría local ~34 377 km. La resta heliocéntrica mezcla referencias baricéntricas; la trayectoria sigue pendiente.",
+            "description": "Primer y único encuentro con Neptuno, pasando sobre su polo norte para desviar la trayectoria hacia Tritón (09:10 UTC, donde descubrió géiseres activos de nitrógeno) y proyectar a Voyager 2 48° al sur del plano eclíptico.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Neptuno",
+              "Triton"
+            ],
+            "focusTarget": "Neptuno",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v2-neptune-gds-1989",
+              "v2-triton-flyby-1989"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2447763.6649558186,
+            "taiMinusUtcSeconds": 24,
+            "tdbMinusUtcSeconds": 56.182740369158964
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      },
+      "geometry": {
+        "utc": "1989-08-25 · 03:56:36 UTC",
+        "tdb": "1989-08-25 · 03:57:32 TDB",
+        "observer": "voyager-2",
+        "target": "Neptuno",
+        "sourceStatus": "interpolated",
+        "vectorKm": {
+          "x": -25224.72660946846,
+          "y": -2807.7058277130127,
+          "z": -23186.52624860406
+        },
+        "vectorScene": {
+          "x": -0.005395740245006664,
+          "y": -0.0049597553526901095,
+          "z": 0.0006005873350432012
+        },
+        "distanceKm": 34377.100576031786,
+        "scenePositionError": 0,
+        "directionDot": 1.0000000000000002,
+        "fovVerticalDeg": 117.17563267055476,
+        "fovHorizontalDeg": 142.10038545805665,
+        "fovReferenceDeg": 117.17563267055476,
+        "fovKind": "contextual_vertical",
+        "angularDiameterDeg": 91.48861236084564
+      }
+    },
+    {
+      "name": "13-pale-blue-dot",
+      "file": "Despues/13-pale-blue-dot.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-pale-blue-dot-1990",
+        "step": "Paso 9 de 12",
+        "date": "1990-02-14 · 04:48:00 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Tierra",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 0.00012057650142207288,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 0.00019237733316457357,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -503.73103498839527,
+            699.4312221831412,
+            961.840232966535
+          ],
+          "objetivoEscena": [
+            -466.8452869953881,
+            645.4277032305615,
+            886.1893140313712
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2447936.7006618646,
+          "progress": 0.2537838698466804,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-pale-blue-dot-1990",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Fotografía Pale Blue Dot (Un punto azul pálido)",
+            "dateUtc": "1990-02-14T04:48:00Z",
+            "displayDateUtc": "14 feb 1990 · 04:48 UTC",
+            "kind": "photographic_observation",
+            "encounterWindowUtc": "14 feb 1990 (01:13 – 05:13 UTC · mosaico de 60 imágenes)",
+            "officialPeriapseNote": "Distancia a la Tierra: ~40,47 AU (~6,05 × 10⁹ km) · 32° sobre la eclíptica",
+            "description": "Por iniciativa de Carl Sagan y el equipo Voyager, Voyager 1 giró sus cámaras ISS hacia el interior del Sistema Solar para capturar el Retrato de Familia de 60 fotogramas, mostrando a la Tierra como un creciente de 0,12 píxeles antes del apagado definitivo de las cámaras.",
+            "officialSource": "NASA/JPL-Caltech · Pale Blue Dot (PIA00452 / PIA23645)",
+            "officialUrl": "https://science.nasa.gov/resource/voyager-1s-pale-blue-dot/",
+            "relatedBodies": [
+              "Tierra",
+              "Sol",
+              "Venus",
+              "Jupiter",
+              "Saturno",
+              "Urano",
+              "Neptuno"
+            ],
+            "focusTarget": "Tierra",
+            "recommendedCameraMode": "first_person",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-pale-blue-dot-1990"
+            ],
+            "kindLabel": "Observación fotográfica histórica",
+            "jdTdb": 2447936.7006618646,
+            "taiMinusUtcSeconds": 25,
+            "tdbMinusUtcSeconds": 57.18511296819497
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      },
+      "geometry": {
+        "utc": "1990-02-14 · 04:48:00 UTC",
+        "tdb": "1990-02-14 · 04:48:57 TDB",
+        "observer": "voyager-1",
+        "target": "Tierra",
+        "sourceStatus": "interpolated",
+        "vectorKm": {
+          "x": 2233349655.972791,
+          "y": 4580494173.790494,
+          "z": -3269792454.71528
+        },
+        "vectorScene": {
+          "x": 477.72865119482833,
+          "y": -699.4308011289694,
+          "z": -979.7987957678588
+        },
+        "distanceKm": 6054776648.141154,
+        "scenePositionError": 0,
+        "directionDot": 1,
+        "fovVerticalDeg": 45,
+        "fovHorizontalDeg": 72.76106262930988,
+        "fovReferenceDeg": 45,
+        "fovKind": "contextual_vertical",
+        "angularDiameterDeg": 0.00012057650142207285
+      }
+    },
+    {
+      "name": "14-v1-interestelar",
+      "file": "Despues/14-v1-interestelar.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-termination-shock-2004",
+        "step": "Paso 10 de 12",
+        "date": "2004-12-16 · 00:00:00 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Sol",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -723.3068234844765,
+            1713.2410730356191,
+            2365.1872318276473
+          ],
+          "objetivoEscena": [
+            -699.2665826513743,
+            1656.2988091668437,
+            2286.5765111453816
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2453355.5007428643,
+          "progress": 0.5553242527082458,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "effectiveSpeed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-termination-shock-2004",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Cruce de la onda de choque de terminación",
+            "dateUtc": "2004-12-16T00:00:00Z",
+            "displayDateUtc": "16 dic 2004 (confirmado por datos de campo y partículas)",
+            "kind": "retrospective_boundary_crossing",
+            "encounterWindowUtc": "Dic 2004 (~94,0 AU del Sol)",
+            "description": "Cruce de la onda de choque de terminación a ~94 AU, donde el viento solar supersónico se frena abruptamente ante la presión del medio interestelar, ingresando en la heliovaina (confirmado retrospectivamente mediante MAG, LECP y CRS).",
+            "officialSource": "NASA Science · Voyager Interstellar Mission",
+            "officialUrl": "https://science.nasa.gov/mission/voyager/interstellar-mission/",
+            "relatedBodies": [
+              "Sol"
+            ],
+            "focusTarget": "voyager-1",
+            "recommendedSpeedId": "30d_s",
+            "photoIds": [],
+            "kindLabel": "Cruce de frontera confirmado retrospectivamente",
+            "jdTdb": 2453355.5007428643,
+            "taiMinusUtcSeconds": 32,
+            "tdbMinusUtcSeconds": 64.18347383990425
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      },
+      "geometry": {
+        "utc": "2004-12-16 · 00:00:00 UTC",
+        "tdb": "2004-12-16 · 00:01:04 TDB",
+        "observer": "voyager-1",
+        "target": "Sol",
+        "sourceStatus": "interpolated",
+        "vectorKm": {
+          "x": 3381411270.5018253,
+          "y": 11057092927.757603,
+          "z": -8009288016.309743
+        },
+        "vectorScene": {
+          "x": 723.3068234844765,
+          "y": -1713.2410730356191,
+          "z": -2365.1872318276473
+        },
+        "distanceKm": 14065629766.261688,
+        "scenePositionError": 0,
+        "directionDot": 0.9999999999999998,
+        "fovVerticalDeg": 45,
+        "fovHorizontalDeg": 72.76106262930988,
+        "fovReferenceDeg": 45,
+        "fovKind": "contextual_vertical",
+        "angularDiameterDeg": null
+      }
+    },
+    {
+      "name": "15-v2-interestelar",
+      "file": "Despues/15-v2-interestelar.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Sol",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            1051.0100945192971,
+            -2265.3572117220338,
+            2875.5235700409185
+          ],
+          "objetivoEscena": [
+            1023.4140711575669,
+            -2205.8764789837455,
+            2800.0219016650794
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2458427.500800724,
+          "progress": 0.8375662281381203,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "effectiveSpeed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-heliopause-2018",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Cruce de la heliopausa y entrada al espacio interestelar",
+            "dateUtc": "2018-11-05T00:00:00Z",
+            "displayDateUtc": "5 nov 2018 (fecha oficial NASA/JPL)",
+            "kind": "retrospective_boundary_crossing",
+            "encounterWindowUtc": "5 nov 2018 (~119,0 AU del Sol)",
+            "description": "El 5 de noviembre de 2018 Voyager 2 cruzó la heliopausa a ~119,0 AU del Sol con su instrumento de plasma PLS operativo, proporcionando las primeras mediciones directas in situ de densidad, velocidad y temperatura en la transición al medio interestelar.",
+            "officialSource": "NASA/JPL · Voyager 2 Enters Interstellar Space (5 Nov 2018)",
+            "officialUrl": "https://science.nasa.gov/mission/voyager/interstellar-mission/",
+            "relatedBodies": [
+              "Sol"
+            ],
+            "focusTarget": "voyager-2",
+            "recommendedSpeedId": "30d_s",
+            "photoIds": [],
+            "kindLabel": "Cruce de frontera confirmado retrospectivamente",
+            "jdTdb": 2458427.500800724,
+            "taiMinusUtcSeconds": 37,
+            "tdbMinusUtcSeconds": 69.18255912332205
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      },
+      "geometry": {
+        "utc": "2018-11-05 · 00:00:00 UTC",
+        "tdb": "2018-11-05 · 00:01:09 TDB",
+        "observer": "voyager-2",
+        "target": "Sol",
+        "sourceStatus": "interpolated",
+        "vectorKm": {
+          "x": -4913402257.009143,
+          "y": 13442881350.805738,
+          "z": 10590394226.515789
+        },
+        "vectorScene": {
+          "x": -1051.0100945192971,
+          "y": 2265.3572117220338,
+          "z": -2875.5235700409185
+        },
+        "distanceKm": 17804747418.147842,
+        "scenePositionError": 0,
+        "directionDot": 1,
+        "fovVerticalDeg": 45,
+        "fovHorizontalDeg": 72.76106262930988,
+        "fovReferenceDeg": 45,
+        "fovKind": "contextual_vertical",
+        "angularDiameterDeg": null
+      }
+    },
+    {
+      "name": "12a-neptuno-movil-panel",
+      "file": "Despues/12a-neptuno-movil-panel.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 150,
+          "fovReferenciaGrados": 150,
+          "fovHorizontalGrados": 119.78372129473975,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 154.56215939407386,
+            "cabeEnAreaLibre": false
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2447763.6649558186,
+          "progress": 0.24415493866820864,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-neptune-1989",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Máximo acercamiento a Neptuno y Tritón",
+            "dateUtc": "1989-08-25T03:56:36Z",
+            "displayDateUtc": "25 ago 1989 · 03:56:36 UTC",
+            "kind": "closest_approach",
+            "secondaryKind": "trajectory_deflection",
+            "encounterWindowUtc": "5 jun – 2 oct 1989 (observación; Tritón 09:10 UTC)",
+            "officialPeriapseNote": "Al UTC oficial: NSSDCA ~29 217 km al centro; Horizons directo ~29 264 km; geometría local ~34 377 km. La resta heliocéntrica mezcla referencias baricéntricas; la trayectoria sigue pendiente.",
+            "description": "Primer y único encuentro con Neptuno, pasando sobre su polo norte para desviar la trayectoria hacia Tritón (09:10 UTC, donde descubrió géiseres activos de nitrógeno) y proyectar a Voyager 2 48° al sur del plano eclíptico.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Neptuno",
+              "Triton"
+            ],
+            "focusTarget": "Neptuno",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v2-neptune-gds-1989",
+              "v2-triton-flyby-1989"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2447763.6649558186,
+            "taiMinusUtcSeconds": 24,
+            "tdbMinusUtcSeconds": 56.182740369158964
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      },
+      "geometry": {
+        "utc": "1989-08-25 · 03:56:36 UTC",
+        "tdb": "1989-08-25 · 03:57:32 TDB",
+        "observer": "voyager-2",
+        "target": "Neptuno",
+        "sourceStatus": "interpolated",
+        "vectorKm": {
+          "x": -25224.72660946846,
+          "y": -2807.7058277130127,
+          "z": -23186.52624860406
+        },
+        "vectorScene": {
+          "x": -0.005395740245006664,
+          "y": -0.0049597553526901095,
+          "z": 0.0006005873350432012
+        },
+        "distanceKm": 34377.100576031786,
+        "scenePositionError": 0,
+        "directionDot": 1.0000000000000002,
+        "fovVerticalDeg": 150,
+        "fovHorizontalDeg": 119.78372129473975,
+        "fovReferenceDeg": 150,
+        "fovKind": "contextual_vertical",
+        "angularDiameterDeg": 91.48861236084564
+      }
+    },
+    {
+      "name": "12b-neptuno-movil-libre",
+      "file": "Despues/12b-neptuno-movil-libre.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "closed",
+        "tab": "navigation",
+        "event": "v2-neptune-1989",
+        "step": "Paso 8 de 12",
+        "date": "1989-08-25 · 03:56:36 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Neptuno",
+          "fovGrados": 150,
+          "fovReferenciaGrados": 150,
+          "fovHorizontalGrados": 119.78372129473975,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 91.48861236077522,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 140.02775375249897,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            192.01528669378348,
+            15.091379527151558,
+            947.4553572567276
+          ],
+          "objetivoEscena": [
+            118.6387476989566,
+            -52.35621163112474,
+            955.6227296669133
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2447763.6649558186,
+          "progress": 0.24415493866820864,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": {
+            "id": "v2-neptune-1989",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Máximo acercamiento a Neptuno y Tritón",
+            "dateUtc": "1989-08-25T03:56:36Z",
+            "displayDateUtc": "25 ago 1989 · 03:56:36 UTC",
+            "kind": "closest_approach",
+            "secondaryKind": "trajectory_deflection",
+            "encounterWindowUtc": "5 jun – 2 oct 1989 (observación; Tritón 09:10 UTC)",
+            "officialPeriapseNote": "Al UTC oficial: NSSDCA ~29 217 km al centro; Horizons directo ~29 264 km; geometría local ~34 377 km. La resta heliocéntrica mezcla referencias baricéntricas; la trayectoria sigue pendiente.",
+            "description": "Primer y único encuentro con Neptuno, pasando sobre su polo norte para desviar la trayectoria hacia Tritón (09:10 UTC, donde descubrió géiseres activos de nitrógeno) y proyectar a Voyager 2 48° al sur del plano eclíptico.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Neptuno",
+              "Triton"
+            ],
+            "focusTarget": "Neptuno",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v2-neptune-gds-1989",
+              "v2-triton-flyby-1989"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2447763.6649558186,
+            "taiMinusUtcSeconds": 24,
+            "tdbMinusUtcSeconds": 56.182740369158964
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "15a-cambio-observador-v1",
+      "file": "Despues/15a-cambio-observador-v1.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12",
+        "date": "2018-11-05 · 00:00:00 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Sol",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -919.0578899222361,
+            2642.4191044261297,
+            3651.567975343043
+          ],
+          "objetivoEscena": [
+            -899.0788402137474,
+            2584.9765611251228,
+            3572.1879287831066
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2458427.500800724,
+          "progress": 0.8375662281381203,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "effectiveSpeed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v2-heliopause-2018",
+            "missionId": "voyager-2",
+            "probeName": "Voyager 2",
+            "title": "Voyager 2 · Cruce de la heliopausa y entrada al espacio interestelar",
+            "dateUtc": "2018-11-05T00:00:00Z",
+            "displayDateUtc": "5 nov 2018 (fecha oficial NASA/JPL)",
+            "kind": "retrospective_boundary_crossing",
+            "encounterWindowUtc": "5 nov 2018 (~119,0 AU del Sol)",
+            "description": "El 5 de noviembre de 2018 Voyager 2 cruzó la heliopausa a ~119,0 AU del Sol con su instrumento de plasma PLS operativo, proporcionando las primeras mediciones directas in situ de densidad, velocidad y temperatura en la transición al medio interestelar.",
+            "officialSource": "NASA/JPL · Voyager 2 Enters Interstellar Space (5 Nov 2018)",
+            "officialUrl": "https://science.nasa.gov/mission/voyager/interstellar-mission/",
+            "relatedBodies": [
+              "Sol"
+            ],
+            "focusTarget": "voyager-2",
+            "recommendedSpeedId": "30d_s",
+            "photoIds": [],
+            "kindLabel": "Cruce de frontera confirmado retrospectivamente",
+            "jdTdb": 2458427.500800724,
+            "taiMinusUtcSeconds": 37,
+            "tdbMinusUtcSeconds": 69.18255912332205
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "15b-seguimiento-otra-fecha",
+      "file": "Despues/15b-seguimiento-otra-fecha.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v2-heliopause-2018",
+        "step": "Paso 12 de 12",
+        "date": "2002-03-27 · 14:55:03 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-2",
+          "idSondaExterior": "voyager-2",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Sol",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            570.9006506234575,
+            -980.8710529707946,
+            1807.177350881327
+          ],
+          "objetivoEscena": [
+            544.1479533831408,
+            -934.90693244779,
+            1722.4920935166908
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2452361.122310987,
+          "progress": 0.49999,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "effectiveSpeed": {
+            "id": "30d_s",
+            "label": "30 días/s",
+            "longLabel": "30 días julianos / s",
+            "tdbSecondsPerRealSecond": 2592000
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-2",
+          "triggeredEvent": null,
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "16-objetivo-manual",
+      "file": "Despues/16-objetivo-manual.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Tierra",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 0.0010750400313596928,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 0.001715204304567907,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.10230102364685,
+            1.7540054880664828,
+            -134.2858632197578
+          ],
+          "objetivoEscena": [
+            -53.19407848029371,
+            0.546778196234458,
+            -47.63880946240842
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-jupiter-1979",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-03-05T12:05:26Z",
+            "displayDateUtc": "5 mar 1979 · 12:05:26 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "6 ene – 13 abr 1979 (observación)",
+            "officialPeriapseNote": "4,89 R_J (~349 136 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis joviano a 4,89 radios de Júpiter, seguido del sobrevuelo cercano de Ío donde se descubrió por primera vez vulcanismo activo fuera de la Tierra y del tenue sistema de anillos de Júpiter. La asistencia gravitacional aceleró la nave hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-jupiter-grs-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2443938.004353998,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18545505013401
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "17-reencuadre-jupiter",
+      "file": "Despues/17-reencuadre-jupiter.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Jupiter",
+          "fovGrados": 45,
+          "fovReferenciaGrados": 45,
+          "fovHorizontalGrados": 72.76106262930988,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 23.172179700395407,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 36.22597114905973,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.10230102364685,
+            1.7540054880664828,
+            -134.2858632197578
+          ],
+          "objetivoEscena": [
+            -155.40108131552682,
+            7.905869473533575,
+            -49.27414550104575
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-jupiter-1979",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-03-05T12:05:26Z",
+            "displayDateUtc": "5 mar 1979 · 12:05:26 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "6 ene – 13 abr 1979 (observación)",
+            "officialPeriapseNote": "4,89 R_J (~349 136 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis joviano a 4,89 radios de Júpiter, seguido del sobrevuelo cercano de Ío donde se descubrió por primera vez vulcanismo activo fuera de la Tierra y del tenue sistema de anillos de Júpiter. La asistencia gravitacional aceleró la nave hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-jupiter-grs-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2443938.004353998,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18545505013401
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "18-fov-iss-nac",
+      "file": "Despues/18-fov-iss-nac.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Jupiter",
+          "fovGrados": 0.424,
+          "fovReferenciaGrados": 0.424,
+          "fovHorizontalGrados": 0.7541383873031959,
+          "fovTipo": "instrumento_cuadrado",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 23.172179700395407,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 36.22597114905973,
+            "cabeEnAreaLibre": null
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.10230102364685,
+            1.7540054880664828,
+            -134.2858632197578
+          ],
+          "objetivoEscena": [
+            -155.40108131552682,
+            7.905869473533575,
+            -49.27414550104575
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-jupiter-1979",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-03-05T12:05:26Z",
+            "displayDateUtc": "5 mar 1979 · 12:05:26 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "6 ene – 13 abr 1979 (observación)",
+            "officialPeriapseNote": "4,89 R_J (~349 136 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis joviano a 4,89 radios de Júpiter, seguido del sobrevuelo cercano de Ío donde se descubrió por primera vez vulcanismo activo fuera de la Tierra y del tenue sistema de anillos de Júpiter. La asistencia gravitacional aceleró la nave hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-jupiter-grs-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2443938.004353998,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18545505013401
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "19-fov-iss-movil",
+      "file": "Despues/19-fov-iss-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Jupiter",
+          "fovGrados": 0.9175640639128076,
+          "fovReferenciaGrados": 0.424,
+          "fovHorizontalGrados": 0.42399999999999993,
+          "fovTipo": "instrumento_cuadrado",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 23.172179700395407,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 83.02006800345283,
+            "cabeEnAreaLibre": null
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.10230102364685,
+            1.7540054880664828,
+            -134.2858632197578
+          ],
+          "objetivoEscena": [
+            -155.40108131552682,
+            7.905869473533575,
+            -49.27414550104575
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-jupiter-1979",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-03-05T12:05:26Z",
+            "displayDateUtc": "5 mar 1979 · 12:05:26 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "6 ene – 13 abr 1979 (observación)",
+            "officialPeriapseNote": "4,89 R_J (~349 136 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis joviano a 4,89 radios de Júpiter, seguido del sobrevuelo cercano de Ío donde se descubrió por primera vez vulcanismo activo fuera de la Tierra y del tenue sistema de anillos de Júpiter. La asistencia gravitacional aceleró la nave hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-jupiter-grs-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2443938.004353998,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18545505013401
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "20-fov-contextual-movil",
+      "file": "Despues/20-fov-contextual-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "first_person",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Jupiter",
+          "fovGrados": 18,
+          "fovReferenciaGrados": 18,
+          "fovHorizontalGrados": 8.371700537452291,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 23.172179700395407,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 83.02006800345283,
+            "cabeEnAreaLibre": false
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.10230102364685,
+            1.7540054880664828,
+            -134.2858632197578
+          ],
+          "objetivoEscena": [
+            -155.40108131552682,
+            7.905869473533575,
+            -49.27414550104575
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "apuntado_geometrico",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-jupiter-1979",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-03-05T12:05:26Z",
+            "displayDateUtc": "5 mar 1979 · 12:05:26 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "6 ene – 13 abr 1979 (observación)",
+            "officialPeriapseNote": "4,89 R_J (~349 136 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis joviano a 4,89 radios de Júpiter, seguido del sobrevuelo cercano de Ío donde se descubrió por primera vez vulcanismo activo fuera de la Tierra y del tenue sistema de anillos de Júpiter. La asistencia gravitacional aceleró la nave hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-jupiter-grs-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2443938.004353998,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18545505013401
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "21-exterior-movil",
+      "file": "Despues/21-exterior-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "navigation",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 23.25091859669417,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.09652602364685,
+            1.7576804880664827,
+            -134.2790382197578
+          ],
+          "objetivoEscena": [
+            -103.10230102364685,
+            1.7540054880664826,
+            -134.2858632197578
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-jupiter-1979",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-03-05T12:05:26Z",
+            "displayDateUtc": "5 mar 1979 · 12:05:26 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "6 ene – 13 abr 1979 (observación)",
+            "officialPeriapseNote": "4,89 R_J (~349 136 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis joviano a 4,89 radios de Júpiter, seguido del sobrevuelo cercano de Ío donde se descubrió por primera vez vulcanismo activo fuera de la Tierra y del tenue sistema de anillos de Júpiter. La asistencia gravitacional aceleró la nave hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-jupiter-grs-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2443938.004353998,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18545505013401
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "22-antes-comparador",
+      "file": "Despues/22-antes-comparador.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "history",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.0662465839589,
+            1.76250665078993,
+            -134.30516321442332
+          ],
+          "objetivoEscena": [
+            -103.11894114266951,
+            1.7559628520500805,
+            -134.25881469026504
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-jupiter-1979",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-03-05T12:05:26Z",
+            "displayDateUtc": "5 mar 1979 · 12:05:26 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "6 ene – 13 abr 1979 (observación)",
+            "officialPeriapseNote": "4,89 R_J (~349 136 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis joviano a 4,89 radios de Júpiter, seguido del sobrevuelo cercano de Ío donde se descubrió por primera vez vulcanismo activo fuera de la Tierra y del tenue sistema de anillos de Júpiter. La asistencia gravitacional aceleró la nave hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-jupiter-grs-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2443938.004353998,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18545505013401
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": false
+      }
+    },
+    {
+      "name": "23-comparador-iss",
+      "file": "Despues/23-comparador-iss.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "closed",
+        "tab": "history",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "photo_recreation",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Jupiter",
+          "fovGrados": 0.424,
+          "fovReferenciaGrados": 0.424,
+          "fovHorizontalGrados": 0.7541383873031959,
+          "fovTipo": "instrumento_cuadrado",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 3.5521703906162023,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 5.664612354185452,
+            "cabeEnAreaLibre": null
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -102.61492050062405,
+            1.7518105707306086,
+            -134.00472607467145
+          ],
+          "objetivoEscena": [
+            -151.03621593434005,
+            1.622652764555727,
+            -221.49964859467775
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "recreacion_fotografica_aproximada",
+          "fotoRecreacionId": "v1-jupiter-grs-1979"
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-jupiter-1979",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-03-05T12:05:26Z",
+            "displayDateUtc": "5 mar 1979 · 12:05:26 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "6 ene – 13 abr 1979 (observación)",
+            "officialPeriapseNote": "4,89 R_J (~349 136 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis joviano a 4,89 radios de Júpiter, seguido del sobrevuelo cercano de Ío donde se descubrió por primera vez vulcanismo activo fuera de la Tierra y del tenue sistema de anillos de Júpiter. La asistencia gravitacional aceleró la nave hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-jupiter-grs-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2443938.004353998,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18545505013401
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": true,
+        "comparatorDateTdb": "1979-03-04 · 00:00:50 TDB",
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "24-comparador-contextual",
+      "file": "Despues/24-comparador-contextual.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "closed",
+        "tab": "history",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "photo_recreation",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Jupiter",
+          "fovGrados": 8.5,
+          "fovReferenciaGrados": 8.5,
+          "fovHorizontalGrados": 15.058987408965116,
+          "fovTipo": "contextual_vertical",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 3.5521703906162023,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 5.664612354185452,
+            "cabeEnAreaLibre": true
+          },
+          "fotoUsaFovContexto": true,
+          "posicionEscena": [
+            -102.61492050062405,
+            1.7518105707306086,
+            -134.00472607467145
+          ],
+          "objetivoEscena": [
+            -151.03621593434005,
+            1.622652764555727,
+            -221.49964859467775
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "recreacion_fotografica_aproximada",
+          "fotoRecreacionId": "v1-jupiter-grs-1979"
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": {
+            "id": "v1-jupiter-1979",
+            "missionId": "voyager-1",
+            "probeName": "Voyager 1",
+            "title": "Voyager 1 · Máximo acercamiento a Júpiter",
+            "dateUtc": "1979-03-05T12:05:26Z",
+            "displayDateUtc": "5 mar 1979 · 12:05:26 UTC",
+            "kind": "closest_approach",
+            "encounterWindowUtc": "6 ene – 13 abr 1979 (observación)",
+            "officialPeriapseNote": "4,89 R_J (~349 136 km al centro con el radio de la tabla NSSDCA)",
+            "description": "Periapsis joviano a 4,89 radios de Júpiter, seguido del sobrevuelo cercano de Ío donde se descubrió por primera vez vulcanismo activo fuera de la Tierra y del tenue sistema de anillos de Júpiter. La asistencia gravitacional aceleró la nave hacia Saturno.",
+            "officialSource": "NASA NSSDCA · Voyager Planetary Closest Approaches",
+            "officialUrl": "https://nssdc.gsfc.nasa.gov/planetary/voyager-periapse-old.html",
+            "relatedBodies": [
+              "Jupiter",
+              "Io"
+            ],
+            "focusTarget": "Jupiter",
+            "recommendedSpeedId": "1h_s",
+            "photoIds": [
+              "v1-jupiter-grs-1979"
+            ],
+            "kindLabel": "Máximo acercamiento (periapsis)",
+            "jdTdb": 2443938.004353998,
+            "taiMinusUtcSeconds": 18,
+            "tdbMinusUtcSeconds": 50.18545505013401
+          },
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": true,
+        "comparatorDateTdb": "1979-03-04 · 00:00:50 TDB",
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "25-despues-comparador",
+      "file": "Despues/25-despues-comparador.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "photos",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.0652243411784,
+            1.7626695834614845,
+            -134.3060452019192
+          ],
+          "objetivoEscena": [
+            -103.11950291797687,
+            1.7560289332332744,
+            -134.25790152396203
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": null,
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "26-contexto-recuperado",
+      "file": "Despues/26-contexto-recuperado.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "tour",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.0652243411784,
+            1.7626695834614845,
+            -134.3060452019192
+          ],
+          "objetivoEscena": [
+            -103.11950291797687,
+            1.7560289332332744,
+            -134.25790152396203
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": null,
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "27-comparador-movil",
+      "file": "Despues/27-comparador-movil.png",
+      "state": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "mode": "historico",
+        "inspector": "closed",
+        "tab": "history",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:05:26 UTC",
+        "camera": {
+          "modo": "photo_recreation",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": "Jupiter",
+          "fovGrados": 0.9175640639128076,
+          "fovReferenciaGrados": 0.424,
+          "fovHorizontalGrados": 0.42399999999999993,
+          "fovTipo": "instrumento_cuadrado",
+          "encuadreObjetivo": {
+            "diametroEsferaGrados": 3.5521703906162023,
+            "incluyeAnillos": false,
+            "fovVerticalNecesarioGrados": 9.497594487713515,
+            "cabeEnAreaLibre": null
+          },
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -102.61492050062405,
+            1.7518105707306086,
+            -134.00472607467145
+          ],
+          "objetivoEscena": [
+            -151.03621593434005,
+            1.622652764555727,
+            -221.49964859467775
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "recreacion_fotografica_aproximada",
+          "fotoRecreacionId": "v1-jupiter-grs-1979"
+        },
+        "engine": {
+          "jdTdb": 2443938.004353998,
+          "progress": 0.03126811034320439,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": null,
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": true,
+        "comparatorDateTdb": "1979-03-04 · 00:00:50 TDB",
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "28-reproduccion-recuperada",
+      "file": "Despues/28-reproduccion-recuperada.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "photos",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:26:23 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": "voyager-1",
+          "idSondaExterior": "voyager-1",
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -103.06602002820526,
+            1.763503538203354,
+            -134.31058985514176
+          ],
+          "objetivoEscena": [
+            -103.12669646201289,
+            1.7564717043274283,
+            -134.25519554197857
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.0189123317,
+          "progress": 0.031268920471906415,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": null,
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "29-modo-experimental",
+      "file": "Despues/29-modo-experimental.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "experimental",
+        "inspector": "half",
+        "tab": "probe",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:26:23 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -125.50221043901544,
+            110.51856517682796,
+            88.06784447368591
+          ],
+          "objetivoEscena": [
+            -55.268510670057665,
+            11.68673893239706,
+            -94.173347145105
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.0189123317,
+          "progress": 0.031268920471906415,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": null,
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "30-modo-exploracion",
+      "file": "Despues/30-modo-exploracion.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "exploracion",
+        "inspector": "closed",
+        "tab": "explore",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:26:23 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            1.8958580949231134,
+            246.98213255514227,
+            452.68956615492255
+          ],
+          "objetivoEscena": [
+            160.64622810514788,
+            23.73138037974973,
+            40.92191107449642
+          ],
+          "transicionActiva": true,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.0189123317,
+          "progress": 0.031268920471906415,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": null,
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": true
+      }
+    },
+    {
+      "name": "31-modo-historico",
+      "file": "Despues/31-modo-historico.png",
+      "state": {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1366,
+        "mode": "historico",
+        "inspector": "half",
+        "tab": "explore",
+        "event": "v1-jupiter-1979",
+        "step": "Paso 3 de 12",
+        "date": "1979-03-05 · 12:26:23 UTC",
+        "camera": {
+          "modo": "exterior",
+          "idSondaObservador": null,
+          "idSondaExterior": null,
+          "objetoExteriorSeleccionado": null,
+          "sondaExperimentalEnfocada": false,
+          "objetivoMirada": null,
+          "fovGrados": 48,
+          "fovReferenciaGrados": 48,
+          "fovHorizontalGrados": 76.75169750399756,
+          "fovTipo": "exterior_vertical",
+          "encuadreObjetivo": null,
+          "fotoUsaFovContexto": false,
+          "posicionEscena": [
+            -427.3720159001033,
+            284.99982402538916,
+            1147.4416789651805
+          ],
+          "objetivoEscena": [
+            -35.37827568982098,
+            -266.2413731453203,
+            130.7079152947608
+          ],
+          "transicionActiva": false,
+          "modoVista": "cientifica",
+          "tipoOrientacion": "orbita_exterior",
+          "fotoRecreacionId": null
+        },
+        "engine": {
+          "jdTdb": 2443938.0189123317,
+          "progress": 0.031268920471906415,
+          "playing": false,
+          "direction": 1,
+          "speed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "effectiveSpeed": {
+            "id": "1h_s",
+            "label": "1 h/s",
+            "longLabel": "1 hora de misión / s",
+            "tdbSecondsPerRealSecond": 3600
+          },
+          "visibilityMode": "both",
+          "selectedProbeId": "voyager-1",
+          "triggeredEvent": null,
+          "autoSlowNearEvents": true,
+          "autoPauseAtEvents": true
+        },
+        "comparatorOpen": false,
+        "comparatorDateTdb": null,
+        "photoLoaded": true
+      }
+    }
+  ],
+  "errors": [],
+  "source": "Chrome CDP, clic físico Input.dispatchMouseEvent",
+  "timestamp": "2026-11-01T06:36:15.573Z"
+}
