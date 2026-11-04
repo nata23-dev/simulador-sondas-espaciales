@@ -1,0 +1,32 @@
+# Preservacion estricta de saltos de linea para integridad cientifica y SHA-256
+
+# Comportamiento por defecto
+* text=auto
+
+# Codigo fuente, scripts y configuracion
+*.js text eol=lf
+*.mjs text eol=lf
+*.py text eol=lf
+*.ps1 text eol=crlf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.svg text eol=lf
+
+# Datos cientificos, efemerides, catalogos y fixtures de pruebas
+# Estos archivos estan vinculados a manifiestos criptograficos SHA-256
+# y DEBEN mantener obligatoriamente finales de linea LF en cualquier sistema operativo.
+*.json text eol=lf
+*.tsv text eol=lf
+*.csv text eol=lf
+*.txt text eol=lf
+
+# Formatos binarios
+*.glb binary
+*.bsp binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.zip binary
