@@ -111,6 +111,7 @@ export function crearControlesModoHistorico({
   alIrAFechaFoto,
   alActivarComparadorFoto,
   alCambiarFovComparador,
+  alCambiarInspeccionVisualIo,
   alCerrarComparadorFoto
 }) {
   const appEl = document.querySelector('#app');
@@ -206,10 +207,23 @@ export function crearControlesModoHistorico({
   const compInstrument = document.querySelector('#comp-photo-instrument');
   const compDate = document.querySelector('#comp-photo-date');
   const compSessionDate = document.querySelector('#comp-session-date');
+  const compRecreationDate = document.querySelector('#comp-recreation-date');
+  const compRecreationDateB = document.querySelector('#comp-recreation-date-b');
+  const compMinimizedTime = document.querySelector('#comp-minimized-time');
+  const compAssistNote = document.querySelector('#comp-assist-note');
+  const btnCompIoInspection = document.querySelector('#comp-io-inspection-btn');
   const compLink = document.querySelector('#comp-photo-link');
   const btnCompCerrar = document.querySelector('#comp-close-btn');
+  const btnCompCerrarMovil = document.querySelector('#comp-mobile-close-btn');
+  const btnCompVistaFoto = document.querySelector('#comp-view-photo');
+  const btnCompVista3d = document.querySelector('#comp-view-3d');
+  const btnCompMinimizar = document.querySelector('#comp-minimize-btn');
+  const selectorFotoComparador = document.querySelector('#comp-photo-select');
+  const detallesComparador = document.querySelector('.comparator-details');
+  const resumenDetallesComparador = detallesComparador.querySelector('summary');
   const btnCompFovIss = document.querySelector('#comp-fov-iss-btn');
   const btnCompFovCtx = document.querySelector('#comp-fov-ctx-btn');
+  const btnCompFovZoom = document.querySelector('#comp-fov-zoom-btn');
   const compFidelityNote = document.querySelector('#comp-fidelity-note');
   const compTelemetry = document.querySelector('#comp-geometry-telemetry');
 
@@ -261,6 +275,8 @@ export function crearControlesModoHistorico({
   let misionLanzamientoActiva = VOYAGER_2_ID;
   let fotoComparadorActiva = null;
   let comparadorUsaContexto = false;
+  let comparadorZoomActivo = false;
+  let inspeccionIoActiva = false;
   let fotoLightboxActiva = null;
   let sincronizandoSelectoresFecha = false;
 
@@ -500,53 +516,141 @@ export function crearControlesModoHistorico({
 
   function abrirComparadorAB(photo) {
     if (!photo) return;
+    establecerInspeccionIo(false);
+    const vistaAnterior = panelComparador.hidden ? 'foto' : panelComparador.dataset.view;
     fotoComparadorActiva = photo;
     comparadorUsaContexto = false;
+    comparadorZoomActivo = false;
     compTitulo.textContent = `${photo.title} (${photo.nasaId})`;
     compImg.src = resolverRutaPublica(baseUrl, photo.imagePath);
     compImg.alt = `Fotografía original NASA ${photo.nasaId}: ${photo.title}`;
     compCaption.textContent = photo.description;
     compInstrument.textContent = `${photo.probeName} · ${photo.instrument}`;
     compDate.textContent = `${photo.displayDateUtc} · Objetivo: ${photo.targetDisplay}`;
-    compSessionDate.textContent = ultimoSnapshot?.timeLabels.labelUtc ?? '—';
+    compSessionDate.textContent = 'Sincronizando recorrido…';
+    actualizarFechaRecreacionComparador('Consultando escena…');
+    btnCompIoInspection.hidden = photo.targetBody !== 'Io';
     compLink.href = photo.officialSourceUrl;
     compLink.textContent = `${photo.provenance} ↗`;
     compFidelityNote.textContent = photo.recreationFidelityNote;
+    selectorFotoComparador.value = photo.id;
 
     btnCompFovIss.setAttribute('aria-pressed', 'true');
-    btnCompFovIss.textContent = `FOV ISS-NAC (${String(photo.instrumentFovDeg).replace('.', ',')}°)`;
+    btnCompFovIss.textContent = `ISS-NAC ${String(photo.instrumentFovDeg).replace('.', ',')}°/lado`;
     btnCompFovCtx.setAttribute('aria-pressed', 'false');
     btnCompFovCtx.textContent = `FOV contextual (${String(photo.contextFovDeg).replace('.', ',')}°)`;
+    btnCompFovZoom.setAttribute('aria-pressed', 'false');
+    resumenDetallesComparador.textContent = 'B · Recreación WebGL · campo ISS';
 
     // Despeja paneles laterales mientras el comparador A/B está abierto para dar máxima visibilidad al lienzo 3D
     panelEventos.open = false;
     panelFotos.open = false;
     panelFichaVoyager.open = false;
     panelComparador.hidden = false;
+    establecerVistaComparador(vistaAnterior === 'minimizado' ? 'foto' : vistaAnterior);
     alActivarComparadorFoto?.(photo, { usarFovContexto: false });
+  }
+
+  function establecerVistaComparador(vista) {
+    panelComparador.dataset.view = vista;
+    btnCompVistaFoto.setAttribute('aria-pressed', String(vista === 'foto'));
+    btnCompVista3d.setAttribute('aria-pressed', String(vista === '3d'));
+    btnCompMinimizar.textContent = vista === 'minimizado' ? '+' : '−';
+    btnCompMinimizar.setAttribute('aria-label', vista === 'minimizado' ? 'Recuperar comparador' : 'Minimizar comparador');
+    if (vista === '3d' && window.matchMedia('(max-width:760px)').matches) detallesComparador.open = false;
   }
 
   function cerrarComparadorAB({ notificar = true } = {}) {
     if (panelComparador.hidden && !fotoComparadorActiva) return;
+    establecerInspeccionIo(false);
     panelComparador.hidden = true;
     fotoComparadorActiva = null;
     alCerrarComparadorFoto?.({ reanudar: notificar });
   }
 
   btnCompCerrar.addEventListener('click', () => cerrarComparadorAB({ notificar: true }));
+  btnCompCerrarMovil.addEventListener('click', () => cerrarComparadorAB({ notificar: true }));
+  btnCompVistaFoto.addEventListener('click', () => establecerVistaComparador('foto'));
+  btnCompVista3d.addEventListener('click', () => establecerVistaComparador('3d'));
+  btnCompMinimizar.addEventListener('click', () => establecerVistaComparador(
+    panelComparador.dataset.view === 'minimizado' ? 'foto' : 'minimizado'));
+  function actualizarFechaRecreacionComparador(label) {
+    compRecreationDate.textContent = label;
+    compRecreationDateB.textContent = `Escena 3D: ${label} · consulta geométrica`;
+    actualizarFechaMinimizado();
+  }
+  function actualizarFechaRecorridoComparador(label) {
+    compSessionDate.textContent = label;
+    actualizarFechaMinimizado();
+  }
+  function actualizarFechaMinimizado() {
+    compMinimizedTime.textContent = `Escena 3D: ${compRecreationDate.textContent} · Recorrido guardado: ${compSessionDate.textContent}`;
+  }
+  function establecerInspeccionIo(activa) {
+    inspeccionIoActiva = Boolean(activa && fotoComparadorActiva?.targetBody === 'Io');
+    btnCompIoInspection.setAttribute('aria-pressed', String(inspeccionIoActiva));
+    btnCompIoInspection.textContent = inspeccionIoActiva
+      ? 'Volver a iluminación científica' : 'Iluminación de inspección de Ío';
+    compAssistNote.hidden = !inspeccionIoActiva;
+    alCambiarInspeccionVisualIo?.(inspeccionIoActiva);
+  }
+  btnCompIoInspection.addEventListener('click', () => establecerInspeccionIo(!inspeccionIoActiva));
+  // Al minimizar, la línea temporal vuelve a estar disponible. Navegar por ella
+  // termina la comparación antes de calcular la nueva escena para no mezclar épocas.
+  const cerrarComparadorAlNavegar = event => {
+    if (!panelComparador.hidden && panelComparador.dataset.view === 'minimizado') {
+      // La restauración sincroniza el range; conservar la nueva elección del
+      // usuario antes de que el listener normal procese este mismo evento.
+      const control = event.target;
+      const value = control instanceof HTMLInputElement || control instanceof HTMLSelectElement
+        ? control.value : null;
+      const checked = control instanceof HTMLInputElement ? control.checked : null;
+      cerrarComparadorAB({ notificar: false });
+      if (value !== null) control.value = value;
+      if (checked !== null) control.checked = checked;
+    }
+  };
+  for (const tipo of ['click', 'input', 'change']) {
+    panelTimelineHist.addEventListener(tipo, cerrarComparadorAlNavegar, true);
+  }
+  for (const photo of VOYAGER_PHOTO_CATALOG) {
+    const option = document.createElement('option');
+    option.value = photo.id;
+    option.textContent = `${photo.probeName} · ${photo.targetDisplay} · ${photo.nasaId}`;
+    selectorFotoComparador.appendChild(option);
+  }
+  selectorFotoComparador.addEventListener('change', () => abrirComparadorAB(
+    getVoyagerPhotoById(selectorFotoComparador.value)));
   btnCompFovIss.addEventListener('click', () => {
     if (!fotoComparadorActiva) return;
     comparadorUsaContexto = false;
+    comparadorZoomActivo = false;
     btnCompFovIss.setAttribute('aria-pressed', 'true');
     btnCompFovCtx.setAttribute('aria-pressed', 'false');
+    btnCompFovZoom.setAttribute('aria-pressed', 'false');
+    resumenDetallesComparador.textContent = 'B · Recreación WebGL · campo ISS';
     alCambiarFovComparador?.(fotoComparadorActiva, { usarFovContexto: false });
   });
   btnCompFovCtx.addEventListener('click', () => {
     if (!fotoComparadorActiva) return;
     comparadorUsaContexto = true;
+    comparadorZoomActivo = false;
     btnCompFovIss.setAttribute('aria-pressed', 'false');
     btnCompFovCtx.setAttribute('aria-pressed', 'true');
+    btnCompFovZoom.setAttribute('aria-pressed', 'false');
+    resumenDetallesComparador.textContent = 'B · Recreación WebGL · contextual';
     alCambiarFovComparador?.(fotoComparadorActiva, { usarFovContexto: true });
+  });
+  btnCompFovZoom.addEventListener('click', () => {
+    if (!fotoComparadorActiva) return;
+    comparadorUsaContexto = false;
+    comparadorZoomActivo = true;
+    btnCompFovIss.setAttribute('aria-pressed', 'false');
+    btnCompFovCtx.setAttribute('aria-pressed', 'false');
+    btnCompFovZoom.setAttribute('aria-pressed', 'true');
+    resumenDetallesComparador.textContent = 'B · Zoom visual 3D (no ISS)';
+    alCambiarFovComparador?.(fotoComparadorActiva, { zoomVisual: true });
+    if (window.matchMedia('(max-width:760px)').matches) detallesComparador.open = false;
   });
 
   document.addEventListener('keydown', event => {
@@ -617,7 +721,8 @@ export function crearControlesModoHistorico({
   btnCamFp.addEventListener('click', () => {
     cerrarComparadorAB({ notificar: false });
     const ev = getHistoricalEventById(selectorEvento.value);
-    alActivarPrimeraPersona?.(ev?.missionId ?? pestanaFichaActiva, objetivoContextualEvento(ev));
+    alActivarPrimeraPersona?.(pestanaFichaActiva,
+      ev?.missionId === pestanaFichaActiva ? objetivoContextualEvento(ev) : 'Tierra');
   });
 
   btnSeguirV1.addEventListener('click', () => alSeguirSondaExterior?.(VOYAGER_1_ID));
@@ -755,8 +860,11 @@ export function crearControlesModoHistorico({
       : 'Próximo hito: Continuación de la Misión Interestelar (>2026)';
 
     if (!probe.isRealData || !probe.state) {
+      const enEmpalme = probe.status === 'spk_segment_transition';
       insigniaEstadoDato.dataset.kind = probe.status;
-      insigniaEstadoDato.textContent = probe.status === 'pre_launch'
+      insigniaEstadoDato.textContent = enEmpalme
+        ? 'SIN POSICIÓN VERIFICADA · TRAYECTORIA INTERRUMPIDA'
+        : probe.status === 'pre_launch'
         ? 'PRE-LANZAMIENTO (SIN SONDA EN EL ESPACIO)'
         : (probe.status === 'launch_ascent_visual'
           ? 'INTRODUCCIÓN VISUAL · ASCENSO TITAN IIIE-CENTAUR'
@@ -764,16 +872,19 @@ export function crearControlesModoHistorico({
 
       campoLightTime.textContent = '—';
       campoDistSunAu.textContent = '—';
-      campoDistSunKm.textContent = probe.status === 'pre_launch' ? 'En plataforma SLC-41 (Tierra)' : 'Previo a inyección heliocéntrica';
+      campoDistSunKm.textContent = enEmpalme ? 'Sin posición verificada'
+        : probe.status === 'pre_launch' ? 'En plataforma SLC-41 (Tierra)' : 'Previo a inyección heliocéntrica';
       campoDistEarthAu.textContent = '—';
       campoDistEarthKm.textContent = '—';
       campoDistMutualAu.textContent = '—';
-      campoDistMutualKm.textContent = 'Requiere ambas sondas en vuelo';
+      campoDistMutualKm.textContent = enEmpalme ? 'No calculable en este intervalo' : 'Requiere ambas sondas en vuelo';
       campoSpeedHelio.textContent = '—';
       campoPosAu.textContent = '—';
       campoPosKm.textContent = '—';
       campoVelDir.textContent = '—';
-      campoSampleInfo.textContent = probe.reason;
+      campoSampleInfo.textContent = enEmpalme
+        ? 'La trayectoria se interrumpe durante este minuto y continúa cuando regresan los datos verificados.'
+        : probe.reason;
       return;
     }
 
@@ -899,7 +1010,7 @@ export function crearControlesModoHistorico({
 
   function actualizarTelemetriaComparador(snapshot) {
     if (!fotoComparadorActiva || panelComparador.hidden) return;
-    ultimoSnapshot = snapshot;
+    actualizarFechaRecreacionComparador(snapshot.timeLabels.labelUtc);
     const probe = snapshot.probes[fotoComparadorActiva.missionId];
     if (!probe?.state) {
       compTelemetry.textContent = 'Sonda sin estado heliocéntrico en la fecha seleccionada.';
@@ -928,12 +1039,20 @@ export function crearControlesModoHistorico({
     const txtAng = diamAng ? ` · Diámetro angular físico 1:1: ${diamAng}` : '';
     const fovContextualReal = ultimoEstadoCamara?.fovTipo === 'contextual_vertical'
       ? ultimoEstadoCamara.fovGrados : fotoComparadorActiva.contextFovDeg;
-    const txtFov = comparadorUsaContexto
-      ? `FOV contextual ${String(fovContextualReal).replace('.', ',')}°`
-      : `FOV instrumento ISS-NAC ${String(fotoComparadorActiva.instrumentFovDeg).replace('.', ',')}°`;
+    const fovVerticalPantalla = ultimoEstadoCamara?.fovGrados;
+    const fovHorizontalPantalla = ultimoEstadoCamara?.fovHorizontalGrados;
+    const txtFov = comparadorZoomActivo
+      ? `Zoom visual 3D ${fovVerticalPantalla?.toFixed(3).replace('.', ',')}° vertical; no es el campo ISS-NAC`
+      : comparadorUsaContexto
+        ? `FOV contextual ${String(fovContextualReal).replace('.', ',')}° vertical`
+        : `Campo ISS-NAC ${String(fotoComparadorActiva.instrumentFovDeg).replace('.', ',')}° por lado del fotograma cuadrado`
+        + (Number.isFinite(fovVerticalPantalla) && Number.isFinite(fovHorizontalPantalla)
+          ? `; viewport 3D ${fovHorizontalPantalla.toFixed(3).replace('.', ',')}° horizontal × ${fovVerticalPantalla.toFixed(3).replace('.', ',')}° vertical`
+          : '');
     const anguloObjetivo = sphereAngularDiameterDeg(obtenerRadioObjetivoKm(targetName), distKm);
-    const fovActivo = comparadorUsaContexto
-      ? fovContextualReal : fotoComparadorActiva.instrumentFovDeg;
+    const fovActivo = Number.isFinite(fovVerticalPantalla) && Number.isFinite(fovHorizontalPantalla)
+      ? Math.min(fovVerticalPantalla, fovHorizontalPantalla)
+      : comparadorUsaContexto ? fovContextualReal : fotoComparadorActiva.instrumentFovDeg;
     const planetaRecortado = anguloObjetivo !== null && anguloObjetivo > fovActivo;
     const anillosRecortados = targetName === 'Saturno'
       && ultimoEstadoCamara?.encuadreObjetivo?.incluyeAnillos
@@ -1085,6 +1204,8 @@ export function crearControlesModoHistorico({
       const refFov = estadoCam.fovReferenciaGrados;
       lecturaFpFov.textContent = estadoCam.fovTipo === 'instrumento_cuadrado'
         ? `FOV ISS ${refFov.toFixed(refFov < 1 ? 3 : 1).replace('.', ',')}° por lado · ${estadoCam.fovGrados.toFixed(3).replace('.', ',')}° vertical en pantalla`
+        : estadoCam.fovTipo === 'zoom_visual_vertical'
+          ? `Zoom visual 3D ${estadoCam.fovGrados.toFixed(3).replace('.', ',')}° vertical · no corresponde al campo ISS`
         : `FOV contextual ${refFov.toFixed(refFov < 2 ? 2 : 1).replace('.', ',')}° vertical`;
 
       const nombreObs = estadoCam.idSondaObservador === VOYAGER_1_ID ? 'Voyager 1 (-31)' : 'Voyager 2 (-32)';
@@ -1139,6 +1260,7 @@ export function crearControlesModoHistorico({
     },
     actualizarDesdeMotor,
     actualizarEstadoCamaraHistorica,
-    actualizarTelemetriaComparador
+    actualizarTelemetriaComparador,
+    actualizarFechaRecorridoComparador
   };
 }

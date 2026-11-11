@@ -495,6 +495,16 @@
 
         <!-- COMPARADOR A/B: A. FOTOGRAFÍA ORIGINAL NASA vs B. RECREACIÓN TRIDIMENSIONAL WEBGL -->
         <section class="photo-comparator-panel hud-secondary" id="photo-comparator-panel" aria-label="Comparador entre fotografía original NASA y recreación tridimensional" hidden>
+          <nav class="comparator-mobile-nav" aria-label="Vistas del comparador">
+            <button type="button" id="comp-view-photo" aria-pressed="true">A · Foto NASA</button>
+            <button type="button" id="comp-view-3d" aria-pressed="false">B · Escena 3D</button>
+            <button type="button" id="comp-minimize-btn" aria-label="Minimizar comparador" title="Minimizar comparador">−</button>
+            <button type="button" id="comp-mobile-close-btn" aria-label="Cerrar comparador" title="Cerrar comparador">×</button>
+          </nav>
+          <div class="comparator-minimized-time" id="comp-minimized-time" aria-live="polite"></div>
+          <label class="comparator-photo-picker">Fotografía histórica
+            <select id="comp-photo-select" aria-label="Elegir fotografía histórica"></select>
+          </label>
           <article class="comparator-card-a">
             <div class="comparator-header">
               <div>
@@ -510,21 +520,29 @@
             <dl class="comparator-meta">
               <div><dt>Misión e instrumento</dt><dd id="comp-photo-instrument">—</dd></div>
               <div><dt>Fecha documentada</dt><dd id="comp-photo-date">—</dd></div>
-              <div><dt>Fecha del recorrido</dt><dd id="comp-session-date">—</dd></div>
+              <div><dt>Fecha de la recreación 3D (consulta)</dt><dd id="comp-recreation-date">—</dd></div>
+              <div><dt>Recorrido guardado al abrir</dt><dd id="comp-session-date">—</dd></div>
               <div><dt>Procedencia oficial</dt><dd><a id="comp-photo-link" class="hist-source-link" href="https://science.nasa.gov/mission/voyager/" target="_blank" rel="noopener noreferrer">—</a></dd></div>
             </dl>
           </article>
 
           <aside class="comparator-banner-b">
-            <div class="comparator-b-top">
-              <span class="comparator-tag comparator-tag--webgl">B · RECREACIÓN TRIDIMENSIONAL WEBGL (NO ES FOTOGRAFÍA)</span>
-              <div class="comparator-fov-toggle" role="group" aria-label="Campo visual de la recreación 3D">
-                <button type="button" id="comp-fov-iss-btn" aria-pressed="true">FOV ISS-NAC (0,424°)</button>
-                <button type="button" id="comp-fov-ctx-btn" aria-pressed="false">FOV contextual</button>
+            <div class="comparator-scene-date" id="comp-recreation-date-b" role="status">Fecha de la escena 3D: consultando…</div>
+            <div class="comparator-assist-note" id="comp-assist-note" hidden>Iluminación de inspección activa · no reproduce la luz de la fotografía</div>
+            <details class="comparator-details" open>
+              <summary>B · Recreación WebGL · opciones de encuadre</summary>
+              <div class="comparator-b-top">
+                <span class="comparator-tag comparator-tag--webgl">B · RECREACIÓN TRIDIMENSIONAL WEBGL (NO ES FOTOGRAFÍA)</span>
+                <div class="comparator-fov-toggle" role="group" aria-label="Campo visual de la recreación 3D">
+                  <button type="button" id="comp-fov-iss-btn" aria-pressed="true">FOV ISS-NAC (0,424°)</button>
+                  <button type="button" id="comp-fov-ctx-btn" aria-pressed="false">FOV contextual</button>
+                  <button type="button" id="comp-fov-zoom-btn" aria-pressed="false" title="Ampliación visual de la escena 3D; no corresponde al campo instrumental">Zoom 3D</button>
+                </div>
+                <button type="button" id="comp-io-inspection-btn" class="comparator-inspection-btn" aria-pressed="false" hidden>Iluminación de inspección de Ío</button>
               </div>
-            </div>
-            <p id="comp-fidelity-note">—</p>
-            <small id="comp-geometry-telemetry">—</small>
+              <p id="comp-fidelity-note">—</p>
+              <small id="comp-geometry-telemetry">—</small>
+            </details>
           </aside>
         </section>
 

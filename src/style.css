@@ -2265,6 +2265,60 @@ details[open] > :not(summary) {
   z-index:6;
   pointer-events:none;
 }
+.comparator-mobile-nav {
+  position:absolute;
+  top:158px;
+  right:var(--edge);
+  display:flex;
+  gap:5px;
+  padding:4px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:rgba(10,12,16,.95);
+  pointer-events:auto;
+}
+.comparator-mobile-nav button {
+  min-height:28px;
+  padding:3px 9px;
+  border:1px solid var(--line);
+  color:#d9dce2;
+  font-size:10px;
+}
+.comparator-mobile-nav button[aria-pressed="true"] {
+  color:var(--accent);
+  border-color:#d3bd9180;
+  background:#d3bd911c;
+}
+.comparator-mobile-nav #comp-view-photo,
+.comparator-mobile-nav #comp-view-3d { display:none; }
+.comparator-photo-picker {
+  position:absolute;
+  top:160px;
+  left:var(--edge);
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:5px 8px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:rgba(10,12,16,.95);
+  color:var(--muted);
+  font-size:9px;
+  pointer-events:auto;
+}
+.comparator-photo-picker select {
+  max-width:280px;
+  min-height:26px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:#171a21;
+  color:#eceef1;
+  font-size:10px;
+}
+.photo-comparator-panel[data-view="minimizado"] .comparator-card-a,
+.photo-comparator-panel[data-view="minimizado"] .comparator-banner-b,
+.photo-comparator-panel[data-view="minimizado"] .comparator-photo-picker { display:none; }
+.comparator-details summary { display:none; }
 .comparator-card-a {
   position:absolute;
   top:212px;
@@ -2376,7 +2430,7 @@ details[open] > :not(summary) {
 }
 .comparator-fov-toggle {
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:5px;
 }
 .comparator-fov-toggle button {
@@ -2788,23 +2842,51 @@ details[open] > :not(summary) {
     padding:10px 12px;
   }
   .comparator-card-a {
-    top:178px;
+    top:250px;
     left:12px;
     right:12px;
     width:auto;
-    max-height:33dvh;
+    max-height:min(43dvh,calc(100dvh - 390px));
     padding:10px 12px;
   }
   .comparator-figure img {
-    max-height:115px;
+    max-height:min(230px,24dvh);
   }
   .comparator-banner-b {
-    top:auto;
-    bottom:146px;
+    top:250px;
+    bottom:auto;
     left:12px;
     right:12px;
     width:auto;
     padding:9px 11px;
+  }
+  .comparator-mobile-nav {
+    top:178px;
+    left:12px;
+    right:12px;
+    justify-content:stretch;
+  }
+  .comparator-mobile-nav #comp-view-photo,
+  .comparator-mobile-nav #comp-view-3d { display:block; flex:1; }
+  .comparator-photo-picker {
+    top:215px;
+    left:12px;
+    right:12px;
+    justify-content:space-between;
+  }
+  .comparator-photo-picker select { width:min(240px,65vw); }
+  .photo-comparator-panel[data-view="foto"] .comparator-banner-b,
+  .photo-comparator-panel[data-view="3d"] .comparator-card-a { display:none; }
+  .comparator-details summary {
+    display:list-item;
+    color:#c8cdd4;
+    cursor:pointer;
+    font-size:9px;
+  }
+  .comparator-details:not([open]) p,
+  .comparator-details:not([open]) small { display:none; }
+  .photo-comparator-panel[data-view="minimizado"] .comparator-mobile-nav {
+    top:178px;
   }
   .historical-timeline-panel {
     bottom:max(10px,env(safe-area-inset-bottom));

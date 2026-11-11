@@ -1,0 +1,23 @@
+{
+  "initial": {
+    "jdTdb": 2443376.104029894,
+    "label": "1977-08-20 · 14:29:00 UTC"
+  },
+  "open": {
+    "motorJd": 2443376.104029894,
+    "sceneJd": 2443941.0005808505,
+    "saved": "1977-08-20 · 14:29:00 UTC",
+    "scene": "1979-03-08 · 12:00:00 UTC",
+    "photo": "8 mar 1979 · hora de captura no publicada · Objetivo: Ío"
+  },
+  "closed": {
+    "motorJd": 2443376.104029894,
+    "snapshotJd": 2443376.104029894,
+    "clock": "1977-08-20 · 14:29:00 UTC"
+  },
+  "navigation": {
+    "motorJd": 2443378.1040298925,
+    "snapshotJd": 2443378.1040298925,
+    "clock": "1977-08-22 · 14:29:00 UTC"
+  }
+}

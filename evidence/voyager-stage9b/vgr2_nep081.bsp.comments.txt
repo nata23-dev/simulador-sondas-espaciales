@@ -1,0 +1,44 @@
+; vgr2-nep081.bsp LOG FILE
+;
+; Created 2009-06-24/09:46:33.00.
+;
+; BEGIN NIOSPK COMMANDS
+
+SPK_FILE            = vgr2-nep081.bsp
+  INCLUDE_TEXT_FILE = readme.nep081.txt
+  SOURCE_NIO_FILE   = vgr2.nep081.nio
+    BEGIN_TIME      = CAL-ET 1988 NOV 13 00:00:00.000
+    END_TIME        = CAL-ET 1989 OCT 01 12:00:00.000
+
+; END NIOSPK COMMANDS
+
+                      Spacecraft Ephemeris File Release
+
+Spacecraft Ephemeris: NEP081
+
+Location: ssd.jpl.nasa.gov/pub/eph/spacecraft/vgr2.nep081.nio
+
+Timespan from JED  2447478.50(13-NOV-1988) to JED  2447801.00(01-OCT-1989)
+Equinox Reference Julian Date: 2451545.00
+Planetary Ephemeris Number: DE-0421/LE-0421
+
+Release to: Horizons/NAIF                      Time: 08-Apr-2009 10:00:00
+Preparer: R. A. Jacobson
+
+Comments:
+Smoothed Voyager 2 trajectory for the Neptune encounter consistent with the
+NEP081 planetary ephemeris and the NEP081 satellite ephemeris.  This file
+was created from a fit to the Voyager Doppler, range, VLBI, and satellite
+occultation data.  The planetary ephemeris was fit to the Earthbased astrometric
+data, the planet occultations, and the Voyager data. The satellite ephemerides
+were fit to the Earthbased astrometric data and the Voyager data.  This
+solution is an update to the NEP076 solution to be consistent with the NEP081
+satellite ephemeris and dynamical constants.
+
+References:
+1. R. A. Jacobson, Reconstruction of the Voyager~2 Neptune Encounter in the
+   ICRF System, AIAA Paper 2008 7372 presented at the AIAA/AAS Astrodynamics
+   Specialist Conference, Honolulu, HI, August 2008; American Institute of
+   Aeronautics and Astronautics, Reston, VA (NEP076)
+2. R. A. Jacobson, The orbits of the Neptunian satellites and the orientation
+   of the pole of Neptune, AJ, 137, 4322-4329, 2009 (NEP081)

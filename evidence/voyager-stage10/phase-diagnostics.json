@@ -1,0 +1,32 @@
+[
+  {
+    "name": "inner-mercury-phase-1920x1080",
+    "jdTdb": null,
+    "distanceAU": 0.4447730567546499,
+    "irradianceWm2": 6879.8850717355235,
+    "phaseAngleDeg": 40.70697645222382,
+    "illuminatedDiskFraction": 0.879027464865952,
+    "exposure": 0.49762266847248915,
+    "approximation": "Geometric disk phase from camera, body center and Sun center; no light-time or atmosphere."
+  },
+  {
+    "name": "inner-mercury-phase-1366x768",
+    "jdTdb": null,
+    "distanceAU": 0.44477305675464973,
+    "irradianceWm2": 6879.885071735528,
+    "phaseAngleDeg": 40.70697645239145,
+    "illuminatedDiskFraction": 0.8790274648649978,
+    "exposure": 0.29991489043490427,
+    "approximation": "Geometric disk phase from camera, body center and Sun center; no light-time or atmosphere."
+  },
+  {
+    "name": "inner-mercury-phase-390x844",
+    "jdTdb": null,
+    "distanceAU": 0.4447730567546495,
+    "irradianceWm2": 6879.885071735535,
+    "phaseAngleDeg": 40.70697645217142,
+    "illuminatedDiskFraction": 0.8790274648662502,
+    "exposure": 0.29328189060035914,
+    "approximation": "Geometric disk phase from camera, body center and Sun center; no light-time or atmosphere."
+  }
+]

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { crearPlaneta } from './PlanetFactory.js';
-import { crearLunasPlanetarias } from './MoonVisuals.js';
+import { crearLunasPlanetarias, establecerInspeccionVisualIo } from './MoonVisuals.js';
 import { crearControladorCamara } from './CameraController.js';
 import { crearSol } from './Sun.js';
 import { crearProteccionTransitosSolares } from './SolarTransitGuard.js';
@@ -296,6 +296,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     [VOYAGER_1_ID, sondaVoyager1],
     [VOYAGER_2_ID, sondaVoyager2]
   ]);
+  const sondasEnEmpalme = new Set();
 
   const satelitesEncuentro = crearSatelitesEncuentroVisual();
   scene.add(satelitesEncuentro.grupo);
@@ -635,12 +636,21 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       }
 
       if (datoSonda.visual?.posicionEscena) {
-        const posAnterior = sHist.posicion.visible ? sHist.posicion.position.clone() : null;
+        const posAnterior = sHist.posicion.visible || sondasEnEmpalme.has(idMision)
+          ? sHist.posicion.position.clone() : null;
+        sondasEnEmpalme.delete(idMision);
         sHist.mostrarTrayectoria(trayectoriasHistoricasVisibles);
         sHist.actualizarEstadoEscena(datoSonda.visual.posicionEscena, jdTdb, posicionTierra);
         controladorCamara.alActualizarPosicionSondaHistorica(idMision, posAnterior);
       } else {
-        // Pre-lanzamiento o introducción visual de ascenso terrestre (sin inventar sonda en el espacio)
+        // Un observador en primera persona requiere una posición certificada.
+        if (datoSonda.status === 'spk_segment_transition' && sHist.posicion.visible) {
+          sondasEnEmpalme.add(idMision);
+        }
+        const camara = controladorCamara.obtenerEstadoCamaraHistorica();
+        if (camara.idSondaObservador === idMision && camara.modo !== 'exterior') {
+          controladorCamara.salirDePrimeraPersonaHaciaExterior();
+        }
         sHist.mostrarSonda(false);
       }
     }
@@ -696,6 +706,25 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   }
 
   let tiempoAnterior = performance.now();
+  const centroFotometricoProyectado = new THREE.Vector3();
+
+  function planetaVisibleCercaDeSonda() {
+    let elegido = null;
+    let menorRelacion = 35;
+    for (const objeto of objetos.values()) {
+      const radio = objeto.planeta.radio * objeto.posicion.scale.x;
+      if (!(radio > 0)) continue;
+      const relacion = camera.position.distanceTo(objeto.posicion.position) / radio;
+      if (relacion >= menorRelacion) continue;
+      centroFotometricoProyectado.copy(objeto.posicion.position).project(camera);
+      if (centroFotometricoProyectado.z < -1 || centroFotometricoProyectado.z > 1
+        || Math.abs(centroFotometricoProyectado.x) > 1.25
+        || Math.abs(centroFotometricoProyectado.y) > 1.25) continue;
+      elegido = objeto;
+      menorRelacion = relacion;
+    }
+    return elegido;
+  }
 
   function actualizarExposicion(segundos) {
     const estadoCamHist = controladorCamara.obtenerEstadoCamaraHistorica();
@@ -704,9 +733,15 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       : controladorCamara.nombreSeleccionado();
     const sateliteLocal = satelitesEncuentro.satelites.get(nombreObjetivo);
     const lunaGlobal = lunasPlanetarias.moons.get(nombreObjetivo);
-    const objeto = objetos.get(nombreObjetivo)
+    const objetoSeleccionado = objetos.get(nombreObjetivo)
       ?? (sateliteLocal?.posicion.visible ? sateliteLocal : null)
       ?? (lunaGlobal?.posicion.visible ? lunaGlobal : null);
+    // En la vista exterior histórica la cámara sigue a la Voyager y puede
+    // encuadrar un planeta sin que exista un nombre de objetivo seleccionado.
+    // La ganancia fotográfica debe seguir al cuerpo realmente visible.
+    const exteriorHistorico = estadoCamHist.modo === 'exterior'
+      && Boolean(estadoCamHist.idSondaExterior);
+    const objeto = objetoSeleccionado ?? (exteriorHistorico ? planetaVisibleCercaDeSonda() : null);
     let objetivo = 1.05;
     if (objeto) {
       const radioEfectivo = Math.max(objeto.planeta
@@ -718,7 +753,12 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       const cercano = THREE.MathUtils.clamp((umbralRel - relacion) / Math.max(umbralRel * 0.65, 1), 0, 1);
       const adaptacion = cercano * cercano * (3 - 2 * cercano);
       const distanciaAU = distanciaHeliocentricaAU(objeto.posicion.position);
-      objetivo *= 1 + adaptacion * (exposicionFotografica(distanciaAU) - 1);
+      // El modelo de la sonda comparte exposición con el planeta. Limitar
+      // esta ayuda exterior evita quemar el modelo y la textura planetaria.
+      const ganancia = exteriorHistorico && !objetoSeleccionado
+        ? Math.min(12, exposicionFotografica(distanciaAU))
+        : exposicionFotografica(distanciaAU);
+      objetivo *= 1 + adaptacion * (ganancia - 1);
     }
     renderer.toneMappingExposure = THREE.MathUtils.damp(
       renderer.toneMappingExposure, objetivo, 2.5, segundos
@@ -846,6 +886,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     encuadrarSalidaTierra1977: controladorCamara.encuadrarSalidaTierra1977,
     activarPrimeraPersona: controladorCamara.activarPrimeraPersona,
     activarRecreacionFotografica: controladorCamara.activarRecreacionFotografica,
+    establecerInspeccionVisualIo,
     obtenerFovContextualParaObjetivo: controladorCamara.obtenerFovContextualParaObjetivo,
     restaurarEstadoCamaraHistorica: controladorCamara.restaurarEstadoCamaraHistorica,
     salirDePrimeraPersona: controladorCamara.salirDePrimeraPersonaHaciaExterior,

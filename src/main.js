@@ -36,6 +36,7 @@ import {
   scientificPipelineEnabled
 } from './integration/ScientificVisualPipeline.js';
 import { createHistoricalVisualPipeline } from './integration/HistoricalVisualPipeline.js';
+import { createHistoricalComparatorSession } from './integration/HistoricalComparatorSession.js';
 import { createHistoricalMissionEngine } from './science/HistoricalMissionEngine.js';
 import {
   HISTORICAL_MISSIONS_CATALOG,
@@ -574,7 +575,11 @@ function actualizarEncabezadoHistorico(snapshot) {
       : cameraGeometry.objetivoSinContextoLocal
         ? 'Vista global: sin vector nave–objetivo validado para esta fecha'
         : 'Catálogo histórico global (1977–2026)';
-    estadoDatos.textContent = `NASA/JPL Horizons · ${contextNote} · ${snapshot.timeLabels.shortLabelTdb}`;
+    const sinPosicion = [VOYAGER_1_ID, VOYAGER_2_ID].filter(id =>
+      (vis === 'both' || vis === id) && snapshot.probes[id]?.status === 'spk_segment_transition');
+    estadoDatos.textContent = sinPosicion.length
+      ? `${sinPosicion.map(id => HISTORICAL_MISSIONS_CATALOG[id].name).join(' y ')} · Sin posición verificada durante este minuto. La trayectoria se interrumpe y continúa después.`
+      : `NASA/JPL Horizons · ${contextNote} · ${snapshot.timeLabels.shortLabelTdb}`;
   }
 }
 
@@ -691,11 +696,30 @@ function bucleReproduccionHistorica(ahora) {
   instanteRealHistAnterior = ahora;
 
   if (!bucleHistOcupado) {
+    const instanteAnterior = motorHistorico.getJdTdb();
     const paso = motorHistorico.step(deltaReal);
     if (paso.changed || paso.triggeredEvent) {
+      const visibilidad = motorHistorico.getVisibilityMode();
+      const empalmeAtravesado = [VOYAGER_1_ID, VOYAGER_2_ID]
+        .filter(id => visibilidad === 'both' || visibilidad === id)
+        .map(id => HISTORICAL_MISSIONS_CATALOG[id].spkSegmentSplice)
+        .sort((a, b) => motorHistorico.getDirection() > 0
+          ? a.beforeJdTdb - b.beforeJdTdb
+          : b.afterJdTdb - a.afterJdTdb)
+        .find(splice => splice && (
+          (instanteAnterior <= splice.beforeJdTdb && paso.jdTdb > splice.beforeJdTdb)
+          || (instanteAnterior >= splice.afterJdTdb && paso.jdTdb < splice.afterJdTdb)
+        ));
+      const instanteVisible = empalmeAtravesado
+        ? (empalmeAtravesado.beforeJdTdb + empalmeAtravesado.afterJdTdb) / 2
+        : paso.jdTdb;
+      if (empalmeAtravesado) {
+        motorHistorico.setTimeJdTdb(instanteVisible);
+        motorHistorico.setPlaying(false);
+      }
       bucleHistOcupado = true;
-      aplicarInstanteHistorico(paso.jdTdb, {
-        reencuadrarEvento: !motorHistorico.isPlaying() && paso.triggeredEvent ? paso.triggeredEvent : null
+      aplicarInstanteHistorico(instanteVisible, {
+        reencuadrarEvento: !empalmeAtravesado && !motorHistorico.isPlaying() && paso.triggeredEvent ? paso.triggeredEvent : null
       }).catch(err => {
         console.error(err);
         estadoDatos.textContent = `Error en reproducción histórica: ${err.message}`;
@@ -1418,19 +1442,34 @@ const controlesHistoricos = crearControlesModoHistorico({
   alActivarComparadorFoto: (photo, { usarFovContexto }) => {
     if (!motorHistorico || !photo || !ultimoSnapshotHistorico) return;
     if (!estadoPrevioComparador) {
-      estadoPrevioComparador = {
-        motor: obtenerEstadoMotorHistoricoPlano(),
+      const previo = createHistoricalComparatorSession({
+        engineState: obtenerEstadoMotorHistoricoPlano(),
         snapshot: ultimoSnapshotHistorico,
-        camara: simulador.obtenerEstadoCamaraHistorica(),
-        evento: eventoSeleccionadoHistorico
-      };
+        querySnapshot: jdTdb => pipelineHistorico.queryVisualHistoricalSnapshot(jdTdb)
+      });
+      previo.camara = simulador.obtenerEstadoCamaraHistorica();
+      previo.evento = eventoSeleccionadoHistorico;
+      estadoPrevioComparador = previo;
+      if (previo.snapshotPromise) {
+        // El salto de evento puede actualizar el motor antes de terminar su consulta.
+        // Nunca guardar como estado restaurable un snapshot de otra fecha.
+        previo.snapshotPromise.then(snapshot => {
+            if (estadoPrevioComparador === previo && comparadorAbierto) {
+              controlesHistoricos.actualizarFechaRecorridoComparador(snapshot.timeLabels.labelUtc);
+              document.querySelector('#hist-clock-utc').textContent = snapshot.timeLabels.labelUtc;
+              document.querySelector('#hist-clock-tdb').textContent = `${snapshot.timeLabels.shortLabelTdb} · Recorrido en pausa`;
+            }
+          }).catch(error => console.error('No se pudo sincronizar el recorrido', error));
+      }
     }
     comparadorAbierto = true;
     comparadorUsaContextoActual = usarFovContexto;
     detenerBucleHistorico();
     ++consultaHistToken;
     const token = ++consultaComparadorToken;
-    document.querySelector('#comp-session-date').textContent = estadoPrevioComparador.snapshot.timeLabels.labelUtc;
+    if (estadoPrevioComparador.snapshot) {
+      controlesHistoricos.actualizarFechaRecorridoComparador(estadoPrevioComparador.snapshot.timeLabels.labelUtc);
+    }
     pipelineHistorico.queryVisualHistoricalSnapshot(photo.jdTdb).then(snapshot => {
       if (token !== consultaComparadorToken || !comparadorAbierto || modoOperacion !== 'historico') return;
       snapshotComparador = snapshot;
@@ -1453,31 +1492,46 @@ const controlesHistoricos = crearControlesModoHistorico({
       }
     });
   },
-  alCambiarFovComparador: (photo, { usarFovContexto }) => {
+  alCambiarFovComparador: (photo, { usarFovContexto = false, zoomVisual = false }) => {
     comparadorUsaContextoActual = usarFovContexto;
     if (!photo || !snapshotComparador) return;
     simulador.activarRecreacionFotografica(photo, { usarFovContexto });
+    // Magnificación óptica de visualización, separada del campo ISS documentado.
+    // Mantiene observador, fecha y objetivo; sólo estrecha el viewport vertical.
+    if (zoomVisual) simulador.establecerFovPrimeraPersona(0.35, { visualZoom: true });
     controlesHistoricos.actualizarTelemetriaComparador(snapshotComparador);
   },
-  alCerrarComparadorFoto: ({ reanudar = true } = {}) => {
+  alCambiarInspeccionVisualIo: activa => simulador.establecerInspeccionVisualIo(activa),
+  alCerrarComparadorFoto: async ({ reanudar = true } = {}) => {
+    simulador.establecerInspeccionVisualIo(false);
     comparadorAbierto = false;
-    ++consultaComparadorToken;
+    const token = ++consultaComparadorToken;
     const previo = estadoPrevioComparador;
     estadoPrevioComparador = null;
     snapshotComparador = null;
     if (!previo || !motorHistorico || modoOperacion !== 'historico') return;
+    let snapshotRecorrido = previo.snapshot;
+    if (!snapshotRecorrido) {
+      try { snapshotRecorrido = await previo.snapshotPromise; }
+      catch (error) {
+        console.error('No se pudo recuperar la fecha del recorrido', error);
+        return;
+      }
+    }
+    if (token !== consultaComparadorToken || comparadorAbierto
+      || modoOperacion !== 'historico' || motorHistorico.getJdTdb() !== previo.motor.jdTdb) return;
     motorHistorico.setTimeJdTdb(previo.motor.jdTdb);
     motorHistorico.setVisibilityMode(previo.motor.visibilityMode);
     motorHistorico.setSelectedProbeId(previo.motor.selectedProbeId);
     motorHistorico.setDirection(previo.motor.direction);
-    ultimoSnapshotHistorico = previo.snapshot;
+    ultimoSnapshotHistorico = snapshotRecorrido;
     eventoSeleccionadoHistorico = previo.evento;
-    simulador.actualizarPosiciones(previo.snapshot.planets, { reencuadrarVista: false });
+    simulador.actualizarPosiciones(snapshotRecorrido.planets, { reencuadrarVista: false });
     simulador.actualizarEscenaHistorica({
-      probesVisual: previo.snapshot.probes,
-      moonsVisual: previo.snapshot.moons,
-      localFrames: previo.snapshot.localFrames,
-      jdTdb: previo.snapshot.jdTdb,
+      probesVisual: snapshotRecorrido.probes,
+      moonsVisual: snapshotRecorrido.moons,
+      localFrames: snapshotRecorrido.localFrames,
+      jdTdb: snapshotRecorrido.jdTdb,
       visibilityMode: previo.motor.visibilityMode
     });
     simulador.restaurarEstadoCamaraHistorica(
@@ -1485,10 +1539,10 @@ const controlesHistoricos = crearControlesModoHistorico({
       previo.camara.fotoRecreacionId ? getVoyagerPhotoById(previo.camara.fotoRecreacionId) : null
     );
     controlesHistoricos.actualizarDesdeMotor({
-      snapshot: previo.snapshot,
+      snapshot: snapshotRecorrido,
       engineState: obtenerEstadoMotorHistoricoPlano()
     });
-    actualizarEncabezadoHistorico(previo.snapshot);
+    actualizarEncabezadoHistorico(snapshotRecorrido);
     actualizarOrientacionHistorica();
     if (reanudar && previo.motor.playing) iniciarReproduccionHistorica();
   }
@@ -1701,6 +1755,8 @@ simulador.alCambiarCamaraHistorica(estadoCam => {
       }
       if (elFov) elFov.textContent = estadoCam.fovTipo === 'instrumento_cuadrado'
         ? `FOV ISS: ${estadoCam.fovReferenciaGrados.toFixed(estadoCam.fovReferenciaGrados < 1 ? 3 : 1).replace('.', ',')}° por lado`
+        : estadoCam.fovTipo === 'zoom_visual_vertical'
+          ? `Zoom 3D ${estadoCam.fovGrados.toFixed(3).replace('.', ',')}° vertical · no ISS`
         : `FOV: ${estadoCam.fovReferenciaGrados.toFixed(estadoCam.fovReferenciaGrados < 2 ? 2 : 1).replace('.', ',')}° vertical`;
     }
   }

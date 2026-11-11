@@ -17,10 +17,10 @@ export function cargarTextura(nombre, onLoad, { color = true } = {}) {
   );
 }
 
-export function aplicarMapaColor(material, nombre) {
+export function aplicarMapaColor(material, nombre, tinte = 0xffffff) {
   cargarTextura(nombre, texture => {
     material.map = texture;
-    material.color.set(0xffffff);
+    material.color.set(tinte);
     material.needsUpdate = true;
   });
 }

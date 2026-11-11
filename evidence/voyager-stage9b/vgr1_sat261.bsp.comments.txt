@@ -1,0 +1,39 @@
+; pfile.sat261.bsp LOG FILE
+;
+; Created 2007-01-26/08:39:22.00.
+;
+; BEGIN NIOSPK COMMANDS
+
+SPK_FILE            = pfile.sat261.bsp
+  INCLUDE_TEXT_FILE = readme.pfile.txt
+  SOURCE_NIO_FILE   = pfile.sat261.nio
+    BEGIN_TIME      = CAL-ET 1980 AUG 07 00:00:00.000
+    END_TIME        = CAL-ET 1980 NOV 20 00:00:00.000
+
+; END NIOSPK COMMANDS
+
+Smoothed Voyager 1 trajectory for the Saturn encounter consistent with the
+SAT261 ephemerides and gravity field.  This is the file used in the processing
+of the Voyager 1 radiometric and optical data for the SAT261 global solution.
+
+
+
+The Voyager 1 Saturn reconstructed spacecraft trajectory file:
+
+  vg1.jup.sat261.bsp
+
+was produced by R. Jacobson of the  JPL Solar System Dynamics Group
+as part of his work in improving the ephemerides of Saturn's
+natural satellites. It was made using Voyager spacecraft observations
+during the Saturn flyby, and also using Cassini observations of
+Saturn's satellites.
+
+NAIF has no "accuracy" information about the SPICE SPK file made
+from the source file identified above.  R. Jacobson says new Voyager 1
+trajectory solutions are still being frequently produced, based on new
+Cassini data, but that the changes between solutions are much smaller
+than the solution uncertainties.  Jacbson has no plans for making any
+kind of significantly different (better) solution.
+
+Charles Acton/NAIF
+2007 Jan 26

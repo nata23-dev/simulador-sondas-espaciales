@@ -6,6 +6,11 @@ import { MOON_TEXTURES } from './MoonTextureCatalog.js';
 import { crearPenachoIo } from './IoVolcanism.js';
 
 const surfaceMaterials = new Map();
+// Ayuda opcional de lectura del mosaico de Ío; 0 conserva exactamente la luz solar.
+const ioInspection = { value: 0 };
+export function establecerInspeccionVisualIo(activa) {
+  ioInspection.value = activa ? 1 : 0;
+}
 export function crearMaterialSuperficie(key) {
   if (surfaceMaterials.has(key)) return surfaceMaterials.get(key);
   const map = MOON_TEXTURES[key];
@@ -27,6 +32,7 @@ export function crearMaterialSuperficie(key) {
   };
   material.customProgramCacheKey = () => `moon-surface-${key}-${hasReconstruction()}`;
   material.onBeforeCompile = shader => {
+    if (key === 'Io') shader.uniforms.ioInspection = ioInspection;
     shader.vertexShader = `varying vec3 vMoonWorldPos; varying vec3 vMoonWorldNormal;\n${shader.vertexShader}`
       .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\n vMoonWorldPos=(modelMatrix*vec4(transformed,1.0)).xyz; vMoonWorldNormal=normalize(mat3(modelMatrix)*normal);');
     shader.fragmentShader = `varying vec3 vMoonWorldPos; varying vec3 vMoonWorldNormal;\n${shader.fragmentShader}`;
@@ -44,11 +50,13 @@ export function crearMaterialSuperficie(key) {
           diffuseColor *= mix(illustrativeColor, documentedColor, observed);
         #endif`);
     }
+    if (key === 'Io') shader.fragmentShader = `uniform float ioInspection;\n${shader.fragmentShader}`;
     shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>',
       `#include <color_fragment>
        float solarDistanceAU = max(length(vMoonWorldPos) / 32.0, 0.1);
        float incidence = max(dot(normalize(vMoonWorldNormal), normalize(-vMoonWorldPos)), 0.0);
-       diffuseColor.rgb *= incidence / (solarDistanceAU * solarDistanceAU);
+       float solarLight = incidence / (solarDistanceAU * solarDistanceAU);
+       diffuseColor.rgb *= ${key === 'Io' ? 'mix(solarLight, 0.24 + 0.08 * incidence, ioInspection)' : 'solarLight'};
        ${key === 'Titan' ? 'diffuseColor.rgb *= 0.94 + 0.06 * smoothstep(-0.7, 0.7, -vMoonWorldNormal.y);' : ''}`);
   };
   if (key !== 'Titan') cargarTextura(`moons/${map.file}`, texture => {

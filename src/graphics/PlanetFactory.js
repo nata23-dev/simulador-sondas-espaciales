@@ -173,7 +173,11 @@ export function crearPlaneta(planeta) {
   const superficie = new THREE.Mesh(sphereGeometry, material);
   superficie.scale.setScalar(planeta.radio);
   eje.add(superficie);
-  aplicarMapaColor(material, aspecto.textura);
+  // The Mercury map is display-normalized and otherwise becomes nearly white
+  // under the stronger sunlight at 0.4 AU. Retain a subdued gray tint after
+  // texture loading; this is a visual albedo cue, not calibrated photometry.
+  aplicarMapaColor(material, aspecto.textura,
+    planeta.nombre === 'Mercurio' ? 0xaaaaaa : 0xffffff);
 
   if (planeta.nombre === 'Tierra') {
     cargarTextura('earth_normal_map.png', texture => {

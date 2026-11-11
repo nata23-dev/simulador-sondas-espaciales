@@ -1,0 +1,1348 @@
+{
+  "browser": "Google Chrome",
+  "chromePath": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "results": [
+    {
+      "viewport": "1920x1080",
+      "mission": "voyager-1",
+      "label": "antes",
+      "jdTdb": 2444605.499652771,
+      "utc": "1980-12-31 · 23:58:38 UTC",
+      "tdb": "1980-12-31 · 23:59:29 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": -1448269295.7279785,
+          "y": -125477968.48841955,
+          "z": 108940424.3367429,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": -6.099998428842186,
+          "y": -16.658067768834368,
+          "z": 12.070321653034808,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": -309.7946330816012,
+        "y": 23.30309624370725,
+        "z": 26.840589193155047
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.7898121689469,
+          23.305862166184003,
+          26.84671134151937
+        ],
+        "target": [
+          -309.7946330816012,
+          23.30309624370725,
+          26.84058919315505
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1980-12-31 · 23:59 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1980-12-31 · 00:00:00 TDB] → [1981-01-01 · 00:00:00 TDB] · Conjunto: hist-cruise-v1-1977-1981 (cadencia 1 d) · Solución: Voyager_1_ST+refit2022_m",
+      "distanceSunKm": "1,457,771,138 km",
+      "speedKmS": "21.457 km/s",
+      "clockUtc": "1980-12-31 · 23:58:38 UTC",
+      "clockTdb": "1980-12-31 · 23:59 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 1920,
+      "viewportWidth": 1920,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "top": 0,
+        "right": 1920,
+        "bottom": 1080,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1920x1080",
+      "mission": "voyager-1",
+      "label": "sin-datos",
+      "jdTdb": 2444605.500347219,
+      "utc": "1980-12-31 · 23:59:38 UTC",
+      "tdb": "1981-01-01 · 00:00:30 TDB",
+      "status": "spk_segment_transition",
+      "state": null,
+      "visualPosition": null,
+      "reason": "Transición documentada en JPL Horizons (Voyager_1_ST+refit2022_m) entre el tramo #1 de diseño cónico (1977–1981) y el tramo #2 reconstruido por R. Jacobson en 2022 con DE440 (1981–2100). No se interpola a través de esta unión.",
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.7898121689469,
+          23.305862166184003,
+          26.84671134151937
+        ],
+        "target": [
+          -309.7946330816012,
+          23.30309624370725,
+          26.84058919315505
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "Voyager 1 · Sin posición verificada durante este minuto. La trayectoria se interrumpe y continúa después.",
+      "badge": "SIN POSICIÓN VERIFICADA · TRAYECTORIA INTERRUMPIDA",
+      "sampleInfo": "La trayectoria se interrumpe durante este minuto y continúa cuando regresan los datos verificados.",
+      "distanceSunKm": "Sin posición verificada",
+      "speedKmS": "—",
+      "clockUtc": "1980-12-31 · 23:59:38 UTC",
+      "clockTdb": "1981-01-01 · 00:00 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 1920,
+      "viewportWidth": 1920,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "top": 0,
+        "right": 1920,
+        "bottom": 1080,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1920x1080",
+      "mission": "voyager-1",
+      "label": "despues",
+      "jdTdb": 2444605.501041667,
+      "utc": "1981-01-01 · 00:00:38 UTC",
+      "tdb": "1981-01-01 · 00:01:30 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": -1448283005.8425052,
+          "y": -125420443.1710858,
+          "z": 108965037.84372418,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": -6.1028831420371885,
+          "y": -16.644496945128466,
+          "z": 12.075728630024793,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": -309.7975657681615,
+        "y": 23.30836123992488,
+        "z": 26.828284137300535
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.79274485550724,
+          23.311127162401633,
+          26.83440628566486
+        ],
+        "target": [
+          -309.7975657681615,
+          23.30836123992488,
+          26.82828413730054
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1981-01-01 · 00:01 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1981-01-01 · 00:01:00 TDB] → [1981-01-01 · 00:02:00 TDB] · Conjunto: hist-bridge-v1-1981-min (cadencia 1 min) · Solución: Voyager_1_ST+refit2022_m",
+      "distanceSunKm": "1,457,781,648 km",
+      "speedKmS": "21.450 km/s",
+      "clockUtc": "1981-01-01 · 00:00:38 UTC",
+      "clockTdb": "1981-01-01 · 00:01 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 1920,
+      "viewportWidth": 1920,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "top": 0,
+        "right": 1920,
+        "bottom": 1080,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1920x1080",
+      "mission": "voyager-2",
+      "label": "antes",
+      "jdTdb": 2447767.8329861127,
+      "utc": "1989-08-29 · 07:58:33 UTC",
+      "tdb": "1989-08-29 · 07:59:30 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": 899331561.5278999,
+          "y": -4433293663.801546,
+          "z": 66211102.465609595,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": 4.62211854824136,
+          "y": -10.88762351256717,
+          "z": -11.896069855998094,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": 192.37312559484712,
+        "y": 14.163004252569936,
+        "z": 948.3116074970277
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.3785956241855,
+          14.165993217369078,
+          948.306174533285
+        ],
+        "target": [
+          192.37312559484718,
+          14.163004252569976,
+          948.3116074970277
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cinematografica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1989-08-29 · 07:59 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1989-08-29 · 07:45:00 TDB] → [1989-08-29 · 08:00:00 TDB] · Conjunto: hist-flyby-v2-neptune-1989 (cadencia 15 min) · Solución: Voyager_2_ST+refit2022_m",
+      "distanceSunKm": "4,524,077,130 km",
+      "speedKmS": "16.776 km/s",
+      "clockUtc": "1989-08-29 · 07:58:33 UTC",
+      "clockTdb": "1989-08-29 · 07:59 TDB · Pausado",
+      "speed": "6h_s",
+      "scrollWidth": 1920,
+      "viewportWidth": 1920,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "top": 0,
+        "right": 1920,
+        "bottom": 1080,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1920x1080",
+      "mission": "voyager-2",
+      "label": "sin-datos",
+      "jdTdb": 2447767.8336805603,
+      "utc": "1989-08-29 · 07:59:33 UTC",
+      "tdb": "1989-08-29 · 08:00:30 TDB",
+      "status": "spk_segment_transition",
+      "state": null,
+      "visualPosition": null,
+      "reason": "Transición documentada en JPL Horizons (Voyager_2_ST+refit2022_m) entre el tramo #1 planetario (1977–1989) y el tramo #2 reconstruido por R. Jacobson en 2022 con DE440 (1989–2100). No se interpola a través de esta unión.",
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.3785956241855,
+          14.165993217369078,
+          948.306174533285
+        ],
+        "target": [
+          192.37312559484718,
+          14.163004252569976,
+          948.3116074970277
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cinematografica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "Voyager 2 · Sin posición verificada durante este minuto. La trayectoria se interrumpe y continúa después.",
+      "badge": "SIN POSICIÓN VERIFICADA · TRAYECTORIA INTERRUMPIDA",
+      "sampleInfo": "La trayectoria se interrumpe durante este minuto y continúa cuando regresan los datos verificados.",
+      "distanceSunKm": "Sin posición verificada",
+      "speedKmS": "—",
+      "clockUtc": "1989-08-29 · 07:59:33 UTC",
+      "clockTdb": "1989-08-29 · 08:00 TDB · Pausado",
+      "speed": "6h_s",
+      "scrollWidth": 1920,
+      "viewportWidth": 1920,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "top": 0,
+        "right": 1920,
+        "bottom": 1080,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1920x1080",
+      "mission": "voyager-2",
+      "label": "despues",
+      "jdTdb": 2447767.8343750085,
+      "utc": "1989-08-29 · 08:00:33 UTC",
+      "tdb": "1989-08-29 · 08:01:30 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": 899322717.6054398,
+          "y": -4433304450.517736,
+          "z": 66210256.370680235,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": 4.62187262972669,
+          "y": -10.886206276855393,
+          "z": -11.895200542031581,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": 192.37123381980112,
+        "y": 14.162823267121327,
+        "z": 948.3139148488401
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.37670384913943,
+          14.16581223192047,
+          948.3084818850974
+        ],
+        "target": [
+          192.37123381980112,
+          14.162823267121368,
+          948.3139148488401
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cinematografica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1989-08-29 · 08:01 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1989-08-29 · 08:01:00 TDB] → [1989-08-29 · 08:02:00 TDB] · Conjunto: hist-bridge-v2-1989-min (cadencia 1 min) · Solución: Voyager_2_ST+refit2022_m",
+      "distanceSunKm": "4,524,085,930 km",
+      "speedKmS": "16.774 km/s",
+      "clockUtc": "1989-08-29 · 08:00:33 UTC",
+      "clockTdb": "1989-08-29 · 08:01 TDB · Pausado",
+      "speed": "6h_s",
+      "scrollWidth": 1920,
+      "viewportWidth": 1920,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "top": 0,
+        "right": 1920,
+        "bottom": 1080,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1366x768",
+      "mission": "voyager-1",
+      "label": "antes",
+      "jdTdb": 2444605.499652771,
+      "utc": "1980-12-31 · 23:58:38 UTC",
+      "tdb": "1980-12-31 · 23:59:29 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": -1448269295.7279785,
+          "y": -125477968.48841955,
+          "z": 108940424.3367429,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": -6.099998428842186,
+          "y": -16.658067768834368,
+          "z": 12.070321653034808,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": -309.7946330816012,
+        "y": 23.30309624370725,
+        "z": 26.840589193155047
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.7898121689469,
+          23.305862166184003,
+          26.84671134151937
+        ],
+        "target": [
+          -309.7946330816012,
+          23.30309624370725,
+          26.84058919315505
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1980-12-31 · 23:59 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1980-12-31 · 00:00:00 TDB] → [1981-01-01 · 00:00:00 TDB] · Conjunto: hist-cruise-v1-1977-1981 (cadencia 1 d) · Solución: Voyager_1_ST+refit2022_m",
+      "distanceSunKm": "1,457,771,138 km",
+      "speedKmS": "21.457 km/s",
+      "clockUtc": "1980-12-31 · 23:58:38 UTC",
+      "clockTdb": "1980-12-31 · 23:59 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 1366,
+      "viewportWidth": 1366,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "top": 0,
+        "right": 1366,
+        "bottom": 768,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1366x768",
+      "mission": "voyager-1",
+      "label": "sin-datos",
+      "jdTdb": 2444605.500347219,
+      "utc": "1980-12-31 · 23:59:38 UTC",
+      "tdb": "1981-01-01 · 00:00:30 TDB",
+      "status": "spk_segment_transition",
+      "state": null,
+      "visualPosition": null,
+      "reason": "Transición documentada en JPL Horizons (Voyager_1_ST+refit2022_m) entre el tramo #1 de diseño cónico (1977–1981) y el tramo #2 reconstruido por R. Jacobson en 2022 con DE440 (1981–2100). No se interpola a través de esta unión.",
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.7898121689469,
+          23.305862166184003,
+          26.84671134151937
+        ],
+        "target": [
+          -309.7946330816012,
+          23.30309624370725,
+          26.84058919315505
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "Voyager 1 · Sin posición verificada durante este minuto. La trayectoria se interrumpe y continúa después.",
+      "badge": "SIN POSICIÓN VERIFICADA · TRAYECTORIA INTERRUMPIDA",
+      "sampleInfo": "La trayectoria se interrumpe durante este minuto y continúa cuando regresan los datos verificados.",
+      "distanceSunKm": "Sin posición verificada",
+      "speedKmS": "—",
+      "clockUtc": "1980-12-31 · 23:59:38 UTC",
+      "clockTdb": "1981-01-01 · 00:00 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 1366,
+      "viewportWidth": 1366,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "top": 0,
+        "right": 1366,
+        "bottom": 768,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1366x768",
+      "mission": "voyager-1",
+      "label": "despues",
+      "jdTdb": 2444605.501041667,
+      "utc": "1981-01-01 · 00:00:38 UTC",
+      "tdb": "1981-01-01 · 00:01:30 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": -1448283005.8425052,
+          "y": -125420443.1710858,
+          "z": 108965037.84372418,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": -6.1028831420371885,
+          "y": -16.644496945128466,
+          "z": 12.075728630024793,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": -309.7975657681615,
+        "y": 23.30836123992488,
+        "z": 26.828284137300535
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.79274485550724,
+          23.311127162401633,
+          26.83440628566486
+        ],
+        "target": [
+          -309.7975657681615,
+          23.30836123992488,
+          26.82828413730054
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1981-01-01 · 00:01 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1981-01-01 · 00:01:00 TDB] → [1981-01-01 · 00:02:00 TDB] · Conjunto: hist-bridge-v1-1981-min (cadencia 1 min) · Solución: Voyager_1_ST+refit2022_m",
+      "distanceSunKm": "1,457,781,648 km",
+      "speedKmS": "21.450 km/s",
+      "clockUtc": "1981-01-01 · 00:00:38 UTC",
+      "clockTdb": "1981-01-01 · 00:01 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 1366,
+      "viewportWidth": 1366,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "top": 0,
+        "right": 1366,
+        "bottom": 768,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1366x768",
+      "mission": "voyager-2",
+      "label": "antes",
+      "jdTdb": 2447767.8329861127,
+      "utc": "1989-08-29 · 07:58:33 UTC",
+      "tdb": "1989-08-29 · 07:59:30 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": 899331561.5278999,
+          "y": -4433293663.801546,
+          "z": 66211102.465609595,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": 4.62211854824136,
+          "y": -10.88762351256717,
+          "z": -11.896069855998094,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": 192.37312559484712,
+        "y": 14.163004252569936,
+        "z": 948.3116074970277
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.3785956241855,
+          14.165993217369078,
+          948.306174533285
+        ],
+        "target": [
+          192.37312559484718,
+          14.163004252569976,
+          948.3116074970277
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1989-08-29 · 07:59 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1989-08-29 · 07:45:00 TDB] → [1989-08-29 · 08:00:00 TDB] · Conjunto: hist-flyby-v2-neptune-1989 (cadencia 15 min) · Solución: Voyager_2_ST+refit2022_m",
+      "distanceSunKm": "4,524,077,130 km",
+      "speedKmS": "16.776 km/s",
+      "clockUtc": "1989-08-29 · 07:58:33 UTC",
+      "clockTdb": "1989-08-29 · 07:59 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 1366,
+      "viewportWidth": 1366,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "top": 0,
+        "right": 1366,
+        "bottom": 768,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1366x768",
+      "mission": "voyager-2",
+      "label": "sin-datos",
+      "jdTdb": 2447767.8336805603,
+      "utc": "1989-08-29 · 07:59:33 UTC",
+      "tdb": "1989-08-29 · 08:00:30 TDB",
+      "status": "spk_segment_transition",
+      "state": null,
+      "visualPosition": null,
+      "reason": "Transición documentada en JPL Horizons (Voyager_2_ST+refit2022_m) entre el tramo #1 planetario (1977–1989) y el tramo #2 reconstruido por R. Jacobson en 2022 con DE440 (1989–2100). No se interpola a través de esta unión.",
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.3785956241855,
+          14.165993217369078,
+          948.306174533285
+        ],
+        "target": [
+          192.37312559484718,
+          14.163004252569976,
+          948.3116074970277
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "Voyager 2 · Sin posición verificada durante este minuto. La trayectoria se interrumpe y continúa después.",
+      "badge": "SIN POSICIÓN VERIFICADA · TRAYECTORIA INTERRUMPIDA",
+      "sampleInfo": "La trayectoria se interrumpe durante este minuto y continúa cuando regresan los datos verificados.",
+      "distanceSunKm": "Sin posición verificada",
+      "speedKmS": "—",
+      "clockUtc": "1989-08-29 · 07:59:33 UTC",
+      "clockTdb": "1989-08-29 · 08:00 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 1366,
+      "viewportWidth": 1366,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "top": 0,
+        "right": 1366,
+        "bottom": 768,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "1366x768",
+      "mission": "voyager-2",
+      "label": "despues",
+      "jdTdb": 2447767.8343750085,
+      "utc": "1989-08-29 · 08:00:33 UTC",
+      "tdb": "1989-08-29 · 08:01:30 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": 899322717.6054398,
+          "y": -4433304450.517736,
+          "z": 66210256.370680235,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": 4.62187262972669,
+          "y": -10.886206276855393,
+          "z": -11.895200542031581,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": 192.37123381980112,
+        "y": 14.162823267121327,
+        "z": 948.3139148488401
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.37670384913943,
+          14.16581223192047,
+          948.3084818850974
+        ],
+        "target": [
+          192.37123381980112,
+          14.162823267121368,
+          948.3139148488401
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1989-08-29 · 08:01 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1989-08-29 · 08:01:00 TDB] → [1989-08-29 · 08:02:00 TDB] · Conjunto: hist-bridge-v2-1989-min (cadencia 1 min) · Solución: Voyager_2_ST+refit2022_m",
+      "distanceSunKm": "4,524,085,930 km",
+      "speedKmS": "16.774 km/s",
+      "clockUtc": "1989-08-29 · 08:00:33 UTC",
+      "clockTdb": "1989-08-29 · 08:01 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 1366,
+      "viewportWidth": 1366,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "top": 0,
+        "right": 1366,
+        "bottom": 768,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "390x844",
+      "mission": "voyager-1",
+      "label": "antes",
+      "jdTdb": 2444605.499652771,
+      "utc": "1980-12-31 · 23:58:38 UTC",
+      "tdb": "1980-12-31 · 23:59:29 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": -1448269295.7279785,
+          "y": -125477968.48841955,
+          "z": 108940424.3367429,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": -6.099998428842186,
+          "y": -16.658067768834368,
+          "z": 12.070321653034808,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": -309.7946330816012,
+        "y": 23.30309624370725,
+        "z": 26.840589193155047
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.7898121689469,
+          23.305862166184,
+          26.84671134151938
+        ],
+        "target": [
+          -309.7946330816012,
+          23.30309624370725,
+          26.840589193155047
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1980-12-31 · 23:59 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1980-12-31 · 00:00:00 TDB] → [1981-01-01 · 00:00:00 TDB] · Conjunto: hist-cruise-v1-1977-1981 (cadencia 1 d) · Solución: Voyager_1_ST+refit2022_m",
+      "distanceSunKm": "1,457,771,138 km",
+      "speedKmS": "21.457 km/s",
+      "clockUtc": "1980-12-31 · 23:58:38 UTC",
+      "clockTdb": "1980-12-31 · 23:59 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 390,
+      "viewportWidth": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "390x844",
+      "mission": "voyager-1",
+      "label": "sin-datos",
+      "jdTdb": 2444605.500347219,
+      "utc": "1980-12-31 · 23:59:38 UTC",
+      "tdb": "1981-01-01 · 00:00:30 TDB",
+      "status": "spk_segment_transition",
+      "state": null,
+      "visualPosition": null,
+      "reason": "Transición documentada en JPL Horizons (Voyager_1_ST+refit2022_m) entre el tramo #1 de diseño cónico (1977–1981) y el tramo #2 reconstruido por R. Jacobson en 2022 con DE440 (1981–2100). No se interpola a través de esta unión.",
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.7898121689469,
+          23.305862166184,
+          26.84671134151938
+        ],
+        "target": [
+          -309.7946330816012,
+          23.30309624370725,
+          26.840589193155047
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "Voyager 1 · Sin posición verificada durante este minuto. La trayectoria se interrumpe y continúa después.",
+      "badge": "SIN POSICIÓN VERIFICADA · TRAYECTORIA INTERRUMPIDA",
+      "sampleInfo": "La trayectoria se interrumpe durante este minuto y continúa cuando regresan los datos verificados.",
+      "distanceSunKm": "Sin posición verificada",
+      "speedKmS": "—",
+      "clockUtc": "1980-12-31 · 23:59:38 UTC",
+      "clockTdb": "1981-01-01 · 00:00 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 390,
+      "viewportWidth": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "390x844",
+      "mission": "voyager-1",
+      "label": "despues",
+      "jdTdb": 2444605.501041667,
+      "utc": "1981-01-01 · 00:00:38 UTC",
+      "tdb": "1981-01-01 · 00:01:30 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": -1448283005.8425052,
+          "y": -125420443.1710858,
+          "z": 108965037.84372418,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": -6.1028831420371885,
+          "y": -16.644496945128466,
+          "z": 12.075728630024793,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": -309.7975657681615,
+        "y": 23.30836123992488,
+        "z": 26.828284137300535
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.79274485550724,
+          23.31112716240163,
+          26.83440628566487
+        ],
+        "target": [
+          -309.7975657681615,
+          23.30836123992488,
+          26.828284137300535
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1981-01-01 · 00:01 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1981-01-01 · 00:01:00 TDB] → [1981-01-01 · 00:02:00 TDB] · Conjunto: hist-bridge-v1-1981-min (cadencia 1 min) · Solución: Voyager_1_ST+refit2022_m",
+      "distanceSunKm": "1,457,781,648 km",
+      "speedKmS": "21.450 km/s",
+      "clockUtc": "1981-01-01 · 00:00:38 UTC",
+      "clockTdb": "1981-01-01 · 00:01 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 390,
+      "viewportWidth": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "390x844",
+      "mission": "voyager-2",
+      "label": "antes",
+      "jdTdb": 2447767.8329861127,
+      "utc": "1989-08-29 · 07:58:33 UTC",
+      "tdb": "1989-08-29 · 07:59:30 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": 899331561.5278999,
+          "y": -4433293663.801546,
+          "z": 66211102.465609595,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": 4.62211854824136,
+          "y": -10.88762351256717,
+          "z": -11.896069855998094,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": 192.37312559484712,
+        "y": 14.163004252569936,
+        "z": 948.3116074970277
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.3785956241855,
+          14.165993217369078,
+          948.306174533285
+        ],
+        "target": [
+          192.37312559484718,
+          14.163004252569976,
+          948.3116074970277
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1989-08-29 · 07:59 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1989-08-29 · 07:45:00 TDB] → [1989-08-29 · 08:00:00 TDB] · Conjunto: hist-flyby-v2-neptune-1989 (cadencia 15 min) · Solución: Voyager_2_ST+refit2022_m",
+      "distanceSunKm": "4,524,077,130 km",
+      "speedKmS": "16.776 km/s",
+      "clockUtc": "1989-08-29 · 07:58:33 UTC",
+      "clockTdb": "1989-08-29 · 07:59 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 390,
+      "viewportWidth": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "390x844",
+      "mission": "voyager-2",
+      "label": "sin-datos",
+      "jdTdb": 2447767.8336805603,
+      "utc": "1989-08-29 · 07:59:33 UTC",
+      "tdb": "1989-08-29 · 08:00:30 TDB",
+      "status": "spk_segment_transition",
+      "state": null,
+      "visualPosition": null,
+      "reason": "Transición documentada en JPL Horizons (Voyager_2_ST+refit2022_m) entre el tramo #1 planetario (1977–1989) y el tramo #2 reconstruido por R. Jacobson en 2022 con DE440 (1989–2100). No se interpola a través de esta unión.",
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.3785956241855,
+          14.165993217369078,
+          948.306174533285
+        ],
+        "target": [
+          192.37312559484718,
+          14.163004252569976,
+          948.3116074970277
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "Voyager 2 · Sin posición verificada durante este minuto. La trayectoria se interrumpe y continúa después.",
+      "badge": "SIN POSICIÓN VERIFICADA · TRAYECTORIA INTERRUMPIDA",
+      "sampleInfo": "La trayectoria se interrumpe durante este minuto y continúa cuando regresan los datos verificados.",
+      "distanceSunKm": "Sin posición verificada",
+      "speedKmS": "—",
+      "clockUtc": "1989-08-29 · 07:59:33 UTC",
+      "clockTdb": "1989-08-29 · 08:00 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 390,
+      "viewportWidth": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    {
+      "viewport": "390x844",
+      "mission": "voyager-2",
+      "label": "despues",
+      "jdTdb": 2447767.8343750085,
+      "utc": "1989-08-29 · 08:00:33 UTC",
+      "tdb": "1989-08-29 · 08:01:30 TDB",
+      "status": "interpolated",
+      "state": {
+        "position": {
+          "x": 899322717.6054398,
+          "y": -4433304450.517736,
+          "z": 66210256.370680235,
+          "unit": "km"
+        },
+        "velocity": {
+          "x": 4.62187262972669,
+          "y": -10.886206276855393,
+          "z": -11.895200542031581,
+          "unit": "km/s"
+        }
+      },
+      "visualPosition": {
+        "x": 192.37123381980112,
+        "y": 14.162823267121327,
+        "z": 948.3139148488401
+      },
+      "camera": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.37670384913943,
+          14.16581223192047,
+          948.3084818850974
+        ],
+        "target": [
+          192.37123381980112,
+          14.162823267121368,
+          948.3139148488401
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "modelLoaded": true,
+      "dataStatus": "NASA/JPL Horizons · Catálogo histórico global (1977–2026) · 1989-08-29 · 08:01 TDB",
+      "badge": "INTERPOLACIÓN HERMITE C¹ · HORIZONS",
+      "sampleInfo": "Extremos Hermite: [1989-08-29 · 08:01:00 TDB] → [1989-08-29 · 08:02:00 TDB] · Conjunto: hist-bridge-v2-1989-min (cadencia 1 min) · Solución: Voyager_2_ST+refit2022_m",
+      "distanceSunKm": "4,524,085,930 km",
+      "speedKmS": "16.774 km/s",
+      "clockUtc": "1989-08-29 · 08:00:33 UTC",
+      "clockTdb": "1989-08-29 · 08:01 TDB · Pausado",
+      "speed": "1d_s",
+      "scrollWidth": 390,
+      "viewportWidth": 390,
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "viewport": "1920x1080",
+      "mission": "voyager-1",
+      "kind": "first-person-gap",
+      "before": {
+        "mode": "first_person",
+        "observer": "voyager-1",
+        "position": [
+          -309.7946330816012,
+          23.30309624370725,
+          26.840589193155047
+        ],
+        "target": [
+          -211.83022453718837,
+          15.792040233431614,
+          8.22450216730903
+        ],
+        "transition": false,
+        "fov": 45,
+        "viewMode": "cientifica",
+        "exteriorPressed": "false",
+        "firstPersonPressed": "true"
+      },
+      "gap": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.7888580816012,
+          23.306771243707253,
+          26.847414193155046
+        ],
+        "target": [
+          -309.7946330816012,
+          23.30309624370725,
+          26.840589193155047
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "after": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.7917907681615,
+          23.312036239924883,
+          26.835109137300535
+        ],
+        "target": [
+          -309.7975657681615,
+          23.30836123992488,
+          26.828284137300535
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      }
+    },
+    {
+      "viewport": "1920x1080",
+      "mission": "voyager-1",
+      "kind": "playback",
+      "forwardPause": {
+        "jdTdb": 2444605.500347222,
+        "status": "spk_segment_transition"
+      },
+      "forwardResume": {
+        "jdTdb": 2444605.510659722,
+        "status": "interpolated"
+      },
+      "reversePause": {
+        "jdTdb": 2444605.500347222,
+        "status": "spk_segment_transition"
+      },
+      "cinematic": {
+        "mode": "exterior",
+        "observer": "voyager-1",
+        "position": [
+          -309.7919082590948,
+          23.312268718448163,
+          26.835429572469156
+        ],
+        "target": [
+          -309.7976832590948,
+          23.30859371844816,
+          26.828604572469157
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cinematografica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "dateBefore": 2444605.45892574,
+      "dateAfter": 2444605.5422590734,
+      "manualTimeline": 2451610.8118781815
+    },
+    {
+      "viewport": "1920x1080",
+      "mission": "voyager-2",
+      "kind": "first-person-gap",
+      "before": {
+        "mode": "first_person",
+        "observer": "voyager-2",
+        "position": [
+          192.37312559484712,
+          14.163004252569936,
+          948.3116074970277
+        ],
+        "target": [
+          175.222575755776,
+          12.67119363566831,
+          849.8045867254053
+        ],
+        "transition": false,
+        "fov": 45,
+        "viewMode": "cinematografica",
+        "exteriorPressed": "false",
+        "firstPersonPressed": "true"
+      },
+      "gap": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.3789005948471,
+          14.166679252569933,
+          948.3184324970276
+        ],
+        "target": [
+          192.3731255948471,
+          14.163004252569934,
+          948.3116074970276
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cinematografica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "after": {
+        "mode": "exterior",
+        "observer": "voyager-2",
+        "position": [
+          192.3770088198011,
+          14.166498267121325,
+          948.32073984884
+        ],
+        "target": [
+          192.3712338198011,
+          14.162823267121325,
+          948.31391484884
+        ],
+        "transition": false,
+        "fov": 48,
+        "viewMode": "cinematografica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      }
+    },
+    {
+      "viewport": "1920x1080",
+      "mission": "voyager-2",
+      "kind": "playback",
+      "forwardPause": {
+        "jdTdb": 2447767.833680555,
+        "status": "spk_segment_transition"
+      },
+      "forwardResume": {
+        "jdTdb": 2447767.8470138884,
+        "status": "interpolated"
+      },
+      "reversePause": {
+        "jdTdb": 2447767.833680555,
+        "status": "spk_segment_transition"
+      },
+      "cinematic": {
+        "mode": "exterior",
+        "observer": null,
+        "position": [
+          166.72866493930266,
+          34.19712497251276,
+          958.9205529197621
+        ],
+        "target": [
+          200.22320382657242,
+          -12.915109036898492,
+          872.0246129434638
+        ],
+        "transition": true,
+        "fov": 48,
+        "viewMode": "cientifica",
+        "exteriorPressed": "true",
+        "firstPersonPressed": "false"
+      },
+      "dateBefore": 2447767.792316929,
+      "dateAfter": 2447767.8756502625,
+      "manualTimeline": 2451610.8118781815
+    },
+    {
+      "viewport": "1920x1080",
+      "kind": "main-modes",
+      "modes": [
+        "exploracion",
+        "experimental",
+        "historico"
+      ]
+    }
+  ],
+  "errors": []
+}

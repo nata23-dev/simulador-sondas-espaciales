@@ -60,6 +60,9 @@
 #app .comparator-card-a { position:absolute; inset:0 auto 0 0; width:36%; max-height:100%; overflow:auto; padding:18px; pointer-events:auto; background:#101215f5; }
 #app .comparator-figure img { max-height:32dvh; object-fit:contain; width:100%; }
 #app .comparator-banner-b { position:absolute; inset:auto 0 0 auto; width:58%; max-height:35%; overflow:auto; pointer-events:auto; padding:14px; background:#101215ed; }
+#app .comparator-mobile-nav { top:0; z-index:2; }
+#app .comparator-photo-picker { top:2px; z-index:2; }
+#app .comparator-card-a { top:58px; bottom:0; }
 #app .comparator-fov-toggle button { min-height:44px; }
 #app #comp-close-btn { min-width:40px; min-height:40px; }
 #app .comparator-tag { font-size:9px; letter-spacing:.08em; }
@@ -155,6 +158,19 @@
 }
 #app #context-inspector :is(.info-panel,.mission-panel,.voyager-science-panel,.hist-side-card,.historical-topbar,.historical-launch-card) { max-width:none; }
 #app:has(#photo-comparator-panel:not([hidden])) #workspace-dock { display:none; }
+/* La escena del comparador usa su propia fecha; el recorrido queda guardado.
+   Minimizar recupera los controles temporales sin cerrar la comparación. */
+#app:has(#photo-comparator-panel:not([hidden]):not([data-view="minimizado"])) #historical-timeline-panel {
+  visibility:hidden;
+  pointer-events:none;
+}
+#app .comparator-scene-date,
+#app .comparator-assist-note { font-size:10px; line-height:1.35; color:#e0c991; }
+#app .comparator-assist-note { color:#d2d6dd; }
+#app .comparator-inspection-btn { min-height:32px; padding:5px 10px; border:1px solid #d3bd9160; border-radius:7px; color:#e0c991; background:#d3bd9115; font-size:10px; }
+#app .comparator-inspection-btn[aria-pressed="true"] { background:#d3bd9138; }
+#app .comparator-minimized-time { display:none; position:absolute; top:42px; right:0; max-width:min(380px,100%); padding:6px 9px; border:1px solid #d3bd9155; border-radius:8px; background:#101215ed; color:#e0c991; font-size:10px; line-height:1.35; pointer-events:none; }
+#app .photo-comparator-panel[data-view="minimizado"] .comparator-minimized-time { display:block; }
 
 /* ==========================================================================
    ETAPA: EXPERIENCIA INTUITIVA, SELECTOR VISIBLE, LANZAMIENTO 3D Y RECORRIDO
@@ -1120,12 +1136,23 @@
   #app #fp-scene-indicator .fp-exit-btn { min-height:44px; padding:5px 7px; font-size:10px; }
 }
 @media(max-width:600px) {
-  #app .photo-comparator-panel { inset:165px 8px 140px; }
-  #app .comparator-card-a { inset:0 0 auto 0; width:100%; height:52%; max-height:none; padding:12px; }
-  #app .comparator-figure img { max-height:135px; }
-  #app .comparator-banner-b { inset:auto 0 0 0; width:100%; height:40%; max-height:none; padding:12px; }
+  #app .photo-comparator-panel { inset:165px 8px 8px; }
+  #app .comparator-minimized-time { left:0; right:0; max-width:none; }
+  #app .comparator-mobile-nav { inset:0 0 auto 0; z-index:3; }
+  #app .comparator-photo-picker { inset:44px 0 auto 0; z-index:3; }
+  #app .comparator-card-a { inset:84px 0 0 0; width:100%; height:auto; max-height:none; padding:12px; }
+  #app .comparator-figure img { max-height:min(230px,24dvh); }
+  #app .comparator-banner-b { inset:auto 0 0 0; width:100%; height:auto; max-height:55%; padding:8px 10px; }
   #app .comparator-meta dd, #app .comparator-figure figcaption, #app .comparator-banner-b p { font-size:11px; line-height:1.4; }
   #app .comparator-banner-b small { font-size:10px; line-height:1.4; }
+}
+@media(max-width:600px) and (max-height:650px) {
+  #app .comparator-banner-b { bottom:30px; }
+  #app.workspace-ready #hist-start-tour-btn.tour-scene-entry { bottom:180px; }
+}
+@media(max-width:370px) {
+  #app.workspace-ready .brand h1 { max-width:108px; white-space:normal; line-height:1.08; font-size:9px; }
+  #app.workspace-ready .brand { gap:4px; }
 }
 
 /* Etapa 03.1: reutilizar el acceso al recorrido cuando el panel móvil está cerrado. */

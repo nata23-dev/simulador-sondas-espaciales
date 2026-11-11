@@ -1,0 +1,100 @@
+; vgr1_saturn.bsp LOG FILE
+;
+; Created 2003-02-06/09:40:12.00.
+;
+; BEGIN NIOSPK COMMANDS
+
+LEAPSECONDS_FILE    = /kernels/gen/lsk/naif0007.tls
+SPK_FILE            = vgr1_saturn.bsp
+  INCLUDE_TEXT_FILE = vgr1_saturn.txt
+  SOURCE_NIO_FILE   = vgr1_saturn.nio
+    BEGIN_TIME      = CAL-ET 1980 AUG 07 00:00:00.000
+    END_TIME        = CAL-ET 1980 NOV 20 00:00:00.000
+
+; END NIOSPK COMMANDS
+
+Smoothed Voyager 1 trajectory for the Saturn encounter from the SAT132 Voyager
+reconstruction
+
+Reference: Jacobson, R. A. (2003) `Reconstruction of the Voyager Saturn
+           Encounter Orbits in the ICRF System', Paper AAS-03-198,
+           13th AAS/AIAA Space Flight Mechanics Meeting, Ponce, Puerto Rico
+
+
+
+
+
+
+
+Time span and contents of this file are as follows:
+
+
+Summary for: vgr1_saturn.bsp
+
+Body: VOYAGER 1 (-31)
+      Start of Interval (ET)              End of Interval (ET)
+      -----------------------             -----------------------
+      1980 AUG 07 00:00:00.000            1980 NOV 20 00:00:00.000
+
+
+
+This "final" reconstructed trajectory for the Voyager 1 spacecraft
+at Saturn replaces the file "vg1_sat" produced by NAIF in August of
+1980 using a set of near-real time OD solutions produced by the
+Voyager NAV Team for use in SEDR production and other engineering
+activities.
+
+NAIF's "CMPSPK" (Compare SPK) program was run onthese two files to
+produce a statistical comparison. This produces a lengthy report,
+but the summary of this comparison is as follows:
+
+                           SUMMARY OF TEST REPORT
+
+
+ TEST OF SPK FILE: vg1_sat.bsp
+ AGAINST SPK FILE: vgr1_saturn.bsp
+
+
+ For each body in the first SPK file, this summary lists statistics
+ generated for the test case that had the largest relative difference
+ in the position vectors read from this SPK file and the second SPK file.
+
+ The statistics listed below are:
+
+   1) NAIF body identification code.
+
+   2) The relative difference between the position vectors.
+
+   3) The magnitude of the position difference vector.
+
+   4) The absolute value of the component of the position difference
+      vector in the down track direction. (See the main report
+      for a description of the view frame coordinate system.)
+
+   5) The absolute value of the component of the position difference
+      vector normal to the orbit plane.
+
+   6) The absolute value of the component of the position difference
+      vector in the orbit plane and perpendicular to the velocity.
+
+   7) The down track component of the position divided by the speed.
+
+
+
+(1)          (2)         (3)         (4)         (5)         (6)         (7)
+           RELATIVE    ABSOLUTE         VIEW FRAME COORDINATES
+           DIFF  IN    DIFF  IN     DOWN        OUT OF       IN         DELTA
+BODY       POSITION    POSITION     TRACK       PLANE       PLANE       TIME
+                         (KM)       (KM)        (KM)        (KM)        (SEC)
+----       --------    --------    --------    --------    --------    --------
+
+-31        2.11E-05    4.05E+00    3.49E+00    1.69E+00    1.17E+00    1.40E-01
+
+
+
+
+
+
+An update to even this file is certainly possible, but if it occurs
+it would likely be quite small.  You may contact the NAIF Team at JPL
+if interested in any such updates.

@@ -848,9 +848,12 @@ export function crearControladorCamara({
     return true;
   }
 
-  function establecerFovPrimeraPersona(grados,{automatico=false}={}) {
+  function establecerFovPrimeraPersona(grados,{automatico=false,visualZoom=false}={}) {
     if (!enPrimeraPersonaORecreacion() || !Number.isFinite(grados)) return camera.fov;
     establecerFovInterno(grados);
+    if (visualZoom && modoCamaraHistorica === MODOS_CAMARA_HISTORICA.RECREACION_FOTOGRAFICA) {
+      fovTipo = 'zoom_visual_vertical';
+    }
     fovContextualAutomatico = automatico && modoCamaraHistorica === MODOS_CAMARA_HISTORICA.PRIMERA_PERSONA
       && fovTipo === 'contextual_vertical';
     notificarCamaraHistorica();

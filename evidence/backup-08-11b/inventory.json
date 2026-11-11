@@ -1,0 +1,2037 @@
+{
+  "baseCommit": "53063a8bc6e7ef793a4b5f81a5c4b03571ec769d",
+  "newCount": 368,
+  "modifiedCount": 13,
+  "deleted": [],
+  "newBytes": 93874531,
+  "modifiedBytes": 575117,
+  "projectBytes": 322154719,
+  "categoriesNew": {
+    "documentacion": 7,
+    "evidencia": 330,
+    "kernels_alternativos": 11,
+    "scripts": 18,
+    "codigo": 1,
+    "pruebas": 1
+  },
+  "top20New": [
+    {
+      "path": "evidence/voyager-stage9b/Kernels/de421.bsp",
+      "bytes": 16790528,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr2_st.bsp",
+      "bytes": 9020416,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr1_st.bsp",
+      "bytes": 8885248,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/voyager_2.ST+1992_m05208u.merged.bsp",
+      "bytes": 5330944,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/voyager_1.ST+1991_a54418u.merged.bsp",
+      "bytes": 5268480,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vg1_sat.bsp",
+      "bytes": 2329600,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vg2_nep.bsp",
+      "bytes": 2001920,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr2_nep081.bsp",
+      "bytes": 850944,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage10/source/Jupiter - Io (B).jpg",
+      "bytes": 648170,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/inner-earth-1920x1080.png",
+      "bytes": 581272,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/inner-earth-1920x1080.png",
+      "bytes": 580526,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-earth-1920x1080.png",
+      "bytes": 579115,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/spice-alternative-comparison.json",
+      "bytes": 548491,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/voyager1-io-1920x1080.png",
+      "bytes": 521489,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-io-1920x1080.png",
+      "bytes": 515524,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/inner-mercury-phase-1920x1080.png",
+      "bytes": 503145,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-mercury-phase-1920x1080.png",
+      "bytes": 501470,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager1-io-1920x1080.png",
+      "bytes": 492415,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr1_saturn.bsp",
+      "bytes": 486400,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/inner-mercury-phase-1920x1080.png",
+      "bytes": 485149,
+      "category": "evidencia"
+    }
+  ],
+  "sizeThresholds": {
+    "over50MiB": [],
+    "over100MiB": []
+  },
+  "sensitiveFindings": [],
+  "newFiles": [
+    {
+      "path": "MIGRACION_OTRA_LAPTOP.md",
+      "bytes": 3772,
+      "category": "documentacion"
+    },
+    {
+      "path": "docs/VOYAGER_STAGE08_VISUAL_CLOSEOUT.md",
+      "bytes": 9827,
+      "category": "documentacion"
+    },
+    {
+      "path": "docs/VOYAGER_STAGE09B_ALTERNATIVE_KERNELS.md",
+      "bytes": 24839,
+      "category": "documentacion"
+    },
+    {
+      "path": "docs/VOYAGER_STAGE09_SPK_ROOT_CAUSE.md",
+      "bytes": 16194,
+      "category": "documentacion"
+    },
+    {
+      "path": "docs/VOYAGER_STAGE10_VISUAL_PHOTOMETRY.md",
+      "bytes": 15425,
+      "category": "documentacion"
+    },
+    {
+      "path": "docs/VOYAGER_STAGE11B_FINAL_REFINEMENT.md",
+      "bytes": 10987,
+      "category": "documentacion"
+    },
+    {
+      "path": "docs/VOYAGER_STAGE11_VISUAL_UX_REFINEMENT.md",
+      "bytes": 16712,
+      "category": "documentacion"
+    },
+    {
+      "path": "evidence/backup-08-11b/alternative-kernels.log",
+      "bytes": 858,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/backup-08-11b/audit-rerun.json",
+      "bytes": 152026,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/backup-08-11b/build.log",
+      "bytes": 773,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/backup-08-11b/inventory.json",
+      "bytes": 56607,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/backup-08-11b/scientific-audit.log",
+      "bytes": 325,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/backup-08-11b/tests.log",
+      "bytes": 12085,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after-results.json",
+      "bytes": 61853,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/inner-earth-1366x768.png",
+      "bytes": 333856,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/inner-earth-1920x1080.png",
+      "bytes": 580526,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/inner-earth-390x844.png",
+      "bytes": 105356,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/inner-mercury-phase-1366x768.png",
+      "bytes": 280414,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/inner-mercury-phase-1920x1080.png",
+      "bytes": 503145,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/inner-mercury-phase-390x844.png",
+      "bytes": 95908,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/outer-neptune-1366x768.png",
+      "bytes": 151035,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/outer-neptune-1920x1080.png",
+      "bytes": 231519,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/outer-neptune-390x844.png",
+      "bytes": 62400,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/outer-saturn-1366x768.png",
+      "bytes": 243731,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/outer-saturn-1920x1080.png",
+      "bytes": 388989,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/outer-saturn-390x844.png",
+      "bytes": 65570,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/solar-overview-1366x768.png",
+      "bytes": 98981,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/solar-overview-1920x1080.png",
+      "bytes": 133006,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/solar-overview-390x844.png",
+      "bytes": 38733,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/voyager1-io-1366x768.png",
+      "bytes": 272586,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/voyager1-io-1920x1080.png",
+      "bytes": 521489,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/voyager1-io-390x844.png",
+      "bytes": 120530,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/voyager1-titan-1366x768.png",
+      "bytes": 118349,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/voyager1-titan-1920x1080.png",
+      "bytes": 170041,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/voyager1-titan-390x844.png",
+      "bytes": 65737,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/voyager2-neptune-1366x768.png",
+      "bytes": 171004,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/voyager2-neptune-1920x1080.png",
+      "bytes": 292663,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/after/voyager2-neptune-390x844.png",
+      "bytes": 79620,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before-results.json",
+      "bytes": 61582,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/inner-earth-1366x768.png",
+      "bytes": 336739,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/inner-earth-1920x1080.png",
+      "bytes": 581272,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/inner-earth-390x844.png",
+      "bytes": 106110,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/inner-mercury-phase-1366x768.png",
+      "bytes": 281330,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/inner-mercury-phase-1920x1080.png",
+      "bytes": 485149,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/inner-mercury-phase-390x844.png",
+      "bytes": 98818,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/outer-neptune-1366x768.png",
+      "bytes": 141614,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/outer-neptune-1920x1080.png",
+      "bytes": 215220,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/outer-neptune-390x844.png",
+      "bytes": 61010,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/outer-saturn-1366x768.png",
+      "bytes": 235749,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/outer-saturn-1920x1080.png",
+      "bytes": 382023,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/outer-saturn-390x844.png",
+      "bytes": 65231,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/solar-overview-1366x768.png",
+      "bytes": 98981,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/solar-overview-1920x1080.png",
+      "bytes": 133006,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/solar-overview-390x844.png",
+      "bytes": 38733,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager1-io-1366x768.png",
+      "bytes": 269921,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager1-io-1920x1080.png",
+      "bytes": 492415,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager1-io-390x844.png",
+      "bytes": 117240,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager1-titan-1366x768.png",
+      "bytes": 117474,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager1-titan-1920x1080.png",
+      "bytes": 168177,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager1-titan-390x844.png",
+      "bytes": 65515,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager2-neptune-1366x768.png",
+      "bytes": 172174,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager2-neptune-1920x1080.png",
+      "bytes": 294161,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager2-neptune-390x844.png",
+      "bytes": 47165,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/before/voyager2-neptune-stabilized-1920x1080.png",
+      "bytes": 208940,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/build.txt",
+      "bytes": 2262,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/comparator/results.json",
+      "bytes": 648,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/comparator/voyager1-io-comparator-1920x1080.png",
+      "bytes": 166947,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/comparator/voyager1-io-comparator-390x844.png",
+      "bytes": 79181,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression-log.txt",
+      "bytes": 3382,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/browser-results.json",
+      "bytes": 41233,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-antes-1366x768.png",
+      "bytes": 174609,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-antes-1920x1080.png",
+      "bytes": 231512,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-antes-390x844.png",
+      "bytes": 95981,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-despues-1366x768.png",
+      "bytes": 170848,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-despues-1920x1080.png",
+      "bytes": 262150,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-despues-390x844.png",
+      "bytes": 94321,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-primera-persona-antes-1920x1080.png",
+      "bytes": 101212,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-primera-persona-corte-1920x1080.png",
+      "bytes": 140879,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-reproduccion-pausa-1920x1080.png",
+      "bytes": 140246,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-sin-datos-1366x768.png",
+      "bytes": 124927,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-sin-datos-1920x1080.png",
+      "bytes": 163234,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v1-sin-datos-390x844.png",
+      "bytes": 60348,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-antes-1366x768.png",
+      "bytes": 179470,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-antes-1920x1080.png",
+      "bytes": 274366,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-antes-390x844.png",
+      "bytes": 93419,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-despues-1366x768.png",
+      "bytes": 177639,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-despues-1920x1080.png",
+      "bytes": 270916,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-despues-390x844.png",
+      "bytes": 93229,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-primera-persona-antes-1920x1080.png",
+      "bytes": 117758,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-primera-persona-corte-1920x1080.png",
+      "bytes": 144362,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-reproduccion-pausa-1920x1080.png",
+      "bytes": 143724,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-sin-datos-1366x768.png",
+      "bytes": 132851,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-sin-datos-1920x1080.png",
+      "bytes": 175321,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/gap-regression/v2-sin-datos-390x844.png",
+      "bytes": 60320,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/io-texture-audit.json",
+      "bytes": 1888,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/luminance-comparison.json",
+      "bytes": 1460,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/phase-diagnostics.json",
+      "bytes": 1180,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/scientific-audit.txt",
+      "bytes": 658,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/source/Jupiter - Io (B).jpg",
+      "bytes": 648170,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/stage8-audit-before.json",
+      "bytes": 152026,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/stage8-audit-rerun.json",
+      "bytes": 152026,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage10/tests.txt",
+      "bytes": 23012,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after-results-320.json",
+      "bytes": 8271,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after-results.json",
+      "bytes": 140369,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/experimental-overview-1280x720.png",
+      "bytes": 103409,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/experimental-overview-1366x768.png",
+      "bytes": 111664,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/experimental-overview-1920x1080.png",
+      "bytes": 153991,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/experimental-overview-320x568.png",
+      "bytes": 33738,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/experimental-overview-390x844.png",
+      "bytes": 39214,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/experimental-overview-768x1024.png",
+      "bytes": 77957,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-earth-1280x720.png",
+      "bytes": 296378,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-earth-1366x768.png",
+      "bytes": 331098,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-earth-1920x1080.png",
+      "bytes": 579115,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-earth-320x568.png",
+      "bytes": 63385,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-earth-390x844.png",
+      "bytes": 105020,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-earth-768x1024.png",
+      "bytes": 298317,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-mercury-phase-1280x720.png",
+      "bytes": 249034,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-mercury-phase-1366x768.png",
+      "bytes": 283884,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-mercury-phase-1920x1080.png",
+      "bytes": 501470,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-mercury-phase-320x568.png",
+      "bytes": 57457,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-mercury-phase-390x844.png",
+      "bytes": 95685,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/inner-mercury-phase-768x1024.png",
+      "bytes": 261738,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-neptune-1280x720.png",
+      "bytes": 148460,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-neptune-1366x768.png",
+      "bytes": 150309,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-neptune-1920x1080.png",
+      "bytes": 229104,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-neptune-320x568.png",
+      "bytes": 41038,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-neptune-390x844.png",
+      "bytes": 61751,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-neptune-768x1024.png",
+      "bytes": 140086,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-saturn-1280x720.png",
+      "bytes": 90494,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-saturn-1366x768.png",
+      "bytes": 243167,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-saturn-1920x1080.png",
+      "bytes": 394464,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-saturn-320x568.png",
+      "bytes": 47311,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-saturn-390x844.png",
+      "bytes": 65192,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/outer-saturn-768x1024.png",
+      "bytes": 155718,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/solar-overview-1280x720.png",
+      "bytes": 90675,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/solar-overview-1366x768.png",
+      "bytes": 98981,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/solar-overview-1920x1080.png",
+      "bytes": 133006,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/solar-overview-320x568.png",
+      "bytes": 32560,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/solar-overview-390x844.png",
+      "bytes": 38733,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/solar-overview-768x1024.png",
+      "bytes": 62382,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-io-1280x720.png",
+      "bytes": 236438,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-io-1366x768.png",
+      "bytes": 272445,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-io-1920x1080.png",
+      "bytes": 515524,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-io-320x568.png",
+      "bytes": 87277,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-io-390x844.png",
+      "bytes": 120442,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-io-768x1024.png",
+      "bytes": 330360,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-titan-1280x720.png",
+      "bytes": 110433,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-titan-1366x768.png",
+      "bytes": 118466,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-titan-1920x1080.png",
+      "bytes": 169836,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-titan-320x568.png",
+      "bytes": 46838,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-titan-390x844.png",
+      "bytes": 65733,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager1-titan-768x1024.png",
+      "bytes": 94401,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager2-neptune-1280x720.png",
+      "bytes": 153509,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager2-neptune-1366x768.png",
+      "bytes": 171052,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager2-neptune-1920x1080.png",
+      "bytes": 292539,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager2-neptune-320x568.png",
+      "bytes": 58662,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager2-neptune-390x844.png",
+      "bytes": 72952,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager2-neptune-768x1024.png",
+      "bytes": 62380,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/after/voyager2-neptune-rotation-check-1920x1080.png",
+      "bytes": 292705,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/audit-preexisting.json",
+      "bytes": 152026,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/audit-result.json",
+      "bytes": 152026,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/build.txt",
+      "bytes": 2262,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/results.json",
+      "bytes": 46008,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/voyager1-io-3d-320x568.png",
+      "bytes": 34312,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/voyager1-io-3d-390x844.png",
+      "bytes": 37606,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/voyager1-io-3d-zoom-320x568.png",
+      "bytes": 33765,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/voyager1-io-3d-zoom-390x844.png",
+      "bytes": 37730,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/voyager1-io-photo-1280x720.png",
+      "bytes": 109710,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/voyager1-io-photo-1366x768.png",
+      "bytes": 121684,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/voyager1-io-photo-1920x1080.png",
+      "bytes": 174016,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/voyager1-io-photo-320x568.png",
+      "bytes": 47884,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/voyager1-io-photo-390x844.png",
+      "bytes": 82577,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/comparator/voyager1-io-photo-768x1024.png",
+      "bytes": 126449,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/browser-results.json",
+      "bytes": 41225,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-antes-1366x768.png",
+      "bytes": 174737,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-antes-1920x1080.png",
+      "bytes": 267287,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-antes-390x844.png",
+      "bytes": 96376,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-despues-1366x768.png",
+      "bytes": 170848,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-despues-1920x1080.png",
+      "bytes": 262004,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-despues-390x844.png",
+      "bytes": 94328,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-primera-persona-antes-1920x1080.png",
+      "bytes": 101210,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-primera-persona-corte-1920x1080.png",
+      "bytes": 141014,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-reproduccion-pausa-1920x1080.png",
+      "bytes": 140565,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-sin-datos-1366x768.png",
+      "bytes": 125073,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-sin-datos-1920x1080.png",
+      "bytes": 163233,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v1-sin-datos-390x844.png",
+      "bytes": 60402,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-antes-1366x768.png",
+      "bytes": 179666,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-antes-1920x1080.png",
+      "bytes": 274568,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-antes-390x844.png",
+      "bytes": 93134,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-despues-1366x768.png",
+      "bytes": 177639,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-despues-1920x1080.png",
+      "bytes": 270918,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-despues-390x844.png",
+      "bytes": 93228,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-primera-persona-antes-1920x1080.png",
+      "bytes": 187948,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-primera-persona-corte-1920x1080.png",
+      "bytes": 86143,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-reproduccion-pausa-1920x1080.png",
+      "bytes": 143723,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-sin-datos-1366x768.png",
+      "bytes": 132968,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-sin-datos-1920x1080.png",
+      "bytes": 175321,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/gaps/v2-sin-datos-390x844.png",
+      "bytes": 60318,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/tests-full.txt",
+      "bytes": 23176,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11/texture-diagnostics.json",
+      "bytes": 2935,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/audit-stage8-original-local.json",
+      "bytes": 152026,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/audit-stage8-rerun.json",
+      "bytes": 152026,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/results.json",
+      "bytes": 33904,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/two-dates-results.json",
+      "bytes": 614,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-1280x720-3d-assisted.png",
+      "bytes": 111372,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-1280x720-3d-scientific.png",
+      "bytes": 99897,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-1280x720-3d-zoom.png",
+      "bytes": 95719,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-1280x720-minimized.png",
+      "bytes": 41585,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-1280x720-photo.png",
+      "bytes": 99906,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-1920x1080-3d-assisted.png",
+      "bytes": 196858,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-1920x1080-3d-scientific.png",
+      "bytes": 169560,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-1920x1080-3d-zoom.png",
+      "bytes": 162674,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-1920x1080-minimized.png",
+      "bytes": 52015,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-1920x1080-photo.png",
+      "bytes": 169569,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-320x568-3d-assisted.png",
+      "bytes": 38921,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-320x568-3d-scientific.png",
+      "bytes": 28451,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-320x568-3d-zoom.png",
+      "bytes": 27344,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-320x568-minimized.png",
+      "bytes": 31763,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-320x568-photo-details.png",
+      "bytes": 46658,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-320x568-photo.png",
+      "bytes": 51777,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-360x780-3d-assisted.png",
+      "bytes": 48966,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-360x780-3d-scientific.png",
+      "bytes": 29624,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-360x780-3d-zoom.png",
+      "bytes": 29655,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-360x780-minimized.png",
+      "bytes": 34690,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-360x780-photo-details.png",
+      "bytes": 72223,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-360x780-photo.png",
+      "bytes": 72223,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-390x844-3d-assisted.png",
+      "bytes": 52558,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-390x844-3d-scientific.png",
+      "bytes": 30730,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-390x844-3d-zoom.png",
+      "bytes": 30604,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-390x844-minimized.png",
+      "bytes": 35856,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-390x844-photo-details.png",
+      "bytes": 78667,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-390x844-photo.png",
+      "bytes": 78667,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-414x896-3d-assisted.png",
+      "bytes": 56163,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-414x896-3d-scientific.png",
+      "bytes": 31932,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-414x896-3d-zoom.png",
+      "bytes": 32292,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-414x896-minimized.png",
+      "bytes": 37498,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-414x896-photo-details.png",
+      "bytes": 82512,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-414x896-photo.png",
+      "bytes": 82512,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-768x1024-3d-assisted.png",
+      "bytes": 147630,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-768x1024-3d-scientific.png",
+      "bytes": 122518,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-768x1024-3d-zoom.png",
+      "bytes": 121647,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-768x1024-minimized-time-navigation.png",
+      "bytes": 116090,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-768x1024-minimized.png",
+      "bytes": 41344,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-768x1024-photo.png",
+      "bytes": 122518,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-768x1024-two-dates-minimized.png",
+      "bytes": 40981,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-768x1024-two-dates-photo.png",
+      "bytes": 122530,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/browser/voyager1-io-768x1024-two-dates-restored.png",
+      "bytes": 73954,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/build.txt",
+      "bytes": 773,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/browser-results.json",
+      "bytes": 41221,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-antes-1366x768.png",
+      "bytes": 174499,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-antes-1920x1080.png",
+      "bytes": 267178,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-antes-390x844.png",
+      "bytes": 96007,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-despues-1366x768.png",
+      "bytes": 170874,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-despues-1920x1080.png",
+      "bytes": 262129,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-despues-390x844.png",
+      "bytes": 94322,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-primera-persona-antes-1920x1080.png",
+      "bytes": 103779,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-primera-persona-corte-1920x1080.png",
+      "bytes": 140259,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-reproduccion-pausa-1920x1080.png",
+      "bytes": 140261,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-sin-datos-1366x768.png",
+      "bytes": 125069,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-sin-datos-1920x1080.png",
+      "bytes": 163227,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v1-sin-datos-390x844.png",
+      "bytes": 60349,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-antes-1366x768.png",
+      "bytes": 184466,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-antes-1920x1080.png",
+      "bytes": 274365,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-antes-390x844.png",
+      "bytes": 93482,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-despues-1366x768.png",
+      "bytes": 177759,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-despues-1920x1080.png",
+      "bytes": 270916,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-despues-390x844.png",
+      "bytes": 93235,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-primera-persona-antes-1920x1080.png",
+      "bytes": 188448,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-primera-persona-corte-1920x1080.png",
+      "bytes": 144445,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-reproduccion-pausa-1920x1080.png",
+      "bytes": 143724,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-sin-datos-1366x768.png",
+      "bytes": 132968,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-sin-datos-1920x1080.png",
+      "bytes": 175321,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/gap-regression/v2-sin-datos-390x844.png",
+      "bytes": 60331,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/initial-diagnosis.json",
+      "bytes": 17060,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage11b/tests.txt",
+      "bytes": 12086,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/browser-results.json",
+      "bytes": 41221,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/build.log",
+      "bytes": 2262,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/local-encounters.log",
+      "bytes": 4088,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/scientific-audit.log",
+      "bytes": 658,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/tests.log",
+      "bytes": 23018,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-antes-1366x768.png",
+      "bytes": 174789,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-antes-1920x1080.png",
+      "bytes": 267586,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-antes-390x844.png",
+      "bytes": 95853,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-despues-1366x768.png",
+      "bytes": 170868,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-despues-1920x1080.png",
+      "bytes": 262140,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-despues-390x844.png",
+      "bytes": 94318,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-primera-persona-antes-1920x1080.png",
+      "bytes": 113014,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-primera-persona-corte-1920x1080.png",
+      "bytes": 140259,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-reproduccion-pausa-1920x1080.png",
+      "bytes": 140246,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-sin-datos-1366x768.png",
+      "bytes": 125069,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-sin-datos-1920x1080.png",
+      "bytes": 163223,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v1-sin-datos-390x844.png",
+      "bytes": 60362,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-antes-1366x768.png",
+      "bytes": 183655,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-antes-1920x1080.png",
+      "bytes": 274389,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-antes-390x844.png",
+      "bytes": 93857,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-despues-1366x768.png",
+      "bytes": 177759,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-despues-1920x1080.png",
+      "bytes": 270915,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-despues-390x844.png",
+      "bytes": 93241,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-primera-persona-antes-1920x1080.png",
+      "bytes": 117899,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-primera-persona-corte-1920x1080.png",
+      "bytes": 143670,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-reproduccion-pausa-1920x1080.png",
+      "bytes": 143727,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-sin-datos-1366x768.png",
+      "bytes": 132968,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-sin-datos-1920x1080.png",
+      "bytes": 175322,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage8/browser/v2-sin-datos-390x844.png",
+      "bytes": 60329,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9/build.log",
+      "bytes": 2262,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9/hash-and-encounter-audit.log",
+      "bytes": 658,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9/spice-handoff-diagnostics.json",
+      "bytes": 56497,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9/tests-107.log",
+      "bytes": 23056,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/de421.bsp",
+      "bytes": 16790528,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/de421.bsp.request.json",
+      "bytes": 404,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vg1_sat.bsp",
+      "bytes": 2329600,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vg1_sat.bsp.request.json",
+      "bytes": 399,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vg2_nep.bsp",
+      "bytes": 2001920,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vg2_nep.bsp.request.json",
+      "bytes": 399,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr1.sat286.bsp",
+      "bytes": 479232,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr1.sat286.bsp.request.json",
+      "bytes": 402,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr1_sat261.bsp",
+      "bytes": 479232,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr1_sat261.bsp.request.json",
+      "bytes": 402,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr1_saturn.bsp",
+      "bytes": 486400,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr1_saturn.bsp.request.json",
+      "bytes": 402,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr1_st.bsp",
+      "bytes": 8885248,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr1_st.bsp.request.json",
+      "bytes": 399,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr2_nep081.bsp",
+      "bytes": 850944,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr2_nep081.bsp.request.json",
+      "bytes": 385,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr2_st.bsp",
+      "bytes": 9020416,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/vgr2_st.bsp.request.json",
+      "bytes": 399,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/voyager_1.ST+1991_a54418u.merged.bsp",
+      "bytes": 5268480,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/voyager_1.ST+1991_a54418u.merged.bsp.request.json",
+      "bytes": 407,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/voyager_2.ST+1992_m05208u.merged.bsp",
+      "bytes": 5330944,
+      "category": "kernels_alternativos"
+    },
+    {
+      "path": "evidence/voyager-stage9b/Kernels/voyager_2.ST+1992_m05208u.merged.bsp.request.json",
+      "bytes": 407,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/all-offset-comparisons.csv",
+      "bytes": 25017,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/alternative-kernel-inventory.json",
+      "bytes": 111193,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/build.log",
+      "bytes": 2262,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/de421.bsp.comments.txt",
+      "bytes": 1423,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/hash-audit.log",
+      "bytes": 658,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/kernel-manifest.csv",
+      "bytes": 3082,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/spice-alternative-comparison.json",
+      "bytes": 548491,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/tests-107.log",
+      "bytes": 23076,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/vg1_sat.bsp.comments.txt",
+      "bytes": 2,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/vg2_nep.bsp.comments.txt",
+      "bytes": 278,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/vgr1.sat286.bsp.comments.txt",
+      "bytes": 2066,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/vgr1_sat261.bsp.comments.txt",
+      "bytes": 1415,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/vgr1_saturn.bsp.comments.txt",
+      "bytes": 3322,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/vgr1_st.bsp.comments.txt",
+      "bytes": 3407,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/vgr2_nep081.bsp.comments.txt",
+      "bytes": 1816,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/vgr2_st.bsp.comments.txt",
+      "bytes": 5038,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/voyager_1.ST+1991_a54418u.merged.bsp.comments.txt",
+      "bytes": 6455,
+      "category": "evidencia"
+    },
+    {
+      "path": "evidence/voyager-stage9b/voyager_2.ST+1992_m05208u.merged.bsp.comments.txt",
+      "bytes": 8202,
+      "category": "evidencia"
+    },
+    {
+      "path": "scripts/analyze-stage10-luminance.py",
+      "bytes": 1699,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/analyze-stage10-phases.mjs",
+      "bytes": 1830,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/audit-backup-inventory.py",
+      "bytes": 5811,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/audit-stage10-comparator.mjs",
+      "bytes": 3297,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/audit-stage10-visual-assets.py",
+      "bytes": 2370,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/audit-stage11-comparator.mjs",
+      "bytes": 6711,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/audit-stage11-textures.py",
+      "bytes": 1817,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/audit-stage11b-comparator.mjs",
+      "bytes": 9122,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/audit-stage11b-temporal.mjs",
+      "bytes": 6877,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/audit-voyager-stage8-browser.mjs",
+      "bytes": 13279,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/audit-voyager-stage9b-alternatives.py",
+      "bytes": 4796,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/capture-stage10.mjs",
+      "bytes": 5163,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/capture-stage11.mjs",
+      "bytes": 6870,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/compare-voyager-stage9b.py",
+      "bytes": 16541,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/diagnose-stage11b-initial.mjs",
+      "bytes": 4520,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/diagnose-voyager-stage9.py",
+      "bytes": 11112,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/trim-backup-evidence.py",
+      "bytes": 1111,
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/verify-stage9b-kernels.py",
+      "bytes": 1861,
+      "category": "scripts"
+    },
+    {
+      "path": "src/integration/HistoricalComparatorSession.js",
+      "bytes": 822,
+      "category": "codigo"
+    },
+    {
+      "path": "tests/HistoricalComparatorSession.test.mjs",
+      "bytes": 1822,
+      "category": "pruebas"
+    }
+  ],
+  "modifiedFiles": [
+    {
+      "path": ".gitignore",
+      "bytes": 619,
+      "category": "otros"
+    },
+    {
+      "path": "evidence/voyager-stage8/audit.json",
+      "bytes": 152026,
+      "category": "evidencia"
+    },
+    {
+      "path": "index.html",
+      "bytes": 44530,
+      "category": "otros"
+    },
+    {
+      "path": "src/graphics/CameraController.js",
+      "bytes": 60230,
+      "category": "codigo"
+    },
+    {
+      "path": "src/graphics/MoonVisuals.js",
+      "bytes": 7309,
+      "category": "codigo"
+    },
+    {
+      "path": "src/graphics/PlanetFactory.js",
+      "bytes": 10931,
+      "category": "codigo"
+    },
+    {
+      "path": "src/graphics/SolarSystem.js",
+      "bytes": 37773,
+      "category": "codigo"
+    },
+    {
+      "path": "src/graphics/TextureLoader.js",
+      "bytes": 798,
+      "category": "codigo"
+    },
+    {
+      "path": "src/main.js",
+      "bytes": 77913,
+      "category": "codigo"
+    },
+    {
+      "path": "src/style.css",
+      "bytes": 55969,
+      "category": "codigo"
+    },
+    {
+      "path": "src/ui/HistoricalModeControls.js",
+      "bytes": 60680,
+      "category": "codigo"
+    },
+    {
+      "path": "src/ui/workspace-layout.css",
+      "bytes": 65049,
+      "category": "codigo"
+    },
+    {
+      "path": "tests/InstrumentFov.test.mjs",
+      "bytes": 1290,
+      "category": "pruebas"
+    }
+  ],
+  "ignoredRoots": [
+    "dist/",
+    "node_modules/"
+  ]
+}
