@@ -1,0 +1,423 @@
+{
+  "payload_561kg": {
+    "status": "LANZAMIENTO COMPLETADO",
+    "classification": "ÓRBITA TERRESTRE ALCANZADA SEGÚN EL MODELO",
+    "reasons": [
+      "Trayectoria ligada, sin intersección con la Tierra y dentro de los criterios del perigeo, apogeo e inclinación. No certifica operatividad."
+    ],
+    "liftoffThrustToWeight": 1.4317303060318918,
+    "propulsiveDeltaVMS": 9632.267439342888,
+    "propellantConsumedKg": 93532.61209894685,
+    "durationSeconds": 1916.7375653796912,
+    "finalAltitudeKm": 353.79093706440744,
+    "finalSpeedKmS": 7.73069992439614,
+    "elements": {
+      "semiMajorAxisKm": 6793.753959305224,
+      "eccentricity": 0.03688099467070151,
+      "periapsisRadiusKm": 6543.193555738032,
+      "apoapsisRadiusKm": 7044.314362872419,
+      "inclinationDeg": 29.279645737277257,
+      "specificEnergyKm2S2": -29.3358015240637,
+      "bound": true
+    },
+    "minimumAltitudeKm": 169.99154853945583,
+    "apogeeAltitudeKm": 671.1208144318043,
+    "failure": null,
+    "impact": null,
+    "maxQ": {
+      "elapsedSeconds": 61.0362229660539,
+      "dynamicPressurePa": 36601.78642235121,
+      "altitudeKm": 11.017025402848049,
+      "speedKmS": 0.7108508262701647
+    },
+    "eventsCount": 12,
+    "events": [
+      {
+        "id": "ignition-1",
+        "title": "Encendido de la etapa 1",
+        "elapsedSeconds": 0
+      },
+      {
+        "id": "liftoff",
+        "title": "Despegue: empuje/peso 1.43",
+        "elapsedSeconds": 0
+      },
+      {
+        "id": "max-q",
+        "title": "Presión dinámica máxima (Max-Q): 36.6 kPa",
+        "elapsedSeconds": 61.0362229660539
+      },
+      {
+        "id": "meco",
+        "title": "Etapa 1: propelente agotado (MECO)",
+        "elapsedSeconds": 152.00307499999997
+      },
+      {
+        "id": "separation",
+        "title": "Separación de la etapa 1",
+        "elapsedSeconds": 154.00307499999997
+      },
+      {
+        "id": "ignition-2",
+        "title": "Inicio de la etapa 2 (encendido)",
+        "elapsedSeconds": 158.00307499999997
+      },
+      {
+        "id": "target-altitude",
+        "title": "Altitud objetivo alcanzada: 200 km",
+        "elapsedSeconds": 195.17687339938945
+      },
+      {
+        "id": "seco-1",
+        "title": "Apagado programado de la etapa 2 (SECO)",
+        "elapsedSeconds": 348.00307499999997
+      },
+      {
+        "id": "apogee",
+        "title": "Apogeo osculante: 644.6 km",
+        "elapsedSeconds": 662.2725302983969
+      },
+      {
+        "id": "circularization",
+        "title": "Encendido de circularización en el apogeo",
+        "elapsedSeconds": 662.272530358386
+      },
+      {
+        "id": "seco-2",
+        "title": "Apagado: perigeo objetivo alcanzado",
+        "elapsedSeconds": 716.7375653796911
+      },
+      {
+        "id": "end",
+        "title": "Fin de la integración",
+        "elapsedSeconds": 1916.7375653796912
+      }
+    ]
+  },
+  "payload_3000kg": {
+    "status": "LANZAMIENTO COMPLETADO",
+    "classification": "NO VERIFICABLE",
+    "reasons": [
+      "El estado final está dentro de la atmósfera densa: el arrastre invalida los elementos osculadores."
+    ],
+    "liftoffThrustToWeight": 1.3987247274268653,
+    "propulsiveDeltaVMS": 9074.803746418302,
+    "propellantConsumedKg": 95000,
+    "durationSeconds": 1730.1078094038676,
+    "finalAltitudeKm": 6.916861643130687,
+    "finalSpeedKmS": 0.7097225483889898,
+    "elements": {
+      "semiMajorAxisKm": 3205.218632414564,
+      "eccentricity": 0.9928345028403874,
+      "periapsisRadiusKm": 22.966985006503467,
+      "apoapsisRadiusKm": 6387.470279822523,
+      "inclinationDeg": 12.91776029902206,
+      "specificEnergyKm2S2": -62.17991363770484,
+      "bound": true
+    },
+    "minimumAltitudeKm": null,
+    "failure": null,
+    "impact": null,
+    "maxQ": {
+      "elapsedSeconds": 1659.5040060530132,
+      "dynamicPressurePa": 184947.50303531042,
+      "altitudeKm": 26.172054487416062,
+      "speedKmS": 3.7369808263402
+    },
+    "eventsCount": 12,
+    "events": [
+      {
+        "id": "ignition-1",
+        "title": "Encendido de la etapa 1",
+        "elapsedSeconds": 0
+      },
+      {
+        "id": "liftoff",
+        "title": "Despegue: empuje/peso 1.40",
+        "elapsedSeconds": 0
+      },
+      {
+        "id": "meco",
+        "title": "Etapa 1: propelente agotado (MECO)",
+        "elapsedSeconds": 152.00307499999997
+      },
+      {
+        "id": "separation",
+        "title": "Separación de la etapa 1",
+        "elapsedSeconds": 154.00307499999997
+      },
+      {
+        "id": "ignition-2",
+        "title": "Inicio de la etapa 2 (encendido)",
+        "elapsedSeconds": 158.00307499999997
+      },
+      {
+        "id": "target-altitude",
+        "title": "Altitud objetivo alcanzada: 200 km",
+        "elapsedSeconds": 236.04502025445694
+      },
+      {
+        "id": "seco-1",
+        "title": "Apagado programado de la etapa 2 (SECO)",
+        "elapsedSeconds": 348.00307499999997
+      },
+      {
+        "id": "apogee",
+        "title": "Apogeo osculante: 309.6 km",
+        "elapsedSeconds": 449.13458565614104
+      },
+      {
+        "id": "circularization",
+        "title": "Encendido de circularización en el apogeo",
+        "elapsedSeconds": 449.1345857196569
+      },
+      {
+        "id": "seco-2",
+        "title": "Etapa 2: propelente agotado en circularización",
+        "elapsedSeconds": 530.1078094038675
+      },
+      {
+        "id": "max-q",
+        "title": "Presión dinámica máxima (Max-Q): 184.9 kPa",
+        "elapsedSeconds": 1659.5040060530132
+      },
+      {
+        "id": "end",
+        "title": "Fin de la integración",
+        "elapsedSeconds": 1730.1078094038676
+      }
+    ]
+  },
+  "payload_5000kg": {
+    "status": "IMPACTO",
+    "classification": "SUBORBITAL",
+    "reasons": [
+      "La trayectoria terminó en impacto con la superficie."
+    ],
+    "liftoffThrustToWeight": 1.372774361426367,
+    "propulsiveDeltaVMS": 8037.678005187469,
+    "propellantConsumedKg": 95000,
+    "durationSeconds": 636.4473426697762,
+    "finalAltitudeKm": -2.1000232663936913e-9,
+    "finalSpeedKmS": 0.5729068548306071,
+    "elements": {
+      "semiMajorAxisKm": 5566.624604461608,
+      "eccentricity": 0.17837027216213563,
+      "periapsisRadiusKm": 4573.704258739349,
+      "apoapsisRadiusKm": 6559.544950183864,
+      "inclinationDeg": 29.30961377588043,
+      "specificEnergyKm2S2": -35.802704855247896,
+      "bound": true
+    },
+    "minimumAltitudeKm": null,
+    "failure": null,
+    "impact": {
+      "elapsedSeconds": 636.4473426697762,
+      "positionKm": [
+        3202.541578292566,
+        -4889.530370974893,
+        2544.253426685284
+      ],
+      "velocityKmS": [
+        0.33371876507260756,
+        0.449389069615529,
+        -0.12207995028013943
+      ]
+    },
+    "maxQ": {
+      "elapsedSeconds": 556.5964922985954,
+      "dynamicPressurePa": 481037.9421750599,
+      "altitudeKm": 22.03472080499978,
+      "speedKmS": 4.276090091071684
+    },
+    "eventsCount": 12,
+    "events": [
+      {
+        "id": "ignition-1",
+        "title": "Encendido de la etapa 1",
+        "elapsedSeconds": 0
+      },
+      {
+        "id": "liftoff",
+        "title": "Despegue: empuje/peso 1.37",
+        "elapsedSeconds": 0
+      },
+      {
+        "id": "meco",
+        "title": "Etapa 1: propelente agotado (MECO)",
+        "elapsedSeconds": 152.00307499999997
+      },
+      {
+        "id": "separation",
+        "title": "Separación de la etapa 1",
+        "elapsedSeconds": 154.00307499999997
+      },
+      {
+        "id": "ignition-2",
+        "title": "Inicio de la etapa 2 (encendido)",
+        "elapsedSeconds": 158.00307499999997
+      },
+      {
+        "id": "apogee",
+        "title": "Apogeo osculante: 138.7 km",
+        "elapsedSeconds": 303.4604712577852
+      },
+      {
+        "id": "seco-1",
+        "title": "Apagado programado de la etapa 2 (SECO)",
+        "elapsedSeconds": 348.00307499999997
+      },
+      {
+        "id": "circularization",
+        "title": "Encendido de circularización en el apogeo",
+        "elapsedSeconds": 348.00307499999997
+      },
+      {
+        "id": "seco-2",
+        "title": "Etapa 2: propelente agotado en circularización",
+        "elapsedSeconds": 428.9762986842105
+      },
+      {
+        "id": "max-q",
+        "title": "Presión dinámica máxima (Max-Q): 481.0 kPa",
+        "elapsedSeconds": 556.5964922985954
+      },
+      {
+        "id": "impact",
+        "title": "Impacto contra la superficie",
+        "elapsedSeconds": 636.4473426697762
+      },
+      {
+        "id": "end",
+        "title": "Fin de la integración",
+        "elapsedSeconds": 636.4473426697762
+      }
+    ]
+  },
+  "payload_150000kg_no_liftoff": {
+    "status": "NO DESPEGA",
+    "classification": "OBJETIVO NO ALCANZADO",
+    "reasons": [
+      "Despegue imposible: el empuje al nivel del mar (1450 kN) no supera el peso (2477 N aprox.). No se ejecutó ningún encendido."
+    ],
+    "liftoffThrustToWeight": 0.5853840038044397,
+    "propulsiveDeltaVMS": 0,
+    "propellantConsumedKg": 0,
+    "durationSeconds": 60,
+    "finalAltitudeKm": 0.002999999998792191,
+    "finalSpeedKmS": 0.4090508369912566,
+    "elements": null,
+    "minimumAltitudeKm": null,
+    "impact": null,
+    "maxQ": null,
+    "eventsCount": 1,
+    "events": [
+      {
+        "id": "prelaunch",
+        "title": "Verificación previa: empuje/peso 0.585 < 1",
+        "elapsedSeconds": 0
+      }
+    ]
+  },
+  "payload_561kg_no_circularization": {
+    "status": "IMPACTO",
+    "classification": "SUBORBITAL",
+    "reasons": [
+      "La trayectoria terminó en impacto con la superficie."
+    ],
+    "liftoffThrustToWeight": 1.4317303060318918,
+    "propulsiveDeltaVMS": 7638.653556078503,
+    "propellantConsumedKg": 90517.64436814378,
+    "durationSeconds": 1260.9642527966846,
+    "finalAltitudeKm": -1.853914000093937e-8,
+    "finalSpeedKmS": 0.6544199961283752,
+    "elements": {
+      "semiMajorAxisKm": 4731.434514992875,
+      "eccentricity": 0.48355432909878676,
+      "periapsisRadiusKm": 2443.5288724206516,
+      "apoapsisRadiusKm": 7019.340157565097,
+      "inclinationDeg": 29.27964573727723,
+      "specificEnergyKm2S2": -42.122577649962494,
+      "bound": true
+    },
+    "minimumAltitudeKm": null,
+    "failure": null,
+    "impact": {
+      "elapsedSeconds": 1260.9642527966846,
+      "positionKm": [
+        5341.336839151323,
+        -3163.628840754192,
+        1458.720050407135
+      ],
+      "velocityKmS": [
+        0.15383804268427262,
+        0.6220362020849088,
+        -0.13292987343527002
+      ]
+    },
+    "maxQ": {
+      "elapsedSeconds": 1226.4465431262965,
+      "dynamicPressurePa": 1263687.9308037732,
+      "altitudeKm": 14.988650894929378,
+      "speedKmS": 3.9766022213050327
+    },
+    "eventsCount": 11,
+    "events": [
+      {
+        "id": "ignition-1",
+        "title": "Encendido de la etapa 1",
+        "elapsedSeconds": 0
+      },
+      {
+        "id": "liftoff",
+        "title": "Despegue: empuje/peso 1.43",
+        "elapsedSeconds": 0
+      },
+      {
+        "id": "meco",
+        "title": "Etapa 1: propelente agotado (MECO)",
+        "elapsedSeconds": 152.00307499999997
+      },
+      {
+        "id": "separation",
+        "title": "Separación de la etapa 1",
+        "elapsedSeconds": 154.00307499999997
+      },
+      {
+        "id": "ignition-2",
+        "title": "Inicio de la etapa 2 (encendido)",
+        "elapsedSeconds": 158.00307499999997
+      },
+      {
+        "id": "target-altitude",
+        "title": "Altitud objetivo alcanzada: 200 km",
+        "elapsedSeconds": 195.17687339938945
+      },
+      {
+        "id": "seco-1",
+        "title": "Apagado programado de la etapa 2 (SECO)",
+        "elapsedSeconds": 348.00307499999997
+      },
+      {
+        "id": "apogee",
+        "title": "Apogeo osculante: 644.6 km",
+        "elapsedSeconds": 662.2725603395236
+      },
+      {
+        "id": "max-q",
+        "title": "Presión dinámica máxima (Max-Q): 1263.7 kPa",
+        "elapsedSeconds": 1226.4465431262965
+      },
+      {
+        "id": "impact",
+        "title": "Impacto contra la superficie",
+        "elapsedSeconds": 1260.9642527966846
+      },
+      {
+        "id": "end",
+        "title": "Fin de la integración",
+        "elapsedSeconds": 1260.9642527966846
+      }
+    ]
+  }
+}

@@ -1,0 +1,295 @@
+{
+  "auditDate": "2026-11-17",
+  "stage": "12E",
+  "title": "Verificación Numérica y Analítica Independiente — Lanzamiento Terrestre y Ascenso Atmosférico",
+  "constants": {
+    "g0_m_s2": 9.80665,
+    "earth_mu_km3_s2": 398600.435507,
+    "wgs84_a_km": 6378.137,
+    "wgs84_b_km": 6356.752314245179,
+    "wgs84_f": 0.0033528106647474805,
+    "wgs84_e2": 0.0066943799901413165,
+    "earth_rotation_rad_s": 0.00007292115
+  },
+  "mathAnalyticalComparison": {
+    "m0_kg": 100000,
+    "Isp_s": 310,
+    "thrust_N": 1600000,
+    "burn_time_s": 100,
+    "massFlowKgS": 526.3051421821566,
+    "mass": {
+      "analytical_kg": 47369.48578178434,
+      "integrated_kg": 47369.48578178417,
+      "residual_kg": -1.673470251262188e-10,
+      "relative_error": 3.532802232583473e-15
+    },
+    "velocity": {
+      "analytical_ms": 2271.5094026842253,
+      "integrated_ms": 2271.5094026837005,
+      "residual_ms": -5.247784429229796e-10,
+      "relative_error": 2.310263132976042e-13
+    },
+    "position": {
+      "analytical_m": 99561.57264415322,
+      "integrated_m": 99561.57264419016,
+      "residual_m": 3.694731276482344e-8,
+      "relative_error": 3.7110013214514223e-13
+    },
+    "deltaV": {
+      "analytical_ms": 2271.5094026842253,
+      "integrated_ms": 2271.5094026837005,
+      "residual_ms": -5.247784429229796e-10,
+      "relative_error": 2.310263132976042e-13
+    }
+  },
+  "atmosphereSamples": [
+    {
+      "h_geopot_km": 0,
+      "h_geom_km": 0,
+      "expected_p_pa": 101325,
+      "expected_t_k": 288.15,
+      "expected_rho_kgm3": 1.225,
+      "computed_p_pa": 101325,
+      "computed_t_k": 288.15,
+      "computed_rho_kgm3": 1.2249991558877122,
+      "pressure_rel_err": 0,
+      "temperature_abs_err": 0
+    },
+    {
+      "h_geopot_km": 11,
+      "h_geom_km": 11.019067832000108,
+      "expected_p_pa": 22632,
+      "expected_t_k": 216.65,
+      "expected_rho_kgm3": 0.36391,
+      "computed_p_pa": 22632.06397346292,
+      "computed_t_k": 216.64999999999998,
+      "computed_rho_kgm3": 0.36391777591155783,
+      "pressure_rel_err": 0.0000028266818185980627,
+      "temperature_abs_err": 2.842170943040401e-14
+    },
+    {
+      "h_geopot_km": 20,
+      "h_geom_km": 20.06312368170136,
+      "expected_p_pa": 5474.9,
+      "expected_t_k": 216.65,
+      "expected_rho_kgm3": 0.088035,
+      "computed_p_pa": 5474.888669677779,
+      "computed_t_k": 216.65,
+      "computed_rho_kgm3": 0.08803480364710489,
+      "pressure_rel_err": 0.0000020695030449143135,
+      "temperature_abs_err": 0
+    },
+    {
+      "h_geopot_km": 32,
+      "h_geom_km": 32.1619032229809,
+      "expected_p_pa": 868.02,
+      "expected_t_k": 228.65,
+      "expected_rho_kgm3": 0.013225,
+      "computed_p_pa": 868.0186847552287,
+      "computed_t_k": 228.65,
+      "computed_rho_kgm3": 0.013224999644107836,
+      "pressure_rel_err": 0.0000015152240400713914,
+      "temperature_abs_err": 0
+    },
+    {
+      "h_geopot_km": 47,
+      "h_geom_km": 47.35009222212044,
+      "expected_p_pa": 110.91,
+      "expected_t_k": 270.65,
+      "expected_rho_kgm3": 0.0014275,
+      "computed_p_pa": 110.90630555496624,
+      "computed_t_k": 270.65,
+      "computed_rho_kgm3": 0.0014275325120644393,
+      "pressure_rel_err": 0.00003331029694129112,
+      "temperature_abs_err": 0
+    }
+  ],
+  "atmosphereBoundaries": {
+    "at_86km": {
+      "density_below": 0.0000069578216065817595,
+      "density_above": 0.000006957819131023002,
+      "ratio": 0.999999644204911,
+      "pressure_below": 0.37338052825531187,
+      "pressure_above": 0.3733803954083536
+    },
+    "at_200km": {
+      "density_below": 1.0835291163848008e-14,
+      "density_above": 0,
+      "pressure_below": 5.814588196297906e-10,
+      "pressure_above": 0
+    }
+  },
+  "geodesyVerification": {
+    "equator": {
+      "speed_ms": 465.10108489755,
+      "theoretical_ms": 465.10108489755,
+      "residual_ms": 0
+    },
+    "ksc": {
+      "speed_ms": 409.0508369912567,
+      "positionKm": [
+        916.1761924673157,
+        -5534.171752058273,
+        3025.318248969007
+      ],
+      "altitudeKm": 0.0029999999997016857
+    },
+    "polar": {
+      "speed_ms": 2.857503442515348e-14,
+      "radiusKm": 6356.752314245179,
+      "wgs84_b_km": 6356.752314245179,
+      "residual_km": 0
+    }
+  },
+  "stagingAndReversibility": {
+    "samples": [
+      {
+        "t": 0,
+        "phase": "ascent-1",
+        "activeStage": 1,
+        "engineOn": true,
+        "engineLabel": "Etapa 1 encendida",
+        "massKg": 103361,
+        "fuelKg": 95000,
+        "altitudeKm": 0.0029999999997016857,
+        "speedKmS": 0.40905083699125666,
+        "relSpeedKmS": 0,
+        "dynPressurePa": 0,
+        "thrustN": 1450053.3444966183,
+        "thrustToWeight": 1.429613329891404,
+        "propulsiveDeltaVMS": 0
+      },
+      {
+        "t": 50,
+        "phase": "ascent-1",
+        "activeStage": 1,
+        "engineOn": true,
+        "engineLabel": "Etapa 1 encendida",
+        "massKg": 77045.74289089211,
+        "fuelKg": 68684.74289089217,
+        "altitudeKm": 6.993351460035228,
+        "speedKmS": 0.5947008434910817,
+        "relSpeedKmS": 0.32973823133961716,
+        "dynPressurePa": 32099.810929256666,
+        "thrustN": 1539091.5250301552,
+        "thrustToWeight": 2.0401370529131766,
+        "propulsiveDeltaVMS": 828.7653656218029
+      },
+      {
+        "t": 150,
+        "phase": "ascent-1",
+        "activeStage": 1,
+        "engineOn": true,
+        "engineLabel": "Etapa 1 encendida",
+        "massKg": 24415.22867267634,
+        "fuelKg": 16054.228672676516,
+        "altitudeKm": 106.10703648186245,
+        "speedKmS": 3.2935405581697204,
+        "relSpeedKmS": 2.9857543607865598,
+        "dynPressurePa": 0.8671276116753537,
+        "thrustN": 1599999.984545396,
+        "thrustToWeight": 6.902348572995975,
+        "propulsiveDeltaVMS": 4309.85569817611
+      },
+      {
+        "t": 153,
+        "phase": "stage-1-coast",
+        "activeStage": 1,
+        "engineOn": false,
+        "engineLabel": "Motores apagados",
+        "massKg": 23361,
+        "fuelKg": 15000.000000000015,
+        "altitudeKm": 112.48772819100395,
+        "speedKmS": 3.4092605245694756,
+        "relSpeedKmS": 3.100245012712061,
+        "dynPressurePa": 0.30046581430113095,
+        "thrustN": 0,
+        "thrustToWeight": 0,
+        "propulsiveDeltaVMS": 4443.33475545467
+      },
+      {
+        "t": 155,
+        "phase": "separation-coast",
+        "activeStage": 2,
+        "engineOn": false,
+        "engineLabel": "Motores apagados",
+        "massKg": 17361,
+        "fuelKg": 15000,
+        "altitudeKm": 116.76215308954943,
+        "speedKmS": 3.397361508391343,
+        "relSpeedKmS": 3.087195799381222,
+        "dynPressurePa": 0.13928026587240727,
+        "thrustN": 0,
+        "thrustToWeight": 0,
+        "propulsiveDeltaVMS": 4443.33475545467
+      },
+      {
+        "t": 200,
+        "phase": "ascent-2",
+        "activeStage": 2,
+        "engineOn": true,
+        "engineLabel": "Etapa 2 encendida",
+        "massKg": 15036.217254181014,
+        "fuelKg": 12675.217254181016,
+        "altitudeKm": 209.7340232507404,
+        "speedKmS": 3.6388060255295303,
+        "relSpeedKmS": 3.2987220248755373,
+        "dynPressurePa": 0,
+        "thrustN": 190000,
+        "thrustToWeight": 1.373857776055245,
+        "propulsiveDeltaVMS": 4936.804988740424
+      },
+      {
+        "t": 340,
+        "phase": "ascent-2",
+        "activeStage": 2,
+        "engineOn": true,
+        "engineLabel": "Etapa 2 encendida",
+        "massKg": 7286.374035548747,
+        "fuelKg": 4925.374035548761,
+        "altitudeKm": 441.6258488344447,
+        "speedKmS": 5.511250623190387,
+        "relSpeedKmS": 5.091215038985955,
+        "dynPressurePa": 0,
+        "thrustN": 190000,
+        "thrustToWeight": 3.038586700288661,
+        "propulsiveDeltaVMS": 7423.450148488881
+      },
+      {
+        "t": 500,
+        "phase": "coast",
+        "activeStage": 2,
+        "engineOn": false,
+        "engineLabel": "Motores apagados",
+        "massKg": 6843.35563185621,
+        "fuelKg": 4482.355631856226,
+        "altitudeKm": 593.6301851818907,
+        "speedKmS": 5.492482683411039,
+        "relSpeedKmS": 5.053902022883049,
+        "dynPressurePa": 0,
+        "thrustN": 0,
+        "thrustToWeight": 0,
+        "propulsiveDeltaVMS": 7638.653556078503
+      },
+      {
+        "t": 1916.7375653796912,
+        "phase": "result",
+        "activeStage": 2,
+        "engineOn": false,
+        "engineLabel": "Motores apagados",
+        "massKg": 3828.387901053137,
+        "fuelKg": 1467.3879010531582,
+        "altitudeKm": 353.79093706440744,
+        "speedKmS": 7.73069992439614,
+        "relSpeedKmS": 7.306171724042596,
+        "dynPressurePa": 0,
+        "thrustN": 0,
+        "thrustToWeight": 0,
+        "propulsiveDeltaVMS": 9632.267439342888
+      }
+    ],
+    "reversibilityCyclesTested": 10,
+    "reversibilityPassed": true,
+    "maxStateDrift": 0
+  }
+}

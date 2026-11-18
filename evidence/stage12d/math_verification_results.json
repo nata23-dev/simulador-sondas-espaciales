@@ -1,0 +1,114 @@
+{
+  "auditDate": "2026-11-17",
+  "stage": "12D",
+  "title": "Verificación Numérica y Analítica Independiente — Propulsión de Empuje Finito",
+  "constants": {
+    "g0_m_s2": 9.80665,
+    "earth_mu_km3_s2": 398600.4418,
+    "earth_radius_km": 6371.0084,
+    "moon_mu_km3_s2": 4902.800118,
+    "moon_radius_km": 1737.4
+  },
+  "analyticalFreeSpaceCases": [
+    {
+      "testCase": "Motor de Prueba (F=1000 N, Isp=300 s, m0=1000 kg, dry=500 kg, t=600 s)",
+      "massAnalyticalKg": 796.0567568843589,
+      "massIntegratedKg": 796.0567568844726,
+      "massResidualKg": 1.137e-13,
+      "velAnalyticalMS": 671.0243187843468,
+      "velIntegratedMS": 671.0243187853589,
+      "velResidualMS": 1.012e-9,
+      "posAnalyticalM": 193661.3995805561,
+      "posIntegratedM": 193661.3995781871,
+      "posResidualM": 2.369e-6,
+      "deltaVAnalyticalMS": 671.0243187843468,
+      "deltaVIntegratedMS": 671.0243187853589,
+      "deltaVResidualMS": 1.012e-9
+    },
+    {
+      "testCase": "Motor Químico Catálogo (F=650 N, Isp=310 s, m0=561 kg, dry=371 kg, t=300 s)",
+      "massAnalyticalKg": 496.8565610050323,
+      "massIntegratedKg": 496.8565610050891,
+      "massResidualKg": 5.684e-14,
+      "velAnalyticalMS": 369.1228420658821,
+      "velIntegratedMS": 369.1228420662068,
+      "velResidualMS": 3.247e-10,
+      "posAnalyticalM": 54248.23277964177,
+      "posIntegratedM": 54248.23277888627,
+      "posResidualM": 7.555e-7,
+      "deltaVAnalyticalMS": 369.1228420658821,
+      "deltaVIntegratedMS": 369.1228420662068,
+      "deltaVResidualMS": 3.247e-10
+    },
+    {
+      "testCase": "Motor Iónico Catálogo (F=0.04 N, Isp=2500 s, m0=336 kg, dry=286 kg, t=86400 s)",
+      "massAnalyticalKg": 335.8590336159535,
+      "massIntegratedKg": 335.8590336162377,
+      "massResidualKg": 2.842e-13,
+      "velAnalyticalMS": 10.28787342676798,
+      "velIntegratedMS": 10.28787342832367,
+      "velResidualMS": 1.556e-12,
+      "posAnalyticalM": 444405.0097746408,
+      "posIntegratedM": 444405.0094542385,
+      "posResidualM": 3.204e-4,
+      "deltaVAnalyticalMS": 10.28787342676798,
+      "deltaVIntegratedMS": 10.28787342832367,
+      "deltaVResidualMS": 1.556e-12
+    }
+  ],
+  "zeroThrustConsistencyVsDOPRI54": {
+    "flightDays": 4.324941,
+    "positionDiscrepancyMeters": 0.0562,
+    "velocityDiscrepancyMS": 0.0,
+    "massConservationKg": 561.0,
+    "integratedDeltaVMS": 0.0
+  },
+  "convergenceAnalysis": [
+    {
+      "stepProfile": "Coarse (maxBurnStep 600s, maxCoastStep 3600s)",
+      "acceptedSteps": 45,
+      "functionEvaluations": 285,
+      "posErrorMeters": 0.0345,
+      "velErrorMS": 5.808e-7
+    },
+    {
+      "stepProfile": "Medium (maxBurnStep 120s, maxCoastStep 1200s)",
+      "acceptedSteps": 85,
+      "functionEvaluations": 519,
+      "posErrorMeters": 0.0014,
+      "velErrorMS": 1.228e-8
+    },
+    {
+      "stepProfile": "Fine (maxBurnStep 20s, maxCoastStep 300s)",
+      "acceptedSteps": 316,
+      "functionEvaluations": 1899,
+      "posErrorMeters": 0.0,
+      "velErrorMS": 0.0
+    }
+  ],
+  "fuelDepletionVerification": {
+    "m0Kg": 510.0,
+    "dryMassKg": 500.0,
+    "availableFuelKg": 10.0,
+    "flowKgS": 0.339906,
+    "expectedDepletionTimeS": 29.419950,
+    "integratedDepletionTimeS": 29.419950,
+    "status": "depleted",
+    "finalMassKg": 500.0,
+    "finalFuelKg": 0.0,
+    "velocityAfterCutoff": "constant ballistic drift (accel = 0.0)"
+  },
+  "eightSequentialBurns": {
+    "numBurns": 8,
+    "initialMassKg": 1000.0,
+    "finalMassKg": 794.740871,
+    "totalPropulsiveDeltaVMS": 698.421455,
+    "massChainPreserved": true
+  },
+  "playbackDeterminismReversibility": {
+    "cyclesTested": 15,
+    "zeroFuelLeak": true,
+    "monotonicMassEvolutionForward": true,
+    "exactRewindToZero": true
+  }
+}

@@ -1,0 +1,15 @@
+# Índice de documentación
+
+**Estado y guía:** [PROJECT_CONTEXT](PROJECT_CONTEXT.md) · [ARCHITECTURE_MAP](ARCHITECTURE_MAP.md) · [DEVELOPMENT_ROADMAP](DEVELOPMENT_ROADMAP.md) · [DEVELOPMENT_GUIDE](DEVELOPMENT_GUIDE.md) · [UI_DESIGN_SYSTEM](UI_DESIGN_SYSTEM.md) · [DATOS_CIENTIFICOS](DATOS_CIENTIFICOS.md) · [MIGRACION_OTRA_LAPTOP](MIGRACION_OTRA_LAPTOP.md)
+
+**Modelos científicos y marcos:** [contrato-cientifico](contrato-cientifico.md) · [proveedor-efemerides](proveedor-efemerides.md) · [adquisicion-interpolacion-1b](adquisicion-interpolacion-1b.md) · [consolidacion-1br-1c](consolidacion-1br-1c.md) · [motor-dinamica-orbital-2a-2b](motor-dinamica-orbital-2a-2b.md) · [arquitectura-motor-futuro](arquitectura-motor-futuro.md)
+
+**Catálogo de cuerpos y misiones multicuerpo:** [MULTIBODY_MISSION_CAPABILITY_MATRIX](MULTIBODY_MISSION_CAPABILITY_MATRIX.md) · [MULTIBODY_MISSION_ARCHITECTURE](MULTIBODY_MISSION_ARCHITECTURE.md)
+
+**Histórico Voyager:** [modo-historico-voyager](modo-historico-voyager.md) · [VOYAGER_ENCOUNTER_CONTEXTS](VOYAGER_ENCOUNTER_CONTEXTS.md) · [VOYAGER_REFERENCE_RECONCILIATION](VOYAGER_REFERENCE_RECONCILIATION.md) · [VOYAGER_TRAJECTORY_RECONCILIATION](VOYAGER_TRAJECTORY_RECONCILIATION.md) · [STAGE_06](STAGE_06.md) · [08](VOYAGER_STAGE08_VISUAL_CLOSEOUT.md) · [09](VOYAGER_STAGE09_SPK_ROOT_CAUSE.md) · [09B](VOYAGER_STAGE09B_ALTERNATIVE_KERNELS.md) · [10](VOYAGER_STAGE10_VISUAL_PHOTOMETRY.md) · [11](VOYAGER_STAGE11_VISUAL_UX_REFINEMENT.md) · [11B](VOYAGER_STAGE11B_FINAL_REFINEMENT.md) · [refinamiento visual](VOYAGER_VISUAL_REFINEMENT.md) · [validación visual](VOYAGER_VISUAL_VALIDATION.md)
+
+**Planificación de misiones (laboratorio):** [12A](../ETAPA-12A-LABORATORIO.md) · [12A.1](STAGE12A1_CORRECTIONS.md) · [12B](STAGE12B_MISSION_PLANNER.md) · [12B.1](STAGE12B1_NUMERICAL_RECONCILIATION.md) · [12C](STAGE12C_MISSION_CONTROL.md) · [12D](STAGE12D_FINITE_THRUST.md) · [12E](STAGE12E_EARTH_LAUNCH.md) · [12F](STAGE12F_MULTIBODY_LANDING.md)
+
+**Auditorías independientes (Gemini):** [12A](STAGE12A_INDEPENDENT_AUDIT.md) · [12A.1](STAGE12A1_INDEPENDENT_AUDIT.md) · [12B](STAGE12B_INDEPENDENT_AUDIT.md) · [12B.1](STAGE12B1_INDEPENDENT_AUDIT.md) · [12C](STAGE12C_INDEPENDENT_AUDIT.md) · [12D](STAGE12D_INDEPENDENT_AUDIT.md) · [12E](STAGE12E_INDEPENDENT_AUDIT.md). 12F **no** tiene auditoría todavía. Son evidencia histórica, no sustituyen un control vigente.
+
+**Limitaciones conocidas:** cada documento de etapa tiene su sección; resumen en [PROJECT_CONTEXT](PROJECT_CONTEXT.md) y [DEVELOPMENT_ROADMAP](DEVELOPMENT_ROADMAP.md).
