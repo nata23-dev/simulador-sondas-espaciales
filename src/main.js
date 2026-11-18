@@ -12,6 +12,7 @@ import { crearControlesTemporales } from './ui/TimelineControls.js';
 import { crearControlesVisualizacion } from './ui/VisualizationControls.js';
 import { crearControlesHUD } from './ui/HudControls.js';
 import { crearControlesMision } from './ui/MissionControls.js';
+import { createExperimentalLaboratory } from './ui/ExperimentalLaboratory.js';
 import { crearControlesDistancia } from './ui/DistanceToolControls.js';
 import { crearControlesModoHistorico } from './ui/HistoricalModeControls.js';
 import { createMeasurableBodyEndpoint } from './science/DistanceMeasurement.js';
@@ -1926,5 +1927,7 @@ crearWorkspaceLayout({
     return true;
   }
 });
+const laboratorioExperimental = createExperimentalLaboratory();
+if (import.meta.hot) import.meta.hot.dispose(() => laboratorioExperimental.dispose());
 actualizarOrientacionHistorica();
 iniciar();

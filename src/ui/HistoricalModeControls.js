@@ -706,6 +706,17 @@ export function crearControlesModoHistorico({
       alCambiarModoApp?.(destino);
     });
   }
+  // El laboratorio y los enlaces profundos también observan data-app-mode.
+  // Si otra ruta lo cambia, sincroniza la navegación y activa el modo real.
+  new MutationObserver(() => {
+    const modo = appEl.dataset.appMode;
+    if (!botonesModo.some(btn => btn.dataset.modeBtn === modo)) return;
+    if (modo !== modoAppActual) {
+      establecerModoVisualApp(modo);
+      alCambiarModoApp?.(modo);
+    }
+    for (const btn of botonesModo) btn.setAttribute('aria-pressed', String(btn.dataset.modeBtn === modo));
+  }).observe(appEl, { attributes: true, attributeFilter: ['data-app-mode'] });
 
   // Controles de barra superior histórica
   for (const btn of botonesVisibilidad) {
