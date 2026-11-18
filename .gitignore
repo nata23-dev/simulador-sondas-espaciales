@@ -41,3 +41,11 @@ __pycache__/
 /UX_Auditoria_Completa_Voyager.zip
 /UX_Rediseno_Profesional_Voyager.zip
 /.redesign-chrome/
+
+# Consolidación (12F+): archivos locales que no forman parte del repositorio
+/scratch/
+/.claude/settings.local.json
+/evidence/stage12a.zip
+/evidence/stage12a1.zip
+/evidence/stage12b.zip
+Thumbs.db
