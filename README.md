@@ -1,6 +1,6 @@
 # Simulador de Sondas Espaciales
 
-Simulador interactivo del sistema solar desarrollado con Three.js y Vite. Permite consultar las posiciones planetarias por fecha, seleccionar un planeta y viajar hasta él con la cámara.
+
 
 ## Ponerlo en marcha
 
