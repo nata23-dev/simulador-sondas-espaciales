@@ -1,0 +1,29 @@
+{
+  "shots": [
+    "01_mars_porkchop_and_best.png",
+    "02_europa_future_destination.png",
+    "03_jupiter_direct_transfer.png",
+    "04_mission_center_overview.png",
+    "05_mission_center_exterior.png",
+    "06_mission_center_arrival_telemetry.png",
+    "07_fix_12f1_touchdown_local_camera.png",
+    "08_responsive_390_interplanetary.png"
+  ],
+  "checks": {
+    "coverage": "Cobertura real de efemérides: 2026-11-18 → 2046-01-01 (TDB). Fuera de ella: «Efemérides no disponibles para el intervalo solicitado».",
+    "marsMessage": "MEJOR CANDIDATO DEL INTERVALO EXAMINADO: salida 2028-11-29, 312 d. El mejor candidato lo es solo dentro de la cuadrícula examinada (resolución finita); no es un óptimo global.",
+    "marsSelected": "MEJOR CANDIDATO DEL INTERVALO EXAMINADOMISIÓN NO EVALUADA COMPLETAMENTE: transferencia geométrica calculada; no incluye lanzamiento, correcciones, captura ni verificación de la sonda.Salida2028-11-29 · 00:00:00 UTC · 2028-11-29 · 00:01:09 TDBLlegada2029-10-07 · 00:00:00 UTC · 2029-10-07 · 00:01:09 TDBTiempo de vuelo312 dC3 de salida8.999 km²/s²v∞ de salida2.9998 km/sv∞ de llegada3.1086 km/sAsíntota de salida (DLA / RLA, ICRF ecuatorial)29.64° / 183.41°Δv ideal de inyección desde 200 km3.6273 km/sTipo · cónicaII (Δθ > 180°) · elipse · Δθ 217.54°Convergencia11 iteraciones · error de tiempo 3.2e-16Cierre (propagación independiente)1.42e-6 kmTierra en la salida (km)[57,911,250, 135,721,576, -9,744]Marte en la llegada (km)[53,121,096, -206,836,526, -5,637,377]Efeméridesip-planets-inner-2026-2031 (DE441) · ip-planets-inner-2026-2031 (mar099) · cubic-hermite",
+    "europa": "Europa: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Júpiter. Transferencia preliminar calculable hasta el sistema de Júpiter.Descenso local: OPERATIVO (Descenso propulsado en vacío justificado: Exosfera tenue; entorno de radiación joviana no modelado. Modelo de un solo cuerpo; sin rotación del cuerpo ni perturbaciones de terceros cuerpos.)Etapas científicas pendientes: Llegada a la esfera de influencia y transición a dinámica planetocéntrica → Captura/inserción orbital en el planeta anfitrión → Transferencia dentro del sistema de Júpiter hasta Europa → Aproximación, órbita y descenso conectados.Calcular transferencia preliminar hasta Júpiter",
+    "invalidated": "Las condiciones cambiaron: los resultados anteriores se invalidaron. Vuelve a buscar.",
+    "jupiterSelected": "MEJOR CANDIDATO DEL INTERVALO EXAMINADOMISIÓN NO EVALUADA COMPLETAMENTE: transferencia geométrica calculada; no incluye lanzamiento, correcciones, captura ni verificación de la sonda.Salida2028-12-26 · 00:00:00 UTC · 2028-12-26 · 00:01:09 TDBLlegada2031-12-21 · 00:00:00 UTC · 2031-12-21 · 00:01:09 TDBTiempo de vuelo1,090 dC3 de salida75.732 km²/s²v∞ de salida8.7024 km/sv∞ de llegada5.6965 km/sAsíntota de salida (DLA / RLA, ICRF ecuatorial)-3.5° / 184.01°Δv ideal de inyección desde 200 km6.2491 km/sTipo · cónicaII (Δθ > 180°) · elipse · Δθ 184.72°Convergencia10 iteraciones · error de tiempo 1.8e-16Cierre (propagación independiente)2.47e-4 kmTierra en la salida (km)[-11,123,387, 146,706,097, -10,098]Júpiter en la llegada (km)[122,728,550, -770,262,327, 456,133]Efeméridesip-planets-inner-2026-2031 (DE441) · ip-planets-outer-2026-2046 (jup365_merged) · cubic-hermiteTransferencia directa idealizada. Las misiones reales a los planetas exteriores suelen requerir asistencias gravitacionales (no implementadas) para reducir el C3.",
+    "mcReadiness": "Transferencia Tierra → Marte vigente. Reproducción de la cónica heliocéntrica calculada (Lambert); no incluye lanzamiento, correcciones ni captura, y no certifica una misión operativa.",
+    "mcMessage": "Transferencia preparada en la salida heliocéntrica desde Tierra hacia Marte.",
+    "mcTelemetryMid": "Tipo de misiónTransferencia interplanetaria preliminarMisiónTierra → Marte (2028-11-29)Origen → destinoTierra → MarteSondaExploración interplanetariaFaseCrucero heliocéntrico (cónica)Fecha UTC2028-12-07 · 17:39:37 UTC (predicción: sin segundos intercalares futuros)Época TDB2028-12-07 · 17:40:46 TDB · JD 2,462,113.23665Desde la salida8.74 dTiempo restante303.26 dMarcoHeliocéntrico ICRF eclíptico J2000 (centro del Sol 500@10)Posición[34,314,497, 143,157,794, 1,059,974] kmVelocidad[-31.9258, 7.6421, 1.4062] km/s",
+    "arrivalDerived": "Distancia al Sol213,623,452 km · 1.428 AURapidez heliocéntrica22.7854 km/sDistancia a Tierra259,032,198 kmDistancia a Marte0 kmVelocidad relativa a Marte3.1086 km/s",
+    "arrivalResources": "C3 de salida8.999 km²/s²v∞ de salida2.9998 km/sv∞ de llegada3.1086 km/sDuración total312 dΔv ideal de inyección (órbita de 200 km)3.6273 km/s · no propagadoCombustible durante el cruceroNo aplica: sin maniobras programadas ni integradas",
+    "landerPanelOpen": true,
+    "landingPreparedMessage": "Descenso preparado en la órbita inicial alrededor de Luna (marco inercial local).",
+    "landingOutcome": "Contacto y evaluación · ATERRIZAJE SUAVE SEGÚN EL MODELO (descenso local aislado). Misión completa (viaje, llegada y descenso conectados): no evaluada. Viabilidad operativa: no verificada."
+  },
+  "errors": []
+}

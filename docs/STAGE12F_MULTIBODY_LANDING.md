@@ -1,6 +1,6 @@
 # Etapa 12F — Arquitectura multicuerpo y descenso planetario (incluye 12E.1)
 
-**Estado:** implementada y probada localmente (213/213 pruebas en la batería completa). **No está validada**: queda pendiente la auditoría independiente de Gemini. Sin commit, push, despliegue ni ZIP.
+**Estado:** implementada y probada localmente (213/213 pruebas en su entrega). **Aprobada por Gemini** dentro de su modelo local según el informe [STAGE12F_INDEPENDENT_AUDIT.md](STAGE12F_INDEPENDENT_AUDIT.md) (18-11-2026, dictamen «APROBADO»), con dos observaciones menores (OBS-12F-01 tolerancias, OBS-12F-02 panel del módulo) corregidas en **12F.1** (ver §13). Sin commit, push, despliegue ni ZIP.
 
 Documentos asociados: [capacidades por cuerpo](MULTIBODY_MISSION_CAPABILITY_MATRIX.md), [arquitectura](MULTIBODY_MISSION_ARCHITECTURE.md), [12E](STAGE12E_EARTH_LAUNCH.md).
 
@@ -48,7 +48,16 @@ Cambios en módulos existentes: `MissionControlCenter.js` (rama `landing`, cáma
 
 ## 7. Contacto y clasificación
 
-`|r| = R` con tolerancia 1e-9 km y bisección a 1e-7 s; no se atraviesa la superficie ni se anula la velocidad. Se registran instante, posición, velocidad, altitud, velocidades vertical y horizontal respecto al suelo, masa, propelente, motor, destino y coordenadas locales. Umbrales (aproximaciones): suave ≤ 3 / 1,5 m/s; brusco ≤ 6 / 3 m/s; impacto en otro caso. Precedencia: contacto suave; EMPUJE INSUFICIENTE (empuje/peso ≤ 1 al iniciar el frenado); COMBUSTIBLE AGOTADO (si ocurrió antes del contacto); saturación del guiado en los últimos 120 s; brusco; impacto. DESCENSO INCOMPLETO si no hay contacto; NO VERIFICABLE si no es finito o la integración no converge. No se declara supervivencia estructural.
+Evento `|r| = R` localizado por bisección; no se atraviesa la superficie ni se anula la velocidad. **Tolerancias (12F.1, OBS-12F-01) — son magnitudes distintas y ninguna sustituye a otra:**
+
+| Magnitud | Valor | Qué controla |
+|---|---|---|
+| Predicado geométrico | contacto si `|r| < R − 1e-9 km` (`CONTACT_PREDICATE_KM`) | Solo el signo: el estado aceptado está por debajo de R. No es una precisión espacial. |
+| Intervalo temporal de localización | bisección hasta `Δt ≤ 1e-7 s` (`CONTACT_BRACKET_SECONDS`) | El instante de contacto queda entre dos estados separados como mucho 1e-7 s. |
+| Error espacial de localización | `≲ |v_r|·Δt` (p. ej. 1,5 km/s × 1e-7 s = 0,15 mm) | El residuo radial observado está entre −(1e-9 km + |v_r|·Δt) y −1e-9 km. Domina el término mayor: a velocidades de impacto (km/s) la cota temporal; en un contacto suave, el predicado. |
+| Error de integración | DOPRI54 abs. `1e-7 km` (posición), rel. `1e-10` | Precisión de la trayectoria integrada; independiente de la bisección. Contrastado con la caída radial analítica de Kepler (prueba N). |
+
+El resultado del descenso incluye `diagnostics.contactTolerances` (intervalo real, `|v_r|`, cota `|v_r|·Δt`, residuo observado y tolerancias de integración), visible en «Diagnósticos numéricos y límites». Descenso lunar de referencia (medido): Δt = 5,9e-8 s, |v_r| = 1,31 m/s, cota |v_r|·Δt = 7,8e-11 km (0,08 µm), residuo radial −1,04e-9 km (−1,04 µm): en un contacto suave domina el predicado. A 1,5 km/s la cota sería 0,15 mm y dominaría. Se registran instante, posición, velocidad, altitud, velocidades vertical y horizontal respecto al suelo, masa, propelente, motor, destino y coordenadas locales. Umbrales (aproximaciones): suave ≤ 3 / 1,5 m/s; brusco ≤ 6 / 3 m/s; impacto en otro caso. Precedencia: contacto suave; EMPUJE INSUFICIENTE (empuje/peso ≤ 1 al iniciar el frenado); COMBUSTIBLE AGOTADO (si ocurrió antes del contacto); saturación del guiado en los últimos 120 s; brusco; impacto. DESCENSO INCOMPLETO si no hay contacto; NO VERIFICABLE si no es finito o la integración no converge. No se declara supervivencia estructural.
 
 ## 8. Resultados de los escenarios (módulo demostrativo, sonda de 561 kg, órbita circular de 100 km, periapsis de descenso 15 km)
 
@@ -77,3 +86,10 @@ Ver [arquitectura §22–23](MULTIBODY_MISSION_ARCHITECTURE.md). Además: el gui
 ## 12. Recomendación siguiente
 
 Efemérides absolutas y orientación de cuerpos (UTC↔TDB, IAU) más cambio de esfera de influencia: es la dependencia común de toda misión continua Tierra → otro cuerpo, y desbloquea además coordenadas fijas al cuerpo y velocidad de superficie real.
+
+## 13. Correcciones 12F.1 (18-11-2026)
+
+1. **Cámara en el contacto lunar (captura `05_telemetry_touchdown_moon.png`, visor gris).** Causa verificada en navegador: en la cámara local la posición se copiaba exacta pero el objetivo se suavizaba (`lerp 0,18` por cuadro); tras un salto temporal el objetivo quedaba kilómetros por detrás mientras la cámara estaba a ~0,35 km del vehículo, de modo que el encuadre apuntaba al suelo. Además, la esfera central facetada (40×28) quedaba hasta ~0,3 % de R por debajo del radio real y el horizonte salía inclinado (eje «arriba» del mundo). Corrección (solo visual, `MissionExecutionView.js`): objetivo exacto sin suavizado en la cámara local, «arriba» = vertical local, plano cercano fijado al entrar en la vista, parche de suelo tangente a radio R exacto bajo el vehículo, anillo en el punto bajo el vehículo, esfera de 96×64 segmentos y, solo en descensos, modelo ampliado apoyado por su base sobre el punto material y orientado con la vertical local. La trayectoria y las coordenadas del aterrizaje no cambian (prueba Z-A).
+2. **Mensajes.** «Misión preparada en la órbita terrestre inicial» aparecía en descensos lunares. Ahora el mensaje depende del tipo de misión y del cuerpo central (`preparedMessage`, `resetMessage`). El resultado de un descenso se muestra como «ATERRIZAJE SUAVE SEGÚN EL MODELO (descenso local aislado). Misión completa (viaje, llegada y descenso conectados): no evaluada. Viabilidad operativa: no verificada.» (prueba Z-B).
+3. **Panel del módulo de aterrizaje** abierto por defecto, titulado «Módulo de aterrizaje (ilustrativo · editable)» con una nota de que los valores son editables; valores y presets sin cambios (prueba Z-C).
+4. **Tolerancias de contacto** documentadas por separado (§7) y expuestas en el resultado; prueba Z-D comprueba `Δt ≤ 1e-7 s`, la cota `|v_r|·Δt` y que el residuo radial esté dentro de ella.

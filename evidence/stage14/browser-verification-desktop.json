@@ -1,0 +1,131 @@
+{
+  "shots": [
+    "d1920_01_solar_overview.png",
+    "d1920_02_area_map.png",
+    "d1920_03_solar_jupiter_selected.png",
+    "d1920_04_voyager_welcome.png",
+    "d1920_05_voyager_explore.png",
+    "d1920_06_voyager_data.png",
+    "d1920_07_voyager_history.png",
+    "d1920_08_voyager_photos.png",
+    "d1920_09_voyager_cameras.png",
+    "d1920_10_lab_orbital_simulation.png",
+    "d1920_11_lab_hangar.png",
+    "d1920_12_lab_engineering.png",
+    "d1920_13_launch_empty.png",
+    "d1920_14_launch_results.png",
+    "d1920_15_center_launch.png",
+    "d1920_16_landing_results.png",
+    "d1920_17_center_landing_contact_local.png",
+    "d1920_18_lunar_planner_result.png"
+  ],
+  "checks": {
+    "areaMapEntries": 12,
+    "areaMapClosedByEscape": true,
+    "jupiterCard": "FICHA ASTRONÓMICAJúpiterContraer Vectores de NASA/JPL Horizons · distancia y rapidez derivadas Distancia heliocéntrica5.309864 AUMagnitud del vector de posición Equivalente794,344,418 km Rapidez12.796 km/s0.00739 AU/día Coordenadas y refere",
+    "areaRoutes": {
+      "solar": {
+        "ok": true,
+        "mode": "exploracion",
+        "labHidden": true,
+        "section": "hangar",
+        "plannerMode": "lunar",
+        "crumb": "Hangar"
+      },
+      "voyager": {
+        "ok": true,
+        "mode": "historico",
+        "labHidden": true,
+        "section": "hangar",
+        "plannerMode": "lunar",
+        "crumb": "Hangar"
+      },
+      "hangar": {
+        "ok": true,
+        "mode": "experimental",
+        "labHidden": false,
+        "section": "hangar",
+        "plannerMode": "lunar",
+        "crumb": "Hangar"
+      },
+      "engineering": {
+        "ok": true,
+        "mode": "experimental",
+        "labHidden": false,
+        "section": "engineering",
+        "plannerMode": "lunar",
+        "crumb": "Ingeniería"
+      },
+      "orbital": {
+        "ok": true,
+        "mode": "experimental",
+        "labHidden": true,
+        "section": "engineering",
+        "plannerMode": "lunar",
+        "crumb": "Ingeniería"
+      },
+      "launch": {
+        "ok": true,
+        "mode": "experimental",
+        "labHidden": false,
+        "section": "launch",
+        "plannerMode": "lunar",
+        "crumb": "Lanzamiento terrestre"
+      },
+      "lunar": {
+        "ok": true,
+        "mode": "experimental",
+        "labHidden": false,
+        "section": "planner",
+        "plannerMode": "lunar",
+        "crumb": "Tierra–Luna y empuje finito"
+      },
+      "finite": {
+        "ok": true,
+        "mode": "experimental",
+        "labHidden": false,
+        "section": "planner",
+        "plannerMode": "lunar",
+        "crumb": "Tierra–Luna y empuje finito"
+      },
+      "landing": {
+        "ok": true,
+        "mode": "experimental",
+        "labHidden": false,
+        "section": "landing",
+        "plannerMode": "lunar",
+        "crumb": "Descenso y aterrizaje"
+      },
+      "interplanetary": {
+        "ok": true,
+        "mode": "experimental",
+        "labHidden": false,
+        "section": "planner",
+        "plannerMode": "interplanetary",
+        "crumb": "Misiones interplanetarias"
+      },
+      "integrated": {
+        "ok": true,
+        "mode": "experimental",
+        "labHidden": false,
+        "section": "planner",
+        "plannerMode": "integrated",
+        "crumb": "Misión completa"
+      },
+      "center": {
+        "ok": true,
+        "mode": "experimental",
+        "labHidden": false,
+        "section": "center",
+        "plannerMode": "integrated",
+        "crumb": "Centro de Misión"
+      }
+    },
+    "launchHud": "Lanzamiento terrestreAscensoPAUSADA · 0 s transcurridosAltitud0.003 kmVelocidad[0.40356, 0.06681, 0] km/sMasa103,361 kgPropelente95,000 kg",
+    "landingHud": "Descenso y aterrizajeContacto y evaluaciónFINALIZADA LA REPRODUCCIÓN · 3,958 s transcurridosAltitud-0 kmVelocidad[0.00126, 0.00028, 0.00016] km/sMasa3,408.6 kgPropelente1,347.6 kg"
+  },
+  "overflow": {},
+  "errors": [
+    "d1920: FALLO DEL GUION: page.click: Timeout 30000ms exceeded. | Call log: | \u001b[2m  - waiting for locator('#mc-pause')\u001b[22m | \u001b[2m    - locator resolved to <button id=\"mc-pause\" type=\"button\">Pausar</button>\u001b[22m | \u001b[2m  - attempting click action\u001b[22m | \u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m"
+  ]
+}

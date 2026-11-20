@@ -1,0 +1,74 @@
+{
+  "part": "responsive",
+  "startedAt": "2026-11-20T00:53:29.040Z",
+  "shots": [
+    "r320x568_01_hangar_juno.png",
+    "r320x568_02_history_sheet.png",
+    "r320x568_03_engineering_power.png",
+    "r375x667_01_hangar_juno.png",
+    "r375x667_02_history_sheet.png",
+    "r375x667_03_engineering_power.png",
+    "r390x844_01_hangar_juno.png",
+    "r390x844_02_history_sheet.png",
+    "r390x844_03_engineering_power.png",
+    "r768x1024_01_hangar_juno.png",
+    "r768x1024_02_history_sheet.png",
+    "r768x1024_03_engineering_power.png",
+    "r1280x720_01_hangar_juno.png",
+    "r1280x720_02_history_sheet.png",
+    "r1280x720_03_engineering_power.png",
+    "r1366x768_01_hangar_juno.png",
+    "r1366x768_02_history_sheet.png",
+    "r1366x768_03_engineering_power.png",
+    "r1920x1080_01_hangar_juno.png",
+    "r1920x1080_02_history_sheet.png",
+    "r1920x1080_03_engineering_power.png"
+  ],
+  "checks": {
+    "r320x568_hangarClipping": [],
+    "r320x568": {
+      "docOverflow": 0,
+      "powerTableOverflow": 0,
+      "sheetVisible": false
+    },
+    "r375x667_hangarClipping": [],
+    "r375x667": {
+      "docOverflow": 0,
+      "powerTableOverflow": 0,
+      "sheetVisible": false
+    },
+    "r390x844_hangarClipping": [],
+    "r390x844": {
+      "docOverflow": 0,
+      "powerTableOverflow": 0,
+      "sheetVisible": false
+    },
+    "r768x1024_hangarClipping": [],
+    "r768x1024": {
+      "docOverflow": 0,
+      "powerTableOverflow": 0,
+      "sheetVisible": false
+    },
+    "r1280x720_hangarClipping": [],
+    "r1280x720": {
+      "docOverflow": 0,
+      "powerTableOverflow": 0,
+      "sheetVisible": false
+    },
+    "r1366x768_hangarClipping": [],
+    "r1366x768": {
+      "docOverflow": 0,
+      "powerTableOverflow": 0,
+      "sheetVisible": false
+    },
+    "r1920x1080_hangarClipping": [],
+    "r1920x1080": {
+      "docOverflow": 0,
+      "powerTableOverflow": 0,
+      "sheetVisible": false
+    }
+  },
+  "overflow": {},
+  "errors": [],
+  "finishedAt": "2026-11-20T00:56:22.847Z"
+}

@@ -43,6 +43,9 @@ Notas de procedencia:
 | Planetas | `public/data/efemerides-2026.json` (Horizons) | ICRF eclíptico J2000, heliocéntrico | TDB | 2026-10-01 → 2026-11-01 (1 día) |
 | Satélites | `moons-2026-10.json`, `moons-stage6-2026-10.json` (Horizons) | ICRF eclíptico J2000, planetocéntrico | TDB | 2026-10-01 → 2026-11-01 (1 h) y ventanas históricas Voyager |
 | Descenso 12F | simulación local | inercial local del cuerpo, ejes arbitrarios | tiempo de simulación (s) | sin efemérides; **no conectado con ICRF** |
+| Planetas 12G | `public/data/interplanetary/*.json` (Horizons, DE441/mar099/jup365/sat441l/ura184/nep098) | ICRF eclíptico J2000, heliocéntrico (500@10) | TDB | 2026-11-18 → 2046-01-01 (1 d internos, 4 d externos). [Cobertura](INTERPLANETARY_EPHEMERIS_COVERAGE.md) |
+| Baricentros 5–8 (13) | `interplanetary/ip-barycenters-outer-2026-2046.json` (Horizons, DE441) | ICRF eclíptico J2000, heliocéntrico (500@10) | TDB | 2026-11-18 → 2046-01-01 (4 d; error ≤ 3,2 m frente a Horizons) |
+| Galileanos por ventana (13) | `interplanetary/galilean-moons-jsb-2031-2032.json` (Horizons) | ICRF eclíptico J2000, centrado en el baricentro 5 (500@5) | TDB | **solo 2031-08-01 → 2032-06-01** (1–6 h). [13](STAGE13_INTEGRATED_MISSIONS.md#3-datos-científicos) |
 
 Rotación, eje polar y orientación IAU **no existen en el proyecto** para ningún cuerpo: `rotation: null` en todos los perfiles. Con rotación nula, la velocidad respecto al suelo es la velocidad en el marco local (error del orden de metros por segundo para cuerpos de rotación lenta). El motor ya implementa `v_rel = v − ω × r` y está probado con un perfil sintético.
 
@@ -57,7 +60,11 @@ Rotación, eje polar y orientación IAU **no existen en el proyecto** para ning�
 | Descenso atmosférico (entrada, calentamiento, paracaídas, propulsión terminal) | PENDIENTE | Venus, Tierra, Marte, Titán; Tritón tras analizar su atmósfera. |
 | Sonda de entrada atmosférica | PENDIENTE (categoría futura) | Júpiter, Saturno, Urano, Neptuno. |
 | Lanzamiento desde otros cuerpos | PENDIENTE | Luna y Marte exigirían generalizar `Launch*.js` (§20.4 del informe). |
-| Transferencias interplanetarias o entre lunas | PENDIENTE | Sin solucionador de Lambert, sin cambio de esfera de influencia. |
+| Transferencia heliocéntrica Tierra → planeta (12G) | OPERATIVO (aprobado por Gemini) | Lambert cero revoluciones con efemérides Horizons; C3, v∞, Δv ideal de inyección. Cónica de dos cuerpos, sin perturbaciones ni asistencias. [12G](STAGE12G_INTERPLANETARY_PLANNING.md) |
+| Encuentro planetario: SOI, hipérbola, plano B, periapsis apuntado (13) | OPERATIVO (pendiente de auditoría) | Cónicas parcheadas; todos los planetas (gigantes al baricentro). [13](STAGE13_INTEGRATED_MISSIONS.md) |
+| Captura con empuje finito en planeta o satélite (13) | EXPERIMENTAL | Retrógrada continua, corte por apoapsis, agotamiento y sobrevuelo registrados. Módulo de propulsión ilustrativo. |
+| Transferencia planetocéntrica y captura en un satélite + descenso 12F conectado (13) | EXPERIMENTAL | Solo galileanos en 2031-08 → 2032-06; referencia Tierra → Júpiter → Europa. Satélites de Saturno, Urano y Neptuno: PENDIENTE (sin ventanas). |
+| Inyección desde el lanzamiento 12E | PENDIENTE | La inyección interplanetaria es una condición inicial. |
 | Superficie, instrumentos, muestras | PENDIENTE | Sin modelo de superficie. |
 
 Limitaciones de la combinación módulo–cuerpo (resultados de las pruebas con el módulo demostrativo, 16 kN, acelerador mínimo 10 %):
@@ -71,6 +78,6 @@ Limitaciones de la combinación módulo–cuerpo (resultados de las pruebas con 
 1. Rotación, eje y orientación IAU de cada cuerpo (período, polo, meridiano origen) para marcos fijos al cuerpo y coordenadas superficiales.
 2. Modelos atmosféricos de Venus, Marte, Titán (y Tritón) y coeficientes aerodinámicos de entrada.
 3. Verificación independiente de la tabla de GM de satélites y GM de cuerpos individuales de los sistemas de Marte y de los planetas gigantes.
-4. Efemérides de ventanas amplias y orientación de cuerpos para anclar simulaciones locales a TDB/ICRF.
+4. Orientación de cuerpos para anclar simulaciones locales a TDB/ICRF (las efemérides planetarias amplias existen desde 12G; en 13 solo hay una ventana de satélites galileanos 2031-08 → 2032-06).
 5. Modelo de terreno y de patas/impacto para dictaminar supervivencia.
 6. Perturbaciones: J2/no esfericidad, terceros cuerpos (marea del planeta anfitrión en los satélites), presión de radiación.

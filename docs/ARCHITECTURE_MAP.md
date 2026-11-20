@@ -78,6 +78,43 @@ La continuidad global de Voyager **no se resuelve** fusionando soluciones SPK: e
 | Planificador | `MissionPlanStore.validatePlanOptions`, `createMissionPlan`, `designSignature`, `isMissionResultCurrent`; `MissionPhysics.calculateLunarTransfer`; `MissionEngineering.evaluateMission`; `MissionTrajectoryView.createMissionTrajectoryView`; `ui/MissionPlanner.createMissionPlanner`. | Resultado lunar con trayectoria DOPRI54 y presupuesto de inyección. Solo Luna tiene modelo disponible. Un cambio de diseño u opciones invalida el resultado. |
 | Centro de Misión | `MissionPlayback.createMissionExecution`, `sampleMissionExecution`, `createPlaybackClock`; `MissionTelemetry.deriveMissionTelemetry`; `MissionExecutionView.createMissionExecutionView`, `missionCameraPose`; `ui/MissionControlCenter.createMissionControlCenter`. | Reproduce estados ya calculados, eventos, cinco cámaras y telemetría. No reintegra ni consume combustible al reproducir. |
 
+**Planificación interplanetaria (12G):** `public/data/interplanetary-ephemerides-catalog-v1.json` + `public/data/interplanetary/*.json` → `science/InterplanetaryEphemeris` (sobre `EphemerisProvider` y Hermite; `loadWindow().stateAt` síncrono) → `lab/InterplanetaryPlan.searchLaunchWindows` / `evaluateTransfer` (`science/LambertSolver`, `KeplerPropagator`, `AstrodynamicsTime`, `Frames`) → `ui/InterplanetaryPlanner` (modalidad del Planificador) → `lab/InterplanetaryPlayback` → Centro de Misión (`kind: 'interplanetary'`, escena heliocéntrica a 32 u/AU en `MissionExecutionView`). [12G](STAGE12G_INTERPLANETARY_PLANNING.md).
+
+**Presentación común (14):** `ui/theme.css` se importa al final de `main.js` y superpone tokens y componentes a las hojas existentes; `ui/AppNavigator.js` añade el mapa de áreas (cambia de modo con los botones existentes y emite `lab:navigate` `{section, plannerMode, focus}`, que atiende `ExperimentalLaboratory.js`); el HUD y la barra de reproducción del Centro (`MissionControlCenter.js`) leen la telemetría ya renderizada y reutilizan los controles existentes. Ningún módulo de `science/` ni `lab/` cambia. [14](STAGE14_UI_UX_SHOWCASE.md).
+
+**Identidad visual (14.1):** `ui/theme.css` reescrita con paleta grafito, tokens por cuerpo e Inter (`ui/fonts/`). La capa añade tres módulos, todos de solo presentación y conectados en `main.js` con su `dispose` para HMR:
+
+- `ui/CommandPalette.js`: búsqueda global, abierta por el evento `app:open-search` o con Ctrl/⌘+K. Pulsa los botones de destino, áreas y acciones existentes.
+- `ui/FeaturedMissions.js`: portada de misiones destacadas en `.scene-panel`. Navega con `AppNavigator.go`.
+- `ui/LabFormEnhancer.js`: lee filas `.lab-metric` y campos ya presentados para mostrar cifras clave, resúmenes de sección y el tono del veredicto.
+
+Otros cambios:
+
+- `AppNavigator.js` añade la ruta `.app-crumb` en la cabecera.
+- `TimelineLayout.js` añade el indicador `.temporal-state`.
+- `PlanetLabels.js` y `SolarSystem.js` comparten los colores por cuerpo.
+- `obtenerZonaEncuadre` descuenta la portada y la columna de herramientas.
+
+**Biblioteca de herencia y Hangar modular (15):**
+
+- `lab/HeritageCatalog.js`: fuentes, buses con puntos (`accepts`, `interface`, `envelopeM`, `direction`), piezas con `data` (calidad y fuente por campo) y `HISTORICAL_PROBES`.
+- `lab/SpacecraftPower.js`: potencia solar y RTG, y empuje eléctrico según la potencia.
+- `ComponentCatalog.js` une las piezas ilustrativas y las de herencia (`ALL_COMPONENTS`).
+- `ProbeDesign.js`: `historicalDesign` y `HISTORICAL_PRESETS`; valida herraje, envolvente y adaptador.
+- `ProbeEngineering.calculateEngineering` añade centro de masas, perfil de potencia, propulsión eléctrica, compatibilidad, veredicto y calidad de datos.
+- `lab/HeritageModels.js` construye la geometría procedimental que monta `ProbeAssemblyView.js` (orientación por punto, encuadre, marcadores).
+- `IntegratedMission.js` recibe el modelo eléctrico de la sonda (fase `power`, empuje eléctrico en el destino, `moon.mode: 'flyby'`).
+- `graphics/QualityProfile.js` registra todos los renderizadores WebGL y aplica la relación de píxeles del perfil.
+
+**Flota fija con modelos de NASA (15.1):**
+
+- `graphics/NasaProbeModels.js`: registro de procedencia de los GLB (`public/models/nasa/` y `Voyager.glb`), carga con `GLTFLoader` y `DRACOLoader` (decodificador en `public/libs/draco/gltf/`), caché por modelo, `attachNasaModel` y `localBounds`.
+- `ProbeAssemblyView.js` (Hangar) y `MissionExecutionView.js` (Centro de Misión) montan primero la geometría procedimental y la sustituyen por el modelo de NASA cuando termina de cargarse; si falla, la conservan.
+- `ui/ExperimentalLaboratory.js`: flota `flota-<id>` construida con `historicalDesign`, sonda activa en `#lab-ctx-probe` (persistida en `simulador:sonda-activa`) y difundida con `setDesign` a todos los planificadores. El motor de piezas y adaptadores sigue en `lab/` y en las pruebas, pero la interfaz no lo expone.
+- Sin módulos auxiliares: `IntegratedMissionPlanner` llama siempre a `computeIntegratedMission` con `propulsionModule: null`, `lander: null` y `landing.enabled: false`. `LandingPlanner.js` ya no se monta (lo inspecciona una prueba de 12F.1) y la sección `landing` desaparece del laboratorio y del navegador de áreas.
+
+**Misiones integradas (13):** `interplanetary-ephemerides-catalog-v1.json` + `encounter-ephemerides-catalog-v1.json` (baricentros 5–8) y la ventana `interplanetary/galilean-moons-jsb-2031-2032.json` (`science/PlanetocentricWindow`) → `lab/EncounterDesign.aimEncounter` (Lambert a la SOI; `science/PlanetaryEncounter`) → `lab/OrbitalInsertion.simulateInsertion` (DOPRI54, masa variable) → `lab/IntegratedMission.computeIntegratedMission` (tramos `kepler`/`burn`/`landing`, conversión de marcos y continuidad; descenso por `BodyLandingSimulation` de 12F) → `ui/IntegratedMissionPlanner` (modalidad «Misión completa») → `lab/IntegratedMissionPlayback` (contextos heliocéntrico, planeta, satélite y descenso) → Centro de Misión (`kind: 'integrated'`). [13](STAGE13_INTEGRATED_MISSIONS.md).
+
 `MissionPhysics.js` usa efeméride geocéntrica lunar local `public/data/moons-2026-10.json`, el integrador existente y el término indirecto Tierra–Luna. El Centro muestra dos lados de la inyección impulsiva en `t=0` y Hermite entre nudos posteriores; su reloj visual no cambia la trayectoria. `MissionExecutionView.js` convierte centros km a 1 unidad/10 000 km y amplía la nave solo para inspección. [12A](../ETAPA-12A-LABORATORIO.md), [12B](STAGE12B_MISSION_PLANNER.md), [12C](STAGE12C_MISSION_CONTROL.md).
 
 ## Persistencia y verificación

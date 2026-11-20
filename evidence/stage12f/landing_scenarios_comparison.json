@@ -1,0 +1,196 @@
+{
+  "moon": {
+    "profile": "Luna",
+    "status": "CONTACTO",
+    "outcome": "ATERRIZAJE SUAVE SEGÚN EL MODELO",
+    "contactClass": "soft",
+    "elapsedSeconds": 3957.6206402265807,
+    "verticalMS": -1.305361758163668,
+    "horizontalMS": 0.03292543822114539,
+    "altitudeKm": -1.0443272913107648e-9,
+    "propellantConsumedKg": 2852.3629815347103,
+    "propulsiveDeltaVMS": 1854.4034220205604,
+    "reasons": [
+      "Contacto dentro de los límites suaves (3 m/s vertical, 1.5 m/s horizontal): v vertical 1.31 m/s, v horizontal 0.03 m/s respecto al suelo.",
+      "Umbrales de contacto: aproximaciones del simulador; no hay modelo de patas, materiales, cargas ni impacto, así que no se declara supervivencia estructural."
+    ],
+    "depletedAt": null,
+    "thrustToWeightPdi": 1.6109013370171916,
+    "executionTimeMs": 42.650199999999984
+  },
+  "europa": {
+    "profile": "Europa",
+    "status": "CONTACTO",
+    "outcome": "ATERRIZAJE SUAVE SEGÚN EL MODELO",
+    "contactClass": "soft",
+    "elapsedSeconds": 4096.119367361753,
+    "verticalMS": -1.2835139783433287,
+    "horizontalMS": 0.042394470917447545,
+    "altitudeKm": -1.0477378964424133e-9,
+    "propellantConsumedKg": 2517.465603708786,
+    "propulsiveDeltaVMS": 1568.5768520940096,
+    "reasons": [
+      "Contacto dentro de los límites suaves (3 m/s vertical, 1.5 m/s horizontal): v vertical 1.28 m/s, v horizontal 0.04 m/s respecto al suelo.",
+      "Umbrales de contacto: aproximaciones del simulador; no hay modelo de patas, materiales, cargas ni impacto, así que no se declara supervivencia estructural."
+    ],
+    "depletedAt": null,
+    "thrustToWeightPdi": 1.9933081301776021,
+    "executionTimeMs": 19.161100000000033
+  },
+  "ganymede": {
+    "profile": "Ganímedes",
+    "status": "CONTACTO",
+    "outcome": "ATERRIZAJE SUAVE SEGÚN EL MODELO",
+    "contactClass": "soft",
+    "elapsedSeconds": 4998.0592472400585,
+    "verticalMS": -1.2916040294433218,
+    "horizontalMS": 0.04593960972417245,
+    "altitudeKm": -1.0654730431269854e-9,
+    "propellantConsumedKg": 3096.0146635939236,
+    "propulsiveDeltaVMS": 2080.5941104376566,
+    "reasons": [
+      "Contacto dentro de los límites suaves (3 m/s vertical, 1.5 m/s horizontal): v vertical 1.29 m/s, v horizontal 0.05 m/s respecto al suelo.",
+      "Umbrales de contacto: aproximaciones del simulador; no hay modelo de patas, materiales, cargas ni impacto, así que no se declara supervivencia estructural."
+    ],
+    "depletedAt": null,
+    "thrustToWeightPdi": 1.818739114945396,
+    "executionTimeMs": 18.86080000000004
+  },
+  "callisto": {
+    "profile": "Calisto",
+    "status": "CONTACTO",
+    "outcome": "ATERRIZAJE SUAVE SEGÚN EL MODELO",
+    "contactClass": "soft",
+    "elapsedSeconds": 5090.395067845078,
+    "verticalMS": -1.2765580238434102,
+    "horizontalMS": 0.051708250519739214,
+    "altitudeKm": -1.0040821507573128e-9,
+    "propellantConsumedKg": 2841.64987362016,
+    "propulsiveDeltaVMS": 1844.8329314103803,
+    "reasons": [
+      "Contacto dentro de los límites suaves (3 m/s vertical, 1.5 m/s horizontal): v vertical 1.28 m/s, v horizontal 0.05 m/s respecto al suelo.",
+      "Umbrales de contacto: aproximaciones del simulador; no hay modelo de patas, materiales, cargas ni impacto, así que no se declara supervivencia estructural."
+    ],
+    "depletedAt": null,
+    "thrustToWeightPdi": 2.103820801430399,
+    "executionTimeMs": 17.169399999999996
+  },
+  "enceladusSmall": {
+    "profile": "Encélado",
+    "status": "CONTACTO",
+    "outcome": "ATERRIZAJE SUAVE SEGÚN EL MODELO",
+    "contactClass": "soft",
+    "elapsedSeconds": 6162.364143553527,
+    "verticalMS": -1.1199261925617572,
+    "horizontalMS": 9.696877444551948e-10,
+    "altitudeKm": -1.0364260560891125e-9,
+    "propellantConsumedKg": 153.50762025014,
+    "propulsiveDeltaVMS": 231.5105246047056,
+    "reasons": [
+      "Contacto dentro de los límites suaves (3 m/s vertical, 1.5 m/s horizontal): v vertical 1.12 m/s, v horizontal 0.00 m/s respecto al suelo.",
+      "Umbrales de contacto: aproximaciones del simulador; no hay modelo de patas, materiales, cargas ni impacto, así que no se declara supervivencia estructural."
+    ],
+    "depletedAt": null,
+    "thrustToWeightPdi": 5.45421952165748,
+    "executionTimeMs": 330.2571
+  },
+  "enceladusDemoRejection": {
+    "code": "NOT_SUPPORTED",
+    "message": "El empuje mínimo del módulo (0.776 m/s² con la masa final) supera la gravedad de Encélado (0.113 m/s²): no puede sostener un vuelo estacionario y el guiado en lazo cerrado no es aplicable (la integración conmutaría el motor en el umbral). Se necesita un módulo con menor empuje mínimo."
+  },
+  "mercury": {
+    "profile": "Mercurio",
+    "status": "CONTACTO",
+    "outcome": "EMPUJE INSUFICIENTE",
+    "contactClass": "impact",
+    "elapsedSeconds": 3452.583658702317,
+    "verticalMS": -113.46406349457271,
+    "horizontalMS": 118.78841622251262,
+    "altitudeKm": -8.143160812323913e-9,
+    "propellantConsumedKg": 4200,
+    "propulsiveDeltaVMS": 3388.85677049208,
+    "reasons": [
+      "Empuje insuficiente: empuje/peso local al inicio del frenado = 0.70 ≤ 1; el módulo no puede frenar ni sostenerse. Contacto: impacto (v vertical 113.46 m/s, v horizontal 118.79 m/s respecto al suelo).",
+      "Umbrales de contacto: aproximaciones del simulador; no hay modelo de patas, materiales, cargas ni impacto, así que no se declara supervivencia estructural."
+    ],
+    "depletedAt": 3436.4402636360555,
+    "thrustToWeightPdi": 0.7045317585284008,
+    "executionTimeMs": 25.262500000000045
+  },
+  "lowFuel": {
+    "profile": "Luna",
+    "status": "CONTACTO",
+    "outcome": "COMBUSTIBLE AGOTADO",
+    "contactClass": "impact",
+    "elapsedSeconds": 3709.3426653869715,
+    "verticalMS": -78.01352271645908,
+    "horizontalMS": 81.21233833219391,
+    "altitudeKm": -2.9156126402085647e-9,
+    "propellantConsumedKg": 1500,
+    "propulsiveDeltaVMS": 1667.8207102016984,
+    "reasons": [
+      "El propelente se agotó en T+3695.6 s, antes del contacto; evaluación del vuelo balístico restante: impacto (v vertical 78.01 m/s, v horizontal 81.21 m/s respecto al suelo).",
+      "Umbrales de contacto: aproximaciones del simulador; no hay modelo de patas, materiales, cargas ni impacto, así que no se declara supervivencia estructural."
+    ],
+    "depletedAt": 3695.609773872074,
+    "thrustToWeightPdi": 2.832309246488169,
+    "executionTimeMs": 6.740499999999997
+  },
+  "weakEngine": {
+    "profile": "Luna",
+    "status": "CONTACTO",
+    "outcome": "EMPUJE INSUFICIENTE",
+    "contactClass": "impact",
+    "elapsedSeconds": 6642.925732389472,
+    "verticalMS": -79.75010658085887,
+    "horizontalMS": 262.8960453077187,
+    "altitudeKm": -5.6754743127385154e-9,
+    "propellantConsumedKg": 4200,
+    "propulsiveDeltaVMS": 3388.8567704145767,
+    "reasons": [
+      "Empuje insuficiente: empuje/peso local al inicio del frenado = 0.40 ≤ 1; el módulo no puede frenar ni sostenerse. Contacto: impacto (v vertical 79.75 m/s, v horizontal 262.90 m/s respecto al suelo).",
+      "Umbrales de contacto: aproximaciones del simulador; no hay modelo de patas, materiales, cargas ni impacto, así que no se declara supervivencia estructural."
+    ],
+    "depletedAt": 6599.064622640989,
+    "thrustToWeightPdi": 0.4027253715635152,
+    "executionTimeMs": 56.63599999999997
+  },
+  "hardLanding": {
+    "profile": "Luna",
+    "status": "CONTACTO",
+    "outcome": "ATERRIZAJE BRUSCO",
+    "contactClass": "hard",
+    "elapsedSeconds": 3955.005628307994,
+    "verticalMS": -5.129136945430783,
+    "horizontalMS": 0.0755615278344261,
+    "altitudeKm": -1.3512817531591281e-9,
+    "propellantConsumedKg": 2842.8916028171357,
+    "propulsiveDeltaVMS": 1845.9406852214925,
+    "reasons": [
+      "Contacto fuera del límite suave pero dentro del límite brusco (v vertical 5.13 m/s, v horizontal 0.08 m/s respecto al suelo).",
+      "Umbrales de contacto: aproximaciones del simulador; no hay modelo de patas, materiales, cargas ni impacto, así que no se declara supervivencia estructural."
+    ],
+    "depletedAt": null,
+    "thrustToWeightPdi": 1.6109013370171916,
+    "executionTimeMs": 14.183099999999968
+  },
+  "impact": {
+    "profile": "Luna",
+    "status": "CONTACTO",
+    "outcome": "IMPACTO",
+    "contactClass": "impact",
+    "elapsedSeconds": 3951.798734722161,
+    "verticalMS": -9.628873078185077,
+    "horizontalMS": 0.21160960245275934,
+    "altitudeKm": -1.6618741938145831e-9,
+    "propellantConsumedKg": 2831.5263744399626,
+    "propulsiveDeltaVMS": 1835.8166794749282,
+    "reasons": [
+      "Contacto con velocidad excesiva (v vertical 9.63 m/s, v horizontal 0.21 m/s respecto al suelo).",
+      "Umbrales de contacto: aproximaciones del simulador; no hay modelo de patas, materiales, cargas ni impacto, así que no se declara supervivencia estructural."
+    ],
+    "depletedAt": null,
+    "thrustToWeightPdi": 1.6109013370171916,
+    "executionTimeMs": 13.879999999999995
+  }
+}

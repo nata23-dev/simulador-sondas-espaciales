@@ -7,6 +7,7 @@
 | Efemérides planetarias diarias, catálogos, Hipparcos | `public/data/` | Ejecución y pruebas |
 | Lunas, encuentros y tramos históricos Voyager | `public/data/historical/`, `public/data/*-v1.json` | Modo histórico |
 | Texturas, fotografías NASA, `Voyager.glb` | `public/textures`, `public/images`, `public/models` | Presentación (créditos en sus README) |
+| Modelos 3D de NASA de la flota (Cassini, Dawn, Juno) y decodificador Draco (15.1) | `public/models/nasa`, `public/libs/draco` | Presentación, archivos originales sin modificar; procedencia, commits y SHA-256 en sus README |
 | Solicitudes Horizons y manifiestos con hash | `evidence/voyager-*`, `evidence/stage*` | Auditorías reproducibles sin red |
 | Kernels SPK originales y alternativos (09B) | `evidence/voyager-reference-reconciliation/Kernels`, `evidence/voyager-stage9b/Kernels` | Diagnóstico; no son la trayectoria activa |
 

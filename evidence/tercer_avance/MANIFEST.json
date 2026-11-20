@@ -1,0 +1,369 @@
+{
+  "title": "Manifiesto de Evidencias - Tercer Avance",
+  "project": "Simulador de Sondas Espaciales",
+  "auditDate": "2026-11-19",
+  "auditor": "Gemini",
+  "totalFiles": 60,
+  "files": [
+    {
+      "path": "01_Sistema_Solar\\solar_01_vista_general_1920x1080.png",
+      "sizeBytes": 142683,
+      "sha256": "43f1659a23f44d553e3718d98c4bb4dfb4f320c6e5ffb8679bd06798a221ce72",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "01_Sistema_Solar\\solar_02_mapa_areas_1920x1080.png",
+      "sizeBytes": 215982,
+      "sha256": "0493058cc953f91bb99bd35bb88b110b89c323a75b1ed59acef616c4342e9559",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "01_Sistema_Solar\\solar_03_jupiter_seleccionado_ficha_1920x1080.png",
+      "sizeBytes": 483563,
+      "sha256": "8a6aa23d14c93eca9d98a7aeac5c04dceb1d93b87d2152403c0a21afab788327",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "01_Sistema_Solar\\solar_04_saturno_y_anillos_1920x1080.png",
+      "sizeBytes": 443722,
+      "sha256": "e875d3a72b14e685e94b48f08ca3862bbb9e5e12ccfa957f71cd93550ee83bd9",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "01_Sistema_Solar\\solar_05_controles_tiempo_y_camaras_1920x1080.png",
+      "sizeBytes": 453821,
+      "sha256": "4eee43de50429a95b54e0b8b6c781710b69cc885fd7149d46012e26c4fdecda9",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "02_Voyager\\voyager_01_dialogo_bienvenida_1920x1080.png",
+      "sizeBytes": 91084,
+      "sha256": "5bea265639d7be33e7ff9f1aa9ecebc503607e7b862ade34396b803c86af9ab2",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "02_Voyager\\voyager_02_exploracion_libre_trayectoria_1920x1080.png",
+      "sizeBytes": 586471,
+      "sha256": "6aebcf950288bae28aa0139b493f8e369fe84383240d7d2baaf13b99d0bdb621",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "02_Voyager\\voyager_03_telemetria_pestana_datos_1920x1080.png",
+      "sizeBytes": 604073,
+      "sha256": "cd1fdbe87ebca453cdba7fc2e9fbd2fe8422b2e8c5f257c78a38d94f5f89f4f1",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "02_Voyager\\voyager_04_linea_historica_pestana_historia_1920x1080.png",
+      "sizeBytes": 639375,
+      "sha256": "985058d451ea5f7c5cc9ae5ea00ce144bb6da7966c60bc710227f66018d43987",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "02_Voyager\\voyager_05_fotografias_nasa_pestana_fotos_1920x1080.png",
+      "sizeBytes": 623607,
+      "sha256": "d7439777ffeb9ca72e9b5808cf775e025a6139674677aea3e6c3698d15a80709",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "02_Voyager\\voyager_06_perspectiva_pestana_camaras_1920x1080.png",
+      "sizeBytes": 589923,
+      "sha256": "486700dac0ce35ffc970cc17ad98c740459954c2a9196b99564b211eb44d09f9",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "02_Voyager\\voyager_07_recorrido_comparador_foto_3d_1920x1080.png",
+      "sizeBytes": 218767,
+      "sha256": "17d001e092cd35f62ea722dc02689bbdd090fb67b20cfd2120ae1ca2ba3c67e3",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "03_Laboratorio_General\\lab_01_cabecera_y_navegacion_3pasos_1920x1080.png",
+      "sizeBytes": 340509,
+      "sha256": "454e3a5aadf4d61d1bda0e3340827204752c92aa2fdfecb9b68693c509d5c64c",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "03_Laboratorio_General\\lab_02_simulacion_orbital_escena_1920x1080.png",
+      "sizeBytes": 166494,
+      "sha256": "96c4fa362a0fac7fa678e3d2c7784936303cc052ba7425aaa05a476da326b6b5",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "03_Laboratorio_General\\lab_03_mapa_areas_desde_laboratorio_1920x1080.png",
+      "sizeBytes": 434760,
+      "sha256": "e901d3611e5f3d372b24aeb3bef5e98e5042b445a3d4c656a01df4017c170b36",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "04_Hangar\\hangar_01_ensamblaje_interplanetario_1920x1080.png",
+      "sizeBytes": 340509,
+      "sha256": "454e3a5aadf4d61d1bda0e3340827204752c92aa2fdfecb9b68693c509d5c64c",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "04_Hangar\\hangar_02_catalogo_y_configuracion_piezas_1920x1080.png",
+      "sizeBytes": 339041,
+      "sha256": "306dd6a0918fcacade0e9b55468704b847c2842ca028c924834926765017e593",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "05_Ingenieria\\ingenieria_01_analisis_metricas_tsiolkovsky_1920x1080.png",
+      "sizeBytes": 280017,
+      "sha256": "ca87f1133e155e86b7de202ddf92ee45a4f30546da70c607f8c4ca8aa6296780",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "05_Ingenieria\\ingenieria_02_balance_propulsion_y_twr_1920x1080.png",
+      "sizeBytes": 280017,
+      "sha256": "ca87f1133e155e86b7de202ddf92ee45a4f30546da70c607f8c4ca8aa6296780",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "06_Planificador_Tierra_Luna\\lunar_01_configuracion_maniobra_1920x1080.png",
+      "sizeBytes": 230369,
+      "sha256": "0573126b5f6ba4ed45d5bd55ac86d63ab8d2c0ee9a27ce7f3ac4ff92ca895362",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "06_Planificador_Tierra_Luna\\lunar_02_transferencia_calculada_1920x1080.png",
+      "sizeBytes": 303119,
+      "sha256": "e229e4528dbe02b5142ff6dd6ea9f0882f82cc58824cf3703b173f8fd542f4cb",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "06_Planificador_Tierra_Luna\\lunar_03_evaluacion_viabilidad_presupuesto_1920x1080.png",
+      "sizeBytes": 294699,
+      "sha256": "bd5178e609e8d68afbb0c21d1fdf474cac58719ae99e872d6026ed601d18d5c9",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "07_Propulsion_Empuje_Finito\\propulsion_01_controles_empuje_finito_1920x1080.png",
+      "sizeBytes": 280259,
+      "sha256": "ed45e0e2f6fc422df314380bc8d5d6c82760e8a5801f8dabe09a942eaba64303",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "07_Propulsion_Empuje_Finito\\propulsion_02_perfiles_motor_quimico_vs_ionico_1920x1080.png",
+      "sizeBytes": 277933,
+      "sha256": "49ebf857aa4712faa729aa4a15cd2c65155175e4754160f0a205099081919b6b",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "08_Lanzamiento_Terrestre\\lanzamiento_01_configuracion_inicial_1920x1080.png",
+      "sizeBytes": 198498,
+      "sha256": "d3e18f25f8a9ad272bfc33e366dbe990019b8c4d0ec2b7f45c77ecfdf073ef67",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "08_Lanzamiento_Terrestre\\lanzamiento_02_ascenso_atmosferico_y_etapas_1920x1080.png",
+      "sizeBytes": 260480,
+      "sha256": "31dc5225114f3627faa7f32eaa23a8e9182547bf768dcf638ea53b1b27ab51be",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "08_Lanzamiento_Terrestre\\lanzamiento_03_resultados_y_clasificacion_orbital_1920x1080.png",
+      "sizeBytes": 260480,
+      "sha256": "31dc5225114f3627faa7f32eaa23a8e9182547bf768dcf638ea53b1b27ab51be",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "09_Aterrizajes_Multicuerpo\\aterrizaje_01_configuracion_luna_1920x1080.png",
+      "sizeBytes": 217766,
+      "sha256": "601abfa3bdcb98d3c5b81500d3c313e450fbf4f185af734392c9c6beb5d17c65",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "09_Aterrizajes_Multicuerpo\\aterrizaje_02_contacto_suave_luna_1920x1080.png",
+      "sizeBytes": 253055,
+      "sha256": "ee0630ea023b33c031208bd82e40f3015c976b2082cf6a4e796f3923ff9de433",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "09_Aterrizajes_Multicuerpo\\aterrizaje_03_configuracion_europa_1920x1080.png",
+      "sizeBytes": 221735,
+      "sha256": "df8516cbeedf2ce9d8b4a0ef4a385e0e352f9f012985bc8b4ff7212993b0b516",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "09_Aterrizajes_Multicuerpo\\aterrizaje_04_contacto_suave_europa_1920x1080.png",
+      "sizeBytes": 252068,
+      "sha256": "8751e99e47431c56a83c9fb2f72cba4242e5d4ffe7455721f7f7e9c60d0ab4ba",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "09_Aterrizajes_Multicuerpo\\aterrizaje_05_escenario_fallido_impacto_o_combustible_1920x1080.png",
+      "sizeBytes": 257260,
+      "sha256": "f72ee41d7825b056b0fddab52c197920d9e9717c55aa802659871b956abe857c",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "10_Misiones_Interplanetarias\\interplanetaria_01_porkchop_tierra_marte_1920x1080.png",
+      "sizeBytes": 493136,
+      "sha256": "1e6243161321b29f2f4edae05b169b0511f25b4236b71eb09bfff492d6d9e984",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "10_Misiones_Interplanetarias\\interplanetaria_02_transferencia_tierra_venus_1920x1080.png",
+      "sizeBytes": 596455,
+      "sha256": "7cbced7b2eeb6dedacef0c60a86536c105494ab2a05d1c1e2164c1d204d08231",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "10_Misiones_Interplanetarias\\interplanetaria_03_transferencia_tierra_jupiter_1920x1080.png",
+      "sizeBytes": 453954,
+      "sha256": "1d0558093b3a9d8ea72994f3108055f3327976ca0e18c7a443c546df4feeb8bf",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "11_Misiones_Integradas_Etapa13\\integrada_01_escenario_A1_marte_captura_1920x1080.png",
+      "sizeBytes": 417920,
+      "sha256": "0f1dd754b8ccb3394edf872505bb7ed0de57c6a9b8fc46e2a99227f6b24fa3f9",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "11_Misiones_Integradas_Etapa13\\integrada_02_escenario_A1_grafico_planetocentrico_1920x1080.png",
+      "sizeBytes": 30401,
+      "sha256": "03c5e561045e830d22416f5037c1b3de8e618600f84911170e9484c8f7037bc7",
+      "dimensions": "809x604"
+    },
+    {
+      "path": "11_Misiones_Integradas_Etapa13\\integrada_03_escenario_B2_sobrevuelo_hiperbolico_1920x1080.png",
+      "sizeBytes": 405199,
+      "sha256": "4bcb56d5a18fcd8f339117fd901370486d1259ff33cd14494fea45479c6a3c0b",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "11_Misiones_Integradas_Etapa13\\integrada_04_escenario_B1_jupiter_europa_descenso_1920x1080.png",
+      "sizeBytes": 405339,
+      "sha256": "1aaeab63d4f95cba9588fc55ca7010bee9b984bbcfe8fd210e9d59ef9b4687b8",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "11_Misiones_Integradas_Etapa13\\integrada_05_escenario_B1_grafico_planetocentrico_1920x1080.png",
+      "sizeBytes": 21647,
+      "sha256": "c3b335f726ebe64faae508855b621aa8cfb2b98574b176db92198cfedc827bca",
+      "dimensions": "809x579"
+    },
+    {
+      "path": "12_Centro_de_Mision\\centro_01_lanzamiento_ascenso_hud_1920x1080.png",
+      "sizeBytes": 319582,
+      "sha256": "0af4f459ae9b7fab201c7996d27fe972e728576b9ecb4417b77441582cdacfb8",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "12_Centro_de_Mision\\centro_02_descenso_lunar_contacto_1920x1080.png",
+      "sizeBytes": 357639,
+      "sha256": "ce1f70f63f2539f15107a5d8eb7bc4a7ca3cfb868b213931dc1973178219a0c0",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "12_Centro_de_Mision\\centro_03_interplanetaria_trayectoria_helio_1920x1080.png",
+      "sizeBytes": 354688,
+      "sha256": "72484894e1b62650a2011e332a444cbda9674aca61d198baa19e5c575b8c9bd1",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "12_Centro_de_Mision\\centro_04_B1_entrada_soi_jupiter_1920x1080.png",
+      "sizeBytes": 368897,
+      "sha256": "d1118f7d827b7c8a9e2bf47b064f5e74f416ed3158220902765ab3c68efa4038",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "12_Centro_de_Mision\\centro_05_B1_insercion_orbital_joi_1920x1080.png",
+      "sizeBytes": 366933,
+      "sha256": "bd409f9f8547ccfc7433568ca125294019d0a85cfe9c47b417eb07abfc34d8d9",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "12_Centro_de_Mision\\centro_06_B1_vista_amplia_inmersiva_1920x1080.png",
+      "sizeBytes": 170829,
+      "sha256": "79325509fd415890e922ad782d5dd861ad8aecd6ef4f907f9cabef8f3726aeff",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "12_Centro_de_Mision\\centro_07_B1_barra_transporte_eventos_1920x1080.png",
+      "sizeBytes": 170307,
+      "sha256": "77870666fc7d70c3fcf773c3e47fd450ae381d2d63b5f43430640a3b0a9224fd",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "12_Centro_de_Mision\\centro_08_B1_soi_europa_contexto_1920x1080.png",
+      "sizeBytes": 393907,
+      "sha256": "c028724802e1e4c2b0c766b8810be34301edd9a64c97f29a6382826a78e91464",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "12_Centro_de_Mision\\centro_09_B1_contacto_europa_camara_local_1920x1080.png",
+      "sizeBytes": 413110,
+      "sha256": "3ae85775923badb4555b3afedf18bee4d3fb1699d2d114071bf5c9fd50c0d720",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "13_Responsive\\responsive_01_escritorio_1920x1080.png",
+      "sizeBytes": 142683,
+      "sha256": "43f1659a23f44d553e3718d98c4bb4dfb4f320c6e5ffb8679bd06798a221ce72",
+      "dimensions": "1920x1080"
+    },
+    {
+      "path": "13_Responsive\\responsive_02_portatil_1600x900.png",
+      "sizeBytes": 122604,
+      "sha256": "1cc54e176c8489044dbd87693872add708c2b8f76995857c1012bf7f6b9df83c",
+      "dimensions": "1600x900"
+    },
+    {
+      "path": "13_Responsive\\responsive_03_portatil_1366x768.png",
+      "sizeBytes": 108798,
+      "sha256": "7c303db0490b968275efa06fe59a9b224a69ef6acb22f6f9ffdba5c8c32a1aea",
+      "dimensions": "1366x768"
+    },
+    {
+      "path": "13_Responsive\\responsive_04_tableta_768x1024.png",
+      "sizeBytes": 69618,
+      "sha256": "f438b4ad5e133d224b8c8817f9d613d52ac04b4097e7f33598be3b0dc8dd7392",
+      "dimensions": "768x1024"
+    },
+    {
+      "path": "13_Responsive\\responsive_05_movil_390x844.png",
+      "sizeBytes": 45394,
+      "sha256": "991a5d076119f4a45dd7657a7c390190ea328de7317d846d29a401908ba64bcb",
+      "dimensions": "390x844"
+    },
+    {
+      "path": "13_Responsive\\responsive_06_movil_320x568.png",
+      "sizeBytes": 40549,
+      "sha256": "f7e4be02c2eef05703fcbf7bfc1a92ec431d2cbba875e492eb5c9459108169d1",
+      "dimensions": "320x568"
+    },
+    {
+      "path": "14_Defectos\\defecto_01_truncamiento_sonda_activa_movil.png",
+      "sizeBytes": 25913,
+      "sha256": "00dec1724d3cbaeab22be9bca6de8f0b35e188aa21696511b4edd4b25d4137fa",
+      "dimensions": "390x194"
+    },
+    {
+      "path": "14_Defectos\\defecto_02_ajuste_veredicto_largo.png",
+      "sizeBytes": 8867,
+      "sha256": "9294b729437d9aa9f5c8198b987e0405775b3f25f99b9f015baea831a5129bc4",
+      "dimensions": "536x57"
+    },
+    {
+      "path": "INDICE_EVIDENCIAS.md",
+      "sizeBytes": 22490,
+      "sha256": "d5a880281370712fe1f51636a13bb8ecb22bf0a9d1334f2c943b93f98e65bbcc",
+      "dimensions": null
+    },
+    {
+      "path": "INFORME_VISUAL.md",
+      "sizeBytes": 18433,
+      "sha256": "2f193b6a7952fcf9b8ba85a7342da484fe2e797c1bc3cb25f4a9d6e80764e024",
+      "dimensions": null
+    },
+    {
+      "path": "RESUMEN_EJECUTIVO_TERCER_AVANCE.md",
+      "sizeBytes": 4547,
+      "sha256": "600cd49f4b91a1ef5d7ad795d25dac3675426665333113eff70de7bfad60bf62",
+      "dimensions": null
+    }
+  ]
+}

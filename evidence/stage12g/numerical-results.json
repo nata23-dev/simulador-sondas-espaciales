@@ -1,0 +1,830 @@
+{
+  "generatedFrom": "datos locales (sin red)",
+  "muSun": 132712440041.27942,
+  "cases": [
+    {
+      "label": "A · Tierra → Marte",
+      "input": {
+        "label": "A · Tierra → Marte",
+        "destinationId": "499",
+        "departureStartUtc": "2028-06-01",
+        "departureEndUtc": "2029-06-01",
+        "departureStepDays": 2,
+        "tofMinDays": 100,
+        "tofMaxDays": 450,
+        "tofStepDays": 2
+      },
+      "cells": {
+        "total": 32208,
+        "ok": 32115,
+        "noCoverage": 0,
+        "noConvergence": 0,
+        "illConditioned": 93
+      },
+      "searchMs": 379,
+      "best": {
+        "departureUtc": "2028-11-30 · 00:00:00 UTC",
+        "departureTdb": "2028-11-30 · 00:01:09 TDB",
+        "arrivalUtc": "2029-10-12 · 00:00:00 UTC",
+        "tofDays": 316,
+        "atGridEdge": false,
+        "c3": 8.996,
+        "vInfDeparture": 2.9993,
+        "vInfArrival": 3.1872,
+        "injectionDv200km": 3.6272,
+        "dlaDeg": 28.98,
+        "type": "II (Δθ > 180°)",
+        "closureKm": 0.000029513383569568435,
+        "earthAtDepartureKm": [
+          55494006,
+          136700373,
+          -9755
+        ],
+        "destinationAtArrivalKm": [
+          63580328,
+          -203071024,
+          -5814874
+        ]
+      },
+      "otherLocalMinima": [
+        {
+          "departureUtc": "2028-12-10 · 00:00:00 UTC",
+          "departureTdb": "2028-12-10 · 00:01:09 TDB",
+          "arrivalUtc": "2029-11-05 · 00:00:00 UTC",
+          "tofDays": 330,
+          "atGridEdge": false,
+          "c3": 9.001,
+          "vInfDeparture": 3.0002,
+          "vInfArrival": 3.7373,
+          "injectionDv200km": 3.6274,
+          "dlaDeg": 28.25,
+          "type": "II (Δθ > 180°)",
+          "closureKm": 0.0000019099809404353515,
+          "earthAtDepartureKm": [
+            30505857,
+            144133540,
+            -9332
+          ],
+          "destinationAtArrivalKm": [
+            111013020,
+            -177864701,
+            -6449434
+          ]
+        },
+        {
+          "departureUtc": "2028-12-12 · 00:00:00 UTC",
+          "departureTdb": "2028-12-12 · 00:01:09 TDB",
+          "arrivalUtc": "2029-11-11 · 00:00:00 UTC",
+          "tofDays": 334,
+          "atGridEdge": false,
+          "c3": 9.003,
+          "vInfDeparture": 3.0005,
+          "vInfArrival": 3.907,
+          "injectionDv200km": 3.6275,
+          "dlaDeg": 27.16,
+          "type": "II (Δθ > 180°)",
+          "closureKm": 0.000004033104640960162,
+          "earthAtDepartureKm": [
+            25367847,
+            145092731,
+            -9363
+          ],
+          "destinationAtArrivalKm": [
+            121918810,
+            -169796636,
+            -6547702
+          ]
+        }
+      ]
+    },
+    {
+      "label": "A2 · Tierra → Marte (2030–2031)",
+      "input": {
+        "label": "A2 · Tierra → Marte (2030–2031)",
+        "destinationId": "499",
+        "departureStartUtc": "2030-06-01",
+        "departureEndUtc": "2031-08-01",
+        "departureStepDays": 2,
+        "tofMinDays": 100,
+        "tofMaxDays": 450,
+        "tofStepDays": 2
+      },
+      "cells": {
+        "total": 37488,
+        "ok": 37387,
+        "noCoverage": 0,
+        "noConvergence": 0,
+        "illConditioned": 101
+      },
+      "searchMs": 342,
+      "best": {
+        "departureUtc": "2031-02-22 · 00:00:00 UTC",
+        "departureTdb": "2031-02-22 · 00:01:09 TDB",
+        "arrivalUtc": "2032-01-08 · 00:00:00 UTC",
+        "tofDays": 320,
+        "atGridEdge": false,
+        "c3": 8.171,
+        "vInfDeparture": 2.8585,
+        "vInfArrival": 5.5069,
+        "injectionDv200km": 3.591,
+        "dlaDeg": 1.26,
+        "type": "II (Δθ > 180°)",
+        "closureKm": 0.00003311939585421599,
+        "earthAtDepartureKm": [
+          -131509716,
+          67807233,
+          -4398
+        ],
+        "destinationAtArrivalKm": [
+          206776505,
+          33797103,
+          -4359658
+        ]
+      },
+      "otherLocalMinima": [
+        {
+          "departureUtc": "2031-01-27 · 00:00:00 UTC",
+          "departureTdb": "2031-01-27 · 00:01:09 TDB",
+          "arrivalUtc": "2031-08-05 · 00:00:00 UTC",
+          "tofDays": 190,
+          "atGridEdge": false,
+          "c3": 8.971,
+          "vInfDeparture": 2.9951,
+          "vInfArrival": 5.6051,
+          "injectionDv200km": 3.6261,
+          "dlaDeg": -34.59,
+          "type": "I (Δθ < 180°)",
+          "closureKm": 0.0000012866362093990902,
+          "earthAtDepartureKm": [
+            -87414875,
+            118557367,
+            -8191
+          ],
+          "destinationAtArrivalKm": [
+            10304045,
+            -216596948,
+            -4791720
+          ]
+        },
+        {
+          "departureUtc": "2031-05-11 · 00:00:00 UTC",
+          "departureTdb": "2031-05-11 · 00:01:09 TDB",
+          "arrivalUtc": "2032-03-14 · 00:00:00 UTC",
+          "tofDays": 308,
+          "atGridEdge": false,
+          "c3": 21.944,
+          "vInfDeparture": 4.6845,
+          "vInfArrival": 6.7443,
+          "injectionDv200km": 4.1809,
+          "dlaDeg": -33.15,
+          "type": "I (Δθ < 180°)",
+          "closureKm": 0.0003856014417010673,
+          "earthAtDepartureKm": [
+            -97705184,
+            -115207474,
+            8345
+          ],
+          "destinationAtArrivalKm": [
+            146138210,
+            163990588,
+            -144925
+          ]
+        }
+      ]
+    },
+    {
+      "label": "B · Tierra → Venus",
+      "input": {
+        "label": "B · Tierra → Venus",
+        "destinationId": "299",
+        "departureStartUtc": "2027-01-01",
+        "departureEndUtc": "2028-12-31",
+        "departureStepDays": 2,
+        "tofMinDays": 60,
+        "tofMaxDays": 250,
+        "tofStepDays": 2
+      },
+      "cells": {
+        "total": 35136,
+        "ok": 35082,
+        "noCoverage": 0,
+        "noConvergence": 0,
+        "illConditioned": 54
+      },
+      "searchMs": 227,
+      "best": {
+        "departureUtc": "2028-03-26 · 00:00:00 UTC",
+        "departureTdb": "2028-03-26 · 00:01:09 TDB",
+        "arrivalUtc": "2028-09-14 · 00:00:00 UTC",
+        "tofDays": 172,
+        "atGridEdge": false,
+        "c3": 9.185,
+        "vInfDeparture": 3.0307,
+        "vInfArrival": 5.7897,
+        "injectionDv200km": 3.6354,
+        "dlaDeg": 36.17,
+        "type": "II (Δθ > 180°)",
+        "closureKm": 0.000009665045499559488,
+        "earthAtDepartureKm": [
+          -148555817,
+          -14216897,
+          1449
+        ],
+        "destinationAtArrivalKm": [
+          58497289,
+          90770847,
+          -2127435
+        ]
+      },
+      "otherLocalMinima": [
+        {
+          "departureUtc": "2028-03-10 · 00:00:00 UTC",
+          "departureTdb": "2028-03-10 · 00:01:09 TDB",
+          "arrivalUtc": "2028-07-02 · 00:00:00 UTC",
+          "tofDays": 114,
+          "atGridEdge": false,
+          "c3": 11.184,
+          "vInfDeparture": 3.3443,
+          "vInfArrival": 5.9777,
+          "injectionDv200km": 3.7226,
+          "dlaDeg": -2.34,
+          "type": "I (Δθ < 180°)",
+          "closureKm": 3.4021202178071913e-7,
+          "earthAtDepartureKm": [
+            -146100232,
+            26946124,
+            -618
+          ],
+          "destinationAtArrivalKm": [
+            53545164,
+            -94753140,
+            -4392008
+          ]
+        },
+        {
+          "departureUtc": "2027-01-01 · 00:00:00 UTC",
+          "departureTdb": "2027-01-01 · 00:01:09 TDB",
+          "arrivalUtc": "2027-06-02 · 00:00:00 UTC",
+          "tofDays": 152,
+          "atGridEdge": true,
+          "c3": 38.783,
+          "vInfDeparture": 6.2276,
+          "vInfArrival": 12.6088,
+          "injectionDv200km": 4.8648,
+          "dlaDeg": 10.04,
+          "type": "II (Δθ > 180°)",
+          "closureKm": 0.000012343216098885362,
+          "earthAtDepartureKm": [
+            -25408215,
+            144895198,
+            -8553
+          ],
+          "destinationAtArrivalKm": [
+            98764006,
+            44440952,
+            -5087841
+          ]
+        }
+      ]
+    },
+    {
+      "label": "C · Tierra → Júpiter",
+      "input": {
+        "label": "C · Tierra → Júpiter",
+        "destinationId": "599",
+        "departureStartUtc": "2028-01-01",
+        "departureEndUtc": "2029-12-31",
+        "departureStepDays": 4,
+        "tofMinDays": 400,
+        "tofMaxDays": 1400,
+        "tofStepDays": 10
+      },
+      "cells": {
+        "total": 18483,
+        "ok": 18350,
+        "noCoverage": 0,
+        "noConvergence": 0,
+        "illConditioned": 133
+      },
+      "searchMs": 126,
+      "best": {
+        "departureUtc": "2028-12-26 · 00:00:00 UTC",
+        "departureTdb": "2028-12-26 · 00:01:09 TDB",
+        "arrivalUtc": "2031-12-21 · 00:00:00 UTC",
+        "tofDays": 1090,
+        "atGridEdge": false,
+        "c3": 75.732,
+        "vInfDeparture": 8.7024,
+        "vInfArrival": 5.6965,
+        "injectionDv200km": 6.2491,
+        "dlaDeg": -3.5,
+        "type": "II (Δθ > 180°)",
+        "closureKm": 0.0002469979487034807,
+        "earthAtDepartureKm": [
+          -11123387,
+          146706097,
+          -10098
+        ],
+        "destinationAtArrivalKm": [
+          122728550,
+          -770262327,
+          456133
+        ]
+      },
+      "otherLocalMinima": [
+        {
+          "departureUtc": "2029-01-07 · 00:00:00 UTC",
+          "departureTdb": "2029-01-07 · 00:01:09 TDB",
+          "arrivalUtc": "2032-08-09 · 00:00:00 UTC",
+          "tofDays": 1310,
+          "atGridEdge": false,
+          "c3": 78.487,
+          "vInfDeparture": 8.8593,
+          "vInfArrival": 6.3828,
+          "injectionDv200km": 6.3469,
+          "dlaDeg": 1.57,
+          "type": "II (Δθ > 180°)",
+          "closureKm": 0.00003451683687799413,
+          "earthAtDepartureKm": [
+            -41932079,
+            141003740,
+            -8698
+          ],
+          "destinationAtArrivalKm": [
+            366621161,
+            -674212056,
+            -5399603
+          ]
+        },
+        {
+          "departureUtc": "2028-12-30 · 00:00:00 UTC",
+          "departureTdb": "2028-12-30 · 00:01:09 TDB",
+          "arrivalUtc": "2031-11-05 · 00:00:00 UTC",
+          "tofDays": 1040,
+          "atGridEdge": false,
+          "c3": 78.994,
+          "vInfDeparture": 8.8879,
+          "vInfArrival": 5.6612,
+          "injectionDv200km": 6.3648,
+          "dlaDeg": 8.95,
+          "type": "I (Δθ < 180°)",
+          "closureKm": 0.0009266835433887811,
+          "earthAtDepartureKm": [
+            -21516727,
+            145523128,
+            -9716
+          ],
+          "destinationAtArrivalKm": [
+            71791552,
+            -779158539,
+            1632694
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Tierra → Mercurio",
+      "input": {
+        "label": "Tierra → Mercurio",
+        "destinationId": "199",
+        "departureStartUtc": "2030-01-01",
+        "departureEndUtc": "2030-12-31",
+        "departureStepDays": 2,
+        "tofMinDays": 60,
+        "tofMaxDays": 200,
+        "tofStepDays": 2
+      },
+      "cells": {
+        "total": 12993,
+        "ok": 12980,
+        "noCoverage": 0,
+        "noConvergence": 0,
+        "illConditioned": 13
+      },
+      "searchMs": 104,
+      "best": {
+        "departureUtc": "2030-09-20 · 00:00:00 UTC",
+        "departureTdb": "2030-09-20 · 00:01:09 TDB",
+        "arrivalUtc": "2031-01-14 · 00:00:00 UTC",
+        "tofDays": 116,
+        "atGridEdge": false,
+        "c3": 51.298,
+        "vInfDeparture": 7.1623,
+        "vInfArrival": 13.1639,
+        "injectionDv200km": 5.35,
+        "dlaDeg": -29.39,
+        "type": "II (Δθ > 180°)",
+        "closureKm": 0.00003759568941082937,
+        "earthAtDepartureKm": [
+          150009907,
+          -8750987,
+          -123
+        ],
+        "destinationAtArrivalKm": [
+          -51921275,
+          -40567852,
+          1445979
+        ]
+      },
+      "otherLocalMinima": [
+        {
+          "departureUtc": "2030-02-06 · 00:00:00 UTC",
+          "departureTdb": "2030-02-06 · 00:01:09 TDB",
+          "arrivalUtc": "2030-05-13 · 00:00:00 UTC",
+          "tofDays": 96,
+          "atGridEdge": false,
+          "c3": 57.691,
+          "vInfDeparture": 7.5955,
+          "vInfArrival": 15.8419,
+          "injectionDv200km": 5.5911,
+          "dlaDeg": -1.53,
+          "type": "I (Δθ < 180°)",
+          "closureKm": 6.99612499715177e-8,
+          "earthAtDepartureKm": [
+            -107558670,
+            100954949,
+            -6673
+          ],
+          "destinationAtArrivalKm": [
+            -1691437,
+            -69229742,
+            -5502930
+          ]
+        },
+        {
+          "departureUtc": "2030-12-31 · 00:00:00 UTC",
+          "departureTdb": "2030-12-31 · 00:01:09 TDB",
+          "arrivalUtc": "2031-04-22 · 00:00:00 UTC",
+          "tofDays": 112,
+          "atGridEdge": true,
+          "c3": 57.786,
+          "vInfDeparture": 7.6017,
+          "vInfArrival": 17.8929,
+          "injectionDv200km": 5.5946,
+          "dlaDeg": -0.72,
+          "type": "I (Δθ < 180°)",
+          "closureKm": 0.0000010505740741929367,
+          "earthAtDepartureKm": [
+            -22769077,
+            145331932,
+            -10438
+          ],
+          "destinationAtArrivalKm": [
+            -27238814,
+            -63902502,
+            -2724723
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Tierra → Saturno",
+      "input": {
+        "label": "Tierra → Saturno",
+        "destinationId": "699",
+        "departureStartUtc": "2030-01-01",
+        "departureEndUtc": "2031-06-30",
+        "departureStepDays": 6,
+        "tofMinDays": 1200,
+        "tofMaxDays": 2800,
+        "tofStepDays": 20
+      },
+      "cells": {
+        "total": 7371,
+        "ok": 7336,
+        "noCoverage": 0,
+        "noConvergence": 0,
+        "illConditioned": 35
+      },
+      "searchMs": 76,
+      "best": {
+        "departureUtc": "2030-07-30 · 00:00:00 UTC",
+        "departureTdb": "2030-07-30 · 00:01:09 TDB",
+        "arrivalUtc": "2034-10-17 · 00:00:00 UTC",
+        "tofDays": 1540,
+        "atGridEdge": false,
+        "c3": 109.873,
+        "vInfDeparture": 10.482,
+        "vInfArrival": 6.5364,
+        "injectionDv200km": 7.4166,
+        "dlaDeg": 19.19,
+        "type": "I (Δθ < 180°)",
+        "closureKm": 0.00008333131854277135,
+        "earthAtDepartureKm": [
+          90315266,
+          -122120742,
+          8283
+        ],
+        "destinationAtArrivalKm": [
+          -632971181,
+          1198772405,
+          4375530
+        ]
+      },
+      "otherLocalMinima": [
+        {
+          "departureUtc": "2030-08-05 · 00:00:00 UTC",
+          "departureTdb": "2030-08-05 · 00:01:09 TDB",
+          "arrivalUtc": "2035-01-11 · 00:00:00 UTC",
+          "tofDays": 1620,
+          "atGridEdge": false,
+          "c3": 109.934,
+          "vInfDeparture": 10.4849,
+          "vInfArrival": 6.2345,
+          "injectionDv200km": 7.4186,
+          "dlaDeg": 19.86,
+          "type": "I (Δθ < 180°)",
+          "closureKm": 0.00009841890203545873,
+          "earthAtDepartureKm": [
+            102001499,
+            -112385224,
+            7556
+          ],
+          "destinationAtArrivalKm": [
+            -699379883,
+            1163397872,
+            7635239
+          ]
+        },
+        {
+          "departureUtc": "2030-07-30 · 00:00:00 UTC",
+          "departureTdb": "2030-07-30 · 00:01:09 TDB",
+          "arrivalUtc": "2036-04-09 · 00:00:00 UTC",
+          "tofDays": 2080,
+          "atGridEdge": false,
+          "c3": 124.121,
+          "vInfDeparture": 11.1409,
+          "vInfArrival": 5.6789,
+          "injectionDv200km": 7.8781,
+          "dlaDeg": 0.61,
+          "type": "II (Δθ > 180°)",
+          "closureKm": 0.00007291655577427604,
+          "earthAtDepartureKm": [
+            90315266,
+            -122120742,
+            8283
+          ],
+          "destinationAtArrivalKm": [
+            -1012097454,
+            923260859,
+            24261122
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Tierra → Urano",
+      "input": {
+        "label": "Tierra → Urano",
+        "destinationId": "799",
+        "departureStartUtc": "2030-01-01",
+        "departureEndUtc": "2031-06-30",
+        "departureStepDays": 8,
+        "tofMinDays": 2500,
+        "tofMaxDays": 6000,
+        "tofStepDays": 40
+      },
+      "cells": {
+        "total": 6072,
+        "ok": 5279,
+        "noCoverage": 745,
+        "noConvergence": 0,
+        "illConditioned": 48
+      },
+      "searchMs": 92,
+      "best": {
+        "departureUtc": "2030-08-13 · 00:00:00 UTC",
+        "departureTdb": "2030-08-13 · 00:01:09 TDB",
+        "arrivalUtc": "2041-08-15 · 00:00:00 UTC",
+        "tofDays": 4020,
+        "atGridEdge": false,
+        "c3": 136.717,
+        "vInfDeparture": 11.6926,
+        "vInfArrival": 5.6921,
+        "injectionDv200km": 8.2751,
+        "dlaDeg": 25.63,
+        "type": "I (Δθ < 180°)",
+        "closureKm": 0.00009330143463950922,
+        "earthAtDepartureKm": [
+          115936318,
+          -97646773,
+          5777
+        ],
+        "destinationAtArrivalKm": [
+          -1704002333,
+          2181932536,
+          30180158
+        ]
+      },
+      "otherLocalMinima": [
+        {
+          "departureUtc": "2030-08-05 · 00:00:00 UTC",
+          "departureTdb": "2030-08-05 · 00:01:09 TDB",
+          "arrivalUtc": "2040-01-25 · 00:00:00 UTC",
+          "tofDays": 3460,
+          "atGridEdge": false,
+          "c3": 137.757,
+          "vInfDeparture": 11.737,
+          "vInfArrival": 6.7198,
+          "injectionDv200km": 8.3074,
+          "dlaDeg": 25.59,
+          "type": "I (Δθ < 180°)",
+          "closureKm": 0.0001945779515802233,
+          "earthAtDepartureKm": [
+            102001499,
+            -112385224,
+            7556
+          ],
+          "destinationAtArrivalKm": [
+            -1426076648,
+            2387017151,
+            27338007
+          ]
+        },
+        {
+          "departureUtc": "2030-08-21 · 00:00:00 UTC",
+          "departureTdb": "2030-08-21 · 00:01:09 TDB",
+          "arrivalUtc": "2043-07-04 · 00:00:00 UTC",
+          "tofDays": 4700,
+          "atGridEdge": false,
+          "c3": 139.658,
+          "vInfDeparture": 11.8177,
+          "vInfArrival": 5.064,
+          "injectionDv200km": 8.3664,
+          "dlaDeg": 28.03,
+          "type": "I (Δθ < 180°)",
+          "closureKm": 0.00006184200202581527,
+          "earthAtDepartureKm": [
+            127771324,
+            -81142497,
+            4787
+          ],
+          "destinationAtArrivalKm": [
+            -2005387543,
+            1890204120,
+            32996475
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Tierra → Neptuno",
+      "input": {
+        "label": "Tierra → Neptuno",
+        "destinationId": "899",
+        "departureStartUtc": "2030-01-01",
+        "departureEndUtc": "2031-06-30",
+        "departureStepDays": 10,
+        "tofMinDays": 3500,
+        "tofMaxDays": 5600,
+        "tofStepDays": 50
+      },
+      "cells": {
+        "total": 2365,
+        "ok": 2260,
+        "noCoverage": 105,
+        "noConvergence": 0,
+        "illConditioned": 0
+      },
+      "searchMs": 29,
+      "best": {
+        "departureUtc": "2030-05-31 · 00:00:00 UTC",
+        "departureTdb": "2030-05-31 · 00:01:09 TDB",
+        "arrivalUtc": "2045-09-29 · 00:00:00 UTC",
+        "tofDays": 5600,
+        "atGridEdge": true,
+        "c3": 159.03,
+        "vInfDeparture": 12.6107,
+        "vInfArrival": 6.8285,
+        "injectionDv200km": 8.9552,
+        "dlaDeg": -26.27,
+        "type": "I (Δθ < 180°)",
+        "closureKm": 0.00003994987698798216,
+        "earthAtDepartureKm": [
+          -53868129,
+          -141774459,
+          10041
+        ],
+        "destinationAtArrivalKm": [
+          3162827782,
+          3141158078,
+          -137580482
+        ]
+      },
+      "otherLocalMinima": [
+        {
+          "departureUtc": "2031-05-26 · 00:00:00 UTC",
+          "departureTdb": "2031-05-26 · 00:01:09 TDB",
+          "arrivalUtc": "2045-11-28 · 00:00:00 UTC",
+          "tofDays": 5300,
+          "atGridEdge": false,
+          "c3": 159.746,
+          "vInfDeparture": 12.6391,
+          "vInfArrival": 7.3322,
+          "injectionDv200km": 8.9766,
+          "dlaDeg": -27.33,
+          "type": "I (Δθ < 180°)",
+          "closureKm": 0.00009856236748025125,
+          "earthAtDepartureKm": [
+            -66062101,
+            -136370394,
+            10323
+          ],
+          "destinationAtArrivalKm": [
+            3142766123,
+            3161318999,
+            -137532513
+          ]
+        },
+        {
+          "departureUtc": "2030-04-21 · 00:00:00 UTC",
+          "departureTdb": "2030-04-21 · 00:01:09 TDB",
+          "arrivalUtc": "2045-08-20 · 00:00:00 UTC",
+          "tofDays": 5600,
+          "atGridEdge": true,
+          "c3": 252.265,
+          "vInfDeparture": 15.8829,
+          "vInfArrival": 6.8813,
+          "injectionDv200km": 11.5399,
+          "dlaDeg": 11.93,
+          "type": "II (Δθ > 180°)",
+          "closureKm": 0.00010222855163022839,
+          "earthAtDepartureKm": [
+            -129475828,
+            -76341836,
+            6185
+          ],
+          "destinationAtArrivalKm": [
+            3176127919,
+            3127648685,
+            -137609302
+          ]
+        }
+      ]
+    }
+  ],
+  "lambertDopri": [
+    {
+      "tofDays": 60,
+      "iterations": 10,
+      "type": "I (Δθ < 180°)",
+      "keplerClosureKm": 3.381549913945675e-7,
+      "dopriClosureKm": 0.0000016184130234550722,
+      "dopriSteps": 107
+    },
+    {
+      "tofDays": 150,
+      "iterations": 10,
+      "type": "I (Δθ < 180°)",
+      "keplerClosureKm": 8.10712456345291e-7,
+      "dopriClosureKm": 0.00005531819982042033,
+      "dopriSteps": 194
+    },
+    {
+      "tofDays": 260,
+      "iterations": 10,
+      "type": "I (Δθ < 180°)",
+      "keplerClosureKm": 0.000036906288355227576,
+      "dopriClosureKm": 0.0001123314739394466,
+      "dopriSteps": 323
+    },
+    {
+      "tofDays": 330,
+      "iterations": 9,
+      "type": "II (Δθ > 180°)",
+      "keplerClosureKm": 0.00006276110046064344,
+      "dopriClosureKm": 0.00009853439599108301,
+      "dopriSteps": 398
+    },
+    {
+      "tofDays": 500,
+      "iterations": 64,
+      "type": "II (Δθ > 180°)",
+      "keplerClosureKm": 0.000005619361950728093,
+      "dopriClosureKm": 0.0005437023736568303,
+      "dopriSteps": 583
+    }
+  ],
+  "timeCheck": [
+    {
+      "utc": "2026-11-18 00:00",
+      "oursTdbMinusUtc": 69.18277925446452,
+      "horizonsTdbMinusUt": 69.182808
+    },
+    {
+      "utc": "2030-01-01 00:00",
+      "oursTdbMinusUtc": 69.18391820229957,
+      "horizonsTdbMinusUt": 69.18393
+    },
+    {
+      "utc": "2035-07-01 12:00",
+      "oursTdbMinusUtc": 69.18411712572964,
+      "horizonsTdbMinusUt": 69.184143
+    },
+    {
+      "utc": "2045-12-31 00:00",
+      "oursTdbMinusUtc": 69.18388449264074,
+      "horizonsTdbMinusUt": 69.183862
+    }
+  ]
+}

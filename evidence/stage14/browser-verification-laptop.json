@@ -1,0 +1,15 @@
+{
+  "shots": [
+    "d1600_01_solar.png",
+    "d1600_02_hangar.png",
+    "d1600_03_integrated_B1.png",
+    "d1600_04_center_transfer.png",
+    "l1366_01_solar.png",
+    "l1366_02_hangar.png",
+    "l1366_03_integrated_B1.png",
+    "l1366_04_center_transfer.png"
+  ],
+  "checks": {},
+  "overflow": {},
+  "errors": []
+}

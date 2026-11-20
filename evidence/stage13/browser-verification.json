@@ -1,0 +1,88 @@
+{
+  "shots": [
+    "01_planner_A1_mars_sufficient.png",
+    "02_planner_A1_mars_planetocentric_plot.png",
+    "03_planner_A2_mars_insufficient.png",
+    "04_center_A1_departure_helio.png",
+    "05_center_A1_soi_planet_context.png",
+    "06_center_A1_capture_burn_exterior.png",
+    "07_center_A1_capture_cutoff.png",
+    "08_planner_B1_europa_complete.png",
+    "09_planner_B1_europa_plot.png",
+    "10_planner_B2_insufficient.png",
+    "11_center_B1_jupiter_soi.png",
+    "12_center_B1_transfer_burn_planet.png",
+    "13_center_B1_europa_soi_moon_context.png",
+    "14_center_B1_same_instant_planet_context.png",
+    "15_center_B1_touchdown_local.png",
+    "16_mobile_390_planner_B1.png",
+    "17_mobile_320_planner_B1.png",
+    "18_mobile_320_results.png",
+    "19_mobile_320_center.png",
+    "20_laptop_1366_center.png"
+  ],
+  "checks": {
+    "coverage": "Efemérides heliocéntricas: 2026-11-17 → 2045-12-31 · baricentros 5–8 (DE441) · satélites galileanos solo 2031-08-01 → 2032-06-01 (ventana de llegada adquirida).",
+    "A1": {
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "message": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada. Cálculo en 11 ms.",
+      "maneuvers": "ManiobraDur.Δv finitoΔv impulsivoProp.FinInserción en órbita de Marte847 s1,184.5 m/s1,171.8 m/s181 kgapoapsis objetivo",
+      "continuity": "Fronteras comprobadas3 (1 con cambio de marco)Máx. salto de posición7.02e-7 kmMáx. salto de velocidad6.01e-12 km/sHuecos de tiempo · masa no declarada0 s · 0",
+      "mass": "Sonda «Exploración interplanetaria»561 kg (propelente 190 → 9 kg)Motor de capturaMotor de la sonda (Hangar) · 650 N · Isp 310 sMasa final380 kg"
+    },
+    "A2": {
+      "verdict": "CADENA CALCULADA CON OBJETIVOS NO ALCANZADOS.",
+      "phases": "Inyección interplanetariaCONDICIÓN INICIAL (no simulada) · EXPERIMENTALEstado heliocéntrico inicial = Tierra(t₀) + v∞ apuntada; C3 = 8.994 km²/s². La inyección la realiza un lanzador externo no modelado (12E no está acoplado).Crucero heliocéntricoCOMPLETADA SEGÚN EL MODELO · OPERATIVOLambert apuntado a la SOI (2 iteraciones de Newton; desajuste 1.3e-11 km/s). Sin correcciones de trayectoria ni perturbaciones planetarias.Aproximación hiperbólica a MarteCOMPLETADA SEGÚN EL MODELO · OPERATIVOPeriapsis apuntado 400.00 km de altitud; v∞ 3.1377 km/s; plano B θ = -0.00°.Captura en Marte (empuje finito)COMPLETADA CON OBJETIVO NO ALCANZADO · NO VIABLE para el escenario configuradoCAPTURADA · ÓRBITA OBJETIVO NO ALCANZADA. Propelente agotado antes de alcanzar el apoapsis objetivo. Propelente 190.0 kg · Δv 1257.1 m/s (referencia impulsiva 2334.5 m/s)."
+    },
+    "A3": {
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "phases": "Inyección interplanetariaCONDICIÓN INICIAL (no simulada) · EXPERIMENTALEstado heliocéntrico inicial = Tierra(t₀) + v∞ apuntada; C3 = 8.994 km²/s². La inyección la realiza un lanzador externo no modelado (12E no está acoplado).Crucero heliocéntricoCOMPLETADA SEGÚN EL MODELO · OPERATIVOLambert apuntado a la SOI (2 iteraciones de Newton; desajuste 1.3e-11 km/s). Sin correcciones de trayectoria ni perturbaciones planetarias.Captura en MarteNO EVALUADA · EXPERIMENTALSobrevuelo sin encendido (elegido o sin motor).Sobrevuelo de MarteCOMPLETADA SEGÚN EL MODELO · EXPERIMENTALPeriapsis 400.0 km de altitud; v∞ de salida 3.1377 km/s; giro de la asíntota por la gravedad del planeta."
+    },
+    "A1center": {
+      "readiness": "Misión integrada Tierra → Marte vigente (4 tramos conectados). CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "rate": "auto"
+    },
+    "A1soi": "Tipo de misiónMisión interplanetaria integradaMisiónTierra → Marte (2028-11-29)FaseAproximación hiperbólica a MarteEstado de la faseCOMPLETADA SEGÚN EL MODELOTramoAproximación balística al periapsisFecha UTC2029-10-08 · 09:32:14 UTC (predicción)Época TDB2029-10-08 · 09:33:23 TDB · JD 2,462,417.898183Desde la salida312.6963 dCuerpo centralMarteMarco del estadoCentrado en centro de Marte (499), ejes ICRF eclíptico J2000Contexto de la vistaPlanetocéntricoPosición[574,830.3, -2,503.2, 52,359] kmVelocidad[-3.14776, 0.05111, -0.28677] km/s",
+    "A1burn": "MotorENCENDIDO · Inserción en órbita de MarteMasa total561 kgPropelente sonda «Exploración interplanetaria»190 kgPropelente del móduloSin móduloPropelente del módulo de aterrizajeSin módulo de aterrizajeAcelerador del descensoNo aplicaVelocidad vertical / horizontalNo aplica",
+    "A1cutoff": {
+      "derived": "Distancia al centro de Marte3,999.6 kmAltitud610.12 kmRapidez respecto al cuerpo central4.39115 km/sÓrbita osculanteelíptica · e = 0.81323Periapsis osculante358.74 km alt.Apoapsis osculante33,000 km alt.Periodo23.977 hDistancia al Sol1.42445 AUDistancia a Marte4,000 km",
+      "outcome": "Captura en Marte (empuje finito) · COMPLETADA SEGÚN EL MODELO. CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada."
+    },
+    "reverse": {
+      "afterPlay": "27231718.262",
+      "afterReverse": "27210237.062",
+      "status": "PAUSADA"
+    },
+    "B1": {
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "message": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada. Cálculo en 262 ms.",
+      "maneuvers": "ManiobraDur.Δv finitoΔv impulsivoProp.FinInserción en órbita de Júpiter393 s1,424.6 m/s1,424.6 m/s33,527 kgapoapsis objetivoTransferencia hacia Europa226 s1,252.5 m/s1,247.9 m/s19,281 kgapuntadoInserción en órbita de Europa300 s3,256.9 m/s3,249.6 m/s25,536 kgapoapsis objetivoReducción de apoapsis en Europa 218 s365.8 m/s365.8 m/s1,551 kgapoapsis objetivoDescenso en Europa3,996 s1,564.2 m/s—2,512 kgATERRIZAJE SUAVE SEGÚN EL MODELO",
+      "approach": "Esfera de influencia48,211,128 km (Laplace: r = a·(m/M)^(2/5))v∞ de llegada5.1704 km/sPlano B: B·T / B·R1,651,402 / -45,678 km · θ -1.58°Periapsis apuntado / logrado209,733 / 209,733 km alt.Excentricidad · giro1.059 · 141.57°SOI → periapsis85.67 dθ del plano B elegido para minimizar la inclinación respecto al plano orbital de Europa (su efeméride en la llegada).Europa: v∞ · periapsis4.6025 km/s · 100.052 km (objetivo 100)Distancia mínima a Ío698,680 kmDistancia mínima a Ganímedes469,494 kmDistancia mínima a Calisto141,291 km",
+      "continuity": "Fronteras comprobadas12 (2 con cambio de marco)Máx. salto de posición1.42e-3 kmMáx. salto de velocidad1.28e-10 km/sHuecos de tiempo · masa no declarada0 s · 0",
+      "mass": "Sonda «Exploración interplanetaria»561 kg (propelente 190 → 190 kg)Módulo de propulsión (ilustrativo)86,300 kg (seco 6,300; propelente 80,000 → 106 kg)Módulo de aterrizaje (12F, ilustrativo)5,700 kg (propelente 4,200 → 1,688 kg)Motor de capturaTres motores bipropelentes de inserción (ilustrativos) · 270 kN · Isp 323 sSeparaciónMódulo de propulsión orbital demostrativo (6406 kg, queda en órbita); masa 12,667 → 6,261 kgMasa final3,749 kg",
+      "warnings": ""
+    },
+    "B2": {
+      "verdict": "NO VIABLE para el escenario configurado: Captura en Europa (empuje finito) — no viable para el escenario configurado.",
+      "phases": "Inyección interplanetariaCONDICIÓN INICIAL (no simulada) · EXPERIMENTALEstado heliocéntrico inicial = Tierra(t₀) + v∞ apuntada; C3 = 75.683 km²/s². La inyección la realiza un lanzador externo no modelado (12E no está acoplado).Crucero heliocéntricoCOMPLETADA SEGÚN EL MODELO · OPERATIVOLambert apuntado a la SOI (4 iteraciones de Newton; desajuste 1.7e-12 km/s). Sin correcciones de trayectoria ni perturbaciones planetarias.Aproximación hiperbólica a JúpiterCOMPLETADA SEGÚN EL MODELO · OPERATIVOPeriapsis apuntado 209733.00 km de altitud; v∞ 5.1704 km/s; plano B θ = -1.58°.Captura en Júpiter (empuje finito)COMPLETADA SEGÚN EL MODELO · EXPERIMENTALÓRBITA OBJETIVO ALCANZADA SEGÚN EL MODELO.  Propelente 22008.3 kg · Δv 1424.6 m/s (referencia impulsiva 1424.6 m/s).Órbita de captura en JúpiterCOMPLETADA SEGÚN EL MODELO · EXPERIMENTAL4.03 d de espera en la órbita de captura hasta la salida óptima de la búsqueda.Transferencia planetocéntrica hacia EuropaCOMPLETADA SEGÚN EL MODELO · EXPERIMENTALBúsqueda: 3162 transferencias evaluadas; mejor Δv impulsivo de salida 1248.4 m/s + captura ideal 3702.8 m/s (v∞ en Europa 4.697 km/s). Sin asistencias gravitacionales de otros satélites. Encendido finito 149 s, 12661 kg, Δv 1253.1 m/s; error en la SOI 0.001 km.Aproximación a EuropaCOMPLETADA SEGÚN EL MODELO · EXPERIMENTALPeriapsis resultante 100.03 km (objetivo 100 km); v∞ 4.6004 km/s.Captura en Europa (empuje finito)NO VIABLE PARA EL ESCENARIO CONFIGURADO · NO VIABLE para el escenario configuradoSIN CAPTURA · SOBREVUELO HIPERBÓLICO. Propelente agotado antes de alcanzar el apoapsis objetivo. Propelente 15330.3 kg · Δv 2805.4 m/s (referencia impulsiva 3613.4 m/s)."
+    },
+    "B1transfer": {
+      "state": "Tipo de misiónMisión interplanetaria integradaMisiónTierra → Europa (2028-12-26)FaseTransferencia planetocéntrica hacia EuropaEstado de la faseCOMPLETADA SEGÚN EL MODELOTramoEncendido de transferencia hacia Europa (dirección inercial fija)Fecha UTC2031-12-30 · 22:48:12 UTC (predicción)Época TDB2031-12-30 · 22:49:21 TDB · JD 2,463,231.450939Desde la salida1,099.812 dCuerpo centralJúpiterMarco del estadoCentrado en baricentro del sistema de Júpiter (5), ejes ICRF eclíptico J2000Contexto de la vistaPlanetocéntricoPosición[2,843,727.9, -1,702,130.9, -194,382.9] kmVelocidad[4.23283, 0.32503, -0.21862] km/s",
+      "resources": "MotorENCENDIDO · Transferencia hacia EuropaMasa total59,034.2 kgPropelente sonda «Exploración interplanetaria»190 kgPropelente del módulo46,473 kgPropelente del módulo de aterrizaje4,200 kgAcelerador del descensoNo aplicaVelocidad vertical / horizontalNo aplica"
+    },
+    "contextFixed": "Marco de la vista fijado: Planetocéntrico. Solo cambia el dibujo; el estado es el mismo.",
+    "separation": "MotorENCENDIDO · Descenso en EuropaMasa total6,261 kgPropelente sonda «Exploración interplanetaria»190 kgPropelente del módulo106 kg · módulo separadoPropelente del módulo de aterrizaje4,200 kgAcelerador del descenso100 % · 16 kNVelocidad vertical / horizontal-1.53 / 1,402.2 m/s",
+    "B1contact": {
+      "outcome": "Descenso en Europa (12F, conectado) · COMPLETADA SEGÚN EL MODELO. CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "resources": "MotorENCENDIDO · descenso guiado 12FMasa total3,749 kgPropelente sonda «Exploración interplanetaria»190 kgPropelente del módulo106 kg · módulo separadoPropelente del módulo de aterrizaje1,688 kgAcelerador del descenso44 % · 7.05 kNVelocidad vertical / horizontal-1.28 / 0.04 m/s",
+      "foot": "Escena local del descenso (12F): radio del cuerpo → 0,6371 u · el estado inicial del descenso es el estado final de la captura (mismo marco centrado en el satélite)"
+    },
+    "autoRate": {
+      "status": "PAUSADA",
+      "state": "Tipo de misiónMisión interplanetaria integradaMisiónTierra → Europa (2028-12-26)FaseCaptura en Júpiter (empuje finito)Estado de la faseCOMPLETADA SEGÚN EL MODELOTramoInserción en órbita de JúpiterFecha UTC2031-12-25 · 22"
+    },
+    "overflow390": 0,
+    "overflow320": 0
+  },
+  "errors": []
+}

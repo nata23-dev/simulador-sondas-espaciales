@@ -1,0 +1,1197 @@
+{
+  "auditDate": "2026-11-19T02:35:24.154Z",
+  "auditor": "Gemini (Auditor Independiente)",
+  "sections": {
+    "timeAudit": {
+      "leapSecondsTableEntries": 28,
+      "firstEntry": [
+        "1972-01-01",
+        10
+      ],
+      "lastEntry": [
+        "2017-01-01",
+        37
+      ],
+      "maxDeltetVsFairheadSeconds": 0.000008291107701332342,
+      "timeComparisons": [
+        {
+          "utc": "2026-11-18 00:00",
+          "jdUtc": 2461362.5,
+          "horizonsDeltaT": 69.182808,
+          "calcTdbMinusUtc": 69.18277925446452,
+          "diffHorizons": 0.00002874553547371761,
+          "naifDeltet": -0.0012125608149336563,
+          "tdbMinusTt": -0.0012207455354827407
+        },
+        {
+          "utc": "2030-01-01 00:00",
+          "jdUtc": 2462502.5,
+          "horizonsDeltaT": 69.18393,
+          "calcTdbMinusUtc": 69.18391820229957,
+          "diffHorizons": 0.000011797700437909953,
+          "naifDeltet": -0.00008108864178666131,
+          "tdbMinusTt": -0.0000817977004384219
+        },
+        {
+          "utc": "2035-07-01 12:00",
+          "jdUtc": 2464510,
+          "horizonsDeltaT": 69.184143,
+          "calcTdbMinusUtc": 69.18411712572964,
+          "diffHorizons": 0.00002587427036360168,
+          "naifDeltet": 0.00011838008643284051,
+          "tdbMinusTt": 0.00011712572964619782
+        },
+        {
+          "utc": "2045-12-31 00:00",
+          "jdUtc": 2468345.5,
+          "horizonsDeltaT": 69.183862,
+          "calcTdbMinusUtc": 69.18388449264074,
+          "diffHorizons": 0.000022492640738391856,
+          "naifDeltet": -0.00011448038752590914,
+          "tdbMinusTt": -0.0001155073592517586
+        }
+      ]
+    },
+    "frameAudit": {
+      "obliquityArcsec": 84381.448,
+      "obliquityDeg": 23.439291111111114,
+      "frameCheckResults": [
+        {
+          "jdTdb": 2462502.5,
+          "labelTdb": "A.D. 2030-Jan-01 00:00:00.0000",
+          "posDiffKm": 7.450580596923828e-9,
+          "velDiffKmS": 4.440892098500626e-16,
+          "normDiff": 0
+        },
+        {
+          "jdTdb": 2465000.5,
+          "labelTdb": "A.D. 2036-Nov-03 00:00:00.0000",
+          "posDiffKm": 7.450580596923828e-9,
+          "velDiffKmS": 1.7763568394002505e-15,
+          "normDiff": 2.9802322387695312e-8
+        },
+        {
+          "jdTdb": 2468000.5,
+          "labelTdb": "A.D. 2045-Jan-20 00:00:00.0000",
+          "posDiffKm": 6.143906154658885e-8,
+          "velDiffKmS": 1.7763568394002505e-15,
+          "normDiff": 0
+        }
+      ]
+    },
+    "datasetAudit": {
+      "catalogVersion": 1,
+      "datasetsCount": 5,
+      "datasetAudits": [
+        {
+          "id": "ip-planets-inner-2026-2031",
+          "file": "data/interplanetary/ip-planets-inner-2026-2031.json",
+          "expectedCadenceSeconds": 86400,
+          "bodyIds": [
+            "199",
+            "299",
+            "399",
+            "499"
+          ],
+          "bodyStats": {
+            "199": {
+              "count": 1657,
+              "startJdTdb": 2461362.5,
+              "endJdTdb": 2463018.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "299": {
+              "count": 1657,
+              "startJdTdb": 2461362.5,
+              "endJdTdb": 2463018.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "399": {
+              "count": 1657,
+              "startJdTdb": 2461362.5,
+              "endJdTdb": 2463018.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "499": {
+              "count": 1657,
+              "startJdTdb": 2461362.5,
+              "endJdTdb": 2463018.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            }
+          }
+        },
+        {
+          "id": "ip-planets-inner-2031-2036",
+          "file": "data/interplanetary/ip-planets-inner-2031-2036.json",
+          "expectedCadenceSeconds": 86400,
+          "bodyIds": [
+            "199",
+            "299",
+            "399",
+            "499"
+          ],
+          "bodyStats": {
+            "199": {
+              "count": 1676,
+              "startJdTdb": 2463018.5,
+              "endJdTdb": 2464693.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "299": {
+              "count": 1676,
+              "startJdTdb": 2463018.5,
+              "endJdTdb": 2464693.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "399": {
+              "count": 1676,
+              "startJdTdb": 2463018.5,
+              "endJdTdb": 2464693.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "499": {
+              "count": 1676,
+              "startJdTdb": 2463018.5,
+              "endJdTdb": 2464693.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            }
+          }
+        },
+        {
+          "id": "ip-planets-inner-2036-2041",
+          "file": "data/interplanetary/ip-planets-inner-2036-2041.json",
+          "expectedCadenceSeconds": 86400,
+          "bodyIds": [
+            "199",
+            "299",
+            "399",
+            "499"
+          ],
+          "bodyStats": {
+            "199": {
+              "count": 1828,
+              "startJdTdb": 2464693.5,
+              "endJdTdb": 2466520.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "299": {
+              "count": 1828,
+              "startJdTdb": 2464693.5,
+              "endJdTdb": 2466520.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "399": {
+              "count": 1828,
+              "startJdTdb": 2464693.5,
+              "endJdTdb": 2466520.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "499": {
+              "count": 1828,
+              "startJdTdb": 2464693.5,
+              "endJdTdb": 2466520.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            }
+          }
+        },
+        {
+          "id": "ip-planets-inner-2041-2046",
+          "file": "data/interplanetary/ip-planets-inner-2041-2046.json",
+          "expectedCadenceSeconds": 86400,
+          "bodyIds": [
+            "199",
+            "299",
+            "399",
+            "499"
+          ],
+          "bodyStats": {
+            "199": {
+              "count": 1827,
+              "startJdTdb": 2466520.5,
+              "endJdTdb": 2468346.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "299": {
+              "count": 1827,
+              "startJdTdb": 2466520.5,
+              "endJdTdb": 2468346.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "399": {
+              "count": 1827,
+              "startJdTdb": 2466520.5,
+              "endJdTdb": 2468346.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "499": {
+              "count": 1827,
+              "startJdTdb": 2466520.5,
+              "endJdTdb": 2468346.5,
+              "minCadenceSeconds": 86400,
+              "maxCadenceSeconds": 86400,
+              "isMonotonic": true,
+              "hasNan": false
+            }
+          }
+        },
+        {
+          "id": "ip-planets-outer-2026-2046",
+          "file": "data/interplanetary/ip-planets-outer-2026-2046.json",
+          "expectedCadenceSeconds": 345600,
+          "bodyIds": [
+            "599",
+            "699",
+            "799",
+            "899"
+          ],
+          "bodyStats": {
+            "599": {
+              "count": 1747,
+              "startJdTdb": 2461362.5,
+              "endJdTdb": 2468346.5,
+              "minCadenceSeconds": 345600,
+              "maxCadenceSeconds": 345600,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "699": {
+              "count": 1747,
+              "startJdTdb": 2461362.5,
+              "endJdTdb": 2468346.5,
+              "minCadenceSeconds": 345600,
+              "maxCadenceSeconds": 345600,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "799": {
+              "count": 1747,
+              "startJdTdb": 2461362.5,
+              "endJdTdb": 2468346.5,
+              "minCadenceSeconds": 345600,
+              "maxCadenceSeconds": 345600,
+              "isMonotonic": true,
+              "hasNan": false
+            },
+            "899": {
+              "count": 1747,
+              "startJdTdb": 2461362.5,
+              "endJdTdb": 2468346.5,
+              "minCadenceSeconds": 345600,
+              "maxCadenceSeconds": 345600,
+              "isMonotonic": true,
+              "hasNan": false
+            }
+          }
+        }
+      ]
+    },
+    "interpolationAudit": {
+      "199": {
+        "target": "Target body name: Mercury (199)                   {source: DE441}",
+        "samplesTested": 10,
+        "maxPosErrKm": 18.720026609847128,
+        "maxVelErrKmS": 0.0006460096716734993,
+        "pointErrors": [
+          {
+            "jdTdb": 2461363,
+            "labelTdb": "A.D. 2026-Nov-18 12:00:00.0000",
+            "posErrKm": 14.3872371276116,
+            "velErrKmS": 0.000005979848296413038
+          },
+          {
+            "jdTdb": 2461700.25,
+            "labelTdb": "A.D. 2027-Oct-21 18:00:00.0000",
+            "posErrKm": 8.9514842778214,
+            "velErrKmS": 0.0005512657537061954
+          },
+          {
+            "jdTdb": 2462502,
+            "labelTdb": "A.D. 2029-Dec-31 12:00:00.0000",
+            "posErrKm": 18.720026609847128,
+            "velErrKmS": 0.000008341717942850161
+          },
+          {
+            "jdTdb": 2463180.75,
+            "labelTdb": "A.D. 2031-Nov-10 06:00:00.0000",
+            "posErrKm": 2.4271509954489723,
+            "velErrKmS": 0.00015037469669244998
+          },
+          {
+            "jdTdb": 2463601,
+            "labelTdb": "A.D. 2033-Jan-03 12:00:00.0000",
+            "posErrKm": 0.6561826779552573,
+            "velErrKmS": 1.5765267244092683e-7
+          },
+          {
+            "jdTdb": 2464693.75,
+            "labelTdb": "A.D. 2036-Jan-01 06:00:00.0000",
+            "posErrKm": 10.448959349133826,
+            "velErrKmS": 0.0006460096716734993
+          },
+          {
+            "jdTdb": 2465500,
+            "labelTdb": "A.D. 2038-Mar-17 12:00:00.0000",
+            "posErrKm": 11.85300237488877,
+            "velErrKmS": 0.000004644535850476195
+          },
+          {
+            "jdTdb": 2466520.75,
+            "labelTdb": "A.D. 2041-Jan-01 06:00:00.0000",
+            "posErrKm": 1.8396682387569505,
+            "velErrKmS": 0.00011397417046484693
+          },
+          {
+            "jdTdb": 2467500,
+            "labelTdb": "A.D. 2043-Sep-07 12:00:00.0000",
+            "posErrKm": 9.832840191651943,
+            "velErrKmS": 0.0000036333009739209523
+          },
+          {
+            "jdTdb": 2468345.75,
+            "labelTdb": "A.D. 2045-Dec-31 06:00:00.0000",
+            "posErrKm": 0.3586452694359976,
+            "velErrKmS": 0.000022089642772548188
+          }
+        ]
+      },
+      "299": {
+        "target": "Target body name: Venus (299)                     {source: DE441}",
+        "samplesTested": 10,
+        "maxPosErrKm": 0.18006659462014554,
+        "maxVelErrKmS": 0.000006275815197371216,
+        "pointErrors": [
+          {
+            "jdTdb": 2461363,
+            "labelTdb": "A.D. 2026-Nov-18 12:00:00.0000",
+            "posErrKm": 0.1770006354389551,
+            "velErrKmS": 1.1778274586059227e-8
+          },
+          {
+            "jdTdb": 2461700.25,
+            "labelTdb": "A.D. 2027-Oct-21 18:00:00.0000",
+            "posErrKm": 0.09432057390594042,
+            "velErrKmS": 0.0000058225538900413185
+          },
+          {
+            "jdTdb": 2462502,
+            "labelTdb": "A.D. 2029-Dec-31 12:00:00.0000",
+            "posErrKm": 0.18006659462014554,
+            "velErrKmS": 1.2179539849995767e-8
+          },
+          {
+            "jdTdb": 2463180.75,
+            "labelTdb": "A.D. 2031-Nov-10 06:00:00.0000",
+            "posErrKm": 0.10166541547255792,
+            "velErrKmS": 0.000006275815197371216
+          },
+          {
+            "jdTdb": 2463601,
+            "labelTdb": "A.D. 2033-Jan-03 12:00:00.0000",
+            "posErrKm": 0.17479031249458693,
+            "velErrKmS": 1.1493245017560604e-8
+          },
+          {
+            "jdTdb": 2464693.75,
+            "labelTdb": "A.D. 2036-Jan-01 06:00:00.0000",
+            "posErrKm": 0.0940913432662135,
+            "velErrKmS": 0.000005808393675943065
+          },
+          {
+            "jdTdb": 2465500,
+            "labelTdb": "A.D. 2038-Mar-17 12:00:00.0000",
+            "posErrKm": 0.1725487284766075,
+            "velErrKmS": 1.1203413499474873e-8
+          },
+          {
+            "jdTdb": 2466520.75,
+            "labelTdb": "A.D. 2041-Jan-01 06:00:00.0000",
+            "posErrKm": 0.09816039758530708,
+            "velErrKmS": 0.000006059625307121858
+          },
+          {
+            "jdTdb": 2467500,
+            "labelTdb": "A.D. 2043-Sep-07 12:00:00.0000",
+            "posErrKm": 0.17800943320096535,
+            "velErrKmS": 1.1909394863200082e-8
+          },
+          {
+            "jdTdb": 2468345.75,
+            "labelTdb": "A.D. 2045-Dec-31 06:00:00.0000",
+            "posErrKm": 0.10142451719322755,
+            "velErrKmS": 0.000006260979478870807
+          }
+        ]
+      },
+      "399": {
+        "target": "Target body name: Earth (399)                     {source: DE441}",
+        "samplesTested": 10,
+        "maxPosErrKm": 0.08755638659160145,
+        "maxVelErrKmS": 0.000003112800875467778,
+        "pointErrors": [
+          {
+            "jdTdb": 2461363,
+            "labelTdb": "A.D. 2026-Nov-18 12:00:00.0000",
+            "posErrKm": 0.049943666002394506,
+            "velErrKmS": 1.5647908649276727e-8
+          },
+          {
+            "jdTdb": 2461700.25,
+            "labelTdb": "A.D. 2027-Oct-21 18:00:00.0000",
+            "posErrKm": 0.02633593464620377,
+            "velErrKmS": 0.0000016147626075747618
+          },
+          {
+            "jdTdb": 2462502,
+            "labelTdb": "A.D. 2029-Dec-31 12:00:00.0000",
+            "posErrKm": 0.07987705712546762,
+            "velErrKmS": 3.852836877186819e-8
+          },
+          {
+            "jdTdb": 2463180.75,
+            "labelTdb": "A.D. 2031-Nov-10 06:00:00.0000",
+            "posErrKm": 0.030310741686462403,
+            "velErrKmS": 0.000001878930551684634
+          },
+          {
+            "jdTdb": 2463601,
+            "labelTdb": "A.D. 2033-Jan-03 12:00:00.0000",
+            "posErrKm": 0.08755638659160145,
+            "velErrKmS": 4.071130507209295e-8
+          },
+          {
+            "jdTdb": 2464693.75,
+            "labelTdb": "A.D. 2036-Jan-01 06:00:00.0000",
+            "posErrKm": 0.03370289026693448,
+            "velErrKmS": 0.000002079705994356678
+          },
+          {
+            "jdTdb": 2465500,
+            "labelTdb": "A.D. 2038-Mar-17 12:00:00.0000",
+            "posErrKm": 0.050509582496441816,
+            "velErrKmS": 3.397501961045601e-8
+          },
+          {
+            "jdTdb": 2466520.75,
+            "labelTdb": "A.D. 2041-Jan-01 06:00:00.0000",
+            "posErrKm": 0.05024495151402461,
+            "velErrKmS": 0.000003112800875467778
+          },
+          {
+            "jdTdb": 2467500,
+            "labelTdb": "A.D. 2043-Sep-07 12:00:00.0000",
+            "posErrKm": 0.04817231672978047,
+            "velErrKmS": 1.0279590359582898e-8
+          },
+          {
+            "jdTdb": 2468345.75,
+            "labelTdb": "A.D. 2045-Dec-31 06:00:00.0000",
+            "posErrKm": 0.03684822851458758,
+            "velErrKmS": 0.0000022784924476710658
+          }
+        ]
+      },
+      "499": {
+        "target": "Target body name: Mars (499)                      {source: mar099}",
+        "samplesTested": 10,
+        "maxPosErrKm": 0.009142354186848979,
+        "maxVelErrKmS": 2.755044158237644e-7,
+        "pointErrors": [
+          {
+            "jdTdb": 2461363,
+            "labelTdb": "A.D. 2026-Nov-18 12:00:00.0000",
+            "posErrKm": 0.003381804436958874,
+            "velErrKmS": 2.2297993161607226e-8
+          },
+          {
+            "jdTdb": 2461700.25,
+            "labelTdb": "A.D. 2027-Oct-21 18:00:00.0000",
+            "posErrKm": 0.0034118813625795045,
+            "velErrKmS": 2.3116343227172705e-7
+          },
+          {
+            "jdTdb": 2462502,
+            "labelTdb": "A.D. 2029-Dec-31 12:00:00.0000",
+            "posErrKm": 0.009142354186848979,
+            "velErrKmS": 2.2146571408859404e-8
+          },
+          {
+            "jdTdb": 2463180.75,
+            "labelTdb": "A.D. 2031-Nov-10 06:00:00.0000",
+            "posErrKm": 0.005060377214834575,
+            "velErrKmS": 2.755044158237644e-7
+          },
+          {
+            "jdTdb": 2463601,
+            "labelTdb": "A.D. 2033-Jan-03 12:00:00.0000",
+            "posErrKm": 0.0017230529287875882,
+            "velErrKmS": 2.1855467795647157e-8
+          },
+          {
+            "jdTdb": 2464693.75,
+            "labelTdb": "A.D. 2036-Jan-01 06:00:00.0000",
+            "posErrKm": 0.003338465671501421,
+            "velErrKmS": 1.5672895776207838e-7
+          },
+          {
+            "jdTdb": 2465500,
+            "labelTdb": "A.D. 2038-Mar-17 12:00:00.0000",
+            "posErrKm": 0.0026695907753792724,
+            "velErrKmS": 2.1861413006090977e-8
+          },
+          {
+            "jdTdb": 2466520.75,
+            "labelTdb": "A.D. 2041-Jan-01 06:00:00.0000",
+            "posErrKm": 0.00313518022648289,
+            "velErrKmS": 2.4733947634905597e-7
+          },
+          {
+            "jdTdb": 2467500,
+            "labelTdb": "A.D. 2043-Sep-07 12:00:00.0000",
+            "posErrKm": 0.0034553162851860076,
+            "velErrKmS": 2.1422102279389904e-8
+          },
+          {
+            "jdTdb": 2468345.75,
+            "labelTdb": "A.D. 2045-Dec-31 06:00:00.0000",
+            "posErrKm": 0.0006502069050962623,
+            "velErrKmS": 8.108739042392411e-8
+          }
+        ]
+      },
+      "599": {
+        "target": "Target body name: Jupiter (599)                   {source: jup365_merged}",
+        "samplesTested": 6,
+        "maxPosErrKm": 94.52809024801822,
+        "maxVelErrKmS": 0.0013419097681312447,
+        "pointErrors": [
+          {
+            "jdTdb": 2461364.75,
+            "labelTdb": "A.D. 2026-Nov-20 06:00:00.0000",
+            "posErrKm": 84.45691702540688,
+            "velErrKmS": 0.0008654056900183717
+          },
+          {
+            "jdTdb": 2462564.5,
+            "labelTdb": "A.D. 2030-Mar-04 00:00:00.0000",
+            "posErrKm": 33.21872112427724,
+            "velErrKmS": 0.0011814344216086986
+          },
+          {
+            "jdTdb": 2464163.5,
+            "labelTdb": "A.D. 2034-Jul-20 00:00:00.0000",
+            "posErrKm": 47.55201368454838,
+            "velErrKmS": 0.0006016020078144973
+          },
+          {
+            "jdTdb": 2465765.5,
+            "labelTdb": "A.D. 2038-Dec-08 00:00:00.0000",
+            "posErrKm": 86.61073004345097,
+            "velErrKmS": 0.0013419097681312447
+          },
+          {
+            "jdTdb": 2467365,
+            "labelTdb": "A.D. 2043-Apr-25 12:00:00.0000",
+            "posErrKm": 94.52809024801822,
+            "velErrKmS": 0.0006368743230212839
+          },
+          {
+            "jdTdb": 2468344.5,
+            "labelTdb": "A.D. 2045-Dec-30 00:00:00.0000",
+            "posErrKm": 66.25510753802293,
+            "velErrKmS": 0.000839454290413995
+          }
+        ]
+      },
+      "699": {
+        "target": "Target body name: Saturn (699)                    {source: sat441l}",
+        "samplesTested": 6,
+        "maxPosErrKm": 6.869069260724701,
+        "maxVelErrKmS": 0.00008033565999849327,
+        "pointErrors": [
+          {
+            "jdTdb": 2461364.75,
+            "labelTdb": "A.D. 2026-Nov-20 06:00:00.0000",
+            "posErrKm": 4.480893636745818,
+            "velErrKmS": 0.00003715182367572903
+          },
+          {
+            "jdTdb": 2462564.5,
+            "labelTdb": "A.D. 2030-Mar-04 00:00:00.0000",
+            "posErrKm": 1.1918761742351016,
+            "velErrKmS": 0.000037134253807334023
+          },
+          {
+            "jdTdb": 2464163.5,
+            "labelTdb": "A.D. 2034-Jul-20 00:00:00.0000",
+            "posErrKm": 3.343753279780494,
+            "velErrKmS": 0.00005672817406260054
+          },
+          {
+            "jdTdb": 2465765.5,
+            "labelTdb": "A.D. 2038-Dec-08 00:00:00.0000",
+            "posErrKm": 4.010435554265068,
+            "velErrKmS": 0.00008033565999849327
+          },
+          {
+            "jdTdb": 2467365,
+            "labelTdb": "A.D. 2043-Apr-25 12:00:00.0000",
+            "posErrKm": 3.389294712193114,
+            "velErrKmS": 0.000017126958537571688
+          },
+          {
+            "jdTdb": 2468344.5,
+            "labelTdb": "A.D. 2045-Dec-30 00:00:00.0000",
+            "posErrKm": 6.869069260724701,
+            "velErrKmS": 0.00003905401074017006
+          }
+        ]
+      },
+      "799": {
+        "target": "Target body name: Uranus (799)                    {source: ura184_merged}",
+        "samplesTested": 6,
+        "maxPosErrKm": 16.97197706899241,
+        "maxVelErrKmS": 0.00014794696746716347,
+        "pointErrors": [
+          {
+            "jdTdb": 2461364.75,
+            "labelTdb": "A.D. 2026-Nov-20 06:00:00.0000",
+            "posErrKm": 3.8870703440269376,
+            "velErrKmS": 0.00008340462621723988
+          },
+          {
+            "jdTdb": 2462564.5,
+            "labelTdb": "A.D. 2030-Mar-04 00:00:00.0000",
+            "posErrKm": 16.97197706899241,
+            "velErrKmS": 0.0001457299279312596
+          },
+          {
+            "jdTdb": 2464163.5,
+            "labelTdb": "A.D. 2034-Jul-20 00:00:00.0000",
+            "posErrKm": 3.79056688948633,
+            "velErrKmS": 0.0000952230668497797
+          },
+          {
+            "jdTdb": 2465765.5,
+            "labelTdb": "A.D. 2038-Dec-08 00:00:00.0000",
+            "posErrKm": 1.269454580019966,
+            "velErrKmS": 0.000027956291147231257
+          },
+          {
+            "jdTdb": 2467365,
+            "labelTdb": "A.D. 2043-Apr-25 12:00:00.0000",
+            "posErrKm": 9.413453658449574,
+            "velErrKmS": 0.00014794696746716347
+          },
+          {
+            "jdTdb": 2468344.5,
+            "labelTdb": "A.D. 2045-Dec-30 00:00:00.0000",
+            "posErrKm": 3.6202145853186276,
+            "velErrKmS": 0.0000842592959364353
+          }
+        ]
+      },
+      "899": {
+        "target": "Target body name: Neptune (899)                   {source: nep098_merged}",
+        "samplesTested": 6,
+        "maxPosErrKm": 47.42602957176295,
+        "maxVelErrKmS": 0.0004193828126165821,
+        "pointErrors": [
+          {
+            "jdTdb": 2461364.75,
+            "labelTdb": "A.D. 2026-Nov-20 06:00:00.0000",
+            "posErrKm": 45.5168683797282,
+            "velErrKmS": 0.00018219427539690116
+          },
+          {
+            "jdTdb": 2462564.5,
+            "labelTdb": "A.D. 2030-Mar-04 00:00:00.0000",
+            "posErrKm": 47.42602957176295,
+            "velErrKmS": 0.00012436123852270503
+          },
+          {
+            "jdTdb": 2464163.5,
+            "labelTdb": "A.D. 2034-Jul-20 00:00:00.0000",
+            "posErrKm": 26.261096148660652,
+            "velErrKmS": 0.0004193828126165821
+          },
+          {
+            "jdTdb": 2465765.5,
+            "labelTdb": "A.D. 2038-Dec-08 00:00:00.0000",
+            "posErrKm": 26.236158643846053,
+            "velErrKmS": 0.00041606971826616007
+          },
+          {
+            "jdTdb": 2467365,
+            "labelTdb": "A.D. 2043-Apr-25 12:00:00.0000",
+            "posErrKm": 41.28669489110355,
+            "velErrKmS": 0.0002861079715000306
+          },
+          {
+            "jdTdb": 2468344.5,
+            "labelTdb": "A.D. 2045-Dec-30 00:00:00.0000",
+            "posErrKm": 46.91551879034651,
+            "velErrKmS": 0.00013060104712970744
+          }
+        ]
+      }
+    },
+    "lambertAudit": {
+      "curtisEx52": {
+        "sol": {
+          "v1": [
+            -5.992494639666398,
+            1.9253634152808923,
+            3.24563652849049
+          ],
+          "v2": [
+            -3.312460310936794,
+            -4.19661730792647,
+            -0.38528761706810466
+          ],
+          "z": 1.5398544345070693,
+          "y": 13523.235612950852,
+          "A": 12372.272033956451,
+          "dthetaDeg": 100.29252420729621,
+          "iter": 10,
+          "tofError": 1.2631870857957337e-16
+        },
+        "refV1": [
+          -5.9925,
+          1.9254,
+          3.2456
+        ],
+        "refV2": [
+          -3.3125,
+          -4.1966,
+          -0.38529
+        ],
+        "v1ErrKmS": 0.00005197600856138838,
+        "v2ErrKmS": 0.00004336432198577365
+      },
+      "valladoEx75": {
+        "sol": {
+          "v1": [
+            2.058913353707273,
+            2.9159643516499654,
+            0
+          ],
+          "v2": [
+            -3.4515648446831797,
+            0.9103142481137838,
+            0
+          ],
+          "z": 2.5466995589688968,
+          "y": 10967.477381471894,
+          "A": 21190.17768787695,
+          "dthetaDeg": 40.00000115224073,
+          "iter": 9,
+          "tofError": 1.3562640289596298e-14
+        },
+        "refV1": [
+          2.058913,
+          2.915965,
+          0
+        ],
+        "refV2": [
+          -3.451565,
+          0.910314,
+          0
+        ],
+        "v1ErrKmS": 7.385571082416337e-7,
+        "v2ErrKmS": 2.927178921819048e-7
+      },
+      "analyticalCircularQuarter": {
+        "sol": {
+          "v1": [
+            -1.3227060262325947e-14,
+            29.784691834309115,
+            0
+          ],
+          "v2": [
+            -29.784691834309115,
+            1.3227060262325947e-14,
+            0
+          ],
+          "z": 2.4674011002723377,
+          "y": 149597870.69999993,
+          "A": 149597870.7,
+          "dthetaDeg": 90,
+          "iter": 10,
+          "tofError": 5.902254832049614e-16
+        },
+        "vCircKmS": 29.784691834309108,
+        "v1ErrKmS": 1.5014733468075513e-14,
+        "v2ErrKmS": 1.5014733468075513e-14
+      },
+      "extraProblemA": {
+        "v1": [
+          4.828440258134929,
+          32.02808627745173,
+          0
+        ],
+        "v2": [
+          -19.15910814383374,
+          -9.51956630377562,
+          0
+        ],
+        "z": 4.851111697696349,
+        "y": 291093275.3626964,
+        "A": 129555556.37825975,
+        "dthetaDeg": 119.99999999999999,
+        "iter": 10,
+        "tofError": 9.856976323412279e-14
+      },
+      "extraProblemB": {
+        "v1": [
+          -18.813249832887603,
+          64.36782440278584,
+          16.09195610069646
+        ],
+        "v2": [
+          -32.18391220139292,
+          51.396376584005,
+          12.84909414600125
+        ],
+        "z": -2.311718197992003,
+        "y": 62149766.24533683,
+        "A": 214794246.7126827,
+        "dthetaDeg": 90,
+        "iter": 9,
+        "tofError": 6.842993222820906e-13
+      },
+      "extraProblemC": {
+        "v1": [
+          -0.029318131331130103,
+          20.154904114656226,
+          25.664952585521075
+        ],
+        "v2": [
+          -1.1808696180291922,
+          -13.410286550426111,
+          -17.076457745321683
+        ],
+        "z": 9.53252841714952,
+        "y": 373909236.9788543,
+        "A": 5490699.427846333,
+        "dthetaDeg": 177.57223761538447,
+        "iter": 10,
+        "tofError": 7.278113453476518e-14
+      }
+    },
+    "trajectoryClosureAudit": {
+      "earthMarsClosures": [
+        {
+          "tofDays": 60,
+          "dthetaDeg": 92.83254172369404,
+          "transferType": "Type I",
+          "posClosureKm": 0.00003332115463765575,
+          "velClosureKmS": 1.86842713844372e-12
+        },
+        {
+          "tofDays": 150,
+          "dthetaDeg": 132.92631572060463,
+          "transferType": "Type I",
+          "posClosureKm": 0.000039495510625681055,
+          "velClosureKmS": 3.686056674860367e-12
+        },
+        {
+          "tofDays": 260,
+          "dthetaDeg": 187.8989605415139,
+          "transferType": "Type II",
+          "posClosureKm": 0.00005563629059539548,
+          "velClosureKmS": 2.32392778819743e-13
+        },
+        {
+          "tofDays": 316,
+          "dthetaDeg": 219.9203446638229,
+          "transferType": "Type II",
+          "posClosureKm": 0.00006083255919038303,
+          "velClosureKmS": 3.586690704576258e-12
+        },
+        {
+          "tofDays": 330,
+          "dthetaDeg": 228.3618035944306,
+          "transferType": "Type II",
+          "posClosureKm": 0.00005029998826051843,
+          "velClosureKmS": 6.666477061576149e-12
+        },
+        {
+          "tofDays": 500,
+          "dthetaDeg": 333.4283157943552,
+          "transferType": "Type II",
+          "posClosureKm": 0.0006828471607947046,
+          "velClosureKmS": 7.794283939930284e-11
+        }
+      ],
+      "extraClosures": [
+        {
+          "name": "Prob A (120°)",
+          "dthetaDeg": 119.99999999999999,
+          "posClosureKm": 0.00009852856918256927,
+          "velClosureKmS": 6.686731912708723e-12
+        },
+        {
+          "name": "Prob B (Hipérbola 60d)",
+          "dthetaDeg": 90,
+          "posClosureKm": 0.00022006090897508385,
+          "velClosureKmS": 4.961351932365296e-12
+        },
+        {
+          "name": "Prob C (Casi colineal 178.5°)",
+          "dthetaDeg": 177.57223761538447,
+          "posClosureKm": 0.00006900058300017728,
+          "velClosureKmS": 1.1031108036113805e-12
+        }
+      ]
+    },
+    "earthMarsAudit": {
+      "nasaHandbookTable3": {
+        "typeI": {
+          "dates": "12/10/28 -> 07/20/29 (TOF 222 d)",
+          "nasaC3": 9.048,
+          "nasaVinfArr": 4.892,
+          "nasaDlaDeg": 1.581,
+          "nasaRlaDeg": 158.9,
+          "ourCalculated": {
+            "c3": 9.054699590298258,
+            "vInfDepMag": 3.009102788257367,
+            "vInfArrMag": 4.938716445009187,
+            "deltaVInj": 3.629732010149839,
+            "dlaDeg": -5.212138987002353,
+            "rlaDeg": 160.0050990363671,
+            "dthetaDeg": 162.8042247174776,
+            "transferType": "Type I"
+          }
+        },
+        "typeII": {
+          "dates": "12/02/28 -> 10/16/29 (TOF 318 d)",
+          "nasaC3": 8.928,
+          "nasaVinfArr": 3.261,
+          "nasaDlaDeg": 29.34,
+          "nasaRlaDeg": 185.1,
+          "ourCalculated": {
+            "c3": 8.998199564798723,
+            "vInfDepMag": 2.9996999124576984,
+            "vInfArrMag": 3.241522267471702,
+            "deltaVInj": 3.6272576239035086,
+            "dlaDeg": 28.86339029720089,
+            "rlaDeg": 184.71069732027442,
+            "dthetaDeg": 220.29242969185944,
+            "transferType": "Type II"
+          }
+        }
+      },
+      "claudeReportCaseA": {
+        "dates": "2028-11-30 -> 2029-10-12 (TOF 316 d)",
+        "claudeC3": 8.996,
+        "ourCalculated": {
+          "c3": 9.001289601825608,
+          "vInfDepMag": 3.000214925938741,
+          "vInfArrMag": 3.170565546930781,
+          "deltaVInj": 3.6273929641686102,
+          "dlaDeg": 28.433738725845775,
+          "rlaDeg": 184.28966183520788,
+          "dthetaDeg": 219.9203446638229,
+          "transferType": "Type II"
+        }
+      },
+      "fineGridSearch": {
+        "jdDep": 2462105.25,
+        "tofDays": 314.75,
+        "jdArr": 2462420,
+        "cost": {
+          "c3": 8.995239085570962,
+          "vInfDepMag": 2.99920640929746,
+          "vInfArrMag": 3.1619676848920495,
+          "deltaVInj": 3.6271279566242214,
+          "dlaDeg": 29.237041606849488,
+          "rlaDeg": 183.96752855248525,
+          "dthetaDeg": 218.86301542808286,
+          "transferType": "Type II"
+        }
+      }
+    },
+    "earthVenusAudit": {
+      "typeII": {
+        "dates": "2028-03-26 -> 2028-09-14 (172 d)",
+        "reported": {
+          "c3": 9.185,
+          "vInfDep": 3.031,
+          "vInfArr": 5.79,
+          "dvInj": 3.635
+        },
+        "calculated": {
+          "c3": 9.186859403571198,
+          "vInfDepMag": 3.0309832403976102,
+          "vInfArrMag": 5.742128293936071,
+          "deltaVInj": 3.6355177804585175,
+          "dlaDeg": 37.37142513071562,
+          "rlaDeg": 95.49543389068394,
+          "dthetaDeg": 231.12896389689934,
+          "transferType": "Type II"
+        }
+      },
+      "typeI": {
+        "dates": "2028-03-10 -> 2028-07-02 (114 d)",
+        "reported": {
+          "c3": 11.184,
+          "vInfDep": 3.344,
+          "vInfArr": 5.978,
+          "dvInj": 3.723
+        },
+        "calculated": {
+          "c3": 11.208446842605397,
+          "vInfDepMag": 3.3479018567761805,
+          "vInfArrMag": 6.092324511744407,
+          "deltaVInj": 3.7236576037535585,
+          "dlaDeg": -1.1621408589998024,
+          "rlaDeg": 78.2541968341133,
+          "dthetaDeg": 129.3025911402478,
+          "transferType": "Type I"
+        }
+      }
+    },
+    "earthJupiterAudit": {
+      "dates": "2028-12-26 -> 2031-12-21 (1090 d)",
+      "reported": {
+        "c3": 75.73,
+        "vInfDep": 8.702,
+        "vInfArr": 5.697,
+        "dvInj": 6.249
+      },
+      "calculated": {
+        "c3": 75.76810232407068,
+        "vInfDepMag": 8.704487481987131,
+        "vInfArrMag": 5.696024270437734,
+        "deltaVInj": 6.250357302475683,
+        "dlaDeg": -3.5976546048472824,
+        "rlaDeg": 184.7081929175669,
+        "dthetaDeg": 185.6539886645778,
+        "transferType": "Type II"
+      }
+    },
+    "otherDestinationsAudit": {
+      "mercury": {
+        "dates": "2030-09-20 -> 2031-01-14 (116 d)",
+        "reportedC3": 51.3,
+        "calculated": {
+          "c3": 51.298673546977874,
+          "vInfDepMag": 7.162309232850665,
+          "vInfArrMag": 13.163880361802624,
+          "deltaVInj": 5.349995152466716,
+          "dlaDeg": -29.389053142305066,
+          "rlaDeg": 266.3448564490473,
+          "dthetaDeg": 221.3543475275516,
+          "transferType": "Type II"
+        }
+      },
+      "saturn": {
+        "dates": "2030-07-30 -> 2034-10-17 (1540 d)",
+        "reportedC3": 109.87,
+        "calculated": {
+          "c3": 109.87293500096068,
+          "vInfDepMag": 10.482029145206601,
+          "vInfArrMag": 6.536438743199223,
+          "deltaVInj": 7.416577665543606,
+          "dlaDeg": 19.187668290075287,
+          "rlaDeg": 35.5989063355344,
+          "dthetaDeg": 171.34844233896672,
+          "transferType": "Type I"
+        }
+      },
+      "uranus": {
+        "dates": "2030-08-13 -> 2041-08-15 (4020 d)",
+        "reportedC3": 136.72,
+        "calculated": {
+          "c3": 136.7163435007071,
+          "vInfDepMag": 11.692576426977379,
+          "vInfArrMag": 5.6920572271397765,
+          "deltaVInj": 8.275055789336058,
+          "dlaDeg": 25.627518011343955,
+          "rlaDeg": 36.188821318744665,
+          "dthetaDeg": 168.07851291396813,
+          "transferType": "Type I"
+        }
+      },
+      "neptune": {
+        "dates": "2030-05-31 -> 2045-09-29 (5600 d - borde)",
+        "reportedC3": 159.03,
+        "calculated": {
+          "c3": 159.02956985702295,
+          "vInfDepMag": 12.610692679509041,
+          "vInfArrMag": 6.828527353971717,
+          "deltaVInj": 8.95518759121774,
+          "dlaDeg": -26.268979713883354,
+          "rlaDeg": 333.0144422507685,
+          "dthetaDeg": 155.54863692962203,
+          "transferType": "Type I"
+        }
+      }
+    },
+    "fix12f1Audit": {
+      "fixA_camera": {
+        "noSmoothedLerpInLocal": true,
+        "localVerticalSetUp": true,
+        "tangentGroundPatch": true
+      },
+      "fixB_messages": {
+        "hasBodySpecificPreparedMessage": true,
+        "landingOutcomeClarified": true
+      },
+      "fixC_landerPanel": {
+        "openByDefault": true,
+        "markedEditable": true
+      },
+      "fixD_tolerances": {
+        "predicateToleranceDefined": true,
+        "bracketSecondsDefined": true,
+        "contactTolerancesInDiagnostics": true
+      }
+    }
+  }
+}

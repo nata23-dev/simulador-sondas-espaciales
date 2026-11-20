@@ -1,0 +1,297 @@
+{
+  "part": "flow",
+  "startedAt": "2026-11-20T00:52:06.386Z",
+  "shots": [
+    "f1920_01_historical_voyager.png",
+    "f1920_02_historical_cassini.png",
+    "f1920_03_historical_dawn.png",
+    "f1920_04_historical_juno.png",
+    "f1920_05_variant_created.png",
+    "f1920_06_variant_voyager_hga.png",
+    "f1920_07_adapter_prompt.png",
+    "f1920_08_propellant_conflict.png",
+    "f1920_09_incompatible_ion_rtg.png",
+    "f1920_10_engineering_incompatible.png",
+    "f1920_10b_engineering_incompatible_details.png",
+    "f1920_11_corrected_variant.png",
+    "f1920_12_engineering_corrected.png",
+    "f1920_13_integrated_C1_flyby.png",
+    "f1920_14_integrated_C2_capture_not_viable.png",
+    "f1920_15_integrated_comparison.png",
+    "f1920_16_center_C1.png",
+    "f1920_17_center_C1_europa_closest.png",
+    "f1920_17b_center_C1_energy.png",
+    "f1920_18_center_C1_joi.png",
+    "f1920_19_quality_menu.png"
+  ],
+  "checks": {
+    "historical_voyager": {
+      "stage": "11 piezas montadas",
+      "status": "COHERENTE SEGÚN EL MODELO",
+      "tone": "ok",
+      "errors": [],
+      "warnings": [],
+      "metrics": {
+        "Masa seca estructural": "725.5 kg",
+        "Adaptadores (estimado)": "0 kg",
+        "Hidracina de actitud": "0 kg",
+        "Masa seca": "725.5 kg",
+        "Propelente principal": "100 / 100 kg · hidracina",
+        "Masa total": "825.5 kg",
+        "Propulsión": "Química",
+        "Control de actitud": "12 × 890 mN · comparte depósito",
+        "Empuje": "3.56 N",
+        "Impulso específico": "220 s",
+        "Aceleración inicial": "4.313 mm/s²",
+        "Consumo de propelente": "1,650.1 mg/s",
+        "Δv ideal": "279 m/s",
+        "Centro de masas (x, y, z)": "-0 · 0.05 · -0.03 m",
+        "Desalineación del empuje": "2.8 cm (límite 10 cm)",
+        "Consumo de servicio": "403 W",
+        "Consumo en encendido": "10 W",
+        "Batería": "0 Wh",
+        "Autonomía por batería": "No disponible"
+      }
+    },
+    "historical_cassini": {
+      "stage": "14 piezas montadas",
+      "status": "COHERENTE SEGÚN EL MODELO",
+      "tone": "ok",
+      "errors": [],
+      "warnings": [],
+      "metrics": {
+        "Masa seca estructural": "2,474 kg",
+        "Adaptadores (estimado)": "0 kg",
+        "Hidracina de actitud": "132 kg",
+        "Masa seca": "2,606 kg",
+        "Propelente principal": "3,000 / 3,000 kg · NTO/MMH",
+        "Masa total": "5,606 kg",
+        "Propulsión": "Química",
+        "Control de actitud": "16 × 500 mN",
+        "Empuje": "445 N",
+        "Impulso específico": "311 s",
+        "Aceleración inicial": "79.4 mm/s²",
+        "Consumo de propelente": "145.9 g/s",
+        "Δv ideal": "2,336 m/s",
+        "Centro de masas (x, y, z)": "0.02 · -0.34 · -0.06 m",
+        "Desalineación del empuje": "6.3 cm (límite 25 cm, con cardán)",
+        "Consumo de servicio": "697 W",
+        "Consumo en encendido": "50 W",
+        "Batería": "0 Wh",
+        "Autonomía por batería": "No disponible"
+      }
+    },
+    "historical_dawn": {
+      "stage": "12 piezas montadas",
+      "status": "COHERENTE SEGÚN EL MODELO",
+      "tone": "ok",
+      "errors": [],
+      "warnings": [],
+      "metrics": {
+        "Masa seca estructural": "747.1 kg",
+        "Adaptadores (estimado)": "0 kg",
+        "Hidracina de actitud": "45.6 kg",
+        "Masa seca": "792.7 kg",
+        "Propelente principal": "425 / 425 kg · xenón",
+        "Masa total": "1,217.7 kg",
+        "Propulsión": "Eléctrica (iónica)",
+        "Control de actitud": "12 × 900 mN",
+        "Empuje": "92 mN",
+        "Impulso específico": "3,100 s",
+        "Aceleración inicial": "0.076 mm/s²",
+        "Consumo de propelente": "3 mg/s",
+        "Δv ideal": "13,050 m/s",
+        "Centro de masas (x, y, z)": "0.04 · -0.05 · 0.02 m",
+        "Desalineación del empuje": "4.2 cm (límite 25 cm, con cardán)",
+        "Consumo de servicio": "447 W",
+        "Consumo en encendido": "2,600 W",
+        "Batería": "980 Wh",
+        "Autonomía por batería": "No disponible"
+      }
+    },
+    "historical_juno": {
+      "stage": "13 piezas montadas · 1 punto libre",
+      "status": "COHERENTE SEGÚN EL MODELO",
+      "tone": "ok",
+      "errors": [],
+      "warnings": [],
+      "metrics": {
+        "Masa seca estructural": "1,593 kg",
+        "Adaptadores (estimado)": "0 kg",
+        "Hidracina de actitud": "0 kg",
+        "Masa seca": "1,593 kg",
+        "Propelente principal": "2,032 / 2,032 kg · MON/hidracina",
+        "Masa total": "3,625 kg",
+        "Propulsión": "Química",
+        "Control de actitud": "¿? × empuje desconocido · comparte depósito",
+        "Empuje": "645 N",
+        "Impulso específico": "318 s",
+        "Aceleración inicial": "177.9 mm/s²",
+        "Consumo de propelente": "206.8 g/s",
+        "Δv ideal": "2,564 m/s",
+        "Centro de masas (x, y, z)": "0.03 · 0.03 · 0.04 m",
+        "Desalineación del empuje": "5.1 cm (límite 10 cm)",
+        "Consumo de servicio": "348 W",
+        "Consumo en encendido": "40 W",
+        "Batería": "3,080 Wh",
+        "Autonomía por batería": "No disponible"
+      }
+    },
+    "variantName": "Variante de Cassini",
+    "modeAfterVariant": "custom",
+    "afterVoyagerHga": {
+      "status": "COHERENTE SEGÚN EL MODELO",
+      "tone": "ok",
+      "errors": [],
+      "warnings": [],
+      "metrics": {
+        "Masa seca estructural": "2,419 kg",
+        "Adaptadores (estimado)": "0 kg",
+        "Hidracina de actitud": "132 kg",
+        "Masa seca": "2,551 kg",
+        "Propelente principal": "3,000 / 3,000 kg · NTO/MMH",
+        "Masa total": "5,551 kg",
+        "Propulsión": "Química",
+        "Control de actitud": "16 × 500 mN",
+        "Empuje": "445 N",
+        "Impulso específico": "311 s",
+        "Aceleración inicial": "80.2 mm/s²",
+        "Consumo de propelente": "145.9 g/s",
+        "Δv ideal": "2,371 m/s",
+        "Centro de masas (x, y, z)": "0.02 · -0.36 · -0.06 m",
+        "Desalineación del empuje": "6.3 cm (límite 25 cm, con cardán)",
+        "Consumo de servicio": "657 W",
+        "Consumo en encendido": "50 W",
+        "Batería": "0 Wh",
+        "Autonomía por batería": "No disponible"
+      }
+    },
+    "ionSocketOptions": [
+      "Motor principal · reemplazar · adaptador +5.6 kg"
+    ],
+    "adapterPrompt": "Propulsión iónica NSTAR de Dawn (3 × 30 cm, uno en operación) necesita un adaptador estructural.Herraje de la pieza «ep-gimbal» frente a «biprop-gimbal» del punto. Se añadirían 5.6 kg estimados (máx(2 kg; 8 % de la masa seca de la pieza)). El diseño actual se conserva hasta que elijas.Instalar con adaptador (+5.6 kg)Cancelar · conservar diseño",
+    "propellantPrompt": "Propulsión iónica NSTAR de Dawn (3 × 30 cm, uno en operación) requiere propelente xenón.En conflicto: Depósitos bipropelentes de Cassini (NTO/MMH) (NTO/MMH). El diseño actual se conserva hasta que elijas una opción. La pieza se instalará con adaptador.Reemplazar por Depósito de xenón de Dawn (425 kg llenos)Retirar Depósitos bipropelentes de Cassini (NTO/MMH)Cancelar · conservar diseño",
+    "afterIon": {
+      "status": "REQUIERE MODIFICACIONES",
+      "tone": "bad",
+      "errors": [
+        "eléctrica Propulsión iónica NSTAR de Dawn (3 × 30 cm, uno en operación) necesita al menos 500 W y solo quedan 228 W a 1 AU tras el consumo de servicio: no puede operar."
+      ],
+      "warnings": [
+        "mecánica Depósito de xenón de Dawn se monta en «Módulo de propulsión» con un adaptador estructural (+2 kg estimados: máx(2 kg; 8 % de la masa seca de la pieza)).",
+        "mecánica Propulsión iónica NSTAR de Dawn (3 × 30 cm, uno en operación) se monta en «Motor principal» con un adaptador estructural (+5.6 kg estimados: máx(2 kg; 8 % de la masa seca de la pieza))."
+      ],
+      "metrics": {
+        "Masa seca estructural": "2,338.6 kg",
+        "Adaptadores (estimado)": "7.6 kg",
+        "Hidracina de actitud": "132 kg",
+        "Masa seca": "2,470.6 kg",
+        "Propelente principal": "425 / 425 kg · xenón",
+        "Masa total": "2,895.6 kg",
+        "Propulsión": "Eléctrica (iónica)",
+        "Control de actitud": "16 × 500 mN",
+        "Empuje": "92 mN",
+        "Impulso específico": "3,100 s",
+        "Aceleración inicial": "0.032 mm/s²",
+        "Consumo de propelente": "3 mg/s",
+        "Δv ideal": "4,826 m/s",
+        "Centro de masas (x, y, z)": "0.04 · -0.21 · -0.11 m",
+        "Desalineación del empuje": "12.1 cm (límite 25 cm, con cardán)",
+        "Consumo de servicio": "657 W",
+        "Consumo en encendido": "2,600 W",
+        "Batería": "0 Wh",
+        "Autonomía por batería": "No disponible"
+      }
+    },
+    "correctionPrompt": "Motores principales de Cassini (2 × R-4D-11, uno de reserva) requiere propelente NTO/MMH.En conflicto: Depósito de xenón de Dawn (xenón). El diseño actual se conserva hasta que elijas una opción.Reemplazar por Depósitos bipropelentes de Cassini (NTO/MMH) (3000 kg llenos)Retirar Depósito de xenón de DawnCancelar · conservar diseño",
+    "afterCorrection": {
+      "status": "COHERENTE SEGÚN EL MODELO",
+      "tone": "ok",
+      "errors": [],
+      "warnings": [],
+      "metrics": {
+        "Masa seca estructural": "2,419 kg",
+        "Adaptadores (estimado)": "0 kg",
+        "Hidracina de actitud": "132 kg",
+        "Masa seca": "2,551 kg",
+        "Propelente principal": "3,000 / 3,000 kg · NTO/MMH",
+        "Masa total": "5,551 kg",
+        "Propulsión": "Química",
+        "Control de actitud": "16 × 500 mN",
+        "Empuje": "445 N",
+        "Impulso específico": "311 s",
+        "Aceleración inicial": "80.2 mm/s²",
+        "Consumo de propelente": "145.9 g/s",
+        "Δv ideal": "2,371 m/s",
+        "Centro de masas (x, y, z)": "0.02 · -0.36 · -0.06 m",
+        "Desalineación del empuje": "6.3 cm (límite 25 cm, con cardán)",
+        "Consumo de servicio": "657 W",
+        "Consumo en encendido": "50 W",
+        "Batería": "0 Wh",
+        "Autonomía por batería": "No disponible"
+      }
+    },
+    "C1": {
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "phases": [
+        "Inyección interplanetaria",
+        "Crucero heliocéntrico",
+        "Aproximación hiperbólica a Júpiter",
+        "Captura en Júpiter (empuje finito)",
+        "Órbita de captura en Júpiter",
+        "Transferencia planetocéntrica hacia Europa",
+        "Aproximación a Europa",
+        "Sobrevuelo de Europa",
+        "Energía eléctrica (solar y RTG)"
+      ],
+      "power": "Balance de la misiónSuficiente según el modeloMargen mínimo147 W a 5.19 AU (804 W generados · 657 W de servicio)Déficit acumulado / batería0 Wh / 0 WhEncendido · Inserción en órbita de Júpiter707 W de carga frente a 808 W a 5.21 AUEncendido · Transferencia hacia Europa707 W de carga frente a 806 W a 5.2 AUSolar P₁·r^(−k) a la distancia heliocéntrica calculada; RTG P₀·e^(−λt); sin eclipses, orientación ni recarga de batería."
+    },
+    "C2": {
+      "verdict": "NO VIABLE para el escenario configurado: Captura en Europa (empuje finito) — no viable para el escenario configurado.",
+      "moonCapture": [
+        "Transferencia planetocéntrica hacia EuropaCOMPLETADA SEGÚN EL MODELO · EXPERIMENTALBúsqueda: 2963 transferencias evaluadas; mejor Δv impulsivo de salida 1351.3 m/s + captura ideal 4436.2 m/s (v∞ en Europa 5.484 km/s). Sin asistencias gravitacionales de otros satélites. Encendido finito 11297 s, 1648 kg, Δv 1353.8 m/s; error en la SOI 0.000 km.",
+        "Aproximación a EuropaCOMPLETADA SEGÚN EL MODELO · EXPERIMENTALPeriapsis resultante 101.21 km (objetivo 100 km); v∞ 5.4000 km/s.",
+        "Captura en Europa (empuje finito)NO VIABLE PARA EL ESCENARIO CONFIGURADO · NO VIABLE para el escenario configuradoSIN CAPTURA · SOBREVUELO HIPERBÓLICO. Propelente agotado antes de alcanzar el apoapsis objetivo. Propelente 398.9 kg · Δv 443.1 m/s (referencia impulsiva 4357.6 m/s)."
+      ]
+    },
+    "compareRows": [
+      "Variante de Cassini · Júpiter → Europa (captura)No viable: Captura en Europa (empuje finito)2,371 m/s3,000 kg2,551 kg147 W",
+      "Variante de Cassini · Júpiter → Europa (sobrevuelo)Completa según el modelo773 m/s1,243 kg4,308 kg147 W"
+    ],
+    "centerContext": "Misión completa · Tierra → Europa (2028-12-26)",
+    "centerEvents": [
+      "Salida heliocéntrica desde la Tierra (C3 75.73 km²/s²)2028-12-26 · 03:18:55 UTC · salida",
+      "Entrada en la esfera de influencia de Júpiter (48.211 millones de km)2031-10-01 · 17:17:39 UTC · esfera de influencia",
+      "Inserción en órbita de Júpiter · inicio2031-12-25 · 21:17:50 UTC · motor encendido",
+      "Inserción en órbita de Júpiter · apagado: apoapsis objetivo alcanzado2031-12-25 · 23:06:40 UTC · motor apagado",
+      "Encendido de transferencia hacia Europa · inicio2032-01-28 · 09:20:43 UTC · motor encendido",
+      "Encendido de transferencia · fin (error de apuntado 0.000 km)2032-01-28 · 09:53:49 UTC · motor apagado",
+      "Entrada en la esfera de influencia de Europa (9725 km)2032-02-17 · 09:28:32 UTC · esfera de influencia",
+      "Máxima aproximación a Europa: 100.0 km de altitud2032-02-17 · 09:37:16 UTC · periapsis",
+      "Salida de la esfera de influencia de Europa2032-02-17 · 09:46:00 UTC · esfera de influencia",
+      "Fin de la cadena calculada2032-02-19 · 09:46:00 UTC · fin"
+    ],
+    "centerFlybyHud": "Misión completaSobrevuelo de EuropaPAUSADA · 1,148.263 d transcurridosAltitud100 kmVelocidad18.36679 km/sDistancia al Sol5.19103 AUMasa4,308.4 kg",
+    "centerFlybyEnergy": "Generación eléctrica804 W (RTG)Consumo modelado657 WMargen eléctrico+147 WEnergía de la misiónSuficiente según el modeloManiobras completadasInserción en órbita de Júpiter: 574.3 m/s, 953 kg (cutoff) · Transferencia hacia Europa: 198.5 m/s, 290 kg (targeted)Veredicto de la cadenaCADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.Estado de validación13 implementada y probada localmente; pendiente de auditoría independiente (Gemini). Viabilidad operativa: no verificada.",
+    "centerEnergySummary": "Energía eléctrica, maniobras y límites",
+    "centerJoiHud": "Misión completaAproximación hiperbólica a JúpiterPAUSADA · 1,094.749 d transcurridosAltitud63,653.14 kmVelocidad43.86572 km/sDistancia al Sol5.21119 AUMasa5,551 kg",
+    "centerJoiEnergy": "Generación eléctrica808 W (RTG)Consumo modelado707 W · con encendidoMargen eléctrico+101 WEnergía de la misiónSuficiente según el modeloManiobras completadasNinguna todavíaVeredicto de la cadenaCADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.Estado de validación13 implementada y probada localmente; pendiente de auditoría independiente (Gemini). Viabilidad operativa: no verificada.",
+    "qualityLow": {
+      "status": "Resolución de render ×1",
+      "canvas": [
+        1920,
+        1920
+      ]
+    },
+    "qualityHigh": {
+      "status": "Resolución de render ×1",
+      "canvas": [
+        1920,
+        1920
+      ]
+    }
+  },
+  "overflow": {},
+  "errors": [],
+  "finishedAt": "2026-11-20T00:53:27.916Z"
+}

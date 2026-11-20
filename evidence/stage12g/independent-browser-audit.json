@@ -1,0 +1,116 @@
+{
+  "testedViewports": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "status": "OK"
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "status": "OK"
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "status": "OK"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "status": "OK"
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "status": "OK"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "temporalReversibilityTest": {
+    "cycles": 10,
+    "targetSeekDays": 150,
+    "deterministic": true,
+    "sampleState": "Tipo de misiónTransferencia interplanetaria preliminarMisiónTierra → Marte (2028-11-29)Origen → destinoTierra → MarteSondaExploración interplanetariaFaseCrucero heliocéntrico (cónica)Fecha UTC2029-04-28 · 00:00:00 UTC (predicción: sin segundos intercalares futuros)Época TDB2029-04-28 · 00:01:09 TDB · JD 2,462,254.5008Desde la salida150 dTiempo restante162 dMarcoHeliocéntrico ICRF eclíptico J2000 (centro del Sol 500@10)Posición[-186,060,686, -66,261,501, 6,313,095] kmVelocidad[3.9077, -24.582, -0.5738] km/s"
+  },
+  "satellitesTested": [
+    {
+      "satId": "301",
+      "displayedText": "Luna: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Tierra. No aplica: la Luna se planifica en el Planificador Tierra–Luna (marco geocéntrico).Descenso local: OPERATIVO (Descenso propulsado en vacío justificado: Exosfera despreciable. Modelo de un solo cuerpo; sin rotación del cuerpo ni perturbaciones de terceros cuerpos.)Etapas científicas pendientes: Conexión de la transferencia lunar con el descenso local.",
+      "invalidatedPrevious": true
+    },
+    {
+      "satId": "501",
+      "displayedText": "Ío: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Júpiter. Transferencia preliminar calculable hasta el sistema de Júpiter.Descenso local: EXPERIMENTAL (Descenso propulsado en vacío justificado: Atmósfera extremadamente tenue (SO₂ volcánico); radiación y vulcanismo no modelados. Modelo de un solo cuerpo; sin rotación del cuerpo ni perturbaciones de terceros cuerpos.)Etapas científicas pendientes: Llegada a la esfera de influencia y transición a dinámica planetocéntrica → Captura/inserción orbital en el planeta anfitrión → Transferencia dentro del sistema de Júpiter hasta Ío → Aproximación, órbita y descenso conectados.Calcular transferencia preliminar hasta Júpiter",
+      "invalidatedPrevious": true
+    },
+    {
+      "satId": "502",
+      "displayedText": "Europa: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Júpiter. Transferencia preliminar calculable hasta el sistema de Júpiter.Descenso local: OPERATIVO (Descenso propulsado en vacío justificado: Exosfera tenue; entorno de radiación joviana no modelado. Modelo de un solo cuerpo; sin rotación del cuerpo ni perturbaciones de terceros cuerpos.)Etapas científicas pendientes: Llegada a la esfera de influencia y transición a dinámica planetocéntrica → Captura/inserción orbital en el planeta anfitrión → Transferencia dentro del sistema de Júpiter hasta Europa → Aproximación, órbita y descenso conectados.Calcular transferencia preliminar hasta Júpiter",
+      "invalidatedPrevious": true
+    },
+    {
+      "satId": "503",
+      "displayedText": "Ganímedes: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Júpiter. Transferencia preliminar calculable hasta el sistema de Júpiter.Descenso local: EXPERIMENTAL (Descenso propulsado en vacío justificado: Exosfera tenue; entorno de radiación joviana no modelado. Modelo de un solo cuerpo; sin rotación del cuerpo ni perturbaciones de terceros cuerpos.)Etapas científicas pendientes: Llegada a la esfera de influencia y transición a dinámica planetocéntrica → Captura/inserción orbital en el planeta anfitrión → Transferencia dentro del sistema de Júpiter hasta Ganímedes → Aproximación, órbita y descenso conectados.Calcular transferencia preliminar hasta Júpiter",
+      "invalidatedPrevious": true
+    },
+    {
+      "satId": "504",
+      "displayedText": "Calisto: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Júpiter. Transferencia preliminar calculable hasta el sistema de Júpiter.Descenso local: EXPERIMENTAL (Descenso propulsado en vacío justificado: Exosfera tenue. Modelo de un solo cuerpo; sin rotación del cuerpo ni perturbaciones de terceros cuerpos.)Etapas científicas pendientes: Llegada a la esfera de influencia y transición a dinámica planetocéntrica → Captura/inserción orbital en el planeta anfitrión → Transferencia dentro del sistema de Júpiter hasta Calisto → Aproximación, órbita y descenso conectados.Calcular transferencia preliminar hasta Júpiter",
+      "invalidatedPrevious": true
+    },
+    {
+      "satId": "606",
+      "displayedText": "Titán: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Saturno. Transferencia preliminar calculable hasta el sistema de Saturno.Descenso local: PENDIENTE (Descenso atmosférico pendiente: Titán tiene una atmósfera relevante y el modelo de vacío no representa un aterrizaje completo (faltan arrastre, entrada, calentamiento, paracaídas y propulsión terminal).)Etapas científicas pendientes: Llegada a la esfera de influencia y transición a dinámica planetocéntrica → Captura/inserción orbital en el planeta anfitrión → Transferencia dentro del sistema de Saturno hasta Titán → Aproximación, órbita y descenso conectados.Calcular transferencia preliminar hasta Saturno",
+      "invalidatedPrevious": true
+    },
+    {
+      "satId": "602",
+      "displayedText": "Encélado: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Saturno. Transferencia preliminar calculable hasta el sistema de Saturno.Descenso local: EXPERIMENTAL (Descenso propulsado en vacío justificado: Sin atmósfera permanente; penacho austral no modelado. Modelo de un solo cuerpo; sin rotación del cuerpo ni perturbaciones de terceros cuerpos.)Etapas científicas pendientes: Llegada a la esfera de influencia y transición a dinámica planetocéntrica → Captura/inserción orbital en el planeta anfitrión → Transferencia dentro del sistema de Saturno hasta Encélado → Aproximación, órbita y descenso conectados.Calcular transferencia preliminar hasta Saturno",
+      "invalidatedPrevious": true
+    },
+    {
+      "satId": "703",
+      "displayedText": "Titania: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Urano. Transferencia preliminar calculable hasta el sistema de Urano.Descenso local: EXPERIMENTAL (Descenso propulsado en vacío justificado: Sin atmósfera significativa. Modelo de un solo cuerpo; sin rotación del cuerpo ni perturbaciones de terceros cuerpos.)Etapas científicas pendientes: Llegada a la esfera de influencia y transición a dinámica planetocéntrica → Captura/inserción orbital en el planeta anfitrión → Transferencia dentro del sistema de Urano hasta Titania → Aproximación, órbita y descenso conectados.Calcular transferencia preliminar hasta Urano",
+      "invalidatedPrevious": true
+    },
+    {
+      "satId": "705",
+      "displayedText": "Miranda: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Urano. Transferencia preliminar calculable hasta el sistema de Urano.Descenso local: EXPERIMENTAL (Descenso propulsado en vacío justificado: Sin atmósfera significativa. Modelo de un solo cuerpo; sin rotación del cuerpo ni perturbaciones de terceros cuerpos.)Etapas científicas pendientes: Llegada a la esfera de influencia y transición a dinámica planetocéntrica → Captura/inserción orbital en el planeta anfitrión → Transferencia dentro del sistema de Urano hasta Miranda → Aproximación, órbita y descenso conectados.Calcular transferencia preliminar hasta Urano",
+      "invalidatedPrevious": true
+    },
+    {
+      "satId": "801",
+      "displayedText": "Tritón: destino satelital (sin trayectoria completa en esta etapa)Planeta anfitrión: Neptuno. Transferencia preliminar calculable hasta el sistema de Neptuno.Descenso local: PENDIENTE (Tritón: atmósfera muy tenue cuyo efecto no está analizado; no se usa el modelo de vacío hasta justificarlo.)Etapas científicas pendientes: Llegada a la esfera de influencia y transición a dinámica planetocéntrica → Captura/inserción orbital en el planeta anfitrión → Transferencia dentro del sistema de Neptuno hasta Tritón → Aproximación, órbita y descenso conectados.Calcular transferencia preliminar hasta Neptuno",
+      "invalidatedPrevious": true
+    }
+  ],
+  "corrections12F1Verified": {
+    "landerDetailsOpen": true,
+    "landingPreparedMsg": "Descenso preparado en la órbita inicial alrededor de Luna (marco inercial local).",
+    "touchdownOutcome": "Contacto y evaluación · ATERRIZAJE SUAVE SEGÚN EL MODELO (descenso local aislado). Misión completa (viaje, llegada y descenso conectados): no evaluada. Viabilidad operativa: no verificada."
+  },
+  "overflowChecks": [
+    {
+      "viewport": "1920x1080",
+      "overflow": false
+    },
+    {
+      "viewport": "1366x768",
+      "overflow": false
+    },
+    {
+      "viewport": "768x1024",
+      "overflow": false
+    },
+    {
+      "viewport": "390x844",
+      "overflow": false
+    },
+    {
+      "viewport": "320x568",
+      "overflow": false
+    }
+  ]
+}

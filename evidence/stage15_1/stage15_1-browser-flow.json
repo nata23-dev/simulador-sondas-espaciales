@@ -1,0 +1,87 @@
+{
+  "part": "flow",
+  "startedAt": "2026-11-20T01:32:49.246Z",
+  "shots": [
+    "f1920_01_hangar_voyager.png",
+    "f1920_02_hangar_cassini.png",
+    "f1920_03_hangar_dawn.png",
+    "f1920_04_hangar_juno.png",
+    "f1920_05_sheet_juno.png",
+    "f1920_06_integrated_C1_voyager.png",
+    "f1920_07_integrated_C1_cassini.png",
+    "f1920_08_center_cassini_exterior.png",
+    "f1920_09_center_cassini_cinematic.png"
+  ],
+  "checks": {
+    "removedControls": [],
+    "defaultProbe": "cassini",
+    "model_voyager": {
+      "state": "nasa",
+      "stage": "Voyager 1 y 2 · NASA 3D Resources",
+      "status": "Modelo 3D oficial de NASA",
+      "header": "voyager",
+      "context": "826 kg · Δv ideal 0.28 km/s",
+      "verdict": "COHERENTE SEGÚN EL MODELO",
+      "credit": "Modelo 3D: NASA / JPL-Caltech (VTAD), archivo original sin modificar (3.1 MB). Pautas de uso de NASA. Su uso no implica respaldo de NASA.",
+      "message": "Voyager 1 y 2 es ahora la sonda activa de todas las misiones."
+    },
+    "model_cassini": {
+      "state": "nasa",
+      "stage": "Cassini · NASA 3D Resources",
+      "status": "Modelo 3D oficial de NASA",
+      "header": "cassini",
+      "context": "5,606 kg · Δv ideal 2.34 km/s",
+      "verdict": "COHERENTE SEGÚN EL MODELO",
+      "credit": "Modelo 3D: NASA 3D Resources (NASA / JPL-Caltech), archivo original sin modificar (1.7 MB, commit 828fd0f). Pautas de uso de NASA. Su uso no implica respaldo de NASA.",
+      "message": "Cassini es ahora la sonda activa de todas las misiones."
+    },
+    "model_dawn": {
+      "state": "nasa",
+      "stage": "Dawn · NASA 3D Resources",
+      "status": "Modelo 3D oficial de NASA",
+      "header": "dawn",
+      "context": "1,218 kg · Δv ideal 13.05 km/s",
+      "verdict": "COHERENTE SEGÚN EL MODELO",
+      "credit": "Modelo 3D: NASA 3D Resources (NASA / Brian E. Kumanchik), archivo original sin modificar (0.9 MB, commit 02cdb6e). Pautas de uso de NASA. Su uso no implica respaldo de NASA.",
+      "message": "Dawn es ahora la sonda activa de todas las misiones."
+    },
+    "model_juno": {
+      "state": "nasa",
+      "stage": "Juno · NASA 3D Resources",
+      "status": "Modelo 3D oficial de NASA",
+      "header": "juno",
+      "context": "3,625 kg · Δv ideal 2.56 km/s",
+      "verdict": "COHERENTE SEGÚN EL MODELO",
+      "credit": "Modelo 3D: NASA 3D Resources (NASA / JPL-Caltech), archivo original sin modificar (9 MB, commit 27a6131). Pautas de uso de NASA. Su uso no implica respaldo de NASA.",
+      "message": "Juno es ahora la sonda activa de todas las misiones."
+    },
+    "persistedProbe": "juno",
+    "integratedDesignVoyager": "Sonda activa: «Voyager 1 y 2» (configuración histórica: masa, motor y energía del catálogo; viaja como carga útil). Se cambia en la cabecera o en el Hangar.",
+    "C1_voyager": "NO VIABLE para el escenario configurado: Captura en Júpiter (empuje finito) — no viable para el escenario configurado.",
+    "afterSwitchMessage": "Sin cálculo",
+    "C1_cassini": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+    "centerHud": "Misión completaSobrevuelo de EuropaPAUSADA · 1,148.263 d transcurridosAltitud100 kmVelocidad18.35962 km/sDistancia al Sol5.19103 AUMasa4,348.9 kg"
+  },
+  "overflow": {},
+  "errors": [],
+  "requests": [
+    "f1920: 200 /models/voyager/Voyager.glb",
+    "f1920: 200 /models/nasa/cassini/Cassini-Huygens-A.glb",
+    "f1920: 200 /libs/draco/gltf/draco_wasm_wrapper.js",
+    "f1920: 200 /libs/draco/gltf/draco_decoder.wasm",
+    "f1920: 200 /models/voyager/Voyager.glb",
+    "f1920: 200 /models/nasa/cassini/Cassini-Huygens-A.glb",
+    "f1920: 200 /libs/draco/gltf/draco_wasm_wrapper.js",
+    "f1920: 200 /libs/draco/gltf/draco_decoder.wasm",
+    "f1920: 200 /models/voyager/Voyager.glb",
+    "f1920: 200 /models/nasa/dawn/Dawn.glb",
+    "f1920: 200 /models/nasa/juno/Juno-A.glb",
+    "f1920: 200 /models/voyager/Voyager.glb",
+    "f1920: 200 /models/nasa/juno/Juno-A.glb",
+    "f1920: 200 /libs/draco/gltf/draco_wasm_wrapper.js",
+    "f1920: 200 /libs/draco/gltf/draco_decoder.wasm",
+    "f1920: 200 /models/voyager/Voyager.glb",
+    "f1920: 200 /models/nasa/cassini/Cassini-Huygens-A.glb"
+  ],
+  "finishedAt": "2026-11-20T01:33:42.489Z"
+}
