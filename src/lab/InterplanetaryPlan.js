@@ -204,6 +204,10 @@ export function compareRequirementsWithDesign(requirements, engineering) {
   if (!requirements) return { status: 'SIN REQUISITOS', message: 'Calcula y selecciona una oportunidad.' };
   if (!Number.isFinite(available)) return { status: 'NO VERIFICABLE', message: 'El diseño no tiene un Δv ideal calculable (revisa Ingeniería).' };
   const requiredMS = requirements.injectionDeltaVKmS * 1000;
+  // Etapa 16: mismo criterio que el Planificador Tierra–Luna (MissionEngineering): con propulsión eléctrica el Δv de Tsiolkovsky
+  // no sirve para una inyección impulsiva; el empuje de milinewtons tardaría meses y exige propagación de empuje finito y potencia.
+  if (engineering.propulsionType === 'electric') return { status: 'NO VERIFICABLE CON PROPULSIÓN ELÉCTRICA', availableMS: available, requiredMS,
+    message: 'El motor iónico tiene mucho Δv ideal pero muy poco empuje: no puede dar la inyección como un impulso desde la órbita de estacionamiento (tardaría meses en espiral). Esta comprobación no se aplica; la salida la daría el lanzador o una etapa superior (no evaluados).' };
   return available >= requiredMS
     ? { status: 'Δv IDEAL SUFICIENTE PARA LA INYECCIÓN (CONDICIÓN NECESARIA)', availableMS: available, requiredMS, message: 'El Δv ideal de la sonda cubre la inyección idealizada. No se verifica empuje finito, lanzamiento, pérdidas ni la llegada: la misión no queda declarada viable.' }
     : { status: 'Δv IDEAL INSUFICIENTE PARA LA INYECCIÓN', availableMS: available, requiredMS, message: 'La sonda sola no puede realizar la inyección idealizada; haría falta una etapa superior o un lanzador que entregue ese C3 (no evaluado).' };

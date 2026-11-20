@@ -21,6 +21,32 @@ export const DEMO_LAUNCHER = Object.freeze({
   separation: Object.freeze({ coastAfterCutoffSeconds: 2, ignitionDelaySeconds: 4, separationImpulseMS: 0 })
 });
 
+// Etapa 16: variante PESADA, también ilustrativa, para cargas como Cassini (5,6 t) o Juno (3,6 t), que superan la capacidad
+// del demostrativo (≈ 2,8 t con el programa de ascenso por defecto). Se obtiene escalando el demostrativo por k: masas,
+// empujes y caudal ×k (misma relación empuje/peso, mismos Isp y Cd) y área de referencia ×k^(2/3). Con el mismo programa de
+// ascenso, la dinámica de masa puntual es la del demostrativo con menos arrastre relativo. No corresponde a ningún cohete real.
+export function scaleLauncher(launcher, k, { id, name } = {}) {
+  if (!(k > 0) || !Number.isFinite(k)) throw new RangeError('El factor de escala del lanzador debe ser positivo.');
+  const areaFactor = k ** (2 / 3);
+  return Object.freeze({ ...launcher, id: id ?? `${launcher.id}-x${k}`, name: name ?? `${launcher.name} ×${k}`,
+    provenance: `${launcher.provenance} Escala ×${k} del lanzador demostrativo (masas y empujes ×${k}, área ×${areaFactor.toFixed(3)}).`,
+    stages: Object.freeze(launcher.stages.map(stage => Object.freeze({ ...stage, structuralMassKg: stage.structuralMassKg * k, propellantMassKg: stage.propellantMassKg * k,
+      thrustSeaLevelN: stage.thrustSeaLevelN * k, thrustVacuumN: stage.thrustVacuumN * k, referenceAreaM2: Math.round(stage.referenceAreaM2 * areaFactor * 100) / 100 }))),
+    separation: launcher.separation });
+}
+export const HEAVY_LAUNCHER_SCALE = 2.5;
+export const HEAVY_DEMO_LAUNCHER = scaleLauncher(DEMO_LAUNCHER, HEAVY_LAUNCHER_SCALE, { id: 'demo-two-stage-heavy-v1', name: 'Lanzador demostrativo pesado (×2,5)' });
+// Capacidad orientativa a órbita baja con el programa de ascenso por defecto (Cabo Cañaveral, acimut 90°, perigeo ≥ 160 km).
+// Medida por bisección con el propio modelo y comprobada en tests/Stage16Coherence.test.mjs; cambia si se editan las etapas.
+export const LAUNCHER_PRESETS = Object.freeze([
+  Object.freeze({ id: DEMO_LAUNCHER.id, label: 'Ligero · demostrativo de dos etapas', launcher: DEMO_LAUNCHER, nominalCapacityKg: 2800 }),
+  Object.freeze({ id: HEAVY_DEMO_LAUNCHER.id, label: 'Pesado · demostrativo ×2,5', launcher: HEAVY_DEMO_LAUNCHER, nominalCapacityKg: 6900 })
+]);
+/** Preset más ligero cuya capacidad orientativa cubre la carga con un 10 % de margen (el pesado si ninguno lo hace). */
+export function recommendedLauncherPreset(payloadMassKg) {
+  return LAUNCHER_PRESETS.find(preset => payloadMassKg * 1.1 <= preset.nominalCapacityKg) ?? LAUNCHER_PRESETS.at(-1);
+}
+
 export const massFlowKgS = stage => stage.thrustVacuumN / (stage.ispVacuumS * STANDARD_GRAVITY_M_S2);
 export function thrustAt(stage, pressurePa) {
   const ratio = Math.min(1, Math.max(0, pressurePa / SEA_LEVEL_PRESSURE_PA));
