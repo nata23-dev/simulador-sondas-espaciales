@@ -1,0 +1,48 @@
+{
+  "catalogVersion": 1,
+  "datasets": [
+    {
+      "id": "ip-barycenters-outer-2026-2046",
+      "file": "data/interplanetary/ip-barycenters-outer-2026-2046.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "coverage": {
+        "startJdTdb": 2461362.5,
+        "endJdTdb": 2468346.5
+      },
+      "bodyCoverage": {
+        "5": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2468346.5
+        },
+        "6": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2468346.5
+        },
+        "7": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2468346.5
+        },
+        "8": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2468346.5
+        }
+      },
+      "cadenceSeconds": 345600,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    }
+  ]
+}

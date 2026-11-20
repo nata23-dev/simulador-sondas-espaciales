@@ -1,150 +1,223 @@
 import './experimental-laboratory.css';
-import { COMPONENTS, COMPONENT_CATEGORIES, getComponent } from '../lab/ComponentCatalog.js';
-import { PRESETS, newDesign, planPartChange, applyPartChange, parseDesign, validateDesign, loadSavedDesigns, saveDesign } from '../lab/ProbeDesign.js';
-import { calculateEngineering } from '../lab/ProbeEngineering.js';
+import { getComponent } from '../lab/ComponentCatalog.js';
+import { historicalDesign } from '../lab/ProbeDesign.js';
+import { calculateEngineering, ENGINEERING_STATUS } from '../lab/ProbeEngineering.js';
+import { HISTORICAL_PROBES, HERITAGE_PROGRAMS, HERITAGE_SOURCES, DATA_QUALITY } from '../lab/HeritageCatalog.js';
+import { designSignature } from '../lab/MissionPlanStore.js';
 import { createProbeAssemblyView } from '../lab/ProbeAssemblyView.js';
+import { NASA_PROBE_MODELS, NASA_MODEL_USAGE } from '../graphics/NasaProbeModels.js';
 import { createMissionPlanner } from './MissionPlanner.js';
 import { createMissionControlCenter } from './MissionControlCenter.js';
 import { createLaunchPlanner } from './LaunchPlanner.js';
-import { createLandingPlanner } from './LandingPlanner.js';
+import { createInterplanetaryPlanner } from './InterplanetaryPlanner.js';
+import { createIntegratedMissionPlanner } from './IntegratedMissionPlanner.js';
 
 const number = (value, digits = 1) => new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(value);
 const valueOrNA = (value, unit, digits = 1) => value == null ? 'No disponible' : `${number(value, digits)} ${unit}`;
+
+// 14: textos de ubicación de cada herramienta del laboratorio. Solo presentación.
+const SECTION_META = Object.freeze({
+  hangar: { step: 'Elegir', title: 'Hangar', desc: 'Elige una de las cuatro sondas históricas (Voyager, Cassini, Dawn o Juno) para tus misiones: modelo 3D oficial de NASA y ficha técnica con fuentes.' },
+  engineering: { step: 'Elegir', title: 'Ingeniería', desc: 'Masas, propulsión, energía según la distancia al Sol y calidad de los datos de la sonda activa (configuración histórica fija).' },
+  launch: { step: 'Planificar', title: 'Lanzamiento terrestre', desc: 'Ascenso desde la superficie con un lanzador ilustrativo de dos etapas y la sonda activa como carga útil.' },
+  center: { step: 'Ejecutar', title: 'Centro de Misión', desc: 'Reproduce la misión preparada: fases, eventos, cámaras y telemetría del estado calculado.' }
+});
+const PLANNER_META = Object.freeze({
+  lunar: { title: 'Tierra–Luna y empuje finito', desc: 'Transferencia translunar desde órbita terrestre con impulso ideal o empuje finito y masa variable.' },
+  interplanetary: { title: 'Misiones interplanetarias', desc: 'Ventanas de lanzamiento Tierra → planeta con efemérides NASA/JPL y Lambert heliocéntrico.' },
+  integrated: { title: 'Misión completa', desc: 'Cadena por fases: crucero, encuentro, captura y satélite con la sonda activa (etapa 13, pendiente de auditoría).' }
+});
+// 15: rótulos de la calidad de cada cifra de herencia y de los campos del catálogo.
+const QUALITY_LABELS = Object.freeze({ [DATA_QUALITY.documented]: 'Documentado', [DATA_QUALITY.secondary]: 'Fuente secundaria',
+  [DATA_QUALITY.derived]: 'Derivado', [DATA_QUALITY.estimated]: 'Estimado', [DATA_QUALITY.unknown]: 'Desconocido' });
+const FIELD_LABELS = Object.freeze({ dryMassKg: 'Masa seca', dimensionsM: 'Dimensiones', idlePowerW: 'Consumo', activePowerW: 'Consumo en encendido',
+  generationW: 'Generación', thrustN: 'Empuje', ispS: 'Impulso específico', fuelCapacityKg: 'Capacidad de propelente', rcsCount: 'Número de propulsores de actitud',
+  rcsThrustN: 'Empuje de actitud', rcsPropellantKg: 'Hidracina de actitud', maxAttachedMassKg: 'Carga máxima montada', solarExponent: 'Exponente solar',
+  rtgDecayPerYear: 'Disminución del RTG', batteryWh: 'Batería', dataCapacityMbit: 'Memoria',
+  'electric.maxInputPowerW': 'Potencia máxima de entrada', 'electric.minInputPowerW': 'Potencia mínima de encendido', 'electric.efficiency': 'Eficiencia eléctrica' });
+const PROGRAM_LABELS = Object.freeze(Object.fromEntries(HERITAGE_PROGRAMS));
+const PROPELLANT_LABELS = Object.freeze({ hydrazine: 'hidracina', 'nto-mmh': 'NTO/MMH', 'mon-hydrazine': 'MON/hidracina', xenon: 'xenón' });
+const propellantLabel = id => PROPELLANT_LABELS[id] ?? id;
+const COMPATIBILITY_TYPES = Object.freeze(['estructural', 'mecánica', 'masa y centro de masas', 'eléctrica', 'propelente', 'control de actitud', 'control', 'comunicaciones']);
+function sourceLink(id) {
+  const source = HERITAGE_SOURCES[id];
+  if (!source) return null;
+  const link = document.createElement('a');
+  link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+  link.textContent = source.publisher; link.title = source.title;
+  return link;
+}
+function externalLink(url, text) {
+  const link = document.createElement('a');
+  link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = text;
+  return link;
+}
+function qualityBadge(quality) {
+  const badge = document.createElement('span'); badge.className = 'lab-quality'; badge.dataset.quality = quality;
+  badge.textContent = QUALITY_LABELS[quality] ?? quality;
+  return badge;
+}
+const MISSION_KIND_LABELS = Object.freeze({ integrated: 'Misión completa', interplanetary: 'Transferencia interplanetaria', landing: 'Descenso y aterrizaje',
+  launch: 'Lanzamiento terrestre', 'finite-thrust': 'Maniobra de empuje finito' });
+
+// 15.1: flota fija. Cada sonda tiene un único diseño (configuración histórica) con identificador estable, de modo que los planes
+// calculados con una sonda siguen vigentes al cambiar a otra y volver. No se pueden añadir, quitar ni sustituir piezas.
+const ACTIVE_PROBE_KEY = 'simulador:sonda-activa';
+const DEFAULT_PROBE_ID = 'cassini';
+const MODEL_STATE_TEXT = Object.freeze({ nasa: 'Modelo 3D oficial de NASA', cargando: 'Cargando el modelo 3D de NASA…',
+  procedural: 'Reconstrucción procedimental de respaldo (no se pudo cargar el modelo de NASA)' });
+function readActiveProbe() {
+  try { const id = localStorage.getItem(ACTIVE_PROBE_KEY); return HISTORICAL_PROBES.some(p => p.id === id) ? id : DEFAULT_PROBE_ID; }
+  catch { return DEFAULT_PROBE_ID; }
+}
+function storeActiveProbe(id) { try { localStorage.setItem(ACTIVE_PROBE_KEY, id); } catch { /* preferencia opcional */ } }
 
 export function createExperimentalLaboratory() {
   const app = document.querySelector('#app');
   const scene = document.querySelector('.scene-panel');
   const lab = document.createElement('section');
   lab.id = 'experimental-lab';
-  lab.setAttribute('aria-label', 'Laboratorio experimental de construcción de sondas');
+  lab.setAttribute('aria-label', 'Laboratorio de misiones con sondas históricas');
   lab.hidden = true;
   lab.innerHTML = `
     <header class="lab-header">
-      <div class="lab-title"><span class="eyebrow">LABORATORIO EXPERIMENTAL / ETAPA 12F</span><h2>Hangar y control de misiones</h2><p>Componentes ilustrativos · transferencia lunar calculada con efemérides locales</p></div>
-      <div class="lab-head-actions"><button type="button" data-lab-action="orbital">Ver simulación orbital</button><button type="button" data-lab-action="reset-camera">Restablecer cámara</button></div>
+      <div class="lab-title">
+        <nav class="lab-breadcrumb" aria-label="Ubicación en el laboratorio"><span>Laboratorio</span><span id="lab-crumb-step">Elegir</span><span id="lab-crumb-tool" aria-current="location">Hangar</span></nav>
+        <h2 id="lab-tool-title">Hangar</h2><p id="lab-tool-desc">Elige la sonda de tus misiones.</p>
+      </div>
+      <dl class="lab-context" aria-live="polite">
+        <div class="lab-context-probe"><dt><label for="lab-ctx-probe">Sonda activa</label></dt><dd><select id="lab-ctx-probe" aria-describedby="lab-ctx-design"></select><span id="lab-ctx-design">—</span></dd></div>
+        <div><dt>Centro de Misión</dt><dd id="lab-ctx-mission" data-ready="false">Sin misión preparada</dd></div>
+      </dl>
+      <div class="lab-head-actions"><button type="button" id="lab-ctx-open-center" class="lab-open-center">Abrir Centro de Misión</button><button type="button" data-lab-action="orbital">Ver simulación orbital</button><button type="button" data-lab-action="reset-camera">Restablecer cámara</button></div>
     </header>
-    <nav class="lab-sections" aria-label="Áreas del laboratorio"><button type="button" data-lab-section="hangar" aria-current="page">Hangar</button><button type="button" data-lab-section="engineering">Ingeniería</button><button type="button" data-lab-section="launch">Lanzamiento</button><button type="button" data-lab-section="landing">Descenso y aterrizaje</button><button type="button" data-lab-section="planner">Planificador</button><button type="button" data-lab-section="center">Centro de misión</button></nav>
+    <nav class="lab-sections" aria-label="Áreas del laboratorio">
+      <div class="lab-nav-group" role="group" aria-labelledby="lab-step-design"><span class="lab-nav-step" id="lab-step-design"><b>1</b>Elegir</span><button type="button" data-lab-section="hangar" aria-current="page">Hangar</button><button type="button" data-lab-section="engineering">Ingeniería</button></div>
+      <div class="lab-nav-group" role="group" aria-labelledby="lab-step-plan"><span class="lab-nav-step" id="lab-step-plan"><b>2</b>Planificar</span><button type="button" data-lab-section="launch">Lanzamiento</button><button type="button" data-lab-section="planner">Planificador</button></div>
+      <div class="lab-nav-group" role="group" aria-labelledby="lab-step-run"><span class="lab-nav-step" id="lab-step-run"><b>3</b>Ejecutar</span><button type="button" data-lab-section="center">Centro de misión</button></div>
+    </nav>
     <div class="lab-workspace">
-      <aside class="lab-panel lab-catalog" aria-label="Catálogo de componentes">
-        <div class="lab-panel-heading"><span class="eyebrow">01 / CATÁLOGO</span><h3>Componentes</h3></div>
-        <div class="lab-panel-scroll"><div id="lab-catalog-list"></div><div class="lab-part-info" id="lab-catalog-info"></div>
-          <label class="lab-field" for="lab-socket">Punto de conexión<select id="lab-socket"></select></label>
-          <button type="button" class="button-primary lab-add" id="lab-add">Agregar al diseño</button>
-          <div class="lab-replacement" id="lab-replacement" role="group" aria-label="Resolver incompatibilidad de propelente" hidden></div>
-          <p class="lab-helper">Selecciona una pieza y un punto compatible. Una conexión ocupada se reemplaza.</p>
+      <aside class="lab-panel lab-catalog lab-fleet" aria-label="Flota de sondas históricas">
+        <div class="lab-panel-heading"><span class="eyebrow">01 / FLOTA</span><h3 id="lab-library-title">Sondas disponibles</h3></div>
+        <div class="lab-panel-scroll">
+          <p class="lab-helper">Cuatro sondas reales con su configuración histórica. La que elijas es la que usan el lanzamiento, el Planificador y el Centro de Misión.</p>
+          <div id="lab-history-list" class="lab-history-list" role="group" aria-label="Elegir la sonda activa"></div>
+          <article id="lab-history-sheet" class="lab-history-sheet" aria-live="polite"></article>
         </div>
       </aside>
       <div class="lab-stage">
-        <div class="lab-stage-top"><span class="eyebrow">02 / ENSAMBLAJE 3D</span><span id="lab-stage-count">Sin estructura</span></div>
-        <div id="lab-canvas" aria-label="Modelo 3D interactivo de la sonda"></div>
+        <div class="lab-stage-top"><span class="eyebrow">02 / MODELO 3D</span><span id="lab-stage-count">—</span></div>
+        <div id="lab-canvas" aria-label="Modelo 3D interactivo de la sonda activa"></div>
         <button type="button" id="lab-touch-toggle" class="lab-touch-toggle" aria-pressed="false" hidden>Activar control 3D</button>
-        <div id="lab-empty" class="lab-empty">Elige una estructura en el catálogo o carga un diseño para comenzar.</div>
-        <div class="lab-stage-foot"><span id="lab-gesture-hint">Arrastra para girar · rueda para acercar · toca una pieza para inspeccionarla</span><strong id="lab-assembly-status">Sin estructura</strong></div>
+        <div class="lab-stage-foot"><span id="lab-gesture-hint">Arrastra para girar · rueda para acercar</span><strong id="lab-assembly-status" aria-live="polite">—</strong></div>
       </div>
-      <aside class="lab-panel lab-engineering" aria-label="Ingeniería y diseños">
-        <div class="lab-panel-heading"><span class="eyebrow">03 / INGENIERÍA</span><h3>Diseño y sistemas</h3></div>
+      <aside class="lab-panel lab-engineering" aria-label="Sistemas e ingeniería de la sonda activa">
+        <div class="lab-panel-heading"><span class="eyebrow">03 / INGENIERÍA</span><h3>Sistemas de la sonda</h3></div>
         <div class="lab-panel-scroll">
-          <label class="lab-field" for="lab-design-name">Nombre del diseño<input id="lab-design-name" maxlength="80" autocomplete="off"></label>
-          <div class="lab-two-actions"><button type="button" id="lab-new">Nuevo vacío</button><button type="button" id="lab-save" class="button-primary">Guardar localmente</button></div>
-          <label class="lab-field" for="lab-preset">Configuraciones iniciales<select id="lab-preset"></select></label>
-          <button type="button" id="lab-load-preset">Cargar configuración editable</button>
-          <label class="lab-field" for="lab-saved">Mis diseños guardados<select id="lab-saved"></select></label>
-          <div class="lab-two-actions"><button type="button" id="lab-load-saved">Recuperar</button><button type="button" id="lab-export">Exportar JSON</button></div>
-          <button type="button" id="lab-import">Importar JSON</button><input id="lab-import-file" type="file" accept=".json,application/json" hidden>
           <p class="lab-message" id="lab-message" role="status"></p>
-          <div class="lab-divider"></div><h4>Ensamblaje</h4><div id="lab-assembly-list" class="lab-assembly-list"></div>
+          <h4>Subsistemas</h4><div id="lab-assembly-list" class="lab-assembly-list"></div>
           <div id="lab-selected-info" class="lab-selected-info"></div>
-          <div class="lab-divider"></div><h4>Balance de ingeniería</h4><div id="lab-metrics" class="lab-metrics"></div>
+          <div class="lab-divider"></div><h4>Balance de ingeniería</h4>
           <div class="lab-assessment" id="lab-assessment"></div>
-          <p class="lab-disclaimer">Modelo conceptual de diseño. El delta-v es ideal; no modifica DOPRI54 ni representa maniobras, iluminación real o capacidad de aterrizaje.</p>
+          <div id="lab-metrics" class="lab-metrics"></div>
+          <div id="lab-power" class="lab-power"></div>
+          <div id="lab-compatibility" class="lab-compatibility"></div>
+          <div id="lab-data-quality" class="lab-data-quality"></div>
+          <p class="lab-disclaimer">Configuración histórica fija: las piezas no se pueden cambiar. Las cifras de la ficha llevan su calidad y su fuente; el reparto de masa por subsistema y los consumos sin fuente son estimaciones del simulador. El Δv es ideal (Tsiolkovski). El modelo 3D es solo presentación: no interviene en ningún cálculo. No modifica DOPRI54.</p>
         </div>
       </aside>
-    </div><div id="lab-launch" hidden></div><div id="lab-landing" hidden></div><div id="lab-mission-planner" hidden></div><div id="lab-mission-center" hidden></div>`;
+    </div><div id="lab-launch" hidden></div><div id="lab-planner-modes" class="lab-planner-modes" role="group" aria-label="Modalidad del Planificador" hidden><button type="button" data-planner-mode="lunar" aria-pressed="true">Tierra–Luna y empuje finito</button><button type="button" data-planner-mode="interplanetary" aria-pressed="false">Misiones interplanetarias</button><button type="button" data-planner-mode="integrated" aria-pressed="false">Misión completa</button></div><div id="lab-mission-planner" hidden></div><div id="lab-interplanetary" hidden></div><div id="lab-integrated" hidden></div><div id="lab-mission-center" hidden></div>`;
   scene.append(lab);
   const returnButton = document.createElement('button');
   returnButton.id = 'lab-return'; returnButton.type = 'button'; returnButton.textContent = 'Volver al laboratorio';
   returnButton.hidden = true; scene.append(returnButton);
-  let design = PRESETS[1].create();
-  let selectedComponentId = 'bus-interplanetary';
+  const fleet = new Map(HISTORICAL_PROBES.map(probe => [probe.id, { ...historicalDesign(probe.id), id: `flota-${probe.id}` }]));
+  let activeProbeId = readActiveProbe();
+  let design = fleet.get(activeProbeId);
   let selectedPartId = null;
-  let pendingChange = null;
   let section = 'hangar';
-  let saved = loadSavedDesigns();
+  let engineering = null;
+  let modelState = { source: 'procedural', entry: null };
   const $ = selector => lab.querySelector(selector);
   let view;
-  try { view = createProbeAssemblyView($('#lab-canvas'), id => { selectedPartId = id; render(); }); }
+  try { view = createProbeAssemblyView($('#lab-canvas'), id => { selectedPartId = id; render(); }, { onModelState: state => { modelState = state; renderModelState(); } }); }
   catch (error) {
     view = { setDesign() {}, setVisible() {}, setTouchInteraction() {}, getLandingClearance: () => null, resetCamera() {}, dispose() {} };
-    $('#lab-canvas').textContent = 'No se pudo iniciar WebGL para el ensamblaje 3D.';
+    $('#lab-canvas').textContent = 'No se pudo iniciar WebGL para el modelo 3D.';
     console.error('Laboratorio 3D no disponible:', error);
   }
   let center, launchActive = false;
   const planner = createMissionPlanner($('#lab-mission-planner'), next => {
-    design = next; selectedPartId = null; render(); message('Sonda del plan restaurada en el Hangar.');
+    // Un plan guardado solo puede restaurar una sonda de la flota (misma configuración que la histórica).
+    const signature = designSignature(next);
+    const match = [...fleet.entries()].find(([, item]) => designSignature(item) === signature);
+    if (!match) { message('El plan guardado usa una sonda que ya no está en la flota (Voyager, Cassini, Dawn o Juno). Recalcula con la sonda activa.', true); return; }
+    selectProbe(match[0]); message(`Sonda del plan restaurada: ${fleet.get(match[0]).name}.`);
   }, {
     // Mientras un lanzamiento está en reproducción, los cambios del Planificador no deben reemplazarlo.
     onPlanChange: candidate => { if (!launchActive) center?.setPlan(candidate); },
-    onExecuteRequest: candidate => { launchActive = false; launch.deactivate(); landing.deactivate(); center.setPlan(candidate); section = 'center'; updateSection(); center.start(); }
+    onExecuteRequest: candidate => { launchActive = false; launch.deactivate(); interplanetary.deactivate(); integrated?.deactivate(); center.setPlan(candidate); section = 'center'; updateSection(); center.start(); }
   });
   const launch = createLaunchPlanner({
     host: $('#lab-launch'),
-    onExecuteRequest: candidate => { landing.deactivate(); launchActive = true; center.setPlan(candidate); section = 'center'; updateSection(); center.start(); },
+    onExecuteRequest: candidate => { interplanetary.deactivate(); integrated.deactivate(); launchActive = true; center.setPlan(candidate); section = 'center'; updateSection(); center.start(); },
     onInvalidated: () => { if (launchActive) { launchActive = false; center.setPlan({ ready: false, reason: 'El lanzamiento quedó obsoleto. Recalcula en Lanzamiento.' }); } }
   });
-  const landing = createLandingPlanner({
-    host: $('#lab-landing'),
-    onExecuteRequest: candidate => { launch.deactivate(); launchActive = true; center.setPlan(candidate); section = 'center'; updateSection(); center.start(); },
-    onInvalidated: () => { if (launchActive) { launchActive = false; center.setPlan({ ready: false, reason: 'El descenso quedó obsoleto. Recalcula en Descenso y aterrizaje.' }); } }
+  // 12G: modalidad «Misiones interplanetarias» del Planificador. Comparte con el lanzamiento la marca que impide
+  // que el plan lunar reemplace una ejecución activa en el Centro de Misión.
+  const interplanetary = createInterplanetaryPlanner({
+    host: $('#lab-interplanetary'),
+    onExecuteRequest: candidate => { launch.deactivate(); integrated.deactivate(); launchActive = true; center.setPlan(candidate); section = 'center'; updateSection(); center.start(); },
+    onInvalidated: () => { if (launchActive) { launchActive = false; center.setPlan({ ready: false, reason: 'La transferencia interplanetaria quedó obsoleta. Vuelve a buscar en el Planificador.' }); } }
+  });
+  // 13: modalidad «Misión completa» (cadena integrada de fases) con la misma marca de ejecución activa.
+  const integrated = createIntegratedMissionPlanner({
+    host: $('#lab-integrated'),
+    onExecuteRequest: candidate => { launch.deactivate(); interplanetary.deactivate(); launchActive = true; center.setPlan(candidate); section = 'center'; updateSection(); center.start(); },
+    onInvalidated: () => { if (launchActive) { launchActive = false; center.setPlan({ ready: false, reason: 'La misión completa quedó obsoleta. Recalcula en el Planificador.' }); } }
+  });
+  let plannerMode = 'lunar';
+  for (const button of lab.querySelectorAll('[data-planner-mode]')) button.addEventListener('click', () => {
+    plannerMode = button.dataset.plannerMode; updateSection();
   });
   center = createMissionControlCenter($('#lab-mission-center'), () => { section = 'planner'; updateSection(); });
+  const centerSetPlan = center.setPlan;
+  center.setPlan = candidate => { centerSetPlan(candidate); updateMissionContext(candidate); };
+  function updateMissionContext(candidate) {
+    const node = $('#lab-ctx-mission');
+    if (!candidate?.ready) { node.textContent = 'Sin misión preparada'; node.dataset.ready = 'false'; node.title = candidate?.reason ?? ''; return; }
+    const kind = MISSION_KIND_LABELS[candidate.kind] ?? 'Transferencia Tierra–Luna';
+    node.textContent = typeof candidate.name === 'string' && candidate.name ? `${kind} · ${candidate.name}` : kind;
+    node.dataset.ready = 'true'; node.title = node.textContent;
+  }
+  function updateDesignContext() {
+    const node = $('#lab-ctx-design');
+    try {
+      const e = engineering ?? calculateEngineering(design);
+      node.textContent = `${number(e.wetMassKg, 0)} kg${e.deltaVMS != null ? ` · Δv ideal ${number(e.deltaVMS / 1000, 2)} km/s` : ''}`;
+    } catch { node.textContent = ''; }
+    node.title = `${design.name} · ${node.textContent}`;
+    $('#lab-ctx-probe').value = activeProbeId;
+  }
+  {
+    const select = $('#lab-ctx-probe');
+    for (const probe of HISTORICAL_PROBES) select.add(new Option(probe.name, probe.id));
+    select.value = activeProbeId;
+    select.addEventListener('change', () => selectProbe(select.value));
+  }
+  $('#lab-ctx-open-center').addEventListener('click', () => { section = 'center'; updateSection(); });
+  // 14: navegación directa desde el mapa de áreas de la cabecera (AppNavigator).
+  document.addEventListener('lab:navigate', event => {
+    const target = event.detail ?? {};
+    if (target.section) section = target.section in SECTION_META || target.section === 'planner' ? target.section : 'hangar';
+    if (target.plannerMode) plannerMode = target.plannerMode;
+    if (app.dataset.appMode === 'experimental' && lab.hidden) setBuilder(true); else updateSection();
+    if (target.focus) requestAnimationFrame(() => lab.querySelector(target.focus)?.scrollIntoView({ block: 'start' }));
+  });
 
   function message(text, error = false) {
     $('#lab-message').textContent = text;
     $('#lab-message').dataset.error = String(error);
-  }
-  function clearPendingChange() {
-    pendingChange = null;
-    $('#lab-replacement').hidden = true;
-    $('#lab-replacement').replaceChildren();
-  }
-  function showReplacementOptions(plan) {
-    const box = $('#lab-replacement');
-    box.replaceChildren(); box.hidden = false;
-    pendingChange = { design, componentId: plan.component.id, socketId: plan.socketId };
-    const names = plan.conflicts.map(item => `${item.name} (${item.propellant})`).join(', ');
-    const title = document.createElement('strong');
-    title.textContent = `${plan.component.name} requiere propelente ${plan.component.propellant}.`;
-    const detail = document.createElement('p');
-    detail.textContent = `En conflicto: ${names}. El diseño actual se conserva hasta que elijas una opción.`;
-    box.append(title, detail);
-    function choice(label, resolution) {
-      const button = document.createElement('button'); button.type = 'button'; button.textContent = label;
-      button.addEventListener('click', () => {
-        if (resolution === 'cancel') {
-          clearPendingChange(); message('Sustitución cancelada. Diseño sin cambios.'); return;
-        }
-        if (!pendingChange || design !== pendingChange.design) {
-          clearPendingChange(); message('El diseño cambió. Selecciona de nuevo la sustitución.', true); return;
-        }
-        try {
-          const next = applyPartChange(design, pendingChange.componentId, pendingChange.socketId, resolution);
-          design = next;
-          selectedPartId = next.parts.at(-1)?.id ?? 'core';
-          render();
-          message(resolution === 'replace' ? 'Componentes compatibles sustituidos juntos.' : 'Pieza elegida instalada y componente incompatible retirado.');
-        } catch (error) { message(error.message, true); }
-      });
-      box.append(button);
-      return button;
-    }
-    const replacements = plan.conflicts.map(item => item.replacement?.name);
-    if (replacements.every(Boolean)) {
-      const replacementText = plan.conflicts.map(item => `${item.replacement.name}${item.replacement.fuelCapacityKg ? ` (${item.replacement.fuelCapacityKg} kg llenos)` : ''}`).join(', ');
-      choice(`Reemplazar por ${replacementText}`, 'replace');
-    }
-    choice(`Retirar ${plan.conflicts.map(item => item.name).join(', ')}`, 'remove');
-    choice('Cancelar · conservar diseño', 'cancel');
-    box.querySelector('button')?.focus({ preventScroll: true });
   }
   function setBuilder(active) {
     const enabled = app.dataset.appMode === 'experimental';
@@ -159,16 +232,27 @@ export function createExperimentalLaboratory() {
     const hangar = enabled && (section === 'hangar' || section === 'engineering');
     $('.lab-workspace').hidden = !hangar;
     $('#lab-launch').hidden = !(enabled && section === 'launch');
-    $('#lab-landing').hidden = !(enabled && section === 'landing');
-    $('#lab-mission-planner').hidden = !(enabled && section === 'planner');
+    $('#lab-mission-planner').hidden = !(enabled && section === 'planner' && plannerMode === 'lunar');
+    $('#lab-interplanetary').hidden = !(enabled && section === 'planner' && plannerMode === 'interplanetary');
+    $('#lab-integrated').hidden = !(enabled && section === 'planner' && plannerMode === 'integrated');
+    $('#lab-planner-modes').hidden = !(enabled && section === 'planner');
+    for (const button of lab.querySelectorAll('[data-planner-mode]')) button.setAttribute('aria-pressed', String(button.dataset.plannerMode === plannerMode));
     $('#lab-mission-center').hidden = !(enabled && section === 'center');
     lab.dataset.section = section;
+    lab.dataset.plannerMode = plannerMode;
+    const meta = section === 'planner' ? { step: 'Planificar', ...PLANNER_META[plannerMode] } : SECTION_META[section];
+    $('#lab-crumb-step').textContent = meta.step; $('#lab-crumb-tool').textContent = meta.title;
+    $('#lab-tool-title').textContent = meta.title; $('#lab-tool-desc').textContent = meta.desc;
+    $('#lab-ctx-open-center').hidden = section === 'center';
+    updateDesignContext();
     for (const button of lab.querySelectorAll('[data-lab-section]')) {
       if (button.dataset.labSection === section) button.setAttribute('aria-current', 'page');
       else button.removeAttribute('aria-current');
     }
     view.setVisible(hangar);
-    planner.setVisible(enabled && section === 'planner');
+    planner.setVisible(enabled && section === 'planner' && plannerMode === 'lunar');
+    interplanetary.setVisible(enabled && section === 'planner' && plannerMode === 'interplanetary');
+    integrated.setVisible(enabled && section === 'planner' && plannerMode === 'integrated');
     center.setVisible(enabled && section === 'center');
   }
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
@@ -180,63 +264,99 @@ export function createExperimentalLaboratory() {
     button.textContent = active ? 'Desactivar control 3D' : 'Activar control 3D';
     $('#lab-gesture-hint').textContent = coarsePointer
       ? active ? 'Arrastra para girar · pellizca para acercar · desactiva el control para desplazarte'
-        : 'Desliza para bajar al catálogo · activa el control 3D para girar y acercar'
-      : 'Arrastra para girar · rueda para acercar · toca una pieza para inspeccionarla';
+        : 'Desliza para bajar a la ficha · activa el control 3D para girar y acercar'
+      : 'Arrastra para girar · rueda para acercar';
   }
   $('#lab-touch-toggle').addEventListener('click', () => setTouchMode($('#lab-touch-toggle').getAttribute('aria-pressed') !== 'true'));
-  function renderCatalog() {
-    const list = $('#lab-catalog-list'); list.replaceChildren();
-    for (const [id, label] of COMPONENT_CATEGORIES) {
-      const group = document.createElement('div'); group.className = 'lab-category';
-      const heading = document.createElement('h4'); heading.textContent = label; group.append(heading);
-      for (const component of COMPONENTS.filter(item => item.category === id)) {
-        const button = document.createElement('button'); button.type = 'button'; button.className = 'lab-component';
-        button.dataset.componentId = component.id;
-        button.setAttribute('aria-pressed', String(selectedComponentId === component.id));
-        button.innerHTML = `<span class="lab-part-glyph lab-part-glyph--${id}" aria-hidden="true"></span><span></span><small>${number(component.dryMassKg)} kg</small>`;
-        button.querySelector('span:nth-child(2)').textContent = component.name;
-        button.addEventListener('click', () => { clearPendingChange(); selectedComponentId = component.id; renderCatalog(); renderComponentInfo(); });
-        group.append(button);
-      }
-      list.append(group);
+  // 15.1: cambiar de sonda sustituye el diseño en todo el laboratorio (los planificadores invalidan los cálculos de otra sonda).
+  function selectProbe(probeId) {
+    if (!fleet.has(probeId)) return;
+    const changed = probeId !== activeProbeId;
+    activeProbeId = probeId; storeActiveProbe(probeId);
+    design = fleet.get(probeId); selectedPartId = null;
+    render();
+    if (changed) message(`${design.name} es ahora la sonda activa de todas las misiones.`);
+  }
+  // Flota: tarjetas de las cuatro sondas y ficha técnica con calidad y fuente de cada cifra.
+  function renderFleet() {
+    const list = $('#lab-history-list'); list.replaceChildren();
+    for (const probe of HISTORICAL_PROBES) {
+      const card = document.createElement('button'); card.type = 'button'; card.className = 'lab-probe-card';
+      card.dataset.probeId = probe.id; card.setAttribute('aria-pressed', String(activeProbeId === probe.id));
+      const name = document.createElement('strong'); name.textContent = probe.name;
+      const meta = document.createElement('small'); meta.textContent = `${probe.launch} · ${probe.role}`;
+      card.append(name, meta);
+      if (activeProbeId === probe.id) { const tag = document.createElement('span'); tag.className = 'lab-probe-active'; tag.textContent = 'Sonda activa'; card.append(tag); }
+      card.addEventListener('click', () => selectProbe(probe.id));
+      list.append(card);
     }
-  }
-  function renderComponentInfo() {
-    const component = getComponent(selectedComponentId);
-    const info = $('#lab-catalog-info'); info.replaceChildren();
-    if (!component) return;
-    const title = document.createElement('h4'); title.textContent = component.name; info.append(title);
-    const description = document.createElement('p'); description.textContent = component.description; info.append(description);
-    const details = document.createElement('p'); details.className = 'lab-specs';
-    details.textContent = `${component.id} · ${component.dimensionsM.join(' × ')} m · ${component.dryMassKg} kg secos`
-      + (component.generationW ? ` · +${component.generationW} W` : '')
-      + (component.idlePowerW ? ` · ${component.idlePowerW} W reposo` : '')
-      + (component.activePowerW ? ` · ${component.activePowerW} W activos` : '')
-      + (component.batteryWh ? ` · ${component.batteryWh} Wh` : '')
-      + (component.fuelCapacityKg ? ` · ${component.fuelCapacityKg} kg combustible` : '')
-      + (component.thrustN ? ` · ${component.thrustN} N · Isp ${component.ispS} s` : '')
-      + (component.maxAttachedMassKg ? ` · Carga máxima montada ${component.maxAttachedMassKg} kg` : '')
-      + (component.propellant ? ` · Propelente: ${component.propellant}` : '')
-      + (component.category !== 'structure' ? ` · Conexión: ${COMPONENT_CATEGORIES.find(item => item[0] === component.category)?.[1]}` : '');
-    info.append(details);
-    const socketSelect = $('#lab-socket'); socketSelect.replaceChildren();
-    if (component.category !== 'structure') {
-      const core = getComponent(design.coreId);
-      for (const socket of core?.slots.filter(item => item.category === component.category) ?? []) {
-        const option = new Option(`${socket.name}${design.parts.some(p => p.socketId === socket.id) ? ' · reemplazar' : ' · libre'}`, socket.id);
-        socketSelect.add(option);
-      }
+    const probe = HISTORICAL_PROBES.find(item => item.id === activeProbeId) ?? HISTORICAL_PROBES[0];
+    const sheet = $('#lab-history-sheet'); sheet.replaceChildren();
+    const title = document.createElement('h4'); title.textContent = `${probe.name} · ficha técnica`;
+    const role = document.createElement('p'); role.textContent = probe.role;
+    const table = document.createElement('dl'); table.className = 'lab-facts';
+    for (const fact of probe.facts) {
+      const row = document.createElement('div');
+      const term = document.createElement('dt'); term.textContent = fact.label;
+      const value = document.createElement('dd'); value.textContent = fact.value;
+      const provenance = document.createElement('dd'); provenance.className = 'lab-fact-source';
+      provenance.append(qualityBadge(fact.quality));
+      const link = fact.source ? sourceLink(fact.source) : null;
+      if (link) provenance.append(' ', link);
+      row.append(term, value, provenance); table.append(row);
     }
-    socketSelect.disabled = component.category === 'structure' || !socketSelect.options.length;
-    $('#lab-add').disabled = component.category !== 'structure' && !socketSelect.options.length;
-    $('#lab-add').textContent = component.category === 'structure' ? (design.coreId ? 'Cambiar estructura' : 'Elegir estructura') : 'Agregar al diseño';
+    const model = NASA_PROBE_MODELS[probe.id];
+    const credit = document.createElement('p'); credit.className = 'lab-model-credit';
+    if (model) {
+      credit.append('Modelo 3D: ', externalLink(model.source, model.credit), `, archivo original sin modificar (${number(model.bytes / 1e6, 1)} MB${model.commit ? `, commit ${model.commit.slice(0, 7)}` : ''}). `);
+      credit.append(externalLink(NASA_MODEL_USAGE.guidelines, 'Pautas de uso de NASA'), '. Su uso no implica respaldo de NASA.');
+    }
+    const parts = document.createElement('p'); parts.className = 'lab-helper';
+    parts.textContent = `Arquitectura: ${getComponent(probe.coreId)?.name} con ${probe.parts.length} subsistemas. Las masas por subsistema y los consumos sin fuente son estimaciones del simulador; la masa del bus se obtiene por cierre con la masa seca documentada.`;
+    const notes = document.createElement('p'); notes.className = 'lab-helper'; notes.textContent = probe.notes;
+    const actions = document.createElement('div'); actions.className = 'lab-two-actions';
+    const plan = document.createElement('button'); plan.type = 'button'; plan.className = 'button-primary'; plan.id = 'lab-plan-mission'; plan.textContent = `Planificar una misión con ${probe.name}`;
+    plan.addEventListener('click', () => { section = 'planner'; updateSection(); });
+    const systems = document.createElement('button'); systems.type = 'button'; systems.id = 'lab-open-engineering'; systems.textContent = 'Ver sistemas e ingeniería';
+    systems.addEventListener('click', () => { section = 'engineering'; updateSection(); $('.lab-engineering').scrollIntoView({ block: 'nearest' }); });
+    actions.append(plan, systems);
+    sheet.append(title, role, table, credit, parts, notes, actions);
   }
-  function renderSaved() {
-    const select = $('#lab-saved'); select.replaceChildren();
-    if (!saved.length) select.add(new Option('Sin diseños guardados', ''));
-    for (const item of saved) select.add(new Option(item.name, item.id));
-    $('#lab-load-saved').disabled = !saved.length;
+  function renderModelState() {
+    const entry = modelState.entry ?? NASA_PROBE_MODELS[activeProbeId];
+    $('#lab-stage-count').textContent = `${design.name}${entry ? ` · ${modelState.source === 'nasa' ? 'NASA 3D Resources' : 'modelo de NASA'}` : ''}`;
+    const status = $('#lab-assembly-status');
+    status.textContent = MODEL_STATE_TEXT[modelState.source] ?? '—';
+    status.dataset.state = modelState.source;
+    status.title = modelState.error ? `Error de carga: ${modelState.error}` : '';
   }
+  function componentSpecs(component) {
+    return `${component.dimensionsM.join(' × ')} m · ${number(component.dryMassKg)} kg secos`
+      + (component.generationW ? ` · ${component.category === 'rtg' || component.powerSource === 'rtg' ? '' : 'a 1 AU '}+${number(component.generationW, 0)} W` : '')
+      + (component.idlePowerW ? ` · ${number(component.idlePowerW)} W reposo` : '')
+      + (component.activePowerW ? ` · ${number(component.activePowerW)} W activos` : '')
+      + (component.batteryWh ? ` · ${number(component.batteryWh, 0)} Wh` : '')
+      + (component.fuelCapacityKg ? ` · ${number(component.fuelCapacityKg)} kg de propelente` : '')
+      + (component.thrustN ? ` · ${component.thrustN < 1 ? `${number(component.thrustN * 1000, 1)} mN` : `${number(component.thrustN, 2)} N`} · Isp ${number(component.ispS, 0)} s` : '')
+      + (component.electric ? ` · eléctrico ${number(component.electric.minInputPowerW, 0)}–${number(component.electric.maxInputPowerW, 0)} W` : '')
+      + (component.rcsPropellantKg ? ` · ${number(component.rcsPropellantKg)} kg de hidracina de actitud` : '')
+      + (component.propellant ? ` · Propelente: ${propellantLabel(component.propellant)}` : '');
+  }
+  function appendDataQuality(container, component) {
+    const entries = Object.entries(component.data ?? {});
+    if (!entries.length) return;
+    const list = document.createElement('ul'); list.className = 'lab-field-quality';
+    for (const [key, entry] of entries) {
+      const item = document.createElement('li');
+      item.append(`${FIELD_LABELS[key] ?? key}: `, qualityBadge(entry.quality));
+      const link = entry.source ? sourceLink(entry.source) : null;
+      if (link) item.append(' ', link);
+      if (entry.note) { const note = document.createElement('small'); note.textContent = ` ${entry.note}`; item.append(note); }
+      list.append(item);
+    }
+    container.append(list);
+  }
+  // Subsistemas de la configuración histórica (solo lectura): al elegir uno se muestran sus cifras con calidad y fuente.
   function renderAssembly() {
     const list = $('#lab-assembly-list'); list.replaceChildren();
     const core = getComponent(design.coreId);
@@ -247,120 +367,136 @@ export function createExperimentalLaboratory() {
       button.setAttribute('aria-pressed', String(selectedPartId === entry.id));
       button.innerHTML = '<span></span><small></small>';
       button.querySelector('span').textContent = component.name;
-      button.querySelector('small').textContent = entry.socketId === 'estructura' ? 'Principal' : core.slots.find(s => s.id === entry.socketId)?.name;
-      button.addEventListener('click', () => { selectedPartId = entry.id; render(); });
+      button.querySelector('small').textContent = entry.socketId === 'estructura' ? 'Estructura' : `${number(component.dryMassKg)} kg`;
+      if (component.heritage) button.dataset.heritage = component.heritage;
+      button.addEventListener('click', () => { selectedPartId = selectedPartId === entry.id ? null : entry.id; render(); });
       list.append(button);
     }
-    if (!entries.length) list.textContent = 'Sin piezas montadas.';
-    $('#lab-stage-count').textContent = entries.length ? `${entries.length} pieza${entries.length === 1 ? '' : 's'} montada${entries.length === 1 ? '' : 's'}` : 'Sin estructura';
-    $('#lab-empty').hidden = Boolean(core);
-    view.setDesign(design, selectedPartId);
+    view.setDesign(design, selectedPartId, { centerOfMassM: engineering?.centerOfMassM ?? null, showFreeSlots: false });
     const selected = selectedPartId === 'core' ? core : getComponent(design.parts.find(p => p.id === selectedPartId)?.componentId);
     const detail = $('#lab-selected-info'); detail.replaceChildren();
     if (selected) {
       const title = document.createElement('h4'); title.textContent = selected.name; detail.append(title);
-      const text = document.createElement('p'); text.textContent = `${selected.description} Masa seca: ${selected.dryMassKg} kg.`; detail.append(text);
-      const entry = design.parts.find(p => p.id === selectedPartId);
-      if (entry?.fuelKg !== undefined) {
-        const label = document.createElement('label'); label.className = 'lab-field'; label.textContent = `Combustible (0–${selected.fuelCapacityKg} kg)`;
-        const input = document.createElement('input'); input.type = 'number'; input.min = '0'; input.max = String(selected.fuelCapacityKg); input.step = '0.1'; input.value = String(entry.fuelKg);
-        input.addEventListener('change', () => {
-          const next = structuredClone(design); next.parts.find(p => p.id === entry.id).fuelKg = Number(input.value);
-          const issues = validateDesign(next);
-          if (issues.length) { message(issues.join(' '), true); input.value = String(entry.fuelKg); return; }
-          design = next; render();
-        });
-        label.append(input); detail.append(label);
-      }
-      const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = selectedPartId === 'core' ? 'Retirar estructura y piezas' : 'Retirar componente';
-      remove.addEventListener('click', () => {
-        design = selectedPartId === 'core' ? { ...design, coreId: null, parts: [] }
-          : { ...design, parts: design.parts.filter(p => p.id !== selectedPartId) };
-        selectedPartId = null; render();
-      }); detail.append(remove);
+      if (selected.description) { const text = document.createElement('p'); text.textContent = selected.description; detail.append(text); }
+      const specs = document.createElement('p'); specs.className = 'lab-specs'; specs.textContent = componentSpecs(selected); detail.append(specs);
+      appendDataQuality(detail, selected);
     }
+    renderModelState();
   }
-  function renderEngineering() {
-    const result = calculateEngineering(design);
-    const metrics = [
-      ['Masa seca', design.coreId ? valueOrNA(result.dryMassKg, 'kg') : 'No disponible'],
-      ['Masa con combustible', design.coreId ? valueOrNA(result.wetMassKg, 'kg') : 'No disponible'],
-      ['Combustible', `${number(result.fuelKg)} / ${number(result.fuelCapacityKg)} kg`],
-      ['Empuje compatible', valueOrNA(result.thrustN, 'N', 2)], ['Delta-v ideal', valueOrNA(result.deltaVMS, 'm/s', 1)],
-      ['Generación solar nominal', valueOrNA(result.generationW, 'W')], ['Consumo en reposo', valueOrNA(result.idlePowerW, 'W')],
-      ['Consumo activo adicional', valueOrNA(result.activePowerW, 'W')], ['Balance en reposo', valueOrNA(result.netIdleW, 'W')],
-      ['Capacidad de batería', valueOrNA(result.batteryWh, 'Wh')],
-      ['Autonomía por batería', result.autonomyHours == null ? 'No disponible' : `${number(result.autonomyHours, 1)} h`]
-    ];
-    const container = $('#lab-metrics'); container.replaceChildren();
-    for (const [label, value] of metrics) {
+  function metricRows(container, rows) {
+    for (const [label, value, title] of rows) {
       const row = document.createElement('div'); row.className = 'lab-metric';
       const term = document.createElement('span'); term.textContent = label;
       const data = document.createElement('strong'); data.textContent = value;
+      if (title) row.title = title;
       row.append(term, data); container.append(row);
     }
+  }
+  const kN = value => value == null ? 'No disponible' : value < 1 ? `${number(value * 1000, 1)} mN` : `${number(value, value < 10 ? 2 : 0)} N`;
+  function renderEngineering() {
+    const result = engineering ?? calculateEngineering(design);
+    const has = Boolean(design.coreId);
+    const acceleration = result.thrustN && result.wetMassKg ? result.thrustN / result.wetMassKg : null;
+    const massFlow = result.thrustN && result.effectiveIspS ? result.thrustN / (9.80665 * result.effectiveIspS) : null;
+    const com = result.centerOfMassM, align = result.thrustAlignment;
+    const metrics = [
+      ['Masa seca estructural', has ? valueOrNA(result.structuralDryMassKg, 'kg') : 'No disponible', 'Bus + subsistemas sin propelente.'],
+      ['Hidracina de actitud', has ? valueOrNA(result.rcsPropellantKg, 'kg') : 'No disponible', 'No la consume el motor principal: forma parte de la masa final.'],
+      ['Masa seca', has ? valueOrNA(result.dryMassKg, 'kg') : 'No disponible', 'Masa final tras agotar el propelente del motor principal.'],
+      ['Propelente principal', `${number(result.fuelKg)} / ${number(result.fuelCapacityKg)} kg${result.mainPropellant ? ` · ${propellantLabel(result.mainPropellant)}` : ''}`],
+      ['Masa total', has ? valueOrNA(result.wetMassKg, 'kg') : 'No disponible'],
+      ['Propulsión', result.propulsionType === 'electric' ? 'Eléctrica (iónica)' : result.propulsionType === 'chemical' ? 'Química' : 'Sin motor'],
+      ['Empuje', kN(result.thrustN)], ['Impulso específico', valueOrNA(result.effectiveIspS, 's', 0)],
+      ['Aceleración inicial', acceleration == null ? 'No disponible' : `${number(acceleration * 1000, acceleration < 0.01 ? 3 : 1)} mm/s²`],
+      ['Consumo de propelente', massFlow == null ? 'No disponible' : massFlow < 0.01 ? `${number(massFlow * 1e6, 1)} mg/s` : `${number(massFlow * 1000, 1)} g/s`],
+      ['Δv ideal', valueOrNA(result.deltaVMS, 'm/s', 0)],
+      ['Centro de masas estimado (x, y, z)', com ? com.map(v => number(v, 2)).join(' · ') + ' m' : 'No disponible', 'Calculado con la disposición y las masas estimadas de los subsistemas; ejes del bus: +Y hacia la antena principal.'],
+      ['Desalineación del empuje', align ? `${number(align.lateralOffsetM * 100, 1)} cm (límite ${number(align.limitM * 100, 0)} cm${align.gimbaled ? ', con cardán' : ''})` : 'No disponible'],
+      ['Consumo de servicio', valueOrNA(result.idlePowerW, 'W')], ['Consumo en encendido', valueOrNA(result.activePowerW, 'W')],
+      ['Batería', valueOrNA(result.batteryWh, 'Wh', 0)],
+      ['Autonomía por batería', result.autonomyHours == null ? 'No disponible' : `${number(result.autonomyHours, 1)} h`]
+    ];
+    if (result.rcs) metrics.splice(6, 0, ['Control de actitud', `${result.rcs.count ?? '¿?'} × ${result.rcs.thrustN == null ? 'empuje desconocido' : kN(result.rcs.thrustN)}${result.rcs.sharesMainPropellant ? ' · comparte depósito' : ''}`]);
+    const container = $('#lab-metrics'); container.replaceChildren();
+    metricRows(container, metrics);
+
+    // Energía frente a la distancia al Sol (al lanzamiento) y límites de la propulsión eléctrica.
+    const power = $('#lab-power'); power.replaceChildren();
+    if (has && result.power) {
+      const heading = document.createElement('h4'); heading.textContent = 'Energía según la distancia al Sol'; power.append(heading);
+      const table = document.createElement('table'); table.className = 'lab-power-table';
+      table.innerHTML = '<caption>Generación al lanzamiento frente al consumo de servicio</caption><thead><tr><th scope="col">Lugar</th><th scope="col">AU</th><th scope="col">Generación</th><th scope="col">Margen</th></tr></thead><tbody></tbody>';
+      for (const point of result.power.profile) {
+        const row = document.createElement('tr'); row.dataset.tone = point.marginW >= 0 ? 'ok' : 'bad';
+        for (const value of [point.label, number(point.distanceAu, 2), `${number(point.totalW, 0)} W`, `${point.marginW >= 0 ? '+' : ''}${number(point.marginW, 0)} W`]) {
+          const cell = document.createElement('td'); cell.textContent = value; row.append(cell);
+        }
+        table.tBodies[0].append(row);
+      }
+      power.append(table);
+      const rows = [];
+      if (result.power.rtgAtLaunchW > 0) rows.push(['RTG al lanzamiento / a 10 años', `${number(result.power.rtgAtLaunchW, 0)} / ${number(result.power.rtgAfter10YearsW, 0)} W`]);
+      rows.push(['Equilibrio generación–servicio', Number.isFinite(result.power.serviceBreakEvenAu) ? `${number(result.power.serviceBreakEvenAu, 2)} AU` : 'Sin límite por distancia (RTG)']);
+      if (result.electric) {
+        rows.push(['Potencia para el motor a 1 AU', `${number(result.electric.availableInputAt1AuW, 0)} W (mín. ${number(result.electric.minInputPowerW, 0)} · máx. ${number(result.electric.maxInputPowerW, 0)} W)`]);
+        rows.push(['Empuje eléctrico a 1 AU', result.electric.operableAt1Au ? `${kN(result.electric.thrustAt1AuN)} (${number(result.electric.throttleAt1Au * 100, 0)} %)` : 'No puede encenderse']);
+        rows.push(['Límite de encendido', Number.isFinite(result.electric.operatingLimitAu) ? `${number(result.electric.operatingLimitAu, 2)} AU` : 'Sin límite por distancia']);
+      }
+      metricRows(power, rows);
+    }
+
+    // Veredicto de ingeniería y restricciones agrupadas por tipo.
     const assessment = $('#lab-assessment'); assessment.replaceChildren();
-    const heading = document.createElement('strong');
-    heading.textContent = result.structuralIssues.length ? 'Configuración incompatible' : 'Conexiones estructurales válidas';
-    assessment.dataset.valid = String(!result.structuralIssues.length && !!design.coreId); assessment.append(heading);
-    for (const note of result.notes) { const line = document.createElement('p'); line.textContent = note; assessment.append(line); }
-    const clearance = view.getLandingClearance();
-    $('#lab-assembly-status').textContent = clearance
-      ? `${clearance.clearanceM > 0 ? 'Holgura motor' : 'Interferencia motor'} · ${number(clearance.clearanceM * 100, 1)} cm`
-      : design.coreId ? (result.structuralIssues.length ? 'Revisar conexiones' : 'Ensamblaje válido') : 'Sin estructura';
+    const status = result.assessment?.status ?? (result.structuralIssues.length ? ENGINEERING_STATUS.modify : ENGINEERING_STATUS.coherent);
+    const heading = document.createElement('strong'); heading.textContent = status;
+    assessment.dataset.valid = String(has && status !== ENGINEERING_STATUS.modify && status !== ENGINEERING_STATUS.incomplete);
+    assessment.dataset.tone = !has ? 'idle' : status === ENGINEERING_STATUS.modify ? 'bad' : status === ENGINEERING_STATUS.warnings ? 'warn' : 'ok';
+    assessment.append(heading);
+    for (const text of [result.assessment?.explanation, result.assessment?.nature].filter(Boolean)) { const line = document.createElement('p'); line.textContent = text; assessment.append(line); }
+    if (result.assessment?.programs?.length) {
+      const programs = document.createElement('p'); programs.className = 'lab-programs';
+      programs.textContent = `Programa: ${result.assessment.programs.map(id => PROGRAM_LABELS[id] ?? id).join(' · ')}`;
+      assessment.append(programs);
+    }
+    const compatibility = $('#lab-compatibility'); compatibility.replaceChildren();
+    const issues = result.compatibility ?? [];
+    if (issues.length) {
+      const title = document.createElement('h4'); title.textContent = `Comprobaciones (${result.assessment.errors} error${result.assessment.errors === 1 ? '' : 'es'} · ${result.assessment.warnings} advertencia${result.assessment.warnings === 1 ? '' : 's'})`;
+      compatibility.append(title);
+      const types = [...COMPATIBILITY_TYPES, ...new Set(issues.map(item => item.type).filter(type => !COMPATIBILITY_TYPES.includes(type)))];
+      const list = document.createElement('ul');
+      for (const type of types) for (const item of issues.filter(issue => issue.type === type)) {
+        const line = document.createElement('li'); line.dataset.severity = item.severity;
+        const tag = document.createElement('b'); tag.textContent = type;
+        line.append(tag, ` ${item.message}`); list.append(line);
+      }
+      compatibility.append(list);
+    }
+    for (const note of result.notes) { const line = document.createElement('p'); line.className = 'lab-helper'; line.textContent = note; compatibility.append(line); }
+
+    // Calidad de los datos y referencias de la sonda.
+    const quality = $('#lab-data-quality'); quality.replaceChildren();
+    const dq = result.dataQuality;
+    if (has && dq) {
+      const title = document.createElement('h4'); title.textContent = 'Calidad de los datos'; quality.append(title);
+      const counts = document.createElement('p'); counts.className = 'lab-quality-counts';
+      for (const [q, n] of Object.entries(dq.counts)) if (n) { counts.append(qualityBadge(q), ` ${n}  `); }
+      quality.append(counts);
+      if (dq.dependsOnEstimates) { const note = document.createElement('p'); note.className = 'lab-helper'; note.textContent = 'Los resultados dependen de cifras estimadas o desconocidas: úsalos como orden de magnitud, no como datos históricos.'; quality.append(note); }
+      if (dq.sources.length) {
+        const list = document.createElement('ul'); list.className = 'lab-sources';
+        for (const source of dq.sources) { const item = document.createElement('li'); const link = sourceLink(source.id); if (link) { link.textContent = source.title; item.append(link, ` · ${source.publisher}`); list.append(item); } }
+        quality.append(list);
+      }
+    }
   }
   function render() {
-    clearPendingChange();
-    $('#lab-design-name').value = design.name;
-    renderCatalog(); renderComponentInfo(); renderAssembly(); renderEngineering();
-    planner.setDesign(design); launch.setDesign(design); landing.setDesign(design);
+    try { engineering = calculateEngineering(design); } catch { engineering = null; }
+    updateDesignContext();
+    renderFleet();
+    renderAssembly(); renderEngineering();
+    planner.setDesign(design); launch.setDesign(design); interplanetary.setDesign(design); integrated.setDesign(design);
   }
-  function load(next) { design = next; selectedPartId = null; selectedComponentId = next.coreId || 'bus-interplanetary'; render(); }
-  for (const preset of PRESETS) $('#lab-preset').add(new Option(preset.name, preset.id));
-  $('#lab-preset').value = 'interplanetary';
-  $('#lab-socket').addEventListener('change', clearPendingChange);
-  $('#lab-add').addEventListener('click', () => {
-    try {
-      const socketId = $('#lab-socket').value;
-      const plan = planPartChange(design, selectedComponentId, socketId);
-      if (plan.conflicts.length) { showReplacementOptions(plan); return; }
-      design = applyPartChange(design, selectedComponentId, socketId);
-      selectedPartId = getComponent(selectedComponentId).category === 'structure' ? 'core' : design.parts.at(-1)?.id;
-      message(`${getComponent(selectedComponentId).name} integrado en el diseño.`); render();
-    } catch (error) { message(error.message, true); }
-  });
-  $('#lab-design-name').addEventListener('change', event => {
-    const candidate = event.target.value.trim();
-    if (!candidate) { event.target.value = design.name; message('El nombre no puede estar vacío.', true); return; }
-    design = { ...design, name: candidate }; render();
-  });
-  $('#lab-new').addEventListener('click', () => { load(newDesign()); message('Diseño vacío creado. Elige una estructura.'); });
-  $('#lab-save').addEventListener('click', () => {
-    try { saved = saveDesign(design); renderSaved(); $('#lab-saved').value = design.id; message('Diseño guardado en este navegador.'); }
-    catch (error) { message(`No se pudo guardar: ${error.message}`, true); }
-  });
-  $('#lab-load-preset').addEventListener('click', () => {
-    const preset = PRESETS.find(item => item.id === $('#lab-preset').value);
-    if (preset) { load(preset.create()); message('Configuración editable cargada.'); }
-  });
-  $('#lab-load-saved').addEventListener('click', () => {
-    const item = saved.find(savedItem => savedItem.id === $('#lab-saved').value);
-    if (item) { load(structuredClone(item)); message('Diseño recuperado.'); }
-  });
-  $('#lab-export').addEventListener('click', () => {
-    const issues = validateDesign(design);
-    if (issues.length) { message(issues.join(' '), true); return; }
-    const url = URL.createObjectURL(new Blob([JSON.stringify(design, null, 2)], { type: 'application/json' }));
-    const link = document.createElement('a'); link.href = url; link.download = `${design.name.trim().replace(/[^\w-]+/g, '-').slice(0, 40) || 'sonda'}.json`;
-    link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); message('Diseño exportado en JSON.');
-  });
-  $('#lab-import').addEventListener('click', () => $('#lab-import-file').click());
-  $('#lab-import-file').addEventListener('change', async event => {
-    const file = event.target.files?.[0]; if (!file) return;
-    try { if (file.size > 100_000) throw Error('Archivo demasiado grande.'); load(parseDesign(await file.text())); message('Diseño importado. Guarda si deseas conservarlo en este navegador.'); }
-    catch (error) { message(`Importación rechazada: ${error.message}`, true); }
-    event.target.value = '';
-  });
   $('[data-lab-action="orbital"]').addEventListener('click', () => setBuilder(false));
   $('[data-lab-action="reset-camera"]').addEventListener('click', () => section === 'planner' ? planner.resetCamera() : section === 'center' ? center.resetCamera() : view.resetCamera());
   for (const button of lab.querySelectorAll('[data-lab-section]:not(:disabled)')) button.addEventListener('click', () => {
@@ -388,11 +524,11 @@ export function createExperimentalLaboratory() {
   for (const button of modeNavigation.querySelectorAll('button')) headerObserver.observe(button);
   window.addEventListener('resize', measureHeader);
   measureHeader();
-  renderSaved(); render();
+  render();
   if (app.dataset.appMode === 'experimental') setBuilder(true);
   return { dispose: () => {
     modeObserver.disconnect(); headerObserver.disconnect(); window.removeEventListener('resize', measureHeader);
-    center.dispose(); landing.dispose(); launch.dispose(); planner.dispose(); view.dispose(); lab.remove(); returnButton.remove(); app.style.removeProperty('--lab-top');
+    center.dispose(); integrated.dispose(); interplanetary.dispose(); launch.dispose(); planner.dispose(); view.dispose(); lab.remove(); returnButton.remove(); app.style.removeProperty('--lab-top');
     delete app.dataset.labView;
   } };
 }

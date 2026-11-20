@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { getComponent } from './ComponentCatalog.js';
+import { getComponent, ILLUSTRATIVE_PROGRAM } from './ComponentCatalog.js';
+import { buildHeritageCore, buildHeritagePart, disposeHeritageMaterials, HERITAGE_MATERIALS } from './HeritageModels.js';
+import { registerRenderer } from '../graphics/QualityProfile.js';
+import { attachNasaModel, nasaModelForCore } from '../graphics/NasaProbeModels.js';
 
 const metal = new THREE.MeshStandardMaterial({ color: 0x9da8b5, metalness: 0.82, roughness: 0.3 });
 const dark = new THREE.MeshStandardMaterial({ color: 0x252d39, metalness: 0.62, roughness: 0.43 });
@@ -122,27 +125,64 @@ function clearAssembly(assembly) {
   while (assembly.children.length) {
     const child = assembly.children[0]; assembly.remove(child);
     child.traverse(node => {
+      if (node.userData.sharedNasaResource) return; // 15.1: geometría compartida con la plantilla del modelo de NASA
       node.geometry?.dispose();
       if (node.userData.selectionHelper) node.material?.dispose();
     });
   }
 }
 
+const isHeritage = component => Boolean(component?.heritage && component.heritage !== ILLUSTRATIVE_PROGRAM);
+const UP = new THREE.Vector3(0, 1, 0), FORWARD = new THREE.Vector3(0, 0, 1);
+// 15: una pieza de herencia se extiende a lo largo de la normal del punto (+Y local → dirección del punto). Las alas solares
+// giran además sobre su eje para que sus células miren hacia donde apunta la antena principal del bus (eje solar habitual).
+function orientHeritagePart(node, socket, component, sunAxis) {
+  if (component.mount === 'internal' || !socket.direction) return;
+  const d = new THREE.Vector3(...socket.direction).normalize();
+  node.quaternion.setFromUnitVectors(UP, d);
+  if (component.shape !== 'wing' || !sunAxis) return;
+  const n = sunAxis.clone().addScaledVector(d, -sunAxis.dot(d));
+  if (n.lengthSq() < 1e-8) return;
+  n.normalize();
+  const z = FORWARD.clone().applyQuaternion(node.quaternion);
+  const angle = Math.atan2(d.dot(z.clone().cross(n)), z.dot(n));
+  node.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(d, angle));
+}
+function adapterRing(component, socket) {
+  const r = Math.min(0.32, Math.max(0.12, Math.min(...component.dimensionsM) * 0.6));
+  const ring = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.08, 18), HERITAGE_MATERIALS.blanket);
+  ring.name = 'adapter';
+  if (socket.direction) ring.quaternion.setFromUnitVectors(UP, new THREE.Vector3(...socket.direction).normalize());
+  return ring;
+}
+
 function mountAssembly(assembly, design) {
   const nodes = new Map();
   const core = getComponent(design.coreId);
   if (!core) return nodes;
-  const body = makeCore(core); body.userData.partId = 'core'; assembly.add(body); nodes.set('core', body);
+  const heritageCore = isHeritage(core);
+  const body = heritageCore ? buildHeritageCore(core) : makeCore(core); body.userData.partId = 'core'; assembly.add(body); nodes.set('core', body);
+  const hga = core.slots.find(item => item.accepts?.includes('antenna') || item.category === 'antenna');
+  const sunAxis = heritageCore && hga?.direction ? new THREE.Vector3(...hga.direction).normalize() : null;
   for (const entry of design.parts) {
     const component = getComponent(entry.componentId);
     const socket = core.slots.find(item => item.id === entry.socketId);
     if (!component || !socket) continue;
-    const node = makePart(component, socket.id);
+    const heritagePart = isHeritage(component);
+    const node = heritagePart ? buildHeritagePart(component) : makePart(component, socket.id);
+    if (heritagePart) orientHeritagePart(node, socket, component, sunAxis);
     node.position.set(...socket.position);
     node.userData.partId = entry.id;
+    if (entry.adapter) { const ring = adapterRing(component, socket); ring.position.copy(node.position); node.add(ring); ring.position.set(0, 0, 0); ring.quaternion.identity(); }
     assembly.add(node); nodes.set(entry.id, node);
   }
   assembly.updateMatrixWorld(true);
+  // Radio de la esfera envolvente (m). Solo se publica para los buses de herencia: las vistas lo usan para encuadrar sondas de
+  // hasta ~20 m sin alterar la presentación ya validada de los diseños ilustrativos.
+  if (heritageCore) {
+    const sphere = new THREE.Box3().setFromObject(assembly).getBoundingSphere(new THREE.Sphere());
+    assembly.userData.boundingRadiusM = sphere.radius; assembly.userData.boundingCenterM = sphere.center.toArray();
+  } else { delete assembly.userData.boundingRadiusM; delete assembly.userData.boundingCenterM; }
   return nodes;
 }
 
@@ -167,6 +207,7 @@ export function disposeProbeAssemblyModel(assembly) {
   if (!assembly) return;
   const geometries = new Set(), materials = new Set();
   assembly.traverse(node => {
+    if (node.userData.sharedNasaResource) return; // 15.1: la plantilla del modelo de NASA se comparte entre vistas
     if (node.geometry) geometries.add(node.geometry);
     for (const material of Array.isArray(node.material) ? node.material : [node.material]) if (material) materials.add(material);
   });
@@ -220,14 +261,14 @@ export function measureRearMountFit(design) {
   return result;
 }
 
-export function createProbeAssemblyView(host, onSelect) {
+export function createProbeAssemblyView(host, onSelect, { onModelState = null } = {}) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x080d16);
   scene.fog = new THREE.FogExp2(0x080d16, 0.028);
   const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 100);
   camera.position.set(5.8, 3.3, 6.8);
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  const unregisterQuality = registerRenderer(renderer);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.append(renderer.domElement);
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -240,6 +281,52 @@ export function createProbeAssemblyView(host, onSelect) {
   const rim = new THREE.DirectionalLight(0x447db5, 2); rim.position.set(-5, 1, -4); scene.add(rim);
   const grid = new THREE.GridHelper(12, 24, 0x486078, 0x243044); grid.position.y = -2.12; scene.add(grid);
   const assembly = new THREE.Group(); scene.add(assembly);
+  const markers = new THREE.Group(); markers.name = 'hangar-markers'; scene.add(markers);
+  const markerMaterials = {
+    com: new THREE.MeshBasicMaterial({ color: 0xf2bf6b, depthTest: false, transparent: true, opacity: 0.95 }),
+    free: new THREE.MeshBasicMaterial({ color: 0x7fb2ff, transparent: true, opacity: 0.55, depthWrite: false })
+  };
+  const DEFAULT_VIEW = { position: [5.8, 3.3, 6.8], target: [0, 0, 0], maxDistance: 17, far: 100, fog: 0.028, gridY: -2.12, gridScale: 1 };
+  let currentFrame = DEFAULT_VIEW, frameKey = null;
+  function frameFor(design) {
+    const r = assembly.userData.boundingRadiusM;
+    if (!r) return DEFAULT_VIEW;
+    const c = assembly.userData.boundingCenterM, distance = Math.max(9.5, r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.05);
+    const dir = new THREE.Vector3(5.8, 3.3, 6.8).normalize().multiplyScalar(distance);
+    const minY = new THREE.Box3().setFromObject(assembly).min.y;
+    return { position: [c[0] + dir.x, c[1] + dir.y, c[2] + dir.z], target: c, maxDistance: Math.max(17, distance * 2.2), far: Math.max(100, distance * 6),
+      fog: 0.028 * 9.5 / distance, gridY: minY - 0.3, gridScale: Math.max(1, (2 * r + 2) / 12), key: design.coreId };
+  }
+  function applyFrame(view, moveCamera) {
+    currentFrame = view;
+    controls.maxDistance = view.maxDistance; camera.far = view.far; camera.updateProjectionMatrix();
+    scene.fog.density = view.fog; grid.position.y = view.gridY; grid.scale.setScalar(view.gridScale);
+    if (moveCamera) { camera.position.set(...view.position); controls.target.set(...view.target); controls.update(); }
+  }
+  function clearMarkers() {
+    while (markers.children.length) { const child = markers.children[0]; markers.remove(child); child.geometry?.dispose(); }
+  }
+  // Marcadores de lectura: centro de masas calculado por la ingeniería (octaedro dorado) y puntos de montaje libres (anillos).
+  function drawMarkers(design, options) {
+    clearMarkers();
+    const core = getComponent(design.coreId);
+    if (!core) return;
+    const scale = Math.max(1, (assembly.userData.boundingRadiusM ?? 2.6) / 6);
+    if (options.centerOfMassM?.every(Number.isFinite)) {
+      const com = new THREE.Mesh(new THREE.OctahedronGeometry(0.12 * scale, 0), markerMaterials.com);
+      com.position.set(...options.centerOfMassM); com.renderOrder = 10; com.name = 'center-of-mass'; markers.add(com);
+    }
+    if (options.showFreeSlots !== false) {
+      const used = new Set(design.parts.map(part => part.socketId));
+      for (const slot of core.slots) {
+        if (used.has(slot.id)) continue;
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.16 * scale, 0.025 * scale, 6, 20), markerMaterials.free);
+        ring.position.set(...slot.position); ring.name = 'free-slot-' + slot.id;
+        if (slot.direction) ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3(...slot.direction).normalize());
+        markers.add(ring);
+      }
+    }
+  }
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
@@ -282,10 +369,35 @@ export function createProbeAssemblyView(host, onSelect) {
       if (controlsConnected) { controls.disconnect(); controlsConnected = false; }
     }
   }
-  function setDesign(design, selected = selectedId) {
+  // 15.1: los buses con modelo oficial de NASA se montan primero con la geometría procedimental (respaldo inmediato y sin red)
+  // y, cuando llega el GLB, este la sustituye. Mientras la sonda no cambie no se vuelve a montar.
+  let mountToken = 0, mountedKey = null;
+  const modelState = { source: 'procedural', entry: null, error: null };
+  const designKey = design => JSON.stringify([design.coreId, design.parts.map(p => [p.socketId, p.componentId, p.fuelKg ?? null, p.adapter ?? false])]);
+  function setDesign(design, selected = selectedId, options = {}) {
     if (disposed) return;
+    const key0 = designKey(design);
+    if (key0 === mountedKey && modelState.source === 'nasa') { selectedId = selected; currentDesign = design; return; }
     clearAssembly(assembly);
-    nodes = mountAssembly(assembly, design); selectedId = selected; currentDesign = design;
+    nodes = mountAssembly(assembly, design); selectedId = selected; currentDesign = design; mountedKey = key0;
+    const view = frameFor(design), key = view.key ?? 'default';
+    const moved = key !== frameKey;
+    applyFrame(view, moved); frameKey = key;
+    drawMarkers(design, options);
+    const entry = nasaModelForCore(design.coreId);
+    Object.assign(modelState, { source: entry ? 'cargando' : 'procedural', entry, error: null });
+    if (entry) {
+      const token = ++mountToken;
+      attachNasaModel(assembly, design.coreId, { isCurrent: () => !disposed && token === mountToken }).then(result => {
+        if (disposed || token !== mountToken) return;
+        if (result.status !== 'nasa') { Object.assign(modelState, { source: 'procedural', error: result.error?.message ?? null }); onModelState?.({ ...modelState }); return; }
+        for (const child of [...assembly.children]) if (child.name !== 'nasa-model') { assembly.remove(child); child.traverse(node => { if (node.userData.sharedNasaResource) return; node.geometry?.dispose(); if (node.userData.selectionHelper) node.material?.dispose(); }); }
+        nodes = new Map(); clearMarkers();
+        applyFrame(frameFor(design), moved);
+        Object.assign(modelState, { source: 'nasa' }); onModelState?.({ ...modelState });
+      });
+    } else mountToken++;
+    onModelState?.({ ...modelState });
     for (const [id, node] of nodes) {
       if (id === selected) {
         const helper = new THREE.BoxHelper(node, 0xe4c781);
@@ -322,7 +434,9 @@ export function createProbeAssemblyView(host, onSelect) {
     renderer.domElement.removeEventListener('pointerup', onPointerEnd);
     renderer.domElement.removeEventListener('pointercancel', onPointerEnd);
     controls.dispose();
-    clearAssembly(assembly); nodes.clear(); currentDesign = null;
+    clearAssembly(assembly); clearMarkers(); nodes.clear(); currentDesign = null;
+    for (const material of Object.values(markerMaterials)) material.dispose();
+    disposeHeritageMaterials();
     grid.geometry.dispose();
     for (const material of Array.isArray(grid.material) ? grid.material : [grid.material]) material.dispose();
     for (const material of [metal, dark, gold, blue, glass]) {
@@ -330,12 +444,13 @@ export function createProbeAssemblyView(host, onSelect) {
       material.dispose();
     }
     renderer.renderLists.dispose();
-    renderer.dispose();
+    unregisterQuality(); renderer.dispose();
     renderer.forceContextLoss();
     renderer.domElement.remove();
   }
   return { setDesign, setVisible, setTouchInteraction,
     getLandingClearance: () => currentDesign ? landingClearanceFromNodes(currentDesign, nodes) : null,
-    resetCamera: () => { camera.position.set(5.8, 3.3, 6.8); controls.target.set(0, 0, 0); controls.update(); },
+    resetCamera: () => applyFrame(currentFrame, true),
+    getModelState: () => ({ ...modelState }),
     dispose };
 }

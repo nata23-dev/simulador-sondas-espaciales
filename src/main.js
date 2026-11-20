@@ -3,6 +3,7 @@ import { crearWorkspaceLayout } from './ui/WorkspaceLayout.js';
 
 import { cargarEfemerides, obtenerEstados } from './astronomy/Ephemerides.js';
 import { createSolarSystem } from './graphics/SolarSystem.js';
+import { bindQualityControls } from './graphics/QualityProfile.js';
 import { MODOS_ESCALA_VISUAL } from './graphics/ScaleModeConfig.js';
 import { crearPanelInfoPlaneta } from './ui/PlanetInfoPanel.js';
 import { crearPanelInfoLuna } from './ui/MoonInfoPanel.js';
@@ -13,6 +14,10 @@ import { crearControlesVisualizacion } from './ui/VisualizationControls.js';
 import { crearControlesHUD } from './ui/HudControls.js';
 import { crearControlesMision } from './ui/MissionControls.js';
 import { createExperimentalLaboratory } from './ui/ExperimentalLaboratory.js';
+import { createAppNavigator } from './ui/AppNavigator.js';
+import { createCommandPalette } from './ui/CommandPalette.js';
+import { createFeaturedMissions } from './ui/FeaturedMissions.js';
+import { createLabFormEnhancer } from './ui/LabFormEnhancer.js';
 import { crearControlesDistancia } from './ui/DistanceToolControls.js';
 import { crearControlesModoHistorico } from './ui/HistoricalModeControls.js';
 import { createMeasurableBodyEndpoint } from './science/DistanceMeasurement.js';
@@ -54,6 +59,8 @@ import { crearRecorridoHistoricoGuiado, HITOS_RECORRIDO_GUIADO } from './ui/Hist
 import { getVoyagerPhotoById } from './science/VoyagerPhotoCatalog.js';
 import { crearSuperficieLanzamientoCinematografico } from './ui/LaunchCinematicOverlay.js';
 import { METADATOS_HISTORICOS_LANZAMIENTO } from './graphics/LaunchCinematicController.js';
+// 14: capa visual común (tokens, componentes y movimiento). Se importa después de los demás estilos para prevalecer.
+import './ui/theme.css';
 
 const ETIQUETAS_CUERPOS = {
   Jupiter: 'Júpiter',
@@ -1778,6 +1785,7 @@ simulador.alCambiarModoEscala(() => {
 });
 
 crearControlesVisualizacion(simulador);
+bindQualityControls(document.querySelector('#quality-controls')); // 15: perfiles de calidad gráfica (solo presentación)
 botonReintentar.addEventListener('click', iniciar);
 
 async function iniciar() {
@@ -1928,6 +1936,12 @@ crearWorkspaceLayout({
   }
 });
 const laboratorioExperimental = createExperimentalLaboratory();
-if (import.meta.hot) import.meta.hot.dispose(() => laboratorioExperimental.dispose());
+// 14: mapa de áreas en la cabecera (solo navegación).
+const navegadorAreas = createAppNavigator();
+// 14.1: búsqueda global, portada de misiones destacadas y presentación de formularios del laboratorio (solo interfaz).
+const paletaBusqueda = createCommandPalette({ navigator: navegadorAreas });
+const misionesDestacadas = createFeaturedMissions({ navigator: navegadorAreas });
+const mejorasLaboratorio = createLabFormEnhancer();
+if (import.meta.hot) import.meta.hot.dispose(() => { mejorasLaboratorio.dispose(); misionesDestacadas.dispose(); paletaBusqueda.dispose(); navegadorAreas.dispose(); laboratorioExperimental.dispose(); });
 actualizarOrientacionHistorica();
 iniciar();

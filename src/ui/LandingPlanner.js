@@ -18,7 +18,7 @@ export function createLandingPlanner({ host, onExecuteRequest, onInvalidated }) 
         <p class="mission-intro">Motor general de descenso propulsado: usa el GM y el radio del destino elegido. Solo se calcula donde el modelo de vacío es justificable.</p>
         <label class="lab-field">Destino<select id="ld-body"></select></label>
         <div id="ld-body-info" class="ft-results" aria-live="polite"></div>
-        <label class="lab-field">Carga útil (Hangar)<input id="ld-payload" readonly></label>
+        <label class="lab-field">Carga útil (sonda activa)<input id="ld-payload" readonly></label>
         <details class="ft-section" open><summary>Órbita inicial local</summary>
           <label class="lab-field">Altitud del periapsis (km)<input id="ld-peri" type="number" min="1" step="1" value="${DEFAULT_DESCENT_ORBIT.periapsisAltitudeKm}"></label>
           <label class="lab-field">Altitud del apoapsis (km)<input id="ld-apo" type="number" min="1" step="1" value="${DEFAULT_DESCENT_ORBIT.apoapsisAltitudeKm}"></label>
@@ -33,7 +33,8 @@ export function createLandingPlanner({ host, onExecuteRequest, onInvalidated }) 
           <label class="lab-field">Espera antes de salir de órbita (s)<input id="ld-delay" type="number" min="0" step="60" value="${DEFAULT_LANDING_GUIDANCE.deorbitDelaySeconds}"></label>
           <label class="lab-field">Velocidad vertical objetivo de contacto (m/s)<input id="ld-td" type="number" min="0.1" step="0.1" value="${DEFAULT_LANDING_GUIDANCE.touchdownSpeedMS}"></label>
           <label class="lab-field">Fracción de deceleración vertical<input id="ld-frac" type="number" min="0.05" max="1" step="0.05" value="${DEFAULT_LANDING_GUIDANCE.descentDecelFraction}"></label></details>
-        <details class="ft-section"><summary>Módulo de aterrizaje (ilustrativo)</summary>
+        <details class="ft-section" open><summary>Módulo de aterrizaje (ilustrativo · editable)</summary>
+          <p class="mission-hint">Parámetros editables del módulo demostrativo. Los valores iniciales son ilustrativos; «Restablecer módulo» recupera el preset.</p>
           ${[['busKg', 'Masa del cuerpo (kg)'], ['tankageKg', 'Masa de depósitos (kg)'], ['landingGearKg', 'Masa de patas (kg)']].map(([k, l]) => `<label class="lab-field">${l}<input data-lander="structure.${k}" type="number" min="0" step="10"></label>`).join('')}
           <label class="lab-field">Propelente del módulo (kg)<input data-lander="propellantMassKg" type="number" min="0" step="50"></label>
           <label class="lab-field">Empuje máximo (N)<input data-lander="engine.thrustMaxN" type="number" min="1" step="100"></label>
@@ -140,6 +141,8 @@ export function createLandingPlanner({ host, onExecuteRequest, onInvalidated }) 
     const details = document.createElement('details'); details.className = 'mission-details';
     const summaryEl = document.createElement('summary'); summaryEl.textContent = 'Diagnósticos numéricos y límites'; details.append(summaryEl);
     paragraph(details, `DOPRI54 de 8 componentes. Pasos aceptados ${sim.diagnostics.acceptedSteps}, rechazados ${sim.diagnostics.rejectedSteps}, evaluaciones ${sim.diagnostics.functionEvaluations}.`);
+    const ct = sim.diagnostics.contactTolerances;
+    if (ct) paragraph(details, `Tolerancias del contacto (magnitudes distintas): predicado geométrico |r| < R − ${ct.predicateToleranceKm} km; intervalo temporal de localización ${ct.bracketSeconds?.toExponential(2)} s (límite ${ct.bracketLimitSeconds} s); cota espacial |v_r|·Δt = ${(ct.spatialBoundKm * 1e6).toFixed(3)} mm; residuo radial observado ${(ct.observedResidualKm * 1e6).toFixed(3)} mm; error de integración gobernado por DOPRI54 (abs. ${ct.integrationTolerance.absPositionKm} km, rel. ${ct.integrationTolerance.rel}).`);
     for (const note of [sim.frame.warning, 'Sin atmósfera, J2, terceros cuerpos, actitud ni rotación del cuerpo (no definida en el proyecto).', 'Guiado idealizado en lazo cerrado con motor estrangulable y reencendido ilimitado.']) paragraph(details, note);
     results.append(details);
   }

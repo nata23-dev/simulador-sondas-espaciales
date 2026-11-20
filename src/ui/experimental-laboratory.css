@@ -206,6 +206,14 @@
   .mc-stage .lab-touch-toggle { top:auto; right:8px; bottom:66px; }
   .mc-stage .lab-stage-foot { font-size:8px; line-height:1.3; }
   .mc-stage .lab-stage-top span:last-child { display:none; }
+  /* 13: Planificador «Misión completa». */
+  .im-chain li { flex-basis:104px; min-width:104px; }
+  #lab-integrated .ip-table table { font-size:9px; }
+  /* 15.1: selector de la sonda activa en la cabecera. */
+  /* Mayor especificidad que las reglas base de 15.1, que aparecen después en la hoja. */
+  #experimental-lab .lab-header .lab-context-probe dd { flex-wrap:wrap; gap:3px; }
+  #experimental-lab .lab-context-probe #lab-ctx-probe { flex:1 1 auto; min-width:0; max-width:100%; font-size:12px; }
+  #experimental-lab .lab-context-probe #lab-ctx-design { flex-basis:100%; }
 }
 
 /* Etapa 12D — controles mínimos de empuje finito (reutilizan los tokens del laboratorio). */
@@ -236,3 +244,160 @@
   #lab-launch .mission-controls, #lab-launch .mission-results, #lab-landing .mission-controls, #lab-landing .mission-results { flex:none; }
   #lab-launch .lab-panel-scroll, #lab-landing .lab-panel-scroll { overflow:visible; }
 }
+
+/* Etapa 12G: modalidad «Misiones interplanetarias» del Planificador (mismo sistema visual: oscuro, acento dorado). */
+#experimental-lab #lab-interplanetary[hidden], #experimental-lab .lab-planner-modes[hidden] { display:none !important; }
+.lab-planner-modes { flex:none; display:flex; gap:5px; padding:7px 12px 0; }
+.lab-planner-modes button { min-height:32px; padding:6px 12px; border:1px solid #d3bd9140; border-radius:7px; background:#0b1726; color:#bdc9d6; font-size:11px; }
+.lab-planner-modes button[aria-pressed="true"] { border-color:#d3bd91a0; background:#d3bd912b; color:#f6dfb2; }
+#lab-interplanetary { flex:1; display:grid; grid-template-columns:minmax(240px,24%) minmax(0,1fr) minmax(300px,30%); gap:10px; min-height:0; padding:10px; }
+#lab-interplanetary .lab-panel-scroll { overflow:auto; }
+#lab-interplanetary .lab-two-actions .lab-field { margin:0; }
+#lab-interplanetary #ip-search, #lab-interplanetary #ip-execute { width:100%; min-height:38px; margin-top:8px; }
+.ip-plots { position:absolute; inset:44px 12px 64px; display:grid; grid-template-rows:minmax(0,1.35fr) minmax(0,1fr); gap:8px; }
+.ip-plots canvas { width:100%; height:100%; min-height:0; border:1px solid #b4c5d122; border-radius:7px; background:#050a13; cursor:crosshair; }
+.ip-legend { position:absolute; left:14px; right:14px; bottom:40px; color:#abbacd; font-size:10px; line-height:1.4; }
+.ip-table table { width:100%; border-collapse:collapse; font-size:10px; }
+.ip-table th { color:#d5ba83; font-weight:600; text-align:left; padding:4px 3px; border-bottom:1px solid #b4c5d128; }
+.ip-table td { color:#c6d2de; padding:5px 3px; border-bottom:1px solid #b4c5d114; }
+.ip-table tr { cursor:pointer; }
+.ip-table tr[aria-current="true"] td, .ip-table tbody tr:hover td, .ip-table tbody tr:focus td { background:#d3bd9118; color:#f3ddbd; }
+.ip-table tbody tr:focus { outline:1px solid #d3bd91; }
+#ip-satellite button { width:100%; min-height:34px; margin-top:6px; }
+@media(max-width:1100px) { #lab-interplanetary { grid-template-columns:minmax(210px,26%) minmax(0,1fr) minmax(240px,30%); gap:7px; padding:7px; } }
+@media(max-width:820px) {
+  #lab-interplanetary { display:flex; flex-direction:column; min-height:auto; }
+  #lab-interplanetary .mission-stage { order:0; flex:none; height:clamp(420px,70dvh,640px); }
+  #lab-interplanetary .lab-panel-scroll { overflow:visible; }
+  .lab-planner-modes { flex-wrap:wrap; padding:7px 8px 0; }
+  .lab-planner-modes button { flex:1 1 auto; }
+}
+
+/* Etapa 13: modalidad «Misión completa» (mismo sistema visual: oscuro, acento dorado; estados verde/ámbar/rojo con texto). */
+#experimental-lab #lab-integrated[hidden], #experimental-lab .im-context[hidden], #experimental-lab #im-moon-profile[hidden] { display:none !important; }
+#lab-integrated { flex:1; display:grid; grid-template-columns:minmax(250px,25%) minmax(0,1fr) minmax(300px,30%); gap:10px; min-height:0; padding:10px; }
+#lab-integrated .lab-panel-scroll { overflow:auto; }
+#lab-integrated .lab-two-actions .lab-field { margin:0; }
+#lab-integrated #im-compute, #lab-integrated #im-execute { width:100%; min-height:38px; margin-top:8px; }
+.im-group { margin:8px 0; padding:8px 9px 4px; border:1px solid #b4c5d11f; border-radius:8px; min-width:0; }
+.im-group legend { padding:0 5px; color:#d5ba83; font-size:10px; font-weight:600; letter-spacing:.06em; }
+.im-check { display:flex; gap:7px; align-items:flex-start; margin:6px 0; color:#c6d2de; font-size:11px; line-height:1.35; }
+.im-check input { margin-top:2px; accent-color:#d3bd91; }
+.im-stage-body { position:absolute; inset:44px 12px 40px; display:flex; flex-direction:column; gap:8px; min-height:0; }
+.im-chain { flex:none; display:flex; gap:6px; margin:0; padding:0; list-style:none; overflow-x:auto; scrollbar-width:thin; }
+.im-chain li { flex:1 0 118px; min-width:118px; padding:7px 8px; border:1px solid #b4c5d12a; border-left-width:3px; border-radius:7px; background:#0b1726; }
+.im-chain li strong { display:block; color:#e7eaf0; font-size:10px; font-weight:600; line-height:1.3; }
+.im-chain li small { display:block; margin-top:3px; color:#9fb0c4; font-size:9px; line-height:1.3; }
+.im-chain li.im-chain-empty { flex:1 1 auto; color:#9fb0c4; font-size:11px; }
+.im-chain li[data-tone="ok"], .im-phase[data-tone="ok"] { border-left-color:#9ed9be; }
+.im-chain li[data-tone="warn"], .im-phase[data-tone="warn"] { border-left-color:#e3c27a; }
+.im-chain li[data-tone="bad"], .im-phase[data-tone="bad"] { border-left-color:#ffad9d; }
+.im-chain li[data-tone="idle"], .im-phase[data-tone="idle"] { border-left-color:#6f8199; }
+.im-context { flex:none; display:flex; gap:5px; }
+.im-context button { min-height:30px; padding:5px 11px; border:1px solid #d3bd9140; border-radius:7px; background:#0b1726; color:#bdc9d6; font-size:10px; }
+.im-context button[aria-pressed="true"] { border-color:#d3bd91a0; background:#d3bd912b; color:#f6dfb2; }
+.im-context button:disabled { opacity:.4; }
+#im-plot { flex:1; width:100%; min-height:0; border:1px solid #b4c5d122; border-radius:7px; background:#050a13; }
+#im-verdict[data-tone="ok"] { border-color:#87bba880; color:#a9e2c5; background:#4c9a7614; }
+#im-verdict[data-tone="warn"] { border-color:#e3c27a80; color:#f0d79c; background:#d3bd9112; }
+#im-verdict[data-tone="bad"] { border-color:#e4a18780; color:#ffb8a7; background:#a751351b; }
+#im-verdict[data-tone="idle"] { border-color:#b4c5d140; color:#c6d2de; background:transparent; }
+#im-verdict { line-height:1.4; letter-spacing:.02em; }
+.im-phases { display:grid; gap:6px; }
+.im-phase { padding:7px 9px; border:1px solid #b4c5d11f; border-left-width:3px; border-radius:7px; background:#0b172680; }
+.im-phase strong { display:block; color:#e7eaf0; font-size:11px; }
+.im-phase span { display:block; margin-top:2px; color:#d5ba83; font-size:9px; letter-spacing:.04em; }
+.im-phase p { margin:4px 0 0; color:#abbacd; font-size:10px; line-height:1.45; overflow-wrap:anywhere; }
+#im-maneuvers td:first-child { min-width:96px; }
+@media(max-width:1100px) { #lab-integrated { grid-template-columns:minmax(220px,27%) minmax(0,1fr) minmax(240px,30%); gap:7px; padding:7px; } }
+@media(max-width:820px) {
+  #lab-integrated { display:flex; flex-direction:column; min-height:auto; }
+  #lab-integrated .mission-stage { order:0; flex:none; height:clamp(420px,70dvh,640px); }
+  #lab-integrated .lab-panel-scroll { overflow:visible; }
+}
+
+/* Etapa 13: Centro de Misión · selector de marco de la vista para la misión integrada. */
+.mc-context { display:flex; flex-wrap:wrap; gap:5px; margin:6px 0; }
+.mc-context[hidden] { display:none !important; }
+.mc-context button { min-height:30px; padding:5px 9px; border:1px solid #d3bd9140; border-radius:7px; background:#0b1726; color:#bdc9d6; font-size:10px; }
+.mc-context button[aria-pressed="true"] { border-color:#d3bd91a0; background:#d3bd912b; color:#f6dfb2; }
+.mc-context button:disabled { opacity:.4; }
+
+/* Etapa 15: biblioteca histórica, modos del Hangar, calidad de datos y panel de ingeniería ampliado.
+   Usa los tokens de 14.1 (grafito, dorado para naves, azul para enlaces); solo presentación. */
+#experimental-lab :is(#lab-history,#lab-custom)[hidden] { display:none !important; }
+.lab-hangar-modes { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:12px; padding:3px; border:1px solid var(--line-soft); border-radius:10px; background:rgba(255,255,255,.02); }
+#experimental-lab .lab-hangar-modes button { min-height:34px; padding:6px 8px; border:1px solid transparent; border-radius:8px; background:transparent; color:var(--text-2); font-size:12.5px; }
+#experimental-lab .lab-hangar-modes button[aria-pressed="true"] { border-color:var(--gold-line); background:var(--gold-soft); color:var(--gold-strong); }
+.lab-history-list { display:grid; gap:6px; }
+#experimental-lab .lab-probe-card { display:grid; gap:3px; width:100%; min-height:56px; padding:9px 12px; border:1px solid var(--line-soft); border-radius:10px; background:rgba(255,255,255,.02); text-align:left; }
+#experimental-lab .lab-probe-card strong { color:var(--text-1); font-size:13.5px; font-weight:600; }
+#experimental-lab .lab-probe-card small { color:var(--text-3); font-size:11.5px; line-height:1.4; }
+#experimental-lab .lab-probe-card[aria-pressed="true"] { border-color:var(--gold-line); background:var(--gold-soft); }
+.lab-history-sheet { margin-top:14px; padding:12px; border:1px solid var(--line-soft); border-radius:var(--r-md); background:var(--panel-raised); }
+.lab-history-sheet h4 { margin:0 0 4px; color:var(--gold-strong); font-size:13px; font-weight:600; }
+.lab-history-sheet > p { margin:0 0 8px; color:var(--text-2); font-size:12px; line-height:1.5; }
+.lab-history-sheet .lab-two-actions { margin-top:12px; grid-template-columns:repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+.lab-history-sheet .lab-two-actions button { min-width:0; }
+.lab-facts { display:grid; gap:0; margin:6px 0 10px; }
+.lab-facts > div { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:2px 10px; padding:7px 0; border-bottom:1px solid var(--line-soft); }
+.lab-facts dt { color:var(--text-3); font-size:11.5px; }
+.lab-facts dd { margin:0; color:var(--text-1); font-size:12px; overflow-wrap:anywhere; }
+.lab-facts .lab-fact-source { grid-column:1 / -1; color:var(--text-3); font-size:11px; }
+#experimental-lab :is(.lab-facts,.lab-field-quality,.lab-sources) a { color:var(--blue); text-decoration:none; }
+#experimental-lab :is(.lab-facts,.lab-field-quality,.lab-sources) a:hover { text-decoration:underline; }
+.lab-quality { display:inline-block; padding:1px 7px; border:1px solid var(--line-strong); border-radius:999px; color:var(--text-2); font-size:10.5px; font-weight:600; letter-spacing:.02em; white-space:nowrap; }
+.lab-quality[data-quality="documentado"] { border-color:rgba(95,213,155,.45); color:var(--ok); }
+.lab-quality[data-quality="secundario"] { border-color:var(--blue-line); color:var(--blue); }
+.lab-quality[data-quality="derivado"] { border-color:rgba(255,255,255,.28); color:var(--text-1); }
+.lab-quality[data-quality="estimado"] { border-color:rgba(242,191,107,.5); color:var(--warn); }
+.lab-quality[data-quality="desconocido"] { border-color:rgba(240,115,92,.5); color:var(--bad); }
+.lab-program { color:var(--gold-strong) !important; }
+.lab-field-quality { display:grid; gap:4px; margin:9px 0 0; padding:0; list-style:none; color:var(--text-2); font-size:11.5px; line-height:1.45; }
+.lab-field-quality small { color:var(--text-3); }
+#experimental-lab .lab-component small { overflow:hidden; text-overflow:ellipsis; }
+#experimental-lab .lab-component[data-heritage]:not([data-heritage="ilustrativo"]) .lab-part-glyph { border-color:var(--gold); }
+#experimental-lab .lab-assembly-item[data-heritage] span::before { content:""; display:inline-block; width:6px; height:6px; margin-right:7px; border-radius:50%; background:var(--gold); vertical-align:1px; }
+#experimental-lab #lab-socket option:disabled { color:var(--text-4); }
+.lab-replacement[data-kind="adapter"] { border-color:var(--blue-line); background:var(--blue-soft); }
+#experimental-lab .lab-assessment { margin:8px 0 12px; border-color:var(--line-strong); background:rgba(255,255,255,.03); }
+#experimental-lab .lab-assessment[data-tone="ok"] { border-color:rgba(95,213,155,.38); background:rgba(95,213,155,.06); }
+#experimental-lab .lab-assessment[data-tone="ok"] strong { color:var(--ok); }
+#experimental-lab .lab-assessment[data-tone="warn"] { border-color:rgba(242,191,107,.4); background:rgba(242,191,107,.06); }
+#experimental-lab .lab-assessment[data-tone="warn"] strong { color:var(--warn); }
+#experimental-lab .lab-assessment[data-tone="bad"] { border-color:rgba(240,115,92,.42); background:rgba(240,115,92,.07); }
+#experimental-lab .lab-assessment[data-tone="bad"] strong { color:var(--bad); }
+#experimental-lab .lab-assessment p { color:var(--text-2); font-size:12px; }
+#experimental-lab .lab-assessment .lab-programs { color:var(--gold-strong); }
+.lab-power-table { width:100%; margin:4px 0 8px; border-collapse:collapse; font-size:12px; }
+.lab-power-table caption { padding:0 0 6px; color:var(--text-3); font-size:11px; text-align:left; }
+.lab-power-table th { padding:5px 4px; border-bottom:1px solid var(--line-strong); font-size:10.5px; text-align:right; }
+.lab-power-table td { padding:6px 4px; border-bottom:1px solid var(--line-soft); color:var(--text-1); text-align:right; }
+.lab-power-table :is(th,td):first-child { text-align:left; }
+.lab-power-table tr[data-tone="bad"] td:last-child { color:var(--bad); }
+.lab-power-table tr[data-tone="ok"] td:last-child { color:var(--ok); }
+.lab-compatibility ul { display:grid; gap:6px; margin:0 0 8px; padding:0; list-style:none; }
+.lab-compatibility li { padding:7px 9px 7px 11px; border-left:3px solid var(--line-strong); border-radius:6px; background:rgba(255,255,255,.025); color:var(--text-2); font-size:12px; line-height:1.45; overflow-wrap:anywhere; }
+.lab-compatibility li b { margin-right:4px; color:var(--text-1); font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
+.lab-compatibility li[data-severity="error"] { border-left-color:var(--bad); background:rgba(240,115,92,.07); }
+.lab-compatibility li[data-severity="warning"] { border-left-color:var(--warn); }
+.lab-compatibility li[data-severity="info"] { border-left-color:var(--blue-line); }
+.lab-quality-counts { margin:0 0 6px; color:var(--text-2); font-size:12px; line-height:1.9; }
+.lab-sources { display:grid; gap:5px; margin:6px 0 0; padding-left:16px; color:var(--text-3); font-size:11.5px; line-height:1.4; }
+@media(max-width:820px) {
+  .lab-facts > div { grid-template-columns:1fr; }
+}
+
+/* Etapa 15.1: flota fija de cuatro sondas con modelos oficiales de NASA. Selector de sonda activa en la cabecera,
+   marca de la sonda activa, crédito del modelo y estado de carga del modelo 3D. Solo presentación. */
+#experimental-lab .lab-context-probe dd { display:flex; align-items:center; gap:8px; min-width:0; }
+#experimental-lab #lab-ctx-probe { flex:0 0 auto; min-height:28px; max-width:150px; padding:2px 26px 2px 8px; border:1px solid var(--gold-line); border-radius:7px; color:var(--gold-strong); font-size:12.5px; font-weight:600; }
+#experimental-lab #lab-ctx-design { min-width:0; overflow:hidden; text-overflow:ellipsis; color:var(--text-2); }
+#experimental-lab .lab-context-probe dt label { cursor:pointer; }
+#experimental-lab .lab-probe-card { position:relative; }
+#experimental-lab .lab-probe-active { justify-self:start; margin-top:3px; padding:1px 8px; border:1px solid var(--gold-line); border-radius:999px; color:var(--gold-strong); font-size:10.5px; font-weight:600; letter-spacing:.04em; }
+.lab-model-credit { margin:0 0 8px; color:var(--text-3); font-size:11.5px; line-height:1.5; }
+.lab-model-credit a, .lab-history-sheet a { color:var(--blue); }
+#experimental-lab #lab-assembly-status[data-state="nasa"] { color:var(--gold-strong); }
+#experimental-lab #lab-assembly-status[data-state="cargando"] { color:var(--text-2); }
+#experimental-lab #lab-assembly-status[data-state="procedural"] { color:var(--warn, #e3a35c); }

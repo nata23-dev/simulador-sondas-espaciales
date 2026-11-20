@@ -142,6 +142,8 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
     button.type = 'button'; button.dataset.destination = destination.id;
     button.dataset.destinationMode = destination.mode;
     button.textContent = destination.label;
+    // 14.1: color identificativo del cuerpo (solo presentación; los tokens --body-* están en theme.css).
+    button.style.setProperty('--dot', `var(--body-${destination.id}, var(--text-3, #8e8e96))`);
     button.setAttribute('aria-pressed', 'false');
     button.addEventListener('click', () => {
       if (alBuscarDestino?.(destination.id) === false) {
@@ -269,14 +271,18 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   document.querySelector('#fp-exit-btn').setAttribute('title', 'Volver desde Voyager a la vista exterior');
   document.querySelector('#fp-exit-btn').setAttribute('aria-label', 'Volver desde Voyager a la vista exterior');
   const search = document.createElement('button');
-  search.type = 'button'; search.id = 'header-search'; search.textContent = 'Buscar destino';
+  search.type = 'button'; search.id = 'header-search'; search.className = 'header-action';
+  search.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#icon-search"></use></svg><span>Buscar</span>';
+  search.title = 'Buscar planetas, sondas y herramientas (Ctrl+K)';
+  search.setAttribute('aria-label', 'Buscar destino');
   search.setAttribute('aria-controls', 'context-inspector');
   search.setAttribute('aria-expanded', 'false');
-  search.addEventListener('click', () => { select('explore'); searchInput.focus(); });
+  // 14.1: si la paleta de búsqueda está presente atiende la petición; si no, se usa el buscador del panel Explorar.
+  search.addEventListener('click', () => { if (document.dispatchEvent(new CustomEvent('app:open-search', { cancelable: true }))) { select('explore'); searchInput.focus(); } });
   document.querySelector('.app-header').append(search);
   const toolsMenu = document.createElement('details');
   toolsMenu.id = 'tools-menu'; toolsMenu.className = 'main-menu hud-secondary';
-  toolsMenu.innerHTML = `<summary aria-label="Abrir menú principal">Menú <svg class="icon"><use href="#icon-chevron"></use></svg></summary><div class="tools-content"><section class="main-menu-group"><span class="menu-heading">Herramientas</span><div id="main-tool-links"></div></section><section class="main-menu-group"><span class="menu-heading">Ayuda y datos</span><div id="main-help-links"></div></section></div>`;
+  toolsMenu.innerHTML = `<summary aria-label="Abrir menú principal" class="header-action"><svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg><span>Menú</span></summary><div class="tools-content"><section class="main-menu-group"><span class="menu-heading">Herramientas</span><div id="main-tool-links"></div></section><section class="main-menu-group"><span class="menu-heading">Ayuda y datos</span><div id="main-help-links"></div></section></div>`;
   document.querySelector('.app-header').append(toolsMenu);
   const toolLinks = toolsMenu.querySelector('#main-tool-links');
   toolLinks.append(document.querySelector('#distance-menu'));

@@ -109,10 +109,17 @@ const integrate = (derivative, state, t0, t1, maxStep, record, shouldAbort = nul
   maxStepSeconds: Math.min(maxStep, Math.max(t1 - t0, 1e-9)), absTol: LANDING_ABS_TOL, relTol: LANDING_REL_TOL, recordSteps: record, shouldAbort });
 
 // Integra un tramo y se detiene en el primer evento: 'contact' (|r| < R), 'depleted' (m ≤ masa seca), o `stopWhen`. Refina por bisección.
+// Tolerancias de contacto (12F.1, OBS-12F-01), que son magnitudes DISTINTAS:
+//  · predicado geométrico: contacto si |r| < R − CONTACT_PREDICATE_KM (1e-9 km); fija el signo, no la precisión;
+//  · intervalo temporal: la bisección termina con un intervalo [lo, hi] ≤ CONTACT_BRACKET_SECONDS (1e-7 s);
+//  · error espacial de localización ≲ |v_r|·Δt_intervalo (≈ 0,15 mm a 1,5 km/s), MAYOR que 1e-9 km;
+//  · error de integración: lo gobiernan las tolerancias DOPRI54 (LANDING_ABS_TOL, LANDING_REL_TOL), no la bisección.
+export const CONTACT_PREDICATE_KM = 1e-9;
+export const CONTACT_BRACKET_SECONDS = 1e-7;
 export function runLandingLeg({ env, lander, guidance, mode, massDryKg, state, t0, t1, maxStepSeconds = 2, stopWhen = null }) {
   if (!(t1 >= t0)) throw new LandingError('INVALID_CONFIGURATION', 'Tramo con tiempo final anterior al inicial.');
   const derivative = makeLandingDerivative(env, lander, guidance, mode, massDryKg);
-  const predicate = s => (Math.hypot(s[0], s[1], s[2]) < env.radiusKm - 1e-9) ? 'contact'
+  const predicate = s => (Math.hypot(s[0], s[1], s[2]) < env.radiusKm - CONTACT_PREDICATE_KM) ? 'contact'
     : (mode !== 'off' && s[6] <= massDryKg + 1e-9) ? 'depleted' : (stopWhen && stopWhen(s)) ? 'event' : null;
   const first = predicate(state);
   if (t1 === t0 || first) return { knots: [{ elapsedSeconds: t0, state: new Float64Array(state) }], state: new Float64Array(state), time: t0, stop: first, stats: zero() };
@@ -129,7 +136,7 @@ export function runLandingLeg({ env, lander, guidance, mode, massDryKg, state, t
   if (knots.length === 1) return { knots, state: new Float64Array(knots[0].state), time: knots[0].elapsedSeconds, stop: predicate(knots[0].state), stats };
   let lo = knots.at(-2), hi = { elapsedSeconds: knots.at(-1).elapsedSeconds, state: new Float64Array(knots.at(-1).state) };
   const hiReason = predicate(hi.state);
-  for (let i = 0; i < 80 && hi.elapsedSeconds - lo.elapsedSeconds > 1e-7; i++) {
+  for (let i = 0; i < 80 && hi.elapsedSeconds - lo.elapsedSeconds > CONTACT_BRACKET_SECONDS; i++) {
     const mid = (lo.elapsedSeconds + hi.elapsedSeconds) / 2;
     const run = integrate(derivative, lo.state, lo.elapsedSeconds, mid, maxStepSeconds, false);
     const s = new Float64Array(run.finalState);
@@ -138,7 +145,7 @@ export function runLandingLeg({ env, lander, guidance, mode, massDryKg, state, t
   const refined = knots.slice(0, -1);
   if (hi.elapsedSeconds > refined.at(-1).elapsedSeconds) refined.push({ elapsedSeconds: hi.elapsedSeconds, state: hi.state });
   else refined[refined.length - 1] = { elapsedSeconds: hi.elapsedSeconds, state: hi.state };
-  return { knots: refined, state: new Float64Array(hi.state), time: hi.elapsedSeconds, stop: predicate(hi.state) ?? hiReason ?? reason, stats };
+  return { knots: refined, state: new Float64Array(hi.state), time: hi.elapsedSeconds, stop: predicate(hi.state) ?? hiReason ?? reason, stats, bracketSeconds: hi.elapsedSeconds - lo.elapsedSeconds };
 }
 const zero = () => ({ acceptedSteps: 0, rejectedSteps: 0, functionEvaluations: 0, minStepSeconds: 0, maxStepSeconds: 0 });
 

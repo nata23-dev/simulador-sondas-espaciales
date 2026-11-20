@@ -1,15 +1,16 @@
 import * as THREE from 'three';
 
 const NOMBRES = { Jupiter: 'Júpiter' };
+// 14.1: color identificativo de cada cuerpo (presentación). Coincide con los tokens --body-* de theme.css.
 const COLORES_MARCADOR = {
-  Mercurio: '#b5bac2',
-  Venus: '#e6c998',
-  Tierra: '#6aa8ff',
-  Marte: '#e2815a',
-  Jupiter: '#dab894',
-  Saturno: '#e0cb9d',
-  Urano: '#99dfe4',
-  Neptuno: '#6c8ff2',
+  Mercurio: '#a88bc9',
+  Venus: '#d9a443',
+  Tierra: '#35b4e8',
+  Marte: '#d97842',
+  Jupiter: '#e3a68c',
+  Saturno: '#dcc78f',
+  Urano: '#7fd8e2',
+  Neptuno: '#7b97f2',
   Io: '#e3c261',
   Titan: '#d99b4e',
   Triton: '#d8cfd2',
@@ -47,6 +48,7 @@ export function crearEtiquetasPlanetas(
 
     const etiqueta = document.createElement('span');
     etiqueta.className = 'planet-label';
+    etiqueta.style.setProperty('--marker-color', COLORES_MARCADOR[nombre] ?? '#cfd3da');
     etiqueta.textContent = NOMBRES[nombre] ?? nombre;
     etiqueta.hidden = true;
     capa.append(etiqueta);
@@ -62,6 +64,7 @@ export function crearEtiquetasPlanetas(
 
   const etiquetaSol = document.createElement('span');
   etiquetaSol.className = 'planet-label';
+  etiquetaSol.style.setProperty('--marker-color', COLORES_MARCADOR.Sol);
   etiquetaSol.textContent = 'Sol';
   etiquetaSol.hidden = true;
   capa.append(etiquetaSol);
@@ -128,7 +131,8 @@ export function crearEtiquetasPlanetas(
       capa.append(marcadorSat);
 
       const etiquetaSat = document.createElement('span');
-      etiquetaSat.className = 'planet-label';
+      etiquetaSat.className = 'planet-label planet-label--moon';
+      etiquetaSat.style.setProperty('--marker-color', COLORES_MARCADOR[key] ?? '#d8d0c0');
       etiquetaSat.textContent = sat.meta.name;
       etiquetaSat.hidden = true;
       capa.append(etiquetaSat);
@@ -311,7 +315,7 @@ export function crearEtiquetasPlanetas(
     const limite = ancho < 660 ? 5 : 8;
     for (const candidato of candidatos) {
       const esPrioritario = candidato.esProtagonista || candidato.nombre === hoverActualId;
-      const umbralX = modoPrimeraPersona && esPrioritario ? 46 : 76;
+      const umbralX = modoPrimeraPersona && esPrioritario ? 46 : 92;
       const solapa = !esPrioritario && (ocupados.length >= limite || ocupados.some(pos =>
         Math.abs(pos.x - candidato.x) < umbralX && Math.abs(pos.y - candidato.y) < 20));
       candidato.elemento.hidden = solapa;

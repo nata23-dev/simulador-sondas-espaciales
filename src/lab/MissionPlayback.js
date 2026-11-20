@@ -113,7 +113,7 @@ export function sampleMissionExecution(execution, elapsedSeconds, { side = 'post
   };
 }
 
-export function createPlaybackClock(durationSeconds) {
+export function createPlaybackClock(durationSeconds, { maxRate = 86400 } = {}) {
   if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) throw Error('Duración de reproducción inválida.');
   let elapsedSeconds = 0, rate = 3600, direction = 1, playing = false, beforeManeuver = true, finished = false;
   const snapshot = () => Object.freeze({ elapsedSeconds, rate, direction, playing, beforeManeuver, finished });
@@ -122,7 +122,7 @@ export function createPlaybackClock(durationSeconds) {
     play() { if (elapsedSeconds >= durationSeconds && direction > 0) { playing = false; finished = true; }
       else { playing = true; finished = false; } return snapshot(); },
     pause() { playing = false; return snapshot(); },
-    setRate(value) { if (!Number.isFinite(value) || value <= 0 || value > 86400) throw Error('Velocidad temporal inválida.');
+    setRate(value) { if (!Number.isFinite(value) || value <= 0 || value > maxRate) throw Error('Velocidad temporal inválida.');
       rate = value; return snapshot(); },
     setDirection(value) { if (![1, -1].includes(value)) throw Error('Dirección de reproducción inválida.');
       direction = value; return snapshot(); },

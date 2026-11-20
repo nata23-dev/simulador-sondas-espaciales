@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { crearPlaneta } from './PlanetFactory.js';
+import { registerRenderer, reportFrame } from './QualityProfile.js';
 import { crearLunasPlanetarias, establecerInspeccionVisualIo } from './MoonVisuals.js';
 import { crearControladorCamara } from './CameraController.js';
 import { crearSol } from './Sun.js';
@@ -36,10 +37,16 @@ const PLANETAS = [
   { nombre: 'Neptuno', radio: 2.1, orbitaAU: 30.070, color: 0x4269ed }
 ];
 
-function crearReferenciaOrbital(radio, interior) {
+// 14.1: color de presentación de cada órbita de referencia (identifica el cuerpo; no altera la geometría ilustrativa).
+const COLORES_ORBITA = Object.freeze({
+  Mercurio: 0xa88bc9, Venus: 0xd9a443, Tierra: 0x35b4e8, Marte: 0xd97842,
+  Jupiter: 0xe3a68c, Saturno: 0xdcc78f, Urano: 0x7fd8e2, Neptuno: 0x7b97f2
+});
+
+function crearReferenciaOrbital(radio, interior, colorHex = 0x7d9cae) {
   const puntos = [];
   const colores = [];
-  const color = new THREE.Color(0x7d9cae);
+  const color = new THREE.Color(colorHex);
   const muestras = 192;
 
   for (let i = 0; i <= muestras; i++) {
@@ -52,7 +59,8 @@ function crearReferenciaOrbital(radio, interior) {
 
   const geometria = new THREE.BufferGeometry().setFromPoints(puntos);
   geometria.setAttribute('color', new THREE.Float32BufferAttribute(colores, 3));
-  const opacidadBase = interior ? 0.088 : 0.125;
+  // 14 y 14.1: órbitas de referencia con el color de cada cuerpo y más legibles (presentación; la geometría ilustrativa no cambia).
+  const opacidadBase = interior ? 0.3 : 0.36;
   const orbita = new THREE.Line(geometria, new THREE.LineBasicMaterial({
     vertexColors: true,
     transparent: true,
@@ -141,7 +149,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     antialias: true
   });
 
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  registerRenderer(renderer); // 15: relación de píxeles según el perfil de calidad (tope 2, como antes en «Alta»)
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -169,7 +177,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
 
   for (const planeta of PLANETAS) {
     const orbita = crearReferenciaOrbital(
-      UNIDADES_POR_AU * planeta.orbitaAU, planeta.orbitaAU < 2
+      UNIDADES_POR_AU * planeta.orbitaAU, planeta.orbitaAU < 2, COLORES_ORBITA[planeta.nombre]
     );
 
     scene.add(orbita);
@@ -212,8 +220,19 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       if (herramientas?.getClientRects().length) {
         right = Math.min(right, herramientas.getBoundingClientRect().left - lienzo.left - 8);
       }
+    } else if (!movil) {
+      // 14.1: en escritorio la barra de herramientas es una columna a la derecha; el margen deja sitio a medio rótulo.
+      const herramientas = document.querySelector('#workspace-dock');
+      if (herramientas?.getClientRects().length) {
+        right = Math.min(right, Math.max(ancho * 0.6, herramientas.getBoundingClientRect().left - lienzo.left - 56));
+      }
     }
     let bottom = Math.max(top + 80, Math.min(alto - 24, tiempo.top - lienzo.top - 20));
+    // 14.1: la portada de misiones destacadas ocupa el margen izquierdo; el encuadre usa el espacio libre a su derecha.
+    const destacadas = document.querySelector('#featured-panel:not([hidden]):not([data-collapsed="true"])');
+    if (!movil && destacadas?.getClientRects().length) {
+      left = Math.min(Math.max(left, destacadas.getBoundingClientRect().right - lienzo.left + 24), ancho - 260);
+    }
     const inspector = document.querySelector('#context-inspector');
     if (inspector && inspector.dataset.state !== 'closed' && inspector.getClientRects().length) {
       const rect = inspector.getBoundingClientRect();
@@ -784,6 +803,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     requestAnimationFrame(animar);
     const delta = Math.max((tiempo - tiempoAnterior) / 1000, 0);
     tiempoAnterior = tiempo;
+    reportFrame(delta);
     const dtClamped = Math.min(delta, 0.1);
 
     for (const objeto of objetos.values()) objeto.actualizarGiro(dtClamped);

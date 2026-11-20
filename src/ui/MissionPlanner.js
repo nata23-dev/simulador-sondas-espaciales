@@ -18,7 +18,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">03 / PLANIFICADOR</span><h3>Condiciones de misión</h3></div>
       <div class="lab-panel-scroll">
         <p class="mission-intro">Salida desde una órbita terrestre circular existente. La fase y el plano se eligen para apuntar al encuentro; el lanzamiento y su delta-v no están incluidos.</p>
-        <label class="lab-field">Sonda del Hangar<input id="mission-probe" readonly></label>
+        <label class="lab-field">Sonda activa<input id="mission-probe" readonly></label>
         <label class="lab-field">Destino<select id="mission-destination"></select></label>
         <label class="lab-field">Objetivo<select id="mission-objective"><option value="approach">Aproximación lunar nominal</option><option value="flyby">Sobrevuelo lunar propuesto</option></select></label>
         <label class="lab-field">Altitud de órbita terrestre inicial (km)<input id="mission-altitude" type="number" min="200" max="150000" step="10" value="200"></label>

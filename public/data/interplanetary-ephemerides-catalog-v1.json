@@ -1,0 +1,220 @@
+{
+  "catalogVersion": 1,
+  "datasets": [
+    {
+      "id": "ip-planets-inner-2026-2031",
+      "file": "data/interplanetary/ip-planets-inner-2026-2031.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "startJdTdb": 2461362.5,
+        "endJdTdb": 2463018.5
+      },
+      "bodyCoverage": {
+        "199": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2463018.5
+        },
+        "299": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2463018.5
+        },
+        "399": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2463018.5
+        },
+        "499": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2463018.5
+        }
+      },
+      "cadenceSeconds": 86400,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "ip-planets-inner-2031-2036",
+      "file": "data/interplanetary/ip-planets-inner-2031-2036.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "startJdTdb": 2463018.5,
+        "endJdTdb": 2464693.5
+      },
+      "bodyCoverage": {
+        "199": {
+          "startJdTdb": 2463018.5,
+          "endJdTdb": 2464693.5
+        },
+        "299": {
+          "startJdTdb": 2463018.5,
+          "endJdTdb": 2464693.5
+        },
+        "399": {
+          "startJdTdb": 2463018.5,
+          "endJdTdb": 2464693.5
+        },
+        "499": {
+          "startJdTdb": 2463018.5,
+          "endJdTdb": 2464693.5
+        }
+      },
+      "cadenceSeconds": 86400,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "ip-planets-inner-2036-2041",
+      "file": "data/interplanetary/ip-planets-inner-2036-2041.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "startJdTdb": 2464693.5,
+        "endJdTdb": 2466520.5
+      },
+      "bodyCoverage": {
+        "199": {
+          "startJdTdb": 2464693.5,
+          "endJdTdb": 2466520.5
+        },
+        "299": {
+          "startJdTdb": 2464693.5,
+          "endJdTdb": 2466520.5
+        },
+        "399": {
+          "startJdTdb": 2464693.5,
+          "endJdTdb": 2466520.5
+        },
+        "499": {
+          "startJdTdb": 2464693.5,
+          "endJdTdb": 2466520.5
+        }
+      },
+      "cadenceSeconds": 86400,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "ip-planets-inner-2041-2046",
+      "file": "data/interplanetary/ip-planets-inner-2041-2046.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "199",
+        "299",
+        "399",
+        "499"
+      ],
+      "coverage": {
+        "startJdTdb": 2466520.5,
+        "endJdTdb": 2468346.5
+      },
+      "bodyCoverage": {
+        "199": {
+          "startJdTdb": 2466520.5,
+          "endJdTdb": 2468346.5
+        },
+        "299": {
+          "startJdTdb": 2466520.5,
+          "endJdTdb": 2468346.5
+        },
+        "399": {
+          "startJdTdb": 2466520.5,
+          "endJdTdb": 2468346.5
+        },
+        "499": {
+          "startJdTdb": 2466520.5,
+          "endJdTdb": 2468346.5
+        }
+      },
+      "cadenceSeconds": 86400,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    },
+    {
+      "id": "ip-planets-outer-2026-2046",
+      "file": "data/interplanetary/ip-planets-outer-2026-2046.json",
+      "format": "horizons-compact-v1",
+      "formatVersion": 1,
+      "bodyIds": [
+        "599",
+        "699",
+        "799",
+        "899"
+      ],
+      "coverage": {
+        "startJdTdb": 2461362.5,
+        "endJdTdb": 2468346.5
+      },
+      "bodyCoverage": {
+        "599": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2468346.5
+        },
+        "699": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2468346.5
+        },
+        "799": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2468346.5
+        },
+        "899": {
+          "startJdTdb": 2461362.5,
+          "endJdTdb": 2468346.5
+        }
+      },
+      "cadenceSeconds": 345600,
+      "frameId": "ICRF_ECLIPTIC_J2000",
+      "origin": "SUN_CENTER",
+      "fileUnits": {
+        "position": "km",
+        "velocity": "km/s"
+      },
+      "source": "NASA/JPL Horizons",
+      "sourceVersion": "1.2"
+    }
+  ]
+}

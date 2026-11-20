@@ -4,7 +4,7 @@
 // con el guiado en lazo cerrado de BodyLandingDynamics; nada está predefinido. El contacto es un evento numérico |r| = R.
 import { CAPABILITY, landingCapability, localFrameDescriptor } from './CelestialBodyMissionRegistry.js';
 import { DEFAULT_LANDING_GUIDANCE, DEFAULT_LANDING_LIMITS, LandingError, createLandingEnvironment, descentPhaseOf, initialOrbitState, landingCommand,
-  orbitalSummary, runLandingLeg, surfaceGravityMS2, surfaceKinematics } from './BodyLandingDynamics.js';
+  orbitalSummary, runLandingLeg, surfaceGravityMS2, surfaceKinematics, CONTACT_PREDICATE_KM, CONTACT_BRACKET_SECONDS, LANDING_ABS_TOL, LANDING_REL_TOL } from './BodyLandingDynamics.js';
 import { landerStructuralMassKg, landerWetMassKg, massFlowAtThrottle, validateLander } from './BodyLandingVehicle.js';
 import { sampleIntegratedState } from './MissionPlayback.js';
 
@@ -39,6 +39,16 @@ export function validateLandingOptions(options) {
   return issues;
 }
 
+// 12F.1 (OBS-12F-01): informe separado de las tolerancias del contacto; ninguna sustituye a otra.
+export function contactToleranceReport(contact, contactInfo, env) {
+  if (!contact || !contactInfo) return null;
+  const r = contactInfo.positionKm, v = contactInfo.velocityKmS, rn = Math.hypot(r[0], r[1], r[2]);
+  const radialSpeedKmS = Math.abs((r[0] * v[0] + r[1] * v[1] + r[2] * v[2]) / rn), bracket = contact.bracketSeconds;
+  return { predicateToleranceKm: CONTACT_PREDICATE_KM, bracketLimitSeconds: CONTACT_BRACKET_SECONDS, bracketSeconds: bracket, radialSpeedKmS,
+    spatialBoundKm: Number.isFinite(bracket) ? radialSpeedKmS * bracket : null, observedResidualKm: rn - env.radiusKm,
+    integrationTolerance: { absPositionKm: LANDING_ABS_TOL[0], rel: LANDING_REL_TOL },
+    note: 'El predicado (1e-9 km) solo fija que el estado está bajo R; la precisión espacial la limita |v_r|·Δt del intervalo de bisección, y el error de integración lo fijan las tolerancias DOPRI54.' };
+}
 export function simulateLanding({ profile, lander, payloadMassKg, options }) {
   const capability = landingCapability(profile);
   if (![CAPABILITY.operational, CAPABILITY.experimental].includes(capability.state)) throw new LandingError('NOT_AVAILABLE', capability.reason, { capability });
@@ -72,7 +82,7 @@ export function simulateLanding({ profile, lander, payloadMassKg, options }) {
     const t0 = t, run = runLandingLeg({ env, lander, guidance, mode, massDryKg: mDry, state, t0, t1: t + duration, maxStepSeconds, stopWhen });
     append(run); state = run.state; t = run.time;
     segments.push({ id, label, mode, startSeconds: t0, endSeconds: t, massStartKg: knots.find(k => k.elapsedSeconds >= t0)?.massKg ?? m0, massEndKg: state[6] });
-    if (run.stop === 'contact') contact = { elapsedSeconds: t };
+    if (run.stop === 'contact') contact = { elapsedSeconds: t, bracketSeconds: run.bracketSeconds ?? null };
     if (run.stop === 'depleted' && lander.propellantMassKg > 0) { state = Float64Array.from(state); state[6] = mDry; knots.at(-1).massKg = mDry; depletedAt ??= t; event('depletion', 'depletion', 'Propelente del módulo agotado (motor apagado)'); }
     return run.stop;
   }
@@ -176,5 +186,5 @@ export function simulateLanding({ profile, lander, payloadMassKg, options }) {
     outcome, contactClass, reasons, contact: contactInfo, failure, capability,
     masses: { wetKg: m0, dryKg: mDry, propellantKg: m0 - mDry, structuralKg: landerStructuralMassKg(lander) },
     totals: { propulsiveDeltaVMS: last.dvAccKmS * 1000, propellantConsumedKg: m0 - last.massKg },
-    diagnostics: { ...stats, thrustToWeightPdi, saturatedLate, maxThrottle, absTol: [1e-7, 1e-7, 1e-7, 1e-10, 1e-10, 1e-10, 1e-6, 1e-12], relTol: 1e-10 } };
+    diagnostics: { ...stats, thrustToWeightPdi, saturatedLate, maxThrottle, absTol: [1e-7, 1e-7, 1e-7, 1e-10, 1e-10, 1e-10, 1e-6, 1e-12], relTol: 1e-10, contactTolerances: contactToleranceReport(contact, contactInfo, env) } };
 }

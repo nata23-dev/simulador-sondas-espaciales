@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { registerRenderer } from '../graphics/QualityProfile.js';
 
 const SCALE = 1 / 10000;
 const toScene = position => new THREE.Vector3(position[0] * SCALE, position[2] * SCALE, -position[1] * SCALE);
@@ -10,7 +11,7 @@ export function createMissionTrajectoryView(host, onSelect) {
   const camera = new THREE.PerspectiveCamera(46, 1, 0.01, 300);
   camera.position.set(0, 21, 55);
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const unregisterQuality = registerRenderer(renderer);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.append(renderer.domElement);
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -127,7 +128,7 @@ export function createMissionTrajectoryView(host, onSelect) {
       renderer.domElement.removeEventListener('pointerup', onPointerUp);
       controls.dispose(); clearTrajectory();
       earth.geometry.dispose(); earth.material.dispose(); earthHalo.geometry.dispose(); earthHalo.material.dispose();
-      renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+      unregisterQuality(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
     }
   };
 }

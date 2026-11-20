@@ -196,10 +196,11 @@ export function responseHeader(result, bodyId) {
   return { solutionId: /\{source:\s*([^}]+)\}/i.exec(targetLine)?.[1]?.trim() ?? null };
 }
 
-async function fetchBody(config, body, { fetchImpl, sleep, contact, onRequest }) {
+async function fetchBody(config, body, { fetchImpl, sleep, contact, clientName, onRequest }) {
   const parameters = queryParameters(config, body.id);
   const url = `${HORIZONS_API}?${new URLSearchParams(parameters)}`;
-  const userAgent = `simulador-sondas-espaciales/1B (contact: ${contact})`;
+  // 12G: un identificador genérico de cliente evita enviar datos personales; el correo sigue siendo admitido.
+  const userAgent = contact ? `simulador-sondas-espaciales/1B (contact: ${contact})` : `simulador-sondas-espaciales/${clientName}`;
   for (let attempt = 0; attempt <= config.maxRetries; attempt++) {
     await onRequest(attempt);
     let response;
@@ -256,11 +257,12 @@ function serializeCompactDataset(dataset) {
 
 /** Prepara datos sin escribir archivos; la red solo se usa al invocarla. */
 export async function prepareHorizonsDataset(input, { fetchImpl = globalThis.fetch,
-  sleep = wait, now = () => new Date(), contact } = {}) {
+  sleep = wait, now = () => new Date(), contact, clientName } = {}) {
   const config = validateAcquisitionConfig(input);
   if (typeof fetchImpl !== 'function' || typeof sleep !== 'function') throw new TypeError('fetchImpl y sleep deben ser funciones.');
-  if (typeof contact !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) {
-    throw new TypeError('Se requiere un correo de contacto configurado por el responsable.');
+  const genericClient = contact === undefined && typeof clientName === 'string' && /^[A-Za-z0-9._ ()-]{3,60}$/.test(clientName);
+  if (!genericClient && (typeof contact !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact))) {
+    throw new TypeError('Se requiere un correo de contacto configurado por el responsable o un identificador genérico de cliente.');
   }
   const configSha256 = configDigest(config);
   const states = [];
@@ -271,7 +273,7 @@ export async function prepareHorizonsDataset(input, { fetchImpl = globalThis.fet
   let apiVersion = undefined;
   const isCompact = config.format === 'horizons-compact-v1';
   for (const body of config.bodies) {
-    const data = await fetchBody(config, body, { fetchImpl, sleep, contact,
+    const data = await fetchBody(config, body, { fetchImpl, sleep, contact, clientName,
       onRequest: async () => { if (requests++ > 0) await sleep(config.minIntervalMs); } });
     const acquiredAtUtc = now().toISOString();
     if (apiVersion !== undefined && apiVersion !== data.apiVersion) {

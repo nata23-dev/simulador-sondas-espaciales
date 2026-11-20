@@ -1,0 +1,173 @@
+{
+  "datasetId": "ip-planets-inner-2031-2036",
+  "configSha256": "3156017a01d5b2541a3b062cfa95c992c53bb972cfb619be4846e473b1550275",
+  "sha256": "ca7fc94d5e3a2528519b361bc976136bc10b86df2cf99dfdaaf2c466fc67da24",
+  "catalogEntry": {
+    "id": "ip-planets-inner-2031-2036",
+    "file": "data/interplanetary/ip-planets-inner-2031-2036.json",
+    "format": "horizons-compact-v1",
+    "formatVersion": 1,
+    "bodyIds": [
+      "199",
+      "299",
+      "399",
+      "499"
+    ],
+    "coverage": {
+      "startJdTdb": 2463018.5,
+      "endJdTdb": 2464693.5
+    },
+    "bodyCoverage": {
+      "199": {
+        "startJdTdb": 2463018.5,
+        "endJdTdb": 2464693.5
+      },
+      "299": {
+        "startJdTdb": 2463018.5,
+        "endJdTdb": 2464693.5
+      },
+      "399": {
+        "startJdTdb": 2463018.5,
+        "endJdTdb": 2464693.5
+      },
+      "499": {
+        "startJdTdb": 2463018.5,
+        "endJdTdb": 2464693.5
+      }
+    },
+    "cadenceSeconds": 86400,
+    "frameId": "ICRF_ECLIPTIC_J2000",
+    "origin": "SUN_CENTER",
+    "fileUnits": {
+      "position": "km",
+      "velocity": "km/s"
+    },
+    "source": "NASA/JPL Horizons",
+    "sourceVersion": "1.2"
+  },
+  "apiVersion": "1.2",
+  "solutionIds": [
+    {
+      "bodyId": "199",
+      "solutionId": "DE441"
+    },
+    {
+      "bodyId": "299",
+      "solutionId": "DE441"
+    },
+    {
+      "bodyId": "399",
+      "solutionId": "DE441"
+    },
+    {
+      "bodyId": "499",
+      "solutionId": "mar099"
+    }
+  ],
+  "responses": [
+    {
+      "bodyId": "199",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'199'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'2031-06-01'",
+        "STOP_TIME": "'2036-01-01'",
+        "STEP_SIZE": "'1 d'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-11-19T01:44:57.633Z",
+      "apiVersion": "1.2",
+      "solutionId": "DE441",
+      "responseSha256": "22747d8ce4d3c5251212f0712fbee2fc293529275a482fd7fe114618206e7335"
+    },
+    {
+      "bodyId": "299",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'299'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'2031-06-01'",
+        "STOP_TIME": "'2036-01-01'",
+        "STEP_SIZE": "'1 d'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-11-19T01:44:59.533Z",
+      "apiVersion": "1.2",
+      "solutionId": "DE441",
+      "responseSha256": "473de7bf0595a718d41a9b5bc5172d174256fd08022c6011accbf339a79638f4"
+    },
+    {
+      "bodyId": "399",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'399'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'2031-06-01'",
+        "STOP_TIME": "'2036-01-01'",
+        "STEP_SIZE": "'1 d'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-11-19T01:45:01.437Z",
+      "apiVersion": "1.2",
+      "solutionId": "DE441",
+      "responseSha256": "a9de11ce231f2322607a00832e815cecda4c8caacc85ea99e92e12f4926e618b"
+    },
+    {
+      "bodyId": "499",
+      "parameters": {
+        "format": "json",
+        "OBJ_DATA": "'NO'",
+        "MAKE_EPHEM": "'YES'",
+        "EPHEM_TYPE": "'VECTORS'",
+        "COMMAND": "'499'",
+        "CENTER": "'500@10'",
+        "START_TIME": "'2031-06-01'",
+        "STOP_TIME": "'2036-01-01'",
+        "STEP_SIZE": "'1 d'",
+        "TIME_TYPE": "'TDB'",
+        "REF_PLANE": "'ECLIPTIC'",
+        "REF_SYSTEM": "'ICRF'",
+        "OUT_UNITS": "'KM-S'",
+        "VEC_TABLE": "'2'",
+        "VEC_LABELS": "'NO'",
+        "VEC_CORR": "'NONE'",
+        "CSV_FORMAT": "'YES'"
+      },
+      "acquiredAtUtc": "2026-11-19T01:45:03.338Z",
+      "apiVersion": "1.2",
+      "solutionId": "mar099",
+      "responseSha256": "ecabc53326c8c6f0fc3ba25a75b6e5c1dc570d692551e6999f444e61cb8c7aa6"
+    }
+  ]
+}

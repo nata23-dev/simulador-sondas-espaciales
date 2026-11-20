@@ -93,4 +93,23 @@ export function crearLayoutTemporal() {
   };
   new MutationObserver(updatePause).observe(toast, { attributes: true, attributeFilter: ['hidden'] });
   updatePause();
+
+  // 14.1: indicador de estado del tiempo (reproduciendo / en pausa). Solo lee la etiqueta ya mantenida por cada control.
+  function stateChip(main, readPlaying, sources) {
+    const chip = document.createElement('span');
+    chip.className = 'temporal-state'; chip.setAttribute('aria-hidden', 'true');
+    main.prepend(chip);
+    const update = () => {
+      const playing = readPlaying();
+      chip.dataset.state = playing ? 'playing' : 'paused';
+      chip.textContent = playing ? 'En curso' : 'En pausa';
+    };
+    const observer = new MutationObserver(update);
+    for (const [node, options] of sources) if (node) observer.observe(node, options);
+    update();
+  }
+  const playLabel = pick('#play-label');
+  stateChip(solarMain, () => playLabel?.textContent.trim() === 'Pausar', [[playLabel, { childList: true, characterData: true, subtree: true }]]);
+  const histPlay = pick('#hist-play-btn');
+  stateChip(historicalMain, () => /^Pausar/.test(histPlay?.getAttribute('aria-label') ?? ''), [[histPlay, { attributes: true, attributeFilter: ['aria-label'] }]]);
 }

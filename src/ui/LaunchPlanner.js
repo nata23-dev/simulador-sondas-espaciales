@@ -16,8 +16,8 @@ export function createLaunchPlanner({ host, onExecuteRequest, onInvalidated }) {
   host.innerHTML = `
     <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">LANZAMIENTO</span><h3>Ascenso desde la Tierra</h3></div>
       <div class="lab-panel-scroll">
-        <p class="mission-intro">Lanzador de dos etapas independiente del Hangar. La carga útil es la sonda actual con su masa húmeda real. Parámetros ilustrativos, no un cohete real.</p>
-        <label class="lab-field">Carga útil (Hangar)<input id="ln-payload" readonly></label>
+        <p class="mission-intro">Lanzador de dos etapas independiente del Hangar. La carga útil es la sonda activa (Voyager, Cassini, Dawn o Juno) con su masa húmeda real. Parámetros ilustrativos, no un cohete real.</p>
+        <label class="lab-field">Carga útil (sonda activa)<input id="ln-payload" readonly></label>
         <details class="ft-section" open><summary>Sitio y fecha</summary>
           <label class="lab-field">Latitud geodésica (°)<input id="ln-lat" type="number" min="-90" max="90" step="0.1" value="28.5"></label>
           <label class="lab-field">Longitud (°)<input id="ln-lon" type="number" min="-180" max="180" step="0.1" value="-80.6"></label>

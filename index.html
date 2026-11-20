@@ -28,6 +28,14 @@
     <symbol id="icon-skip-forward" viewBox="0 0 24 24"><path d="M18 6v12M6 6l9 6-9 6z"/></symbol>
     <symbol id="icon-reverse" viewBox="0 0 24 24"><path d="m12 6-8 6 8 6zM20 6l-8 6 8 6z"/></symbol>
     <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="icon-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.2"/></symbol>
+    <symbol id="icon-probe" viewBox="0 0 24 24"><path d="M12 3.5 19.4 7.8v8.4L12 20.5l-7.4-4.3V7.8z"/><circle cx="12" cy="12" r="2.2"/></symbol>
+    <symbol id="icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></symbol>
+    <symbol id="icon-planet" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.5"/><path d="M3.5 15.5c2-1.6 9.5-6.4 17-7"/></symbol>
+    <symbol id="icon-rocket" viewBox="0 0 24 24"><path d="M12 2.8c3 2.4 4.4 5.7 4.4 9.6v4.1H7.6v-4.1c0-3.9 1.4-7.2 4.4-9.6z"/><circle cx="12" cy="9.6" r="1.7"/><path d="M7.6 13.2 5 16.5v3l2.6-1.6M16.4 13.2l2.6 3.3v3l-2.6-1.6M10.2 19.4 12 21.6l1.8-2.2"/></symbol>
+    <symbol id="icon-chevrons-left" viewBox="0 0 24 24"><path d="m11 6-6 6 6 6M19 6l-6 6 6 6"/></symbol>
   </svg>
 
   <!-- La escena ocupa el área de trabajo; los paneles se colocan encima del lienzo. -->
@@ -49,7 +57,7 @@
           <span class="mode-label-full">Misiones históricas</span><span class="mode-label-short">Voyager 77–26</span>
         </button>
         <button type="button" data-mode-btn="experimental" aria-pressed="false" title="Simulación orbital experimental (Sonda Experimental 01 · DOPRI54)">
-          <span class="mode-label-full">Experimental</span><span class="mode-label-short">Exp.</span>
+          <span class="mode-label-full">Laboratorio</span><span class="mode-label-short">Lab.</span>
         </button>
       </nav>
 
@@ -149,6 +157,16 @@
                   <button id="scale-scientific-option" type="button" aria-pressed="true">Científica 1:1</button>
                   <button id="scale-exploratory-option" type="button" aria-pressed="false">Exploratoria</button>
                 </div>
+              </div>
+              <div class="menu-section" id="quality-controls">
+                <span class="menu-heading">Calidad gráfica</span>
+                <div class="menu-pill-group menu-pill-group--quad" role="group" aria-label="Perfil de calidad gráfica">
+                  <button type="button" data-quality="auto" aria-pressed="true">Automática</button>
+                  <button type="button" data-quality="alto" aria-pressed="false">Alta</button>
+                  <button type="button" data-quality="medio" aria-pressed="false">Media</button>
+                  <button type="button" data-quality="bajo" aria-pressed="false">Baja</button>
+                </div>
+                <small class="menu-note" data-quality-status>Resolución de render ×1</small>
               </div>
               <div class="menu-actions menu-actions-grid">
                 <button id="region-inner-button" type="button">Sistema interior</button>

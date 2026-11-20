@@ -1,4 +1,5 @@
-import { COMPONENTS, getComponent } from './ComponentCatalog.js';
+import { ALL_COMPONENTS, getComponent, slotAccepts, needsAdapter, fitsEnvelope, adapterMassKg, maxDimensionM, interfaceOf } from './ComponentCatalog.js';
+import { HISTORICAL_PROBES } from './HeritageCatalog.js';
 
 export const DESIGN_FORMAT = 'simulador-sondas-probe-design';
 export const DESIGN_VERSION = 1;
@@ -36,6 +37,26 @@ export const PRESETS = Object.freeze([
   ]) }
 ]);
 
+// 15: configuraciones históricas, separadas de las iniciales ilustrativas (que conservan su lista y sus índices).
+export const HISTORICAL_PRESETS = Object.freeze(HISTORICAL_PROBES.map(probe => Object.freeze({
+  id: `hist-${probe.id}`, name: `${probe.name} (configuración histórica)`, historical: probe.id, create: () => historicalDesign(probe.id) })));
+
+/** Diseño editable que reproduce la configuración histórica documentada (piezas de herencia, propelente de lanzamiento). */
+export function historicalDesign(probeId) {
+  const probe = HISTORICAL_PROBES.find(item => item.id === probeId);
+  if (!probe) throw Error('Sonda histórica desconocida.');
+  const design = { ...newDesign(probe.name, probe.coreId), basedOn: probe.id };
+  design.parts = probe.parts.map(([socketId, componentId, fuelKg], index) => ({
+    id: `hist-${probe.id}-${index + 1}`, socketId, componentId,
+    ...(getComponent(componentId).category === 'tank' ? { fuelKg: fuelKg ?? getComponent(componentId).fuelCapacityKg } : {})
+  }));
+  const issues = validateDesign(design);
+  if (issues.length) throw Error(`Configuración histórica inconsistente: ${issues.join(' ')}`);
+  return design;
+}
+
+const HISTORICAL_IDS = new Set(HISTORICAL_PROBES.map(item => item.id));
+
 export function validateDesign(value) {
   const errors = [];
   if (!value || typeof value !== 'object' || Array.isArray(value)) return ['El archivo no contiene un diseño válido.'];
@@ -45,6 +66,7 @@ export function validateDesign(value) {
   if (value.coreId !== null && typeof value.coreId !== 'string') errors.push('Identificador de estructura inválido.');
   const core = value.coreId === null ? null : getComponent(value.coreId);
   if (value.coreId !== null && core?.category !== 'structure') errors.push('Estructura principal desconocida.');
+  if (value.basedOn !== undefined && !HISTORICAL_IDS.has(value.basedOn)) errors.push('Referencia histórica desconocida.');
   if (!Array.isArray(value.parts) || value.parts.length > 30) return [...errors, 'La lista de piezas no es válida.'];
   if (!core && value.parts.length) errors.push('Las piezas necesitan una estructura principal.');
   const ids = new Set(), sockets = new Set();
@@ -57,10 +79,16 @@ export function validateDesign(value) {
     if (typeof entry.id !== 'string' || !/^[\w-]{1,80}$/.test(entry.id) || ids.has(entry.id)) errors.push('Identificador de pieza duplicado o inválido.');
     ids.add(entry.id);
     if (!component || component.category === 'structure') { errors.push('Componente desconocido.'); continue; }
-    if (!socket || socket.category !== component.category) errors.push(`${component.name}: conexión incompatible (${entry.socketId ?? 'sin punto'}).`);
+    if (!socket || !slotAccepts(socket, component)) errors.push(`${component.name}: conexión incompatible (${entry.socketId ?? 'sin punto'}).`);
+    else {
+      // 15: compatibilidad dimensional (envolvente del punto) y mecánica (herraje; el adaptador es una decisión explícita).
+      if (!fitsEnvelope(socket, component)) errors.push(`${component.name}: ${maxDimensionM(component)} m exceden la envolvente de ${socket.envelopeM} m del punto «${socket.name}».`);
+      if (needsAdapter(socket, component) && entry.adapter !== true) errors.push(`${component.name}: el herraje «${interfaceOf(component)}» no coincide con «${interfaceOf(socket)}» del punto «${socket.name}»; requiere adaptador estructural.`);
+    }
+    if (entry.adapter !== undefined && (entry.adapter !== true || !socket || !needsAdapter(socket, component))) errors.push(`${component.name}: adaptador innecesario o inválido.`);
     if (sockets.has(entry.socketId)) errors.push(`Punto ${entry.socketId} ocupado por más de una pieza.`);
     sockets.add(entry.socketId);
-    attachedMass += component.dryMassKg;
+    attachedMass += component.dryMassKg + (entry.adapter ? adapterMassKg(component) : 0) + (component.rcsPropellantKg ?? 0);
     if (component.propellant) propellants.add(component.propellant);
     if (component.category === 'tank') {
       if (!Number.isFinite(entry.fuelKg) || entry.fuelKg < 0 || entry.fuelKg > component.fuelCapacityKg) errors.push(`${component.name}: combustible fuera de capacidad.`);
@@ -73,7 +101,7 @@ export function validateDesign(value) {
   return errors;
 }
 
-export function addPart(design, componentId, socketId) {
+export function addPart(design, componentId, socketId, { adapter = false } = {}) {
   const component = getComponent(componentId);
   if (!component) throw Error('Componente desconocido.');
   if (component.category === 'structure') {
@@ -82,8 +110,10 @@ export function addPart(design, componentId, socketId) {
     if (issues.length) throw Error(issues.join(' '));
     return next;
   }
+  const socket = getComponent(design.coreId)?.slots.find(item => item.id === socketId);
   const entry = { id: crypto.randomUUID(), componentId, socketId,
-    ...(component.category === 'tank' ? { fuelKg: component.fuelCapacityKg } : {}) };
+    ...(component.category === 'tank' ? { fuelKg: component.fuelCapacityKg } : {}),
+    ...(socket && slotAccepts(socket, component) && needsAdapter(socket, component) && adapter ? { adapter: true } : {}) };
   const next = { ...design, parts: [...design.parts.filter(part => part.socketId !== socketId), entry] };
   const issues = validateDesign(next);
   if (issues.length) throw Error(issues.join(' '));
@@ -97,10 +127,13 @@ export function planPartChange(design, componentId, socketId) {
   if (previousIssues.length) throw Error(previousIssues.join(' '));
   const component = getComponent(componentId);
   if (!component) throw Error('Componente desconocido.');
-  if (component.category === 'structure') return { component, socketId: null, conflicts: [] };
+  if (component.category === 'structure') return { component, socketId: null, conflicts: [], adapter: null };
   const core = getComponent(design.coreId);
   const socket = core?.slots.find(item => item.id === socketId);
-  if (!socket || socket.category !== component.category) throw Error(`${component.name}: conexión incompatible (${socketId ?? 'sin punto'}).`);
+  if (!socket || !slotAccepts(socket, component)) throw Error(`${component.name}: conexión incompatible (${socketId ?? 'sin punto'}).`);
+  if (!fitsEnvelope(socket, component)) throw Error(`${component.name}: ${maxDimensionM(component)} m exceden la envolvente de ${socket.envelopeM} m del punto «${socket.name}».`);
+  // 15: si el herraje no coincide, la interfaz debe ofrecer el adaptador con su masa estimada antes de instalar.
+  const adapter = needsAdapter(socket, component) ? { required: true, massKg: adapterMassKg(component), from: interfaceOf(component), to: interfaceOf(socket) } : null;
   const conflicts = component.propellant ? design.parts
     .filter(entry => entry.socketId !== socketId)
     .map(entry => ({ entry, component: getComponent(entry.componentId) }))
@@ -109,17 +142,27 @@ export function planPartChange(design, componentId, socketId) {
       entryId: item.entry.id, socketId: item.entry.socketId,
       componentId: item.component.id, name: item.component.name,
       propellant: item.component.propellant,
-      replacement: COMPONENTS.find(candidate => candidate.category === item.component.category
-        && candidate.propellant === component.propellant) ?? null
+      replacement: replacementFor(core, item.entry.socketId, item.component, component)
     })) : [];
-  return { component, socketId, conflicts };
+  return { component, socketId, conflicts, adapter };
+}
+
+// Pieza de la misma categoría con el propelente requerido que cabe en el punto. Prioridad: mismo programa que la pieza
+// elegida, después el de la pieza en conflicto y, por último, sin adaptador.
+function replacementFor(core, socketId, current, selected) {
+  const socket = core.slots.find(item => item.id === socketId);
+  const candidates = ALL_COMPONENTS.filter(candidate => candidate.category === current.category && candidate.propellant === selected.propellant
+    && slotAccepts(socket, candidate) && fitsEnvelope(socket, candidate));
+  const rank = candidate => (candidate.heritage === selected.heritage ? 0 : 4) + (candidate.heritage === current.heritage ? 0 : 2) + (needsAdapter(socket, candidate) ? 1 : 0);
+  return candidates.sort((a, b) => rank(a) - rank(b))[0] ?? null;
 }
 
 // Construye una única propuesta y la valida antes de devolverla. Si falla,
 // la referencia y el contenido del diseño original permanecen intactos.
-export function applyPartChange(design, componentId, socketId, resolution = 'none') {
+export function applyPartChange(design, componentId, socketId, resolution = 'none', { adapter = false } = {}) {
   const plan = planPartChange(design, componentId, socketId);
   if (plan.component.category === 'structure') return addPart(design, componentId);
+  if (plan.adapter && !adapter) throw Error(`${plan.component.name}: requiere un adaptador estructural (+${plan.adapter.massKg} kg estimados) entre «${plan.adapter.from}» y «${plan.adapter.to}».`);
   if (plan.conflicts.length && !['replace', 'remove'].includes(resolution)) {
     throw Error(`Propelente incompatible: ${plan.component.name} requiere ${plan.component.propellant}. Elige reemplazar o retirar los componentes en conflicto.`);
   }
@@ -129,12 +172,16 @@ export function applyPartChange(design, componentId, socketId, resolution = 'non
   }
   const conflictIds = new Set(plan.conflicts.map(item => item.entryId));
   const retained = design.parts.filter(entry => entry.socketId !== socketId && !conflictIds.has(entry.id));
+  const core = getComponent(design.coreId);
+  const adapterFor = (id, slotId) => needsAdapter(core.slots.find(item => item.id === slotId), getComponent(id)) ? { adapter: true } : {};
   const replacements = resolution === 'replace' ? plan.conflicts.map(item => ({
     id: crypto.randomUUID(), componentId: item.replacement.id, socketId: item.socketId,
-    ...(item.replacement.category === 'tank' ? { fuelKg: item.replacement.fuelCapacityKg } : {})
+    ...(item.replacement.category === 'tank' ? { fuelKg: item.replacement.fuelCapacityKg } : {}),
+    ...adapterFor(item.replacement.id, item.socketId)
   })) : [];
   const selected = { id: crypto.randomUUID(), componentId, socketId,
-    ...(plan.component.category === 'tank' ? { fuelKg: plan.component.fuelCapacityKg } : {}) };
+    ...(plan.component.category === 'tank' ? { fuelKg: plan.component.fuelCapacityKg } : {}),
+    ...(plan.adapter ? { adapter: true } : {}) };
   const next = { ...design, parts: [...retained, ...replacements, selected] };
   const issues = validateDesign(next);
   if (issues.length) throw Error(issues.join(' '));
@@ -149,8 +196,9 @@ export function parseDesign(text) {
   if (errors.length) throw Error(errors.join(' '));
   // Limita la representación persistida a campos conocidos.
   return { format: DESIGN_FORMAT, version: DESIGN_VERSION, id: parsed.id, name: parsed.name.trim(), coreId: parsed.coreId,
+    ...(parsed.basedOn !== undefined ? { basedOn: parsed.basedOn } : {}),
     parts: parsed.parts.map(p => ({ id: p.id, componentId: p.componentId, socketId: p.socketId,
-      ...(p.fuelKg !== undefined ? { fuelKg: p.fuelKg } : {}) })) };
+      ...(p.fuelKg !== undefined ? { fuelKg: p.fuelKg } : {}), ...(p.adapter === true ? { adapter: true } : {}) })) };
 }
 
 const STORAGE_KEY = 'probe-laboratory-designs-v1';
