@@ -95,6 +95,17 @@ Cambios de la etapa 15.1 ([detalle](STAGE15_1_NASA_FLEET.md)):
 - Planificador de misión completa: el grupo «2 · Vehículo» muestra solo la sonda activa (`#im-design`); se retiran `#im-module*`, `#im-lander` e `#im-landing`, y la pestaña «Descenso y aterrizaje».
 - Estado del modelo 3D `#lab-assembly-status[data-state=nasa|cargando|procedural]`: dorado si es el oficial, gris mientras carga y naranja si se usa el respaldo procedimental.
 
+Cambios de la etapa 16 ([detalle](STAGE16_COHERENCE.md)):
+
+- Barra de secciones del laboratorio en tres grupos numerados (`.lab-nav-group` con su rótulo `.lab-nav-step`): Elegir sonda, Planificar (un botón por modalidad, `data-planner-mode`) y Reproducir. Se retira la segunda fila `.lab-planner-modes`. El botón `.lab-guide-launch` (píldora dorada) va a la derecha. Por debajo de 1340 px la barra pasa a dos filas, y por debajo de 560 px el botón ocupa todo el ancho.
+- Tarjeta de bienvenida `.lab-welcome` (borde y fondo dorados suaves) en el Hangar.
+- Misión guiada `.lab-guide`: tarjeta fija abajo a la derecha (370 px; por debajo de 560 px ocupa el ancho, con altura máxima del 48 % de la ventana y desplazamiento), progreso con segmentos dorado/verde, estado con texto (`#lab-guide-status[data-state=done|hint|wait]`) y modo minimizado. El control indicado lleva `.lab-guide-target`: contorno dorado con pulso, sin pulso si se pide movimiento reducido.
+- Resultado esperado `.im-outcome[data-tone=ok|warn|idle]`: borde izquierdo verde o ámbar, siempre con texto. Se usa también en el consejo de Tierra–Luna (`#mission-probe-advice`).
+- «Misión completa»: pasos `.im-howto` y ajustes plegados en `details.im-advanced`.
+- Lanzamiento: selector `#ln-launcher` y nota `#ln-launcher-hint`.
+- Cabecera: el resumen `#lab-ctx-design` puede pasar a una segunda línea. Centro de Misión: en pantallas de más de 760 px, su fila superior no se parte en dos.
+- Se eliminan los selectores sin uso de 15/15.1 (`.lab-component*`, `.lab-part-*`, `.lab-replacement*`, `.lab-hangar-modes`, `#lab-landing`/`#ld-*`, `#lab-load-preset`, `#lab-import`, `#lab-export`, `[data-section="engineering"]`).
+
 ## Componentes y comportamiento
 
 | Componente | Implementación y regla que conservar |
