@@ -1,0 +1,240 @@
+{
+  "part": "all",
+  "startedAt": "2026-11-20T14:37:14.515Z",
+  "shots": [
+    "g1366_00_portada.png",
+    "g1366_01_guia_intro_hangar.png",
+    "g1366_02_guia_paso1_sonda.png",
+    "g1366_03_guia_paso2_resaltado.png",
+    "g1366_04_guia_paso3_escenario.png",
+    "g1366_05_guia_paso5_calculada.png",
+    "g1366_06_guia_fin_centro.png",
+    "g1366_07_centro_captura_marte.png",
+    "t1600_10_mapa_areas.png",
+    "t1600_11_lanzamiento_cassini_pesado.png",
+    "t1600_12_lanzamiento_cassini_ligero_explicado.png",
+    "t1600_13_tierra_luna_voyager_150000.png",
+    "t1600_14_tierra_luna_dawn_no_verificable.png",
+    "t1600_15_interplanetario_dawn.png",
+    "t1600_16_interplanetario_europa_info.png",
+    "t1600_17_mision_completa_C1_juno.png",
+    "t1600_18_mision_completa_ajustes_avanzados.png",
+    "t1600_19_demostracion_orbital.png",
+    "r320x568_01_hangar_guia.png",
+    "r320x568_02_mision_completa_guia.png",
+    "r320x568_03_mision_completa_minimizada.png",
+    "r375x667_01_hangar_guia.png",
+    "r375x667_02_mision_completa_guia.png",
+    "r375x667_03_mision_completa_minimizada.png",
+    "r390x844_01_hangar_guia.png",
+    "r390x844_02_mision_completa_guia.png",
+    "r390x844_03_mision_completa_minimizada.png",
+    "r768x1024_01_hangar_guia.png",
+    "r768x1024_02_mision_completa_guia.png",
+    "r768x1024_03_mision_completa_minimizada.png",
+    "r1280x720_01_hangar_guia.png",
+    "r1280x720_02_mision_completa_guia.png",
+    "r1280x720_03_mision_completa_minimizada.png",
+    "r1366x768_01_hangar_guia.png",
+    "r1366x768_02_mision_completa_guia.png",
+    "r1366x768_03_mision_completa_minimizada.png",
+    "r1920x1080_01_hangar_guia.png",
+    "r1920x1080_02_mision_completa_guia.png",
+    "r1920x1080_03_mision_completa_minimizada.png"
+  ],
+  "checks": {
+    "featuredCards": [
+      "Voyager 1",
+      "Voyager 2",
+      "Tu primera misión: Cassini a Marte",
+      "Misión completa a Europa"
+    ],
+    "guideIntro": {
+      "step": "intro",
+      "title": "Tu primera misión: Cassini a Marte",
+      "status": "",
+      "eyebrow": "Misión guiada",
+      "target": null
+    },
+    "nav": [
+      "Hangar",
+      "Misión completa",
+      "Ventanas interplanetarias",
+      "Tierra–Luna",
+      "Lanzamiento",
+      "Centro de Misión",
+      "Misión guiada"
+    ],
+    "defaultProbe": "cassini",
+    "guideProbe": {
+      "step": "probe",
+      "title": "1 · Elige la sonda",
+      "status": "✓ Hecho. Pulsa «Siguiente».",
+      "eyebrow": "Misión guiada · paso 1 de 5",
+      "target": "lab-probe-card lab-guide-target"
+    },
+    "assemblyNote": "Elige un subsistema para ver sus cifras y su fuente. El modelo 3D de NASA es una sola pieza, así que la selección no se resalta en él.",
+    "guidePlannerBefore": {
+      "step": "planner",
+      "title": "2 · Abre «Misión completa»",
+      "status": "Esperando a que lo hagas…",
+      "eyebrow": "Misión guiada · paso 2 de 5",
+      "target": "lab-guide-target"
+    },
+    "guidePlannerAfter": {
+      "step": "planner",
+      "title": "2 · Abre «Misión completa»",
+      "status": "✓ Hecho. Pulsa «Siguiente».",
+      "eyebrow": "Misión guiada · paso 2 de 5",
+      "target": "lab-guide-target"
+    },
+    "guideScenario": {
+      "step": "scenario",
+      "title": "3 · Elige el escenario",
+      "status": "✓ Hecho. Pulsa «Siguiente».",
+      "eyebrow": "Misión guiada · paso 3 de 5",
+      "target": "im-scenario"
+    },
+    "scenarioValue": "A1",
+    "outcomeA1": "Con Cassini: se completa según el modelo (queda en órbita de Marte con su motor principal).Lo completan: Cassini y Juno.",
+    "guideVerdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+    "chain": [
+      "Inyección interplanetaria · idle",
+      "Crucero heliocéntrico · ok",
+      "Aproximación hiperbólica a Marte · ok",
+      "Captura en Marte (empuje finito) · ok",
+      "Energía eléctrica (solar y RTG) · ok"
+    ],
+    "guidePlayDone": {
+      "step": "play",
+      "title": "5 · Reprodúcela en 3D",
+      "status": "✓ Hecho. Pulsa «Siguiente».",
+      "eyebrow": "Misión guiada · paso 5 de 5",
+      "target": "im-execute"
+    },
+    "guideDone": {
+      "step": "done",
+      "title": "Misión en marcha",
+      "status": "",
+      "eyebrow": "Misión guiada · completada",
+      "target": null
+    },
+    "centerContext": "Misión completa · Tierra → Marte (2028-11-29)",
+    "landingContextHidden": true,
+    "guideClosed": true,
+    "centerHud": "Misión completaCrucero heliocéntricoPAUSADA · 50.722 d transcurridosAltitud153,968,055.68 kmVelocidad31.51153 km/sDistancia al Sol1.03386 AUMasa5,606 kg",
+    "mapGroups": [
+      "Explorar: Sistema Solar, Misiones históricas Voyager",
+      "Laboratorio · 1 Elegir sonda: Misión guiada, Hangar",
+      "Laboratorio · 2 Planificar: Misión completa, Ventanas interplanetarias, Tierra–Luna, Empuje finito, Lanzamiento terrestre",
+      "Laboratorio · 3 Reproducir: Centro de Misión, Demostración orbital"
+    ],
+    "launch": {
+      "cassini": {
+        "preset": "demo-two-stage-heavy-v1",
+        "hint": "Capacidad orientativa con el programa de ascenso por defecto: ≈ 6,900 kg. Cassini pesa 5,606 kg: este lanzador puede llevarla.",
+        "status": "ÓRBITA TERRESTRE ALCANZADA SEGÚN EL MODELO",
+        "message": "Órbita alcanzada según el modelo. Pulsa «Reproducir en el Centro de Misión» para verlo.",
+        "executeEnabled": true
+      },
+      "juno": {
+        "preset": "demo-two-stage-heavy-v1",
+        "hint": "Capacidad orientativa con el programa de ascenso por defecto: ≈ 6,900 kg. Juno pesa 3,625 kg: este lanzador puede llevarla.",
+        "status": "ÓRBITA TERRESTRE ALCANZADA SEGÚN EL MODELO",
+        "message": "Órbita alcanzada según el modelo. Pulsa «Reproducir en el Centro de Misión» para verlo.",
+        "executeEnabled": true
+      },
+      "voyager": {
+        "preset": "demo-two-stage-v1",
+        "hint": "Capacidad orientativa con el programa de ascenso por defecto: ≈ 2,800 kg. Voyager 1 y 2 pesa 826 kg: este lanzador puede llevarla.",
+        "status": "ÓRBITA TERRESTRE ALCANZADA SEGÚN EL MODELO",
+        "message": "Órbita alcanzada según el modelo. Pulsa «Reproducir en el Centro de Misión» para verlo.",
+        "executeEnabled": true
+      },
+      "dawn": {
+        "preset": "demo-two-stage-v1",
+        "hint": "Capacidad orientativa con el programa de ascenso por defecto: ≈ 2,800 kg. Dawn pesa 1,218 kg: este lanzador puede llevarla.",
+        "status": "ÓRBITA TERRESTRE ALCANZADA SEGÚN EL MODELO",
+        "message": "Órbita alcanzada según el modelo. Pulsa «Reproducir en el Centro de Misión» para verlo.",
+        "executeEnabled": true
+      },
+      "cassiniLight": {
+        "status": "IMPACTO CONFIRMADO",
+        "warning": "La sonda (5,606 kg) pesa más de lo que este lanzador puede poner en órbita (≈ 2,813 kg con este programa de ascenso). Elige «Pesado · demostrativo ×2,5» y vuelve a calcular.",
+        "hint": "Capacidad orientativa con el programa de ascenso por defecto: ≈ 2,800 kg. Cassini pesa 5,606 kg: con este lanzador probablemente no llegue a órbita; el recomendado es «Pesado · demostrativo ×2,5»."
+      }
+    },
+    "lunar": {
+      "destinations": [
+        "Luna"
+      ],
+      "altitude": "100000",
+      "cassini": {
+        "advice": "Desde 200 km a Cassini le falta Δv; según el modelo, el plan es viable a partir de unos 50 000 km de altitud inicial.",
+        "status": "VIABLE SEGÚN EL MODELO",
+        "executeEnabled": true,
+        "executeTitle": ""
+      },
+      "juno": {
+        "advice": "Desde 200 km a Juno le falta Δv; según el modelo, el plan es viable a partir de la órbita geoestacionaria (unos 36 000 km).",
+        "status": "VIABLE SEGÚN EL MODELO",
+        "executeEnabled": true,
+        "executeTitle": ""
+      },
+      "voyager": {
+        "advice": "Voyager solo lleva 100 kg de hidracina (unos 280 m/s de Δv ideal): según el modelo, únicamente llega a la Luna saliendo desde muy lejos, unos 150 000 km.Usar 150,000 km (recomendado para Voyager 1 y 2)",
+        "usedAltitude": "150000",
+        "status": "VIABLE SEGÚN EL MODELO",
+        "executeEnabled": true,
+        "executeTitle": ""
+      },
+      "dawn": {
+        "advice": "Dawn usa un motor iónico de 92 mN: no puede dar la inyección como un impulso, así que el plan sale «no verificable» a cualquier altitud. Prueba su motor en «Empuje finito», más abajo.Usar 100,000 km (recomendado para Dawn)",
+        "usedAltitude": "100000",
+        "status": "NO VERIFICABLE",
+        "executeEnabled": false,
+        "executeTitle": "Plan no verificable: El motor iónico no se ha validado para una inyección impulsiva desde órbita terrestre; requiere propagación de empuje finito y potencia continua. Encendido demasiado largo para la aproximación impulsiva (>10 % del período orbital inicial); falta modelar empuje finito."
+      }
+    },
+    "interplanetaryDawn": "Requisitos frente a la sonda activa · DawnComprobaciónNO VERIFICABLE CON PROPULSIÓN ELÉCTRICAΔv ideal de la sonda / requerido13,050 / 3,627 m/sEl motor iónico tiene mucho Δv ideal pero muy poco empuje: no puede dar la inyección como un impulso desde la órbita de estacionamiento (tardaría meses en espiral). Esta comprobación no se aplica; la salida la daría el lanzador o una etapa superior (no evaluados).",
+    "europaInfo": "Europa: aquí solo se buscan ventanas hacia planetasEn «Misión completa» puedes llegar a Júpiter y sobrevolar Europa o intentar capturarte en su órbita (efemérides de satélites de agosto de 2031 a junio de 2032).Buscar ventanas hacia JúpiterAbrir «Misión completa»",
+    "outcomes": {
+      "A1_voyager": "Con Voyager 1 y 2: no se completa (agota sus 100 kg de hidracina en la captura y sigue de largo).Lo completan: Cassini y Juno.",
+      "C1_voyager": "Con Voyager 1 y 2: no se completa (no tiene propelente para capturarse en Júpiter).Lo completan: Cassini y Juno.",
+      "A1_cassini": "Con Cassini: se completa según el modelo (queda en órbita de Marte con su motor principal).Lo completan: Cassini y Juno.",
+      "C1_cassini": "Con Cassini: se completa según el modelo (captura en Júpiter y sobrevuelo de Europa).Lo completan: Cassini y Juno.",
+      "A1_dawn": "Con Dawn: no se completa (su motor iónico no puede frenar en un solo encendido).Lo completan: Cassini y Juno.",
+      "C1_dawn": "Con Dawn: no se completa (a 5,2 AU sus paneles no dan potencia al motor iónico).Lo completan: Cassini y Juno.",
+      "A1_juno": "Con Juno: se completa según el modelo (queda en órbita de Marte con su motor principal).Lo completan: Cassini y Juno.",
+      "C1_juno": "Con Juno: se completa según el modelo (captura en Júpiter y sobrevuelo de Europa).Lo completan: Cassini y Juno."
+    },
+    "C1_juno": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+    "orbitalTitle": "Escena del Sistema Solar con la Sonda Experimental 01, una trayectoria ficticia que demuestra el integrador DOPRI54. No usa la sonda activa.",
+    "orbitalCrumb": "Demostración orbital",
+    "returnedSection": "planner",
+    "r320x568_clipped_hangar": [],
+    "r320x568_clipped_planner": [],
+    "r320x568_doc": 0,
+    "r375x667_clipped_hangar": [],
+    "r375x667_clipped_planner": [],
+    "r375x667_doc": 0,
+    "r390x844_clipped_hangar": [],
+    "r390x844_clipped_planner": [],
+    "r390x844_doc": 0,
+    "r768x1024_clipped_hangar": [],
+    "r768x1024_clipped_planner": [],
+    "r768x1024_doc": 0,
+    "r1280x720_clipped_hangar": [],
+    "r1280x720_clipped_planner": [],
+    "r1280x720_doc": 0,
+    "r1366x768_clipped_hangar": [],
+    "r1366x768_clipped_planner": [],
+    "r1366x768_doc": 0,
+    "r1920x1080_clipped_hangar": [],
+    "r1920x1080_clipped_planner": [],
+    "r1920x1080_doc": 0
+  },
+  "overflow": {},
+  "errors": [],
+  "finishedAt": "2026-11-20T14:44:15.490Z"
+}
