@@ -8,6 +8,7 @@ import { createMissionTrajectoryView } from '../lab/MissionTrajectoryView.js';
 import { createMissionPlan, designSignature, DESTINATIONS, isMissionResultCurrent, loadSavedPlans, parseMissionPlan, saveMissionPlan, validatePlanOptions } from '../lab/MissionPlanStore.js';
 import { TRANSFER_MODEL_VERSION } from '../lab/MissionPhysics.js';
 import { createFiniteThrustPlanner } from './FiniteThrustPlanner.js';
+import { LUNAR_DEFAULTS, LUNAR_GUIDE } from '../lab/FleetGuide.js';
 
 const number = (n, digits = 1) => Number.isFinite(n) ? new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(n) : 'No disponible';
 const valueOrNA = (n, unit, digits = 1) => Number.isFinite(n) ? `${number(n, digits)} ${unit}` : 'No disponible';
@@ -17,14 +18,16 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
   host.innerHTML = `
     <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">03 / PLANIFICADOR</span><h3>Condiciones de misión</h3></div>
       <div class="lab-panel-scroll">
-        <p class="mission-intro">Salida desde una órbita terrestre circular existente. La fase y el plano se eligen para apuntar al encuentro; el lanzamiento y su delta-v no están incluidos.</p>
+        <p class="mission-intro">Viaje a la Luna desde una órbita terrestre circular que la sonda ya ocupa. La fase y el plano se eligen para apuntar al encuentro; el lanzamiento y su Δv no se incluyen.</p>
         <label class="lab-field">Sonda activa<input id="mission-probe" readonly></label>
+        <div id="mission-probe-advice" class="im-outcome" aria-live="polite"></div>
         <label class="lab-field">Destino<select id="mission-destination"></select></label>
+        <p class="mission-hint">Para Marte, Júpiter o Europa usa «Misión completa».</p>
         <label class="lab-field">Objetivo<select id="mission-objective"><option value="approach">Aproximación lunar nominal</option><option value="flyby">Sobrevuelo lunar propuesto</option></select></label>
-        <label class="lab-field">Altitud de órbita terrestre inicial (km)<input id="mission-altitude" type="number" min="200" max="150000" step="10" value="200"></label>
+        <label class="lab-field">Altitud de órbita terrestre inicial (km)<input id="mission-altitude" type="number" min="200" max="150000" step="10" value="${LUNAR_DEFAULTS.defaultAltitudeKm}"></label>
         <label class="lab-field">Distancia lunar nominal de llegada (km)<input id="mission-distance" type="number" min="30000" max="100000" step="100" value="50000"></label>
         <p id="mission-distance-hint" class="mission-hint">Aproximación: 30 000–100 000 km del centro lunar.</p>
-        <label class="lab-field">Salida, calendario TDB (sin conversión UTC)<input id="mission-departure" type="datetime-local" min="2026-10-01T00:00" max="2026-10-31T23:59" value="2026-10-15T12:00"></label>
+        <label class="lab-field">Salida, calendario TDB (sin conversión UTC)<input id="mission-departure" type="datetime-local" min="2026-10-01T00:00" max="2026-10-31T23:59" value="${LUNAR_DEFAULTS.departureTdb}"></label>
         <p class="mission-hint">Cobertura lunar: 1 oct–1 nov 2026, TDB. El tiempo de vuelo se calcula por la transferencia elíptica; la llegada también debe quedar cubierta.</p>
         <button id="mission-calculate" type="button" class="button-primary">Calcular transferencia</button>
         <button id="mission-execute" type="button">Ejecutar misión planificada</button>
@@ -51,7 +54,8 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
         <details class="mission-details"><summary>Modelo, marcos y límites</summary><p>Posiciones en km y velocidades en km/s, Tierra como centro, ejes ICRF eclípticos J2000, fechas TDB. La sonda se integra con gravedad terrestre y lunar más el término indirecto del marco geocéntrico mediante DOPRI54. La Luna procede de Horizons, interpolada con Hermite dentro de octubre de 2026.</p><p>La fase y el plano de la órbita terrestre se seleccionan para la transferencia. La elipse de Hohmann proporciona la semilla de apuntado; la trayectoria visual es el resultado numérico. No se incluyen gravedad solar, empuje finito, eclipses, correcciones ni lanzamiento. La captura lunar y el éxito de una misión completa quedan sin verificar.</p></details>
       </div></div>`;
   const $ = selector => host.querySelector(selector);
-  for (const destination of DESTINATIONS) $('#mission-destination').add(new Option(`${destination.name}${destination.available ? '' : ' · pendiente'}`, destination.id));
+  // 16: solo destinos calculables (la Luna). Los planes antiguos con otros destinos se siguen validando en MissionPlanStore.
+  for (const destination of DESTINATIONS.filter(destination => destination.available)) $('#mission-destination').add(new Option(destination.name, destination.id));
   let design = null, loadedPlan = null, result = null, dataset = null, dataError = null, finite = null;
   let saved = loadSavedPlans();
   let disposed = false;
@@ -73,7 +77,26 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     };
     return { ready: true, result, design, dataset, name: $('#mission-name').value.trim() || 'Misión lunar' };
   }
-  function notifyPlan() { if (finite?.isActive()) return; onPlanChange(executionCandidate()); }
+  function notifyPlan() { updateExecute(); if (finite?.isActive()) return; onPlanChange(executionCandidate()); }
+  // 16: «Ejecutar» solo se activa con un plan viable y vigente; el motivo se muestra en el botón.
+  function updateExecute() {
+    const candidate = executionCandidate(), button = $('#mission-execute');
+    button.disabled = !candidate.ready; button.title = candidate.ready ? '' : candidate.reason;
+  }
+  // 16: consejo según la sonda activa (FleetGuide, comprobado con el mismo modelo en tests/Stage16Coherence.test.mjs).
+  function renderAdvice() {
+    const box = $('#mission-probe-advice'); box.replaceChildren();
+    const guide = LUNAR_GUIDE[design?.basedOn];
+    if (!guide) { box.hidden = true; return; }
+    box.hidden = false; box.dataset.tone = guide.status === 'VIABLE SEGÚN EL MODELO' ? 'ok' : 'warn';
+    const text = document.createElement('span'); text.textContent = guide.text; box.append(text);
+    if (Number($('#mission-altitude').value) !== guide.altitudeKm) {
+      const use = document.createElement('button'); use.type = 'button'; use.id = 'mission-use-altitude';
+      use.textContent = `Usar ${number(guide.altitudeKm, 0)} km (recomendado para ${design.name})`;
+      use.addEventListener('click', () => { $('#mission-altitude').value = String(guide.altitudeKm); stale('Altitud recomendada aplicada. Pulsa «Calcular transferencia».'); renderAdvice(); });
+      box.append(use);
+    }
+  }
   function updateDistanceRange(reset = false) {
     const flyby = $('#mission-objective').value === 'flyby';
     const input = $('#mission-distance');
@@ -210,7 +233,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
   });
   $('#mission-destination').addEventListener('change', () => stale('Destino modificado. Recalcula la transferencia.'));
   for (const id of ['mission-altitude', 'mission-distance', 'mission-departure']) {
-    $(`#${id}`).addEventListener('input', () => stale('Parámetros modificados. Recalcula la transferencia.'));
+    $(`#${id}`).addEventListener('input', () => { stale('Parámetros modificados. Recalcula la transferencia.'); if (id === 'mission-altitude') renderAdvice(); });
   }
   $('#mission-objective').addEventListener('change', () => { updateDistanceRange(true); stale('Objetivo modificado. Recalcula la transferencia.'); });
   $('#mission-name').addEventListener('change', notifyPlan);
@@ -280,7 +303,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
       else if (!result) { trajectoryView.setTransfer(null); $('#mission-stage-empty').hidden = false; $('#mission-stage-status').textContent = 'Sin cálculo'; }
     }
   });
-  refreshSaved();
+  refreshSaved(); updateExecute();
   return {
     getExecutionCandidate: executionCandidate,
     focusEarth() { trajectoryView.focus('earth'); },
@@ -288,6 +311,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     setDesign(next) {
       const changed = result && !isMissionResultCurrent(result, next, options());
       design = next; finite?.setDesign(next); $('#mission-probe').value = `${next.name} · ${number(calculateEngineering(next).dryMassKg)} kg secos`;
+      renderAdvice();
       if (changed) stale('La sonda cambió. El resultado anterior se invalidó; recalcula la misión.');
       else notifyPlan();
       $('#mission-restore-design').hidden = !loadedPlan || (next.id === loadedPlan.designId && designSignature(next) === loadedPlan.designSignature);

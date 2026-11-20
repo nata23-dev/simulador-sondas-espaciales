@@ -5,20 +5,21 @@ export const AREAS = Object.freeze([
     { id: 'solar', title: 'Sistema Solar', desc: 'Planetas, lunas y efemérides NASA/JPL 2026', mode: 'exploracion', icon: 'icon-orbit' },
     { id: 'voyager', title: 'Misiones históricas Voyager', desc: 'Voyager 1 y 2, 1977–2026: trayectorias, eventos y fotografías', mode: 'historico', icon: 'icon-probe' }
   ] },
-  { group: 'Laboratorio · Elegir sonda', items: [
-    { id: 'hangar', title: 'Hangar', desc: 'Flota: Voyager, Cassini, Dawn y Juno con modelos 3D de NASA', mode: 'experimental', section: 'hangar', icon: 'icon-settings' },
-    { id: 'engineering', title: 'Ingeniería', desc: 'Masa, propulsión, energía y Δv de la sonda activa', mode: 'experimental', section: 'engineering', icon: 'icon-scale' },
-    { id: 'orbital', title: 'Simulación orbital experimental', desc: 'Sonda Experimental 01 en el Sistema Solar (DOPRI54)', mode: 'experimental', orbital: true, icon: 'icon-eye' }
+  // 16: el laboratorio en tres pasos (elegir sonda → planificar → reproducir) y la misión guiada para empezar.
+  { group: 'Laboratorio · 1 Elegir sonda', items: [
+    { id: 'guide', title: 'Misión guiada', desc: 'Primeros pasos: Cassini a Marte en cinco pasos', mode: 'experimental', section: 'hangar', guide: true, icon: 'icon-target' },
+    { id: 'hangar', title: 'Hangar', desc: 'Voyager, Cassini, Dawn y Juno: modelo 3D de NASA, ficha e ingeniería', mode: 'experimental', section: 'hangar', icon: 'icon-settings' }
   ] },
-  { group: 'Laboratorio · Planificar', items: [
-    { id: 'launch', title: 'Lanzamiento terrestre', desc: 'Ascenso en dos etapas desde la superficie', mode: 'experimental', section: 'launch', icon: 'icon-rocket' },
-    { id: 'lunar', title: 'Planificación Tierra–Luna', desc: 'Transferencia translunar con impulso ideal', mode: 'experimental', section: 'planner', plannerMode: 'lunar', icon: 'icon-target' },
-    { id: 'finite', title: 'Propulsión y maniobras', desc: 'Empuje finito y masa variable (en Tierra–Luna)', mode: 'experimental', section: 'planner', plannerMode: 'lunar', focus: '#ft-controls-host', icon: 'icon-ruler' },
-    { id: 'interplanetary', title: 'Misiones interplanetarias', desc: 'Ventanas de lanzamiento y Lambert (12G)', mode: 'experimental', section: 'planner', plannerMode: 'interplanetary', icon: 'icon-planet' },
-    { id: 'integrated', title: 'Misión completa', desc: 'Cadena integrada por fases (13 · pendiente de auditoría)', mode: 'experimental', section: 'planner', plannerMode: 'integrated', icon: 'icon-expand' }
+  { group: 'Laboratorio · 2 Planificar', items: [
+    { id: 'integrated', title: 'Misión completa', desc: 'Viaje, llegada, captura y satélite en un solo cálculo', mode: 'experimental', section: 'planner', plannerMode: 'integrated', icon: 'icon-expand' },
+    { id: 'interplanetary', title: 'Ventanas interplanetarias', desc: 'Mejores fechas de salida hacia un planeta (Lambert)', mode: 'experimental', section: 'planner', plannerMode: 'interplanetary', icon: 'icon-planet' },
+    { id: 'lunar', title: 'Tierra–Luna', desc: 'Transferencia a la Luna con impulso ideal', mode: 'experimental', section: 'planner', plannerMode: 'lunar', icon: 'icon-target' },
+    { id: 'finite', title: 'Empuje finito', desc: 'Encendidos con masa variable (dentro de Tierra–Luna)', mode: 'experimental', section: 'planner', plannerMode: 'lunar', focus: '#ft-controls-host', icon: 'icon-ruler' },
+    { id: 'launch', title: 'Lanzamiento terrestre', desc: 'Despegue hasta una órbita baja con un lanzador ilustrativo', mode: 'experimental', section: 'launch', icon: 'icon-rocket' }
   ] },
-  { group: 'Laboratorio · Ejecutar', items: [
-    { id: 'center', title: 'Centro de Misión', desc: 'Reproducción, eventos, cámaras y telemetría', mode: 'experimental', section: 'center', icon: 'icon-play' }
+  { group: 'Laboratorio · 3 Reproducir', items: [
+    { id: 'center', title: 'Centro de Misión', desc: 'Reproducción 3D, eventos, cámaras y telemetría', mode: 'experimental', section: 'center', icon: 'icon-play' },
+    { id: 'orbital', title: 'Demostración orbital', desc: 'Sonda Experimental 01 (ficticia, DOPRI54): no usa la sonda activa', mode: 'experimental', orbital: true, icon: 'icon-eye' }
   ] }
 ]);
 const AREA_BY_ID = new Map(AREAS.flatMap(group => group.items).map(area => [area.id, area]));
@@ -67,7 +68,7 @@ export function createAppNavigator() {
     const mode = app.dataset.appMode;
     const lab = document.querySelector('#experimental-lab');
     let root = CRUMB_ROOT[mode] ?? '', leaf = '';
-    if (mode === 'experimental') leaf = lab && !lab.hidden ? document.querySelector('#lab-tool-title')?.textContent?.trim() ?? '' : 'Simulación orbital';
+    if (mode === 'experimental') leaf = lab && !lab.hidden ? document.querySelector('#lab-tool-title')?.textContent?.trim() ?? '' : 'Demostración orbital';
     else leaf = document.querySelector('#context-title')?.textContent?.trim() ?? '';
     if (leaf === root || leaf === 'Explorar destinos') leaf = '';
     crumbRoot.textContent = root; crumbLeaf.textContent = leaf; crumbLeaf.hidden = !leaf;
@@ -117,7 +118,7 @@ export function createAppNavigator() {
     if (area.mode !== 'experimental') { await waitForMode(area.mode); return; }
     await waitForMode('experimental');
     if (area.orbital) { document.querySelector('[data-lab-action="orbital"]')?.click(); return; }
-    document.dispatchEvent(new CustomEvent('lab:navigate', { detail: { section: area.section, plannerMode: area.plannerMode, focus: area.focus } }));
+    document.dispatchEvent(new CustomEvent('lab:navigate', { detail: { section: area.section, plannerMode: area.plannerMode, focus: area.focus, guide: area.guide } }));
   }
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   const onKey = event => { if (event.key === 'Escape' && !panel.hidden) { setOpen(false); toggle.focus(); } };

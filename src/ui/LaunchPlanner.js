@@ -1,8 +1,9 @@
 // Etapa 12E — sección «Lanzamiento»: configura el lanzador, el sitio y el ascenso, calcula con la física de
 // src/lab/Launch*.js y muestra resultados. La reproducción ocurre en el Centro de Misión.
-import { DEMO_LAUNCHER, payloadFromDesign } from '../lab/LaunchVehicle.js';
+import { LAUNCHER_PRESETS, payloadFromDesign, recommendedLauncherPreset } from '../lab/LaunchVehicle.js';
 import { DEFAULT_GUIDANCE, DEFAULT_SCHEDULE } from '../lab/LaunchSimulation.js';
-import { calculateLaunch, isLaunchResultCurrent, validateLaunchInputs } from '../lab/LaunchPlan.js';
+import { calculateLaunch, estimatePayloadCapacityKg, isLaunchResultCurrent, validateLaunchInputs } from '../lab/LaunchPlan.js';
+import { ORBIT_CLASSES } from '../lab/LaunchOrbit.js';
 import { createLaunchExecution } from '../lab/LaunchPlayback.js';
 
 const number = (n, digits = 1) => Number.isFinite(n) ? new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(n) : 'No disponible';
@@ -16,8 +17,10 @@ export function createLaunchPlanner({ host, onExecuteRequest, onInvalidated }) {
   host.innerHTML = `
     <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">LANZAMIENTO</span><h3>Ascenso desde la Tierra</h3></div>
       <div class="lab-panel-scroll">
-        <p class="mission-intro">Lanzador de dos etapas independiente del Hangar. La carga útil es la sonda activa (Voyager, Cassini, Dawn o Juno) con su masa húmeda real. Parámetros ilustrativos, no un cohete real.</p>
+        <p class="mission-intro">Despegue desde la superficie hasta una órbita baja. La carga útil es la sonda activa con su masa real al lanzamiento; el cohete es ilustrativo (no corresponde a ningún lanzador real). Este tramo no se encadena con los planificadores: termina en órbita terrestre.</p>
         <label class="lab-field">Carga útil (sonda activa)<input id="ln-payload" readonly></label>
+        <label class="lab-field">Lanzador ilustrativo<select id="ln-launcher">${LAUNCHER_PRESETS.map(p => `<option value="${p.id}">${p.label} · ≈ ${number(p.nominalCapacityKg / 1000, 1)} t a órbita baja</option>`).join('')}<option value="custom" disabled>Personalizado (etapas editadas)</option></select></label>
+        <p id="ln-launcher-hint" class="mission-hint"></p>
         <details class="ft-section" open><summary>Sitio y fecha</summary>
           <label class="lab-field">Latitud geodésica (°)<input id="ln-lat" type="number" min="-90" max="90" step="0.1" value="28.5"></label>
           <label class="lab-field">Longitud (°)<input id="ln-lon" type="number" min="-180" max="180" step="0.1" value="-80.6"></label>
@@ -49,7 +52,7 @@ export function createLaunchPlanner({ host, onExecuteRequest, onInvalidated }) {
       <div class="lab-panel-scroll"><div id="ln-results" class="ft-results"></div></div></div>`;
   const $ = selector => host.querySelector(selector);
   const results = $('#ln-results');
-  let design = null, launcher = structuredClone(DEMO_LAUNCHER), result = null, active = false;
+  let design = null, preset = LAUNCHER_PRESETS[0], launcher = structuredClone(preset.launcher), result = null, active = false, manualPreset = false, customized = false, capacityKg = null;
 
   const message = (text, error = false) => { $('#ln-message').textContent = text; $('#ln-message').dataset.error = String(error); };
   function writeLauncher() {
@@ -77,13 +80,25 @@ export function createLaunchPlanner({ host, onExecuteRequest, onInvalidated }) {
     const strong = document.createElement('strong'); strong.textContent = value;
     row.append(term, strong); results.append(row);
   }
-  function paragraph(text, className = 'mission-hint') { const p = document.createElement('p'); p.className = className; p.textContent = text; results.append(p); }
+  function paragraph(text, className = 'mission-hint') { const p = document.createElement('p'); p.className = className; p.textContent = text; if (className === 'lab-message') p.dataset.error = 'true'; results.append(p); }
+  // 16: lanzador recomendado según la masa de la sonda (el más ligero que la lleva con un 10 % de margen), salvo que el usuario elija otro.
+  function usePreset(next, { manual = false } = {}) {
+    preset = next; launcher = structuredClone(next.launcher); customized = false; manualPreset = manual;
+    $('#ln-launcher').value = next.id; writeLauncher(); updateLauncherHint();
+  }
+  function updateLauncherHint() {
+    const hint = $('#ln-launcher-hint');
+    if (!design) { hint.textContent = ''; return; }
+    const payload = payloadFromDesign(design), recommended = recommendedLauncherPreset(payload.massKg);
+    const base = customized ? 'Etapas editadas: la capacidad cambia y se estima al calcular.' : `Capacidad orientativa con el programa de ascenso por defecto: ≈ ${number(preset.nominalCapacityKg, 0)} kg.`;
+    hint.textContent = `${base} ${design.name} pesa ${number(payload.massKg, 0)} kg${!customized && recommended.id !== preset.id ? `: con este lanzador probablemente no llegue a órbita; el recomendado es «${recommended.label}».` : !customized ? ': este lanzador puede llevarla.' : '.'}`;
+  }
   function updateButtons() {
     $('#ln-calculate').disabled = !design;
     $('#ln-execute').disabled = !(result && design && isLaunchResultCurrent(result, design, readLauncher(), options()) && result.simulation.knots.length > 2);
   }
   function invalidate(text) {
-    result = null; results.replaceChildren();
+    result = null; capacityKg = null; results.replaceChildren();
     if (text) message(text);
     if (active) { active = false; onInvalidated?.(); }
     updateButtons();
@@ -95,8 +110,14 @@ export function createLaunchPlanner({ host, onExecuteRequest, onInvalidated }) {
     const heading = document.createElement('h4'); heading.textContent = 'Resultado del lanzamiento'; results.append(heading);
     const status = document.createElement('div'); status.className = 'mission-status'; status.textContent = orbit.outcome ?? orbit.classification; results.append(status);
     for (const reason of orbit.reasons) paragraph(reason);
+    // 16: si no llega a órbita por exceso de carga, dilo en palabras y propone el lanzador adecuado.
+    if (orbit.classification !== ORBIT_CLASSES.orbit && Number.isFinite(capacityKg) && sim.payloadMassKg > capacityKg) {
+      const recommended = recommendedLauncherPreset(sim.payloadMassKg);
+      paragraph(`La sonda (${number(sim.payloadMassKg, 0)} kg) pesa más de lo que este lanzador puede poner en órbita (≈ ${number(capacityKg, 0)} kg con este programa de ascenso).${recommended.id !== preset.id || customized ? ` Elige «${recommended.label}» y vuelve a calcular.` : ''}`, 'lab-message');
+    }
     metric('Estado de la integración', sim.status);
     metric('Carga útil', `${result.payload.name} · ${number(sim.payloadMassKg, 1)} kg`);
+    if (Number.isFinite(capacityKg)) metric('Capacidad estimada de este lanzador', `≈ ${number(capacityKg, 0)} kg con este programa de ascenso`);
     metric('Masa al despegue', `${number(sim.stack.liftoffMassKg, 0)} kg`);
     metric('Empuje / peso al despegue', number(sim.stack.liftoffThrustToWeight, 2));
     metric('Δv ideal de Tsiolkovsky (referencia)', `${number(sim.stack.idealDeltaVMS, 0)} m/s`);
@@ -137,14 +158,25 @@ export function createLaunchPlanner({ host, onExecuteRequest, onInvalidated }) {
       const issues = validateLaunchInputs({ design, launcher: currentLauncher, options: current });
       if (issues.length) throw Error(issues.join(' '));
       result = calculateLaunch({ design, launcher: currentLauncher, options: current });
+      capacityKg = estimatePayloadCapacityKg({ launcher: currentLauncher, options: current });
       active = false; render();
-      message(result.simulation.knots.length > 2 ? 'Lanzamiento calculado. Revisa la clasificación antes de reproducirlo.' : 'El vehículo no despega: no hay trayectoria que reproducir.');
+      const reached = result.simulation.orbit.classification === ORBIT_CLASSES.orbit;
+      message(result.simulation.knots.length <= 2 ? 'El vehículo no despega: no hay trayectoria que reproducir.'
+        : reached ? 'Órbita alcanzada según el modelo. Pulsa «Reproducir en el Centro de Misión» para verlo.' : 'No llega a una órbita estable: puedes reproducir el intento igualmente; abajo se explica el motivo.', !reached);
     } catch (error) { result = null; results.replaceChildren(); message(`Cálculo no disponible: ${error.message}`, true); }
     updateButtons();
   }
-  host.addEventListener('input', event => { if (event.target.matches('input')) invalidate('Parámetros modificados. Recalcula el lanzamiento.'); });
+  host.addEventListener('input', event => {
+    if (!event.target.matches('input')) return;
+    if (event.target.matches('[data-stage]')) { customized = true; $('#ln-launcher').value = 'custom'; updateLauncherHint(); }
+    invalidate('Parámetros modificados. Recalcula el lanzamiento.');
+  });
+  $('#ln-launcher').addEventListener('change', () => {
+    const next = LAUNCHER_PRESETS.find(p => p.id === $('#ln-launcher').value); if (!next) return;
+    usePreset(next, { manual: true }); invalidate(`Lanzador cambiado a «${next.label}». Recalcula.`);
+  });
   $('#ln-calculate').addEventListener('click', calculate);
-  $('#ln-reset').addEventListener('click', () => { launcher = structuredClone(DEMO_LAUNCHER); writeLauncher(); invalidate('Lanzador restablecido. Recalcula.'); });
+  $('#ln-reset').addEventListener('click', () => { usePreset(design ? recommendedLauncherPreset(payloadFromDesign(design).massKg) : LAUNCHER_PRESETS[0]); invalidate('Lanzador restablecido al recomendado para la sonda activa. Recalcula.'); });
   $('#ln-execute').addEventListener('click', () => {
     try {
       if (!result || !design || !isLaunchResultCurrent(result, design, readLauncher(), options())) throw Error('El cálculo quedó obsoleto. Recalcula.');
@@ -155,9 +187,10 @@ export function createLaunchPlanner({ host, onExecuteRequest, onInvalidated }) {
   writeLauncher(); updateButtons();
   return {
     setDesign(next) {
-      const changed = result && !isLaunchResultCurrent(result, next, readLauncher(), options());
       design = next; payloadSummary();
-      if (changed) invalidate('La sonda cambió. El resultado del lanzamiento se invalidó; recalcula.'); else updateButtons();
+      if (!manualPreset && !customized && next) { const recommended = recommendedLauncherPreset(payloadFromDesign(next).massKg); if (recommended.id !== preset.id) usePreset(recommended); }
+      updateLauncherHint();
+      if (result && !isLaunchResultCurrent(result, next, readLauncher(), options())) invalidate('La sonda cambió. El resultado del lanzamiento se invalidó; recalcula.'); else updateButtons();
     },
     isActive: () => active,
     deactivate() { active = false; },

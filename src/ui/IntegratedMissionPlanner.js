@@ -11,6 +11,8 @@ import { refineTransferCandidate } from '../lab/InterplanetaryPlan.js';
 import { computeIntegratedMission, ENCOUNTER_TARGETS, MOON_WINDOW_KEYS, PHASE_STATUS, MISSION_LIMITS, moduleDryMassKg, isIntegratedMissionCurrent } from '../lab/IntegratedMission.js';
 import { createIntegratedExecution } from '../lab/IntegratedMissionPlayback.js';
 import { getBodyProfile } from '../lab/CelestialBodyMissionRegistry.js';
+import { scenarioOutcome, probesCompleting } from '../lab/FleetGuide.js';
+import { HISTORICAL_PROBES } from '../lab/HeritageCatalog.js';
 
 const number = (n, digits = 1) => Number.isFinite(n) ? new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(n) : 'No disponible';
 const utcLabel = jd => tdbToTimeScales(jd).labelUtc;
@@ -22,20 +24,20 @@ const MOON_WINDOW_FILE = 'data/interplanetary/galilean-moons-jsb-2031-2032.json'
 // casos A y C); el planificador los refina localmente antes de calcular. Masas, motores y energía: sonda activa de la flota.
 // 15.1: sin módulo de propulsión ni módulo de aterrizaje (retirados por decisión del usuario); el motor los admite pero la interfaz no los ofrece.
 export const INTEGRATED_SCENARIOS = Object.freeze([
-  { id: 'A1', label: 'A · Tierra → Marte · captura elíptica 3000 × 100 000 km', destinationId: '499', moonId: '', departureUtc: '2028-11-30', tofDays: 316, refine: true,
+  { id: 'A1', group: 'Marte', label: 'Marte · órbita elíptica de 3000 × 100 000 km', destinationId: '499', moonId: '', departureUtc: '2028-11-30', tofDays: 316, refine: true,
     planet: { mode: 'capture', periapsisAltitudeKm: 3000, apoapsisAltitudeKm: 100000 },
     note: 'Según el modelo, Cassini y Juno se capturan con su motor principal; Voyager agota la hidracina y Dawn no puede frenar en un solo paso con su motor iónico.' },
-  { id: 'A2', label: 'A · Tierra → Marte · órbita circular baja de 400 km (exigente)', destinationId: '499', moonId: '', departureUtc: '2028-11-30', tofDays: 316, refine: true,
+  { id: 'A2', group: 'Marte', label: 'Marte · órbita circular baja de 400 km (exigente)', destinationId: '499', moonId: '', departureUtc: '2028-11-30', tofDays: 316, refine: true,
     planet: { mode: 'capture', periapsisAltitudeKm: 400, apoapsisAltitudeKm: 400 },
     note: 'Ninguna de las cuatro sondas la alcanza: Voyager agota la hidracina, Cassini y Juno chocan con Marte durante el largo encendido y Dawn no puede frenar con su motor iónico.' },
-  { id: 'A3', label: 'A · Tierra → Marte · sobrevuelo sin frenado', destinationId: '499', moonId: '', departureUtc: '2028-11-30', tofDays: 316, refine: true,
+  { id: 'A3', group: 'Marte', label: 'Marte · sobrevuelo sin frenar', destinationId: '499', moonId: '', departureUtc: '2028-11-30', tofDays: 316, refine: true,
     planet: { mode: 'flyby', periapsisAltitudeKm: 400, apoapsisAltitudeKm: 33000 }, note: 'Sobrevuelo balístico: las cuatro sondas lo completan según el modelo.' },
   // 15 / 15.1: escenario de referencia de VISION_FINAL con la sonda activa de la flota, sin módulo auxiliar.
-  { id: 'C1', label: 'C · Sonda activa → Júpiter (órbita tipo Juno) → sobrevuelo de Europa', destinationId: '599', moonId: '502', departureUtc: '2028-12-26', tofDays: 1090, refine: true,
+  { id: 'C1', group: 'Júpiter y Europa', label: 'Júpiter (órbita tipo Juno) y sobrevuelo de Europa', destinationId: '599', moonId: '502', departureUtc: '2028-12-26', tofDays: 1090, refine: true,
     planet: { mode: 'capture', periapsisAltitudeKm: 4200, apoapsisAltitudeKm: 8000000 },
     moon: { mode: 'flyby', periapsisAltitudeKm: 100, intermediateApoapsisKm: 0, apoapsisAltitudeKm: 100 },
     note: 'Usa la sonda activa sin módulo auxiliar. Según el modelo, Cassini y Juno completan la cadena; Voyager no tiene propelente para capturarse en Júpiter (sigue un sobrevuelo) y Dawn no tiene potencia para su motor iónico a 5,2 AU.' },
-  { id: 'C2', label: 'C · Sonda activa → Júpiter → captura en órbita de Europa', destinationId: '599', moonId: '502', departureUtc: '2028-12-26', tofDays: 1090, refine: true,
+  { id: 'C2', group: 'Júpiter y Europa', label: 'Júpiter y captura en órbita de Europa (exigente)', destinationId: '599', moonId: '502', departureUtc: '2028-12-26', tofDays: 1090, refine: true,
     planet: { mode: 'capture', periapsisAltitudeKm: 4200, apoapsisAltitudeKm: 8000000 },
     moon: { mode: 'capture', periapsisAltitudeKm: 100, intermediateApoapsisKm: 5000, apoapsisAltitudeKm: 100 },
     note: 'La captura en Europa exige ≈ 4,4 km/s más tras la transferencia; ninguna de las cuatro sondas lleva propelente para ello y el modelo explica en qué fase falla.' }
@@ -43,14 +45,38 @@ export const INTEGRATED_SCENARIOS = Object.freeze([
 const STATUS_TONE = new Map([[PHASE_STATUS.done, 'ok'], [PHASE_STATUS.partial, 'warn'], [PHASE_STATUS.failed, 'bad'], [PHASE_STATUS.noData, 'bad'],
   [PHASE_STATUS.skipped, 'idle'], [PHASE_STATUS.pending, 'idle'], [PHASE_STATUS.initial, 'idle']]);
 
+// Etapa 16: entrada de computeIntegratedMission a partir de los valores del formulario. La usan la interfaz y las pruebas
+// (tests/Stage16Coherence.test.mjs), así que lo que se comprueba es exactamente lo que calcula el Planificador.
+export function integratedMissionInput({ destinationId, moonId = null, departureJdTdb, tofDays, soiModel = 'laplace', planetMode, rp, ra, bPlane = { mode: 'auto' }, moonMode = 'capture', mrp, mra, mri = 0 }, design) {
+  const moonBurns = moonId ? [...(mri > 0 ? [{ apoapsisAltitudeKm: mri }] : []), { apoapsisAltitudeKm: mra }] : null;
+  return { destinationId, moonId: moonId || null, opportunity: { departureJdTdb, arrivalJdTdb: departureJdTdb + tofDays }, design, propulsionModule: null, lander: null,
+    profile: { soiModel, planet: { mode: planetMode, periapsisAltitudeKm: rp, bPlane, captureBurns: [{ apoapsisAltitudeKm: ra }], orbitCoastDays: moonId ? 1 : 2 },
+      moon: moonId ? (moonMode === 'flyby' ? { mode: 'flyby', periapsisAltitudeKm: mrp } : { periapsisAltitudeKm: mrp, captureBurns: moonBurns }) : null, landing: { enabled: false } } };
+}
+/** Valores del formulario de un escenario de demostración. */
+export function scenarioFormValues(s) {
+  return { destinationId: s.destinationId, moonId: s.moonId || null, departureUtc: s.departureUtc, tofDays: s.tofDays, refine: s.refine, planetMode: s.planet.mode,
+    rp: s.planet.periapsisAltitudeKm, ra: s.planet.apoapsisAltitudeKm, moonMode: s.moon?.mode ?? 'capture', mrp: s.moon?.periapsisAltitudeKm ?? 100, mra: s.moon?.apoapsisAltitudeKm ?? 100, mri: s.moon?.intermediateApoapsisKm ?? 0 };
+}
+/** Semiamplitud (días) de la caja de refinamiento local de la oportunidad: ± 1 % del vuelo, al menos 1 día. */
+export const refinementHalfSpanDays = tofDays => Math.max(1, 0.01 * tofDays);
+const probeName = id => HISTORICAL_PROBES.find(p => p.id === id)?.name ?? id;
+
 export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => {}, onInvalidated = () => {} }) {
   host.classList.add('mission-planner', 'integrated-planner');
   const planets = Object.values(ENCOUNTER_TARGETS);
   host.innerHTML = `
     <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">03 / PLANIFICADOR · MISIÓN COMPLETA</span><h3>Cadena de fases</h3></div>
       <div class="lab-panel-scroll">
-        <p class="mission-intro">Conecta crucero heliocéntrico, encuentro, captura con empuje finito, operaciones planetocéntricas y satélite. Cada fase empieza en el estado final de la anterior.</p>
-        <label class="lab-field">Escenario<select id="im-scenario">${INTEGRATED_SCENARIOS.map(s => `<option value="${s.id}">${s.label}</option>`).join('')}<option value="custom">Personalizado</option></select></label>
+        <p class="mission-intro">Un solo cálculo une el viaje desde la Tierra, la llegada al planeta, el encendido de captura y, si eliges un satélite, el paso por él. Cada fase empieza donde terminó la anterior.</p>
+        <ol class="im-howto" aria-label="Cómo usar este planificador"><li>Elige un escenario</li><li>Pulsa «Calcular misión»</li><li>Reprodúcela en el Centro de Misión</li></ol>
+        <label class="lab-field">Escenario<select id="im-scenario">${[...new Set(INTEGRATED_SCENARIOS.map(s => s.group))].map(group => `<optgroup label="${group}">${INTEGRATED_SCENARIOS.filter(s => s.group === group).map(s => `<option value="${s.id}">${s.label}</option>`).join('')}</optgroup>`).join('')}<option value="custom">Personalizado (tus propios valores)</option></select></label>
+        <div id="im-outcome" class="im-outcome" aria-live="polite" hidden></div>
+        <p id="im-design" class="mission-hint">Sonda activa: sin elegir.</p>
+        <button id="im-compute" type="button" class="button-primary">Calcular misión</button>
+        <button id="im-execute" type="button">Reproducir en el Centro de Misión</button>
+        <p id="im-message" class="lab-message" role="status"></p>
+        <details class="im-advanced" id="im-advanced"><summary>Ajustar destino, fechas y órbitas</summary>
         <p id="im-scenario-note" class="mission-hint" hidden></p>
         <fieldset class="im-group"><legend>1 · Destino y oportunidad</legend>
           <label class="lab-field">Planeta<select id="im-destination">${planets.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}</select></label>
@@ -58,10 +84,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
           <div class="lab-two-actions"><label class="lab-field">Salida (UTC)<input id="im-departure" type="date"></label><label class="lab-field">Vuelo (d)<input id="im-tof" type="number" min="20" step="0.5"></label></div>
           <label class="im-check"><input id="im-refine" type="checkbox"> Refinar localmente la oportunidad (C3, ± 1 % del vuelo)</label>
         </fieldset>
-        <fieldset class="im-group"><legend>2 · Vehículo</legend>
-          <p id="im-design" class="mission-hint">Sonda activa: sin elegir.</p>
-        </fieldset>
-        <fieldset class="im-group"><legend>3 · Encuentro y órbitas objetivo</legend>
+        <fieldset class="im-group"><legend>2 · Encuentro y órbitas objetivo</legend>
           <div class="lab-two-actions"><label class="lab-field">Modo en el planeta<select id="im-mode"><option value="capture">Captura</option><option value="flyby">Sobrevuelo</option></select></label>
             <label class="lab-field">Esfera de influencia<select id="im-soi">${Object.entries(SOI_MODELS).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('')}</select></label></div>
           <div class="lab-two-actions"><label class="lab-field">Periapsis (km alt.)<input id="im-rp" type="number" min="0" step="10"></label><label class="lab-field">Apoapsis objetivo (km alt.)<input id="im-ra" type="number" min="0" step="100"></label></div>
@@ -69,10 +92,8 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
           <div id="im-moon-profile"><label class="lab-field">Objetivo en el satélite<select id="im-moon-mode"><option value="capture">Captura en órbita (empuje finito)</option><option value="flyby">Sobrevuelo balístico</option></select></label><div class="lab-two-actions"><label class="lab-field">Periapsis en el satélite (km)<input id="im-mrp" type="number" min="1" step="5"></label><label class="lab-field">Apoapsis final (km)<input id="im-mra" type="number" min="1" step="5"></label></div>
             <label class="lab-field">Apoapsis intermedio (km; 0 = un solo encendido)<input id="im-mri" type="number" min="0" step="100"></label></div>
         </fieldset>
+        <p class="mission-hint">Al cambiar cualquier valor, el escenario pasa a «Personalizado».</p></details>
         <p class="mission-hint" id="im-coverage">Cargando catálogos de efemérides…</p>
-        <button id="im-compute" type="button" class="button-primary">Calcular misión</button>
-        <button id="im-execute" type="button">Reproducir en el Centro de Misión</button>
-        <p id="im-message" class="lab-message" role="status"></p>
       </div></div>
     <div class="mission-stage lab-stage"><div class="lab-stage-top"><span class="eyebrow">CADENA DE FASES / TRAYECTORIA CALCULADA</span><span id="im-stage-status">Sin cálculo</span></div>
       <div class="im-stage-body"><ol id="im-chain" class="im-chain" aria-label="Fases de la misión"></ol>
@@ -131,7 +152,23 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     else { $('#im-mrp').value = 100; $('#im-mra').value = 100; $('#im-mri').value = 0; }
     $('#im-moon-mode').value = s.moon?.mode ?? 'capture';
     $('#im-scenario-note').textContent = s.note ?? ''; $('#im-scenario-note').hidden = !s.note;
-    syncEnabled();
+    syncEnabled(); renderOutcome();
+  }
+  // 16: resultado esperado del escenario con la sonda activa (FleetGuide, comprobado por pruebas con el mismo motor).
+  function renderOutcome() {
+    const box = $('#im-outcome'), id = $('#im-scenario').value, probeId = design?.basedOn;
+    box.replaceChildren(); box.hidden = true; delete box.dataset.tone;
+    const outcome = probeId ? scenarioOutcome(id, probeId) : null;
+    if (!outcome) {
+      if (id === 'custom') { box.hidden = false; box.dataset.tone = 'idle'; box.textContent = 'Valores propios: el resultado depende de lo que ajustes. Pulsa «Calcular misión» para comprobarlo.'; }
+      return;
+    }
+    const head = document.createElement('strong'); head.textContent = outcome.ok ? `Con ${design.name}: se completa según el modelo` : `Con ${design.name}: no se completa`;
+    const why = document.createElement('span'); why.textContent = ` (${outcome.text}).`;
+    const others = probesCompleting(id);
+    const tip = document.createElement('small');
+    tip.textContent = others.length ? `Lo completan: ${others.map(probeName).join(' y ')}.` : 'Ninguna de las cuatro sondas lo completa: sirve para ver en qué fase y por qué falla.';
+    box.append(head, why, tip); box.dataset.tone = outcome.ok ? 'ok' : 'warn'; box.hidden = false;
   }
   function syncEnabled() {
     $('#im-btheta').disabled = $('#im-bmode').value !== 'fixed';
@@ -159,10 +196,10 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     if (had) { message(reason); if (active) { active = false; onInvalidated(); } }
   }
   const changed = () => { syncEnabled(); invalidate('Las condiciones cambiaron: el cálculo anterior se invalidó. Vuelve a calcular.'); };
-  for (const el of host.querySelectorAll('.mission-controls input, .mission-controls select')) if (el.id !== 'im-scenario') el.addEventListener('change', () => { $('#im-scenario').value = 'custom'; changed(); });
+  for (const el of host.querySelectorAll('.mission-controls input, .mission-controls select')) if (el.id !== 'im-scenario') el.addEventListener('change', () => { $('#im-scenario').value = 'custom'; renderOutcome(); changed(); });
   $('#im-destination').addEventListener('change', fillMoons);
   $('#im-moon').addEventListener('change', () => { $('#im-moon-profile').hidden = !$('#im-moon').value; });
-  $('#im-scenario').addEventListener('change', () => { applyScenario($('#im-scenario').value); changed(); });
+  $('#im-scenario').addEventListener('change', () => { applyScenario($('#im-scenario').value); renderOutcome(); changed(); });
 
   async function compute() {
     if (busy) return;
@@ -184,15 +221,13 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
       const helio = await helioEphemeris.loadWindow(['399', tgt.ephemerisId], start, end);
       refinement = null;
       if ($('#im-refine').checked) {
-        refinement = refineTransferCandidate(helio, { destinationId: tgt.ephemerisId, departureJdTdb, tofDays, criterion: 'c3', halfSpanDepartureDays: Math.max(1, 0.01 * tofDays), halfSpanTofDays: Math.max(1, 0.01 * tofDays) });
+        refinement = refineTransferCandidate(helio, { destinationId: tgt.ephemerisId, departureJdTdb, tofDays, criterion: 'c3', halfSpanDepartureDays: refinementHalfSpanDays(tofDays), halfSpanTofDays: refinementHalfSpanDays(tofDays) });
         if (Number.isFinite(refinement.score)) { departureJdTdb = refinement.departureJdTdb; tofDays = refinement.tofDays; }
       }
       let moons = null;
       if (v.moonId) { moonsData ??= createPlanetocentricWindow(await fetchJson(MOON_WINDOW_FILE)); moons = moonsData; }
-      const moonBurns = v.moonId ? [...(v.mri > 0 ? [{ apoapsisAltitudeKm: v.mri }] : []), { apoapsisAltitudeKm: v.mra }] : null;
-      const input = { destinationId: tgt.id, moonId: v.moonId, opportunity: { departureJdTdb, arrivalJdTdb: departureJdTdb + tofDays }, design, propulsionModule: null, lander: null,
-        profile: { soiModel: $('#im-soi').value, planet: { mode: $('#im-mode').value, periapsisAltitudeKm: v.rp, bPlane: $('#im-bmode').value === 'fixed' ? { mode: 'fixed', angleDeg: Number($('#im-btheta').value) } : { mode: 'auto' },
-          captureBurns: [{ apoapsisAltitudeKm: v.ra }], orbitCoastDays: v.moonId ? 1 : 2 }, moon: v.moonId ? (v.moonMode === 'flyby' ? { mode: 'flyby', periapsisAltitudeKm: v.mrp } : { periapsisAltitudeKm: v.mrp, captureBurns: moonBurns }) : null, landing: { enabled: false } } };
+      const input = integratedMissionInput({ destinationId: tgt.id, moonId: v.moonId, departureJdTdb, tofDays, soiModel: $('#im-soi').value, planetMode: $('#im-mode').value, rp: v.rp, ra: v.ra,
+        bPlane: $('#im-bmode').value === 'fixed' ? { mode: 'fixed', angleDeg: Number($('#im-btheta').value) } : { mode: 'auto' }, moonMode: v.moonMode, mrp: v.mrp, mra: v.mra, mri: v.mri }, design);
       data = { helio, moons };
       mission = computeIntegratedMission(input, data);
       execution = createIntegratedExecution({ result: mission, data, design });
@@ -355,12 +390,13 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
   return {
     setDesign(next) {
       design = next;
-      $('#im-design').textContent = next ? `Sonda activa: «${next.name}» (configuración histórica: masa, motor y energía del catálogo; todas las maniobras usan su propio motor). Se cambia en la cabecera o en el Hangar.` : 'Sonda activa: sin elegir.';
+      $('#im-design').textContent = next ? `Sonda activa: ${next.name}. Todas las maniobras usan su propio motor y propelente (configuración histórica). Puedes cambiarla en la cabecera.` : 'Sonda activa: sin elegir.';
+      renderOutcome();
       if (mission && !isIntegratedMissionCurrent(mission, design)) invalidate('La sonda activa cambió: el cálculo anterior se invalidó.');
     },
     setVisible(visible) { if (visible) drawPlot(); },
     isActive: () => active, deactivate() { active = false; },
-    getState: () => ({ mission, refinement }),
+    getState: () => ({ mission, refinement, scenarioId: $('#im-scenario').value, busy, executable: Boolean(mission) && !$('#im-execute').disabled }),
     compute, applyScenario,
     dispose() { observer?.disconnect(); host.replaceChildren(); }
   };

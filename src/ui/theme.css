@@ -395,10 +395,6 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
 #experimental-lab .lab-sections button { min-height:36px; padding:6px 13px; border:0; border-radius:8px; background:transparent; color:var(--text-2); font-size:13px; font-weight:500; }
 #experimental-lab .lab-sections button:hover { background:rgba(255,255,255,.06); color:var(--text-1); }
 #experimental-lab .lab-sections button[aria-current="page"] { background:rgba(255,255,255,.1); color:#fff; box-shadow:inset 0 -2px 0 var(--text-1); border-radius:8px 8px 2px 2px; }
-#experimental-lab .lab-planner-modes { gap:6px; padding:10px 16px 0; }
-#experimental-lab .lab-planner-modes button { min-height:34px; padding:6px 14px; border:1px solid var(--line-soft); border-radius:999px; background:transparent; color:var(--text-2); font-size:12.5px; }
-#experimental-lab .lab-planner-modes button:hover { border-color:var(--line-strong); color:var(--text-1); }
-#experimental-lab .lab-planner-modes button[aria-pressed="true"] { border-color:var(--line-focus); background:rgba(255,255,255,.1); color:#fff; }
 
 #experimental-lab .lab-panel { border:1px solid var(--line-soft); border-radius:var(--r-md); background:var(--panel-solid); box-shadow:none; }
 #experimental-lab .lab-panel-heading { padding:16px 18px 12px; border-bottom:1px solid var(--line-soft); }
@@ -407,7 +403,7 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
 #experimental-lab .lab-stage { border:1px solid var(--line-soft); border-radius:var(--r-md); background:radial-gradient(circle at 50% 42%,#101012,#000 72%); box-shadow:none; }
 #experimental-lab .lab-stage-top { color:var(--text-1); font-size:12px; }
 #experimental-lab .lab-stage-top .eyebrow { color:var(--text-3); }
-#experimental-lab .mission-intro, #experimental-lab .lab-part-info p, #experimental-lab .lab-helper, #experimental-lab .lab-disclaimer, #experimental-lab .mission-hint { color:var(--text-2); font-size:12.5px; line-height:1.55; }
+#experimental-lab .mission-intro, #experimental-lab .lab-helper, #experimental-lab .lab-disclaimer, #experimental-lab .mission-hint { color:var(--text-2); font-size:12.5px; line-height:1.55; }
 #experimental-lab .lab-message { font-size:12.5px; }
 
 /* Campos: rótulo arriba, valor legible, rejilla de dos columnas cuando hay ancho. */
@@ -426,7 +422,7 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
 #experimental-lab .lab-field input[readonly] { color:var(--text-2); background:transparent; border-style:dashed; }
 #experimental-lab .lab-field:has(> span > input[type="checkbox"]), #experimental-lab .im-check { flex-direction:row; align-items:center; min-height:38px; color:var(--text-1); font-size:13px; }
 #experimental-lab .lab-field > span:has(> input[type="checkbox"]) { display:flex; align-items:center; gap:2px; }
-#experimental-lab :is(#lab-launch,#lab-landing) .mission-controls .lab-panel-scroll { container:labform / inline-size; }
+#experimental-lab #lab-launch .mission-controls .lab-panel-scroll { container:labform / inline-size; }
 /* El contenido de <details> vive en ::details-content: la rejilla se aplica ahí (los navegadores sin soporte usan una columna). */
 @container labform (min-width:460px) {
   #experimental-lab details.ft-section::details-content { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 14px; align-content:start; }
@@ -454,10 +450,10 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
 #experimental-lab button[id$="-execute"]::before { content:""; display:inline-block; width:0; height:0; margin-right:8px; border-left:8px solid currentColor; border-top:5px solid transparent; border-bottom:5px solid transparent; vertical-align:0; }
 #experimental-lab button[id$="-execute"]:hover:not(:disabled) { background:rgba(214,168,92,.24); border-color:var(--gold); }
 #experimental-lab button:not(:disabled):active { transform:translateY(1px); }
-#experimental-lab :is(.lab-two-actions button:not(.button-primary), #lab-load-preset, #lab-import, #lab-export, #lab-selected-info button, .mission-stage-actions button, .lab-replacement button, .ft-burn button, #ip-satellite button, #mc-open-planner, .mc-actions button) {
+#experimental-lab :is(.lab-two-actions button:not(.button-primary), #lab-selected-info button, .mission-stage-actions button, .ft-burn button, #ip-satellite button, #mc-open-planner, .mc-actions button) {
   min-height:38px; padding:7px 12px; border:1px solid var(--line-strong); border-radius:8px; background:transparent; color:var(--text-1); font-size:13px; font-weight:500;
 }
-#experimental-lab :is(.lab-two-actions button:not(.button-primary), #lab-load-preset, #lab-import, #lab-export, #lab-selected-info button, .mission-stage-actions button, .lab-replacement button, .ft-burn button, #ip-satellite button, #mc-open-planner, .mc-actions button):hover:not(:disabled) { background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.3); }
+#experimental-lab :is(.lab-two-actions button:not(.button-primary), #lab-selected-info button, .mission-stage-actions button, .ft-burn button, #ip-satellite button, #mc-open-planner, .mc-actions button):hover:not(:disabled) { background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.3); }
 #experimental-lab .mission-stage-actions button { min-height:32px; border-radius:999px; background:rgba(16,16,18,.8); font-size:12px; }
 #experimental-lab :is(.im-context, .mc-context) button { min-height:32px; padding:5px 12px; border:1px solid var(--line-soft); border-radius:999px; background:rgba(16,16,18,.8); color:var(--text-2); font-size:12px; }
 #experimental-lab :is(.im-context, .mc-context) button[aria-pressed="true"] { border-color:var(--line-focus); background:rgba(255,255,255,.12); color:#fff; }
@@ -480,26 +476,22 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
 #experimental-lab .lab-metric span { color:var(--text-2); }
 #experimental-lab .lab-metric strong { color:var(--text-1); font-size:13px; font-weight:500; font-variant-numeric:tabular-nums; text-align:right; }
 #experimental-lab .ft-results h4, #experimental-lab .mission-results h4 { margin:14px 0 8px; color:var(--text-3); font-size:10.5px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; }
-#experimental-lab :is(#lab-launch,#lab-landing) .mission-results .lab-panel-scroll { container:labres / inline-size; }
+#experimental-lab #lab-launch .mission-results .lab-panel-scroll { container:labres / inline-size; }
 @container labres (min-width:760px) {
-  #experimental-lab :is(#ln-results,#ld-results) { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:36px; align-content:start; }
-  #experimental-lab :is(#ln-results,#ld-results) > :not(.lab-metric) { grid-column:1 / -1; }
+  #experimental-lab #ln-results { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:36px; align-content:start; }
+  #experimental-lab #ln-results > :not(.lab-metric) { grid-column:1 / -1; }
 }
 #experimental-lab table { font-variant-numeric:tabular-nums; }
 #experimental-lab table th { color:var(--text-3); font-weight:600; letter-spacing:.06em; }
 #experimental-lab table tbody tr:nth-child(even) { background:rgba(255,255,255,.02); }
 #experimental-lab table tbody tr:hover { background:rgba(255,255,255,.05); }
-#experimental-lab .lab-component { border-radius:10px; font-size:13px; }
-#experimental-lab .lab-component small { color:var(--text-3); font-size:12px; }
-#experimental-lab .lab-component[aria-pressed="true"], #experimental-lab .lab-component.is-selected { border-color:var(--gold-line); background:var(--gold-soft); }
 #experimental-lab .lab-assembly-item { font-size:12px; }
-#experimental-lab :is(.lab-workspace,#lab-launch,#lab-landing,#lab-mission-planner,#lab-interplanetary,#lab-integrated,#lab-mission-center) { animation:ui-enter var(--dur) var(--ease) both; }
+#experimental-lab :is(.lab-workspace,#lab-launch,#lab-mission-planner,#lab-interplanetary,#lab-integrated,#lab-mission-center) { animation:ui-enter var(--dur) var(--ease) both; }
 #experimental-lab .lab-empty { border:1px solid var(--line-strong); border-radius:var(--r-md); background:rgba(17,17,19,.92); color:var(--text-2); }
 #lab-return { border:1px solid var(--line-strong) !important; background:rgba(17,17,19,.9) !important; color:var(--text-1) !important; border-radius:999px !important; padding:9px 18px !important; -webkit-backdrop-filter:var(--glass); backdrop-filter:var(--glass); }
-#experimental-lab :is(#ln-results,#ld-results):empty { display:grid; place-items:center; min-height:240px; border:1px dashed var(--line-strong); border-radius:var(--r-md); background:rgba(255,255,255,.012); }
-#experimental-lab :is(#ln-results,#ld-results):empty::before { max-width:320px; padding:18px; color:var(--text-3); font-size:13px; line-height:1.55; text-align:center; }
+#experimental-lab #ln-results:empty { display:grid; place-items:center; min-height:240px; border:1px dashed var(--line-strong); border-radius:var(--r-md); background:rgba(255,255,255,.012); }
+#experimental-lab #ln-results:empty::before { max-width:320px; padding:18px; color:var(--text-3); font-size:13px; line-height:1.55; text-align:center; }
 #lab-launch #ln-results:empty::before { content:"Configura el sitio, la fecha y el programa de ascenso y pulsa «Calcular lanzamiento». Aquí aparecerán fases, eventos, velocidad, altitud, combustible y la órbita resultante."; }
-#lab-landing #ld-results:empty::before { content:"Elige el cuerpo y la órbita inicial y pulsa «Calcular descenso». Aquí aparecerán fases, eventos, velocidad, altitud, combustible y el resultado del contacto."; }
 #experimental-lab :is(#im-verdict,#ip-verdict,.mission-verdict) { animation:ui-enter var(--dur) var(--ease) both; }
 
 /* ---------- Centro de Misión ---------- */
@@ -647,7 +639,6 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
   .lab-nav-step { padding:0 2px; font-size:0; gap:0; }
   .lab-nav-step b { font-size:10.5px; }
   #experimental-lab .lab-sections button { flex:1 1 auto; min-height:36px; padding:6px 8px; border:1px solid var(--line-soft); font-size:12.5px; }
-  #experimental-lab .lab-planner-modes { padding:8px 8px 0; }
   .lab-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .lab-kpis dd { font-size:17px; }
   .featured-panel:not([data-collapsed="true"]) { right:10px; width:auto; }

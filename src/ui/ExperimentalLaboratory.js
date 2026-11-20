@@ -11,21 +11,22 @@ import { createMissionControlCenter } from './MissionControlCenter.js';
 import { createLaunchPlanner } from './LaunchPlanner.js';
 import { createInterplanetaryPlanner } from './InterplanetaryPlanner.js';
 import { createIntegratedMissionPlanner } from './IntegratedMissionPlanner.js';
+import { createLabGuidedMission, revealInScrollAreas } from './LabGuidedMission.js';
 
 const number = (value, digits = 1) => new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(value);
 const valueOrNA = (value, unit, digits = 1) => value == null ? 'No disponible' : `${number(value, digits)} ${unit}`;
 
 // 14: textos de ubicación de cada herramienta del laboratorio. Solo presentación.
+// 16: el laboratorio se recorre en tres pasos (elegir sonda → planificar → reproducir); la ingeniería forma parte del Hangar.
 const SECTION_META = Object.freeze({
-  hangar: { step: 'Elegir', title: 'Hangar', desc: 'Elige una de las cuatro sondas históricas (Voyager, Cassini, Dawn o Juno) para tus misiones: modelo 3D oficial de NASA y ficha técnica con fuentes.' },
-  engineering: { step: 'Elegir', title: 'Ingeniería', desc: 'Masas, propulsión, energía según la distancia al Sol y calidad de los datos de la sonda activa (configuración histórica fija).' },
-  launch: { step: 'Planificar', title: 'Lanzamiento terrestre', desc: 'Ascenso desde la superficie con un lanzador ilustrativo de dos etapas y la sonda activa como carga útil.' },
-  center: { step: 'Ejecutar', title: 'Centro de Misión', desc: 'Reproduce la misión preparada: fases, eventos, cámaras y telemetría del estado calculado.' }
+  hangar: { step: 'Elegir sonda', title: 'Hangar', desc: 'Elige una de las cuatro sondas reales (Voyager, Cassini, Dawn o Juno): modelo 3D oficial de NASA, ficha técnica con fuentes e ingeniería.' },
+  launch: { step: 'Planificar', title: 'Lanzamiento terrestre', desc: 'Despegue desde la superficie hasta una órbita baja con un lanzador ilustrativo de dos etapas y la sonda activa como carga útil.' },
+  center: { step: 'Reproducir', title: 'Centro de Misión', desc: 'Reproduce en 3D la misión calculada: fases, eventos, cámaras y telemetría.' }
 });
 const PLANNER_META = Object.freeze({
-  lunar: { title: 'Tierra–Luna y empuje finito', desc: 'Transferencia translunar desde órbita terrestre con impulso ideal o empuje finito y masa variable.' },
-  interplanetary: { title: 'Misiones interplanetarias', desc: 'Ventanas de lanzamiento Tierra → planeta con efemérides NASA/JPL y Lambert heliocéntrico.' },
-  integrated: { title: 'Misión completa', desc: 'Cadena por fases: crucero, encuentro, captura y satélite con la sonda activa (etapa 13, pendiente de auditoría).' }
+  integrated: { title: 'Misión completa', desc: 'El planificador principal: une el viaje desde la Tierra, la llegada, la captura y un satélite en un solo cálculo con la sonda activa.' },
+  interplanetary: { title: 'Ventanas interplanetarias', desc: 'Busca las mejores fechas de salida hacia un planeta con posiciones de NASA/JPL (mapa de oportunidades y Lambert).' },
+  lunar: { title: 'Tierra–Luna', desc: 'Transferencia a la Luna desde una órbita terrestre, con impulso ideal o con empuje finito y masa variable.' }
 });
 // 15: rótulos de la calidad de cada cifra de herencia y de los campos del catálogo.
 const QUALITY_LABELS = Object.freeze({ [DATA_QUALITY.documented]: 'Documentado', [DATA_QUALITY.secondary]: 'Fuente secundaria',
@@ -82,25 +83,27 @@ export function createExperimentalLaboratory() {
   lab.innerHTML = `
     <header class="lab-header">
       <div class="lab-title">
-        <nav class="lab-breadcrumb" aria-label="Ubicación en el laboratorio"><span>Laboratorio</span><span id="lab-crumb-step">Elegir</span><span id="lab-crumb-tool" aria-current="location">Hangar</span></nav>
+        <nav class="lab-breadcrumb" aria-label="Ubicación en el laboratorio"><span>Laboratorio</span><span id="lab-crumb-step">Elegir sonda</span><span id="lab-crumb-tool" aria-current="location">Hangar</span></nav>
         <h2 id="lab-tool-title">Hangar</h2><p id="lab-tool-desc">Elige la sonda de tus misiones.</p>
       </div>
       <dl class="lab-context" aria-live="polite">
         <div class="lab-context-probe"><dt><label for="lab-ctx-probe">Sonda activa</label></dt><dd><select id="lab-ctx-probe" aria-describedby="lab-ctx-design"></select><span id="lab-ctx-design">—</span></dd></div>
         <div><dt>Centro de Misión</dt><dd id="lab-ctx-mission" data-ready="false">Sin misión preparada</dd></div>
       </dl>
-      <div class="lab-head-actions"><button type="button" id="lab-ctx-open-center" class="lab-open-center">Abrir Centro de Misión</button><button type="button" data-lab-action="orbital">Ver simulación orbital</button><button type="button" data-lab-action="reset-camera">Restablecer cámara</button></div>
+      <div class="lab-head-actions"><button type="button" id="lab-ctx-open-center" class="lab-open-center">Abrir Centro de Misión</button><button type="button" data-lab-action="orbital" title="Escena del Sistema Solar con la Sonda Experimental 01, una trayectoria ficticia que demuestra el integrador DOPRI54. No usa la sonda activa.">Demostración orbital</button><button type="button" data-lab-action="reset-camera">Restablecer cámara</button></div>
     </header>
     <nav class="lab-sections" aria-label="Áreas del laboratorio">
-      <div class="lab-nav-group" role="group" aria-labelledby="lab-step-design"><span class="lab-nav-step" id="lab-step-design"><b>1</b>Elegir</span><button type="button" data-lab-section="hangar" aria-current="page">Hangar</button><button type="button" data-lab-section="engineering">Ingeniería</button></div>
-      <div class="lab-nav-group" role="group" aria-labelledby="lab-step-plan"><span class="lab-nav-step" id="lab-step-plan"><b>2</b>Planificar</span><button type="button" data-lab-section="launch">Lanzamiento</button><button type="button" data-lab-section="planner">Planificador</button></div>
-      <div class="lab-nav-group" role="group" aria-labelledby="lab-step-run"><span class="lab-nav-step" id="lab-step-run"><b>3</b>Ejecutar</span><button type="button" data-lab-section="center">Centro de misión</button></div>
+      <div class="lab-nav-group" role="group" aria-labelledby="lab-step-design"><span class="lab-nav-step" id="lab-step-design"><b>1</b>Elegir sonda</span><button type="button" data-lab-section="hangar" aria-current="page">Hangar</button></div>
+      <div class="lab-nav-group" role="group" aria-labelledby="lab-step-plan"><span class="lab-nav-step" id="lab-step-plan"><b>2</b>Planificar</span><button type="button" data-lab-section="planner" data-planner-mode="integrated" title="El planificador principal: viaje, llegada, captura y satélite en un solo cálculo">Misión completa</button><button type="button" data-lab-section="planner" data-planner-mode="interplanetary" title="Mejores fechas de salida hacia un planeta">Ventanas interplanetarias</button><button type="button" data-lab-section="planner" data-planner-mode="lunar" title="Transferencia a la Luna y maniobras de empuje finito">Tierra–Luna</button><button type="button" data-lab-section="launch" title="Despegue hasta una órbita baja con un lanzador ilustrativo">Lanzamiento</button></div>
+      <div class="lab-nav-group" role="group" aria-labelledby="lab-step-run"><span class="lab-nav-step" id="lab-step-run"><b>3</b>Reproducir</span><button type="button" data-lab-section="center">Centro de Misión</button></div>
+      <button type="button" class="lab-guide-launch" data-lab-action="guide" title="Recorrido paso a paso: Cassini a Marte">Misión guiada</button>
     </nav>
     <div class="lab-workspace">
       <aside class="lab-panel lab-catalog lab-fleet" aria-label="Flota de sondas históricas">
         <div class="lab-panel-heading"><span class="eyebrow">01 / FLOTA</span><h3 id="lab-library-title">Sondas disponibles</h3></div>
         <div class="lab-panel-scroll">
-          <p class="lab-helper">Cuatro sondas reales con su configuración histórica. La que elijas es la que usan el lanzamiento, el Planificador y el Centro de Misión.</p>
+          <div class="lab-welcome"><strong>¿Primera vez en el laboratorio?</strong><p>Elige una sonda, planifica su misión y reprodúcela en 3D. La misión guiada te lleva paso a paso con Cassini hasta Marte.</p><button type="button" data-lab-action="guide">Empezar la misión guiada</button></div>
+          <p class="lab-helper">Cuatro sondas reales con su configuración histórica. La que elijas es la que usan todas las herramientas del laboratorio.</p>
           <div id="lab-history-list" class="lab-history-list" role="group" aria-label="Elegir la sonda activa"></div>
           <article id="lab-history-sheet" class="lab-history-sheet" aria-live="polite"></article>
         </div>
@@ -115,7 +118,7 @@ export function createExperimentalLaboratory() {
         <div class="lab-panel-heading"><span class="eyebrow">03 / INGENIERÍA</span><h3>Sistemas de la sonda</h3></div>
         <div class="lab-panel-scroll">
           <p class="lab-message" id="lab-message" role="status"></p>
-          <h4>Subsistemas</h4><div id="lab-assembly-list" class="lab-assembly-list"></div>
+          <h4>Subsistemas</h4><p id="lab-assembly-note" class="lab-helper" hidden></p><div id="lab-assembly-list" class="lab-assembly-list"></div>
           <div id="lab-selected-info" class="lab-selected-info"></div>
           <div class="lab-divider"></div><h4>Balance de ingeniería</h4>
           <div class="lab-assessment" id="lab-assessment"></div>
@@ -126,7 +129,7 @@ export function createExperimentalLaboratory() {
           <p class="lab-disclaimer">Configuración histórica fija: las piezas no se pueden cambiar. Las cifras de la ficha llevan su calidad y su fuente; el reparto de masa por subsistema y los consumos sin fuente son estimaciones del simulador. El Δv es ideal (Tsiolkovski). El modelo 3D es solo presentación: no interviene en ningún cálculo. No modifica DOPRI54.</p>
         </div>
       </aside>
-    </div><div id="lab-launch" hidden></div><div id="lab-planner-modes" class="lab-planner-modes" role="group" aria-label="Modalidad del Planificador" hidden><button type="button" data-planner-mode="lunar" aria-pressed="true">Tierra–Luna y empuje finito</button><button type="button" data-planner-mode="interplanetary" aria-pressed="false">Misiones interplanetarias</button><button type="button" data-planner-mode="integrated" aria-pressed="false">Misión completa</button></div><div id="lab-mission-planner" hidden></div><div id="lab-interplanetary" hidden></div><div id="lab-integrated" hidden></div><div id="lab-mission-center" hidden></div>`;
+    </div><div id="lab-launch" hidden></div><div id="lab-mission-planner" hidden></div><div id="lab-interplanetary" hidden></div><div id="lab-integrated" hidden></div><div id="lab-mission-center" hidden></div>`;
   scene.append(lab);
   const returnButton = document.createElement('button');
   returnButton.id = 'lab-return'; returnButton.type = 'button'; returnButton.textContent = 'Volver al laboratorio';
@@ -176,13 +179,11 @@ export function createExperimentalLaboratory() {
     onExecuteRequest: candidate => { launch.deactivate(); interplanetary.deactivate(); launchActive = true; center.setPlan(candidate); section = 'center'; updateSection(); center.start(); },
     onInvalidated: () => { if (launchActive) { launchActive = false; center.setPlan({ ready: false, reason: 'La misión completa quedó obsoleta. Recalcula en el Planificador.' }); } }
   });
-  let plannerMode = 'lunar';
-  for (const button of lab.querySelectorAll('[data-planner-mode]')) button.addEventListener('click', () => {
-    plannerMode = button.dataset.plannerMode; updateSection();
-  });
+  let plannerMode = 'integrated';
   center = createMissionControlCenter($('#lab-mission-center'), () => { section = 'planner'; updateSection(); });
   const centerSetPlan = center.setPlan;
-  center.setPlan = candidate => { centerSetPlan(candidate); updateMissionContext(candidate); };
+  let centerPlan = null;
+  center.setPlan = candidate => { centerPlan = candidate; centerSetPlan(candidate); updateMissionContext(candidate); };
   function updateMissionContext(candidate) {
     const node = $('#lab-ctx-mission');
     if (!candidate?.ready) { node.textContent = 'Sin misión preparada'; node.dataset.ready = 'false'; node.title = candidate?.reason ?? ''; return; }
@@ -194,9 +195,9 @@ export function createExperimentalLaboratory() {
     const node = $('#lab-ctx-design');
     try {
       const e = engineering ?? calculateEngineering(design);
-      node.textContent = `${number(e.wetMassKg, 0)} kg${e.deltaVMS != null ? ` · Δv ideal ${number(e.deltaVMS / 1000, 2)} km/s` : ''}`;
-    } catch { node.textContent = ''; }
-    node.title = `${design.name} · ${node.textContent}`;
+      node.textContent = `${number(e.wetMassKg, 0)} kg${e.deltaVMS != null ? ` · Δv ${number(e.deltaVMS / 1000, 2)} km/s` : ''}`;
+      node.title = `${design.name}: ${number(e.wetMassKg, 0)} kg al lanzamiento${e.deltaVMS != null ? ` · Δv ideal (Tsiolkovski) ${number(e.deltaVMS, 0)} m/s` : ''}${e.propulsionType === 'electric' ? ' · propulsión eléctrica de bajo empuje' : ''}`;
+    } catch { node.textContent = ''; node.title = design.name; }
     $('#lab-ctx-probe').value = activeProbeId;
   }
   {
@@ -209,10 +210,14 @@ export function createExperimentalLaboratory() {
   // 14: navegación directa desde el mapa de áreas de la cabecera (AppNavigator).
   document.addEventListener('lab:navigate', event => {
     const target = event.detail ?? {};
+    // 16: «engineering» (enlaces antiguos) abre el Hangar con el panel de ingeniería a la vista.
+    const engineeringLink = target.section === 'engineering';
     if (target.section) section = target.section in SECTION_META || target.section === 'planner' ? target.section : 'hangar';
-    if (target.plannerMode) plannerMode = target.plannerMode;
+    if (target.plannerMode && target.plannerMode in PLANNER_META) plannerMode = target.plannerMode;
     if (app.dataset.appMode === 'experimental' && lab.hidden) setBuilder(true); else updateSection();
-    if (target.focus) requestAnimationFrame(() => lab.querySelector(target.focus)?.scrollIntoView({ block: 'start' }));
+    const focus = target.focus ?? (engineeringLink ? '.lab-engineering' : null);
+    if (focus) requestAnimationFrame(() => revealInScrollAreas(lab.querySelector(focus), { block: 'start' }));
+    if (target.guide) guide.start();
   });
 
   function message(text, error = false) {
@@ -229,14 +234,12 @@ export function createExperimentalLaboratory() {
   }
   function updateSection() {
     const enabled = app.dataset.appMode === 'experimental' && !lab.hidden;
-    const hangar = enabled && (section === 'hangar' || section === 'engineering');
+    const hangar = enabled && section === 'hangar';
     $('.lab-workspace').hidden = !hangar;
     $('#lab-launch').hidden = !(enabled && section === 'launch');
     $('#lab-mission-planner').hidden = !(enabled && section === 'planner' && plannerMode === 'lunar');
     $('#lab-interplanetary').hidden = !(enabled && section === 'planner' && plannerMode === 'interplanetary');
     $('#lab-integrated').hidden = !(enabled && section === 'planner' && plannerMode === 'integrated');
-    $('#lab-planner-modes').hidden = !(enabled && section === 'planner');
-    for (const button of lab.querySelectorAll('[data-planner-mode]')) button.setAttribute('aria-pressed', String(button.dataset.plannerMode === plannerMode));
     $('#lab-mission-center').hidden = !(enabled && section === 'center');
     lab.dataset.section = section;
     lab.dataset.plannerMode = plannerMode;
@@ -246,7 +249,8 @@ export function createExperimentalLaboratory() {
     $('#lab-ctx-open-center').hidden = section === 'center';
     updateDesignContext();
     for (const button of lab.querySelectorAll('[data-lab-section]')) {
-      if (button.dataset.labSection === section) button.setAttribute('aria-current', 'page');
+      const current = button.dataset.labSection === section && (!button.dataset.plannerMode || button.dataset.plannerMode === plannerMode);
+      if (current) button.setAttribute('aria-current', 'page');
       else button.removeAttribute('aria-current');
     }
     view.setVisible(hangar);
@@ -318,7 +322,7 @@ export function createExperimentalLaboratory() {
     const plan = document.createElement('button'); plan.type = 'button'; plan.className = 'button-primary'; plan.id = 'lab-plan-mission'; plan.textContent = `Planificar una misión con ${probe.name}`;
     plan.addEventListener('click', () => { section = 'planner'; updateSection(); });
     const systems = document.createElement('button'); systems.type = 'button'; systems.id = 'lab-open-engineering'; systems.textContent = 'Ver sistemas e ingeniería';
-    systems.addEventListener('click', () => { section = 'engineering'; updateSection(); $('.lab-engineering').scrollIntoView({ block: 'nearest' }); });
+    systems.addEventListener('click', () => { revealInScrollAreas($('.lab-engineering')); $('.lab-engineering .lab-panel-scroll').scrollTo?.({ top: 0 }); });
     actions.append(plan, systems);
     sheet.append(title, role, table, credit, parts, notes, actions);
   }
@@ -329,6 +333,10 @@ export function createExperimentalLaboratory() {
     status.textContent = MODEL_STATE_TEXT[modelState.source] ?? '—';
     status.dataset.state = modelState.source;
     status.title = modelState.error ? `Error de carga: ${modelState.error}` : '';
+    // 16: el modelo de NASA es una malla única; la selección de un subsistema solo se resalta en la reconstrucción procedimental.
+    const note = $('#lab-assembly-note');
+    note.hidden = modelState.source !== 'nasa';
+    note.textContent = 'Elige un subsistema para ver sus cifras y su fuente. El modelo 3D de NASA es una sola pieza, así que la selección no se resalta en él.';
   }
   function componentSpecs(component) {
     return `${component.dimensionsM.join(' × ')} m · ${number(component.dryMassKg)} kg secos`
@@ -498,12 +506,25 @@ export function createExperimentalLaboratory() {
     planner.setDesign(design); launch.setDesign(design); interplanetary.setDesign(design); integrated.setDesign(design);
   }
   $('[data-lab-action="orbital"]').addEventListener('click', () => setBuilder(false));
+  for (const button of lab.querySelectorAll('[data-lab-action="guide"]')) button.addEventListener('click', () => guide.start());
   $('[data-lab-action="reset-camera"]').addEventListener('click', () => section === 'planner' ? planner.resetCamera() : section === 'center' ? center.resetCamera() : view.resetCamera());
   for (const button of lab.querySelectorAll('[data-lab-section]:not(:disabled)')) button.addEventListener('click', () => {
     section = button.dataset.labSection;
+    if (button.dataset.plannerMode) plannerMode = button.dataset.plannerMode;
     updateSection();
-    if (section === 'engineering') $('.lab-engineering').scrollIntoView({ block: 'nearest' });
   });
+  // 16: misión guiada. Solo usa los mismos controles y estados que el usuario.
+  const guide = createLabGuidedMission({ host: lab, api: {
+    activeProbeId: () => activeProbeId,
+    selectProbe,
+    section: () => section, plannerMode: () => plannerMode,
+    go(nextSection, nextMode) { section = nextSection; if (nextMode) plannerMode = nextMode; updateSection(); },
+    integratedState: () => integrated.getState(),
+    applyScenario(id) { $('#im-scenario').value = id; $('#im-scenario').dispatchEvent(new Event('change')); },
+    computeIntegrated: () => integrated.compute(),
+    executeIntegrated() { $('#im-execute').click(); },
+    centerKind: () => centerPlan?.ready ? centerPlan.kind ?? 'mission' : null
+  } });
   returnButton.addEventListener('click', () => setBuilder(true));
   const modeObserver = new MutationObserver(() => {
     if (app.dataset.appMode === 'experimental') { setBuilder(true); render(); }
@@ -528,7 +549,7 @@ export function createExperimentalLaboratory() {
   if (app.dataset.appMode === 'experimental') setBuilder(true);
   return { dispose: () => {
     modeObserver.disconnect(); headerObserver.disconnect(); window.removeEventListener('resize', measureHeader);
-    center.dispose(); integrated.dispose(); interplanetary.dispose(); launch.dispose(); planner.dispose(); view.dispose(); lab.remove(); returnButton.remove(); app.style.removeProperty('--lab-top');
+    guide.dispose(); center.dispose(); integrated.dispose(); interplanetary.dispose(); launch.dispose(); planner.dispose(); view.dispose(); lab.remove(); returnButton.remove(); app.style.removeProperty('--lab-top');
     delete app.dataset.labView;
   } };
 }

@@ -6,6 +6,7 @@ import { tdbToTimeScales } from '../science/AstrodynamicsTime.js';
 import { KM_PER_AU } from '../science/Units.js';
 import { propagateKepler } from '../science/KeplerPropagator.js';
 import { calculateEngineering } from '../lab/ProbeEngineering.js';
+import { MOON_WINDOW_KEYS } from '../lab/IntegratedMission.js';
 import { CELL, CRITERIA, DEFAULT_INTERPLANETARY_OPTIONS, MU_SUN, SUGGESTED_RANGES, compareRequirementsWithDesign, evaluateTransfer, interplanetarySignature,
   isInterplanetaryResultCurrent, listMissionDestinations, searchLaunchWindows, validateInterplanetaryOptions, MODEL_LIMITS, CANDIDATE_STATUS,
   refineTransferCandidate, candidateEdgeDiagnostics } from '../lab/InterplanetaryPlan.js';
@@ -22,7 +23,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
   host.innerHTML = `
     <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">03 / PLANIFICADOR · INTERPLANETARIO</span><h3>Ventanas de lanzamiento</h3></div>
       <div class="lab-panel-scroll">
-        <p class="mission-intro">Busca fechas de salida y llegada con posiciones reales de NASA/JPL Horizons y resuelve, para cada combinación, el problema de Lambert heliocéntrico (cero revoluciones).</p>
+        <p class="mission-intro">Busca las mejores fechas para salir de la Tierra hacia un planeta: prueba miles de combinaciones de salida y duración con posiciones reales de NASA/JPL Horizons (problema de Lambert, cero revoluciones). Para calcular la llegada y la captura, usa «Misión completa».</p>
         <label class="lab-field">Origen<select id="ip-origin"><option value="399">Tierra</option><option disabled>Otros planetas · pendiente de validación</option></select></label>
         <label class="lab-field">Destino<select id="ip-destination"></select></label>
         <div id="ip-satellite" class="ft-results" aria-live="polite"></div>
@@ -56,7 +57,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
   const destSelect = $('#ip-destination');
   const planetGroup = document.createElement('optgroup'); planetGroup.label = 'Planetas · transferencia directa';
   for (const p of destinations.planets) planetGroup.append(new Option(p.name, p.id));
-  const satGroup = document.createElement('optgroup'); satGroup.label = 'Satélites · requieren etapas futuras';
+  const satGroup = document.createElement('optgroup'); satGroup.label = 'Satélites · información';
   for (const s of destinations.satellites) satGroup.append(new Option(`${s.name} (sistema de ${s.hostName})`, `sat:${s.id}`));
   destSelect.append(planetGroup, satGroup);
   const fields = { originId: '#ip-origin', departureStartUtc: '#ip-dep-start', departureEndUtc: '#ip-dep-end', tofMinDays: '#ip-tof-min', tofMaxDays: '#ip-tof-max',
@@ -85,11 +86,14 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     if (!destSelect.value.startsWith('sat:')) return;
     const s = destinations.satellites.find(item => `sat:${item.id}` === destSelect.value);
     const add = (tag, text) => { const el = document.createElement(tag); el.textContent = text; box.append(el); return el; };
-    add('strong', `${s.name}: destino satelital (sin trayectoria completa en esta etapa)`);
-    add('p', `Planeta anfitrión: ${s.hostName}. ${s.heliocentricLeg}`);
-    add('p', s.localOperations);
-    add('p', `Etapas científicas pendientes: ${s.pendingStages.join(' → ')}.`);
-    if (s.id !== '301') { const b = add('button', `Calcular transferencia preliminar hasta ${s.hostName}`); b.type = 'button'; b.addEventListener('click', () => { destSelect.value = s.hostId; changed(); }); }
+    // 16: qué ofrece hoy el laboratorio para cada satélite (sin descensos: la interfaz ya no los ofrece).
+    const inIntegrated = Object.hasOwn(MOON_WINDOW_KEYS, s.id);
+    add('strong', `${s.name}: aquí solo se buscan ventanas hacia planetas`);
+    add('p', s.id === '301' ? s.heliocentricLeg
+      : inIntegrated ? `En «Misión completa» puedes llegar a ${s.hostName} y sobrevolar ${s.name} o intentar capturarte en su órbita (efemérides de satélites de agosto de 2031 a junio de 2032).`
+        : `Aquí puedes buscar la ventana hasta ${s.hostName}. Las operaciones en ${s.name} no están disponibles en el laboratorio.`);
+    if (s.id !== '301') { const b = add('button', `Buscar ventanas hacia ${s.hostName}`); b.type = 'button'; b.addEventListener('click', () => { destSelect.value = s.hostId; changed(); }); }
+    if (inIntegrated) { const b = add('button', 'Abrir «Misión completa»'); b.type = 'button'; b.addEventListener('click', () => document.dispatchEvent(new CustomEvent('lab:navigate', { detail: { section: 'planner', plannerMode: 'integrated' } }))); }
   }
   function invalidate(reason) {
     const had = Boolean(search || selected);
@@ -114,7 +118,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
   async function runSearch() {
     if (busy) return;
     if (!ephemeris) { message(loadError ? `${UNAVAILABLE_MESSAGE}: ${loadError}` : 'Espera la carga del catálogo de efemérides.', true); return; }
-    if (destSelect.value.startsWith('sat:')) { message('Un satélite no tiene todavía una trayectoria completa: elige su planeta anfitrión para la transferencia preliminar.', true); return; }
+    if (destSelect.value.startsWith('sat:')) { message('Aquí solo se buscan ventanas hacia planetas: elige el planeta anfitrión o, para los satélites de Júpiter, usa «Misión completa».', true); return; }
     const input = options();
     const { issues, options: o } = validateInterplanetaryOptions(input);
     if (issues.length) { message(issues.join(' '), true); return; }

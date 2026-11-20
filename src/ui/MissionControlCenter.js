@@ -349,7 +349,8 @@ export function createMissionControlCenter(host, onOpenPlanner) {
         $('#mc-stage-status').textContent = position.finished ? 'FINALIZADA LA REPRODUCCIÓN' : position.playing ? (position.direction < 0 ? 'REPRODUCCIÓN INVERSA' : 'EN REPRODUCCIÓN') : position.elapsedSeconds === 0 ? 'PREPARADA' : 'PAUSADA';
         $('#mc-outcome').textContent = `${telemetry.phaseLabel} · ${telemetry.phaseStatus ?? 'fase calculada'}. ${execution.mission.verdict}`;
         renderIntegrated(telemetry, position); updateSelectedEvent(position); $('#mc-model-note').textContent = INTEGRATED_NOTE;
-        for (const b of $('#mc-context').querySelectorAll('button')) { b.disabled = b.dataset.context !== 'auto' && !execution.contexts[b.dataset.context]; b.setAttribute('aria-pressed', String(b.dataset.context === contextMode)); }
+        // 16: el marco «Descenso» solo aparece si la misión incluye un descenso (la interfaz ya no ofrece módulos de aterrizaje).
+        for (const b of $('#mc-context').querySelectorAll('button')) { b.disabled = b.dataset.context !== 'auto' && !execution.contexts[b.dataset.context]; b.hidden = b.dataset.context === 'landing' && !execution.contexts.landing; b.setAttribute('aria-pressed', String(b.dataset.context === contextMode)); }
         $('#mc-play').textContent = position.playing ? 'En curso' : position.finished ? 'Reiniciar e iniciar' : position.elapsedSeconds === 0 ? 'Iniciar' : 'Reanudar';
         return;
       }

@@ -7,8 +7,9 @@ const STORAGE_KEY = 'simulador:featured-collapsed';
 const CARDS = Object.freeze([
   { id: 'voyager-1', accent: 'voyager-1', title: 'Voyager 1', meta: 'Lanzada el 5 sep 1977', text: 'Júpiter, Saturno y Titán; hoy, el objeto humano más lejano.', image: 'images/voyager/v1-jupiter-grs-1979-thumb.jpg', alt: 'Gran Mancha Roja de Júpiter fotografiada por Voyager 1 en 1979', area: 'voyager', destination: 'voyager-1' },
   { id: 'voyager-2', accent: 'voyager-2', title: 'Voyager 2', meta: 'Neptuno · 25 ago 1989', text: 'La única visita a Urano y Neptuno, con el gran recorrido de 1977–1989.', image: 'images/voyager/v2-neptune-gds-1989-thumb.jpg', alt: 'Neptuno y su Gran Mancha Oscura fotografiados por Voyager 2 en 1989', area: 'voyager', destination: 'voyager-2' },
-  { id: 'integrated', accent: 'mission', title: 'Misión completa a Europa', meta: 'Laboratorio · etapa 13 · pendiente de auditoría', text: 'Crucero, captura en Júpiter y sobrevuelo de Europa con una de las cuatro sondas, por fases.', image: 'images/voyager/v1-europa-1979-thumb.jpg', alt: 'Europa fotografiada por Voyager 1 en 1979', area: 'integrated' },
-  { id: 'launch', accent: 'mission', title: 'Lanzamiento terrestre', meta: 'Laboratorio · lanzador ilustrativo', text: 'Ascenso en dos etapas desde la superficie hasta una órbita terrestre.', image: 'textures/earth_daymap.jpg', alt: '', area: 'launch', planet: true }
+  // 16: puerta de entrada para quien llega por primera vez al laboratorio.
+  { id: 'guide', accent: 'mission', title: 'Tu primera misión: Cassini a Marte', meta: 'Laboratorio · misión guiada en 5 pasos', text: 'Elige la sonda, calcula el viaje con efemérides de NASA/JPL y míralo en 3D.', image: 'textures/mars.jpg', alt: '', area: 'guide', planet: true },
+  { id: 'integrated', accent: 'mission', title: 'Misión completa a Europa', meta: 'Laboratorio · pendiente de auditoría independiente', text: 'Captura en Júpiter y sobrevuelo de Europa con Cassini o Juno, por fases.', image: 'images/voyager/v1-europa-1979-thumb.jpg', alt: 'Europa fotografiada por Voyager 1 en 1979', area: 'integrated' }
 ]);
 
 export function createFeaturedMissions({ navigator } = {}) {
