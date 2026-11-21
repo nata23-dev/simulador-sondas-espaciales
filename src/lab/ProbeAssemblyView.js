@@ -376,7 +376,9 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
   const designKey = design => JSON.stringify([design.coreId, design.parts.map(p => [p.socketId, p.componentId, p.fuelKg ?? null, p.adapter ?? false])]);
   function setDesign(design, selected = selectedId, options = {}) {
     if (disposed) return;
-    const key0 = designKey(design);
+    // 17: `procedural` fuerza la reconstrucción técnica (esquema con selección resaltada, o ensamblaje experimental sin modelo oficial).
+    const procedural = Boolean(options.procedural);
+    const key0 = designKey(design) + (procedural ? '|esquema' : '');
     if (key0 === mountedKey && modelState.source === 'nasa') { selectedId = selected; currentDesign = design; return; }
     clearAssembly(assembly);
     nodes = mountAssembly(assembly, design); selectedId = selected; currentDesign = design; mountedKey = key0;
@@ -384,8 +386,8 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
     const moved = key !== frameKey;
     applyFrame(view, moved); frameKey = key;
     drawMarkers(design, options);
-    const entry = nasaModelForCore(design.coreId);
-    Object.assign(modelState, { source: entry ? 'cargando' : 'procedural', entry, error: null });
+    const entry = procedural ? null : nasaModelForCore(design.coreId);
+    Object.assign(modelState, { source: entry ? 'cargando' : procedural ? 'esquema' : 'procedural', entry, error: null });
     if (entry) {
       const token = ++mountToken;
       attachNasaModel(assembly, design.coreId, { isCurrent: () => !disposed && token === mountToken }).then(result => {

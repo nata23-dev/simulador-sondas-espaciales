@@ -95,7 +95,7 @@ function stars() {
   return new THREE.Points(geometry, new THREE.PointsMaterial({ color: '#9eb4d4', size: 0.08, sizeAttenuation: true, transparent: true, opacity: 0.55 }));
 }
 
-export function createMissionExecutionView(host) {
+export function createMissionExecutionView(host, { onModel = null } = {}) {
   const scene = new THREE.Scene(); scene.background = new THREE.Color('#050a13');
   const camera = new THREE.PerspectiveCamera(46, 1, 0.005, 300);
   camera.position.set(0, 22, 53);
@@ -224,8 +224,15 @@ export function createMissionExecutionView(host) {
     scene.add(probeAssembly);
     // 15.1: el modelo oficial de NASA sustituye a la geometría procedimental cuando termina de cargarse (misma orientación: +Y = antena).
     const mounted = probeAssembly;
-    attachNasaModel(mounted, next.design?.coreId, { isCurrent: () => probeAssembly === mounted }).then(result => {
-      if (result.status !== 'nasa' || probeAssembly !== mounted) return;
+    // 17: un ensamblaje experimental no usa el modelo de NASA de su bus (no lo representaría); se queda con la reconstrucción.
+    const modelCore = next.design?.experimental ? null : next.design?.coreId;
+    const report = status => onModel?.({ status, designName: next.design?.name ?? null, coreId: next.design?.coreId ?? null,
+      probeId: next.design?.basedOn ?? null, experimental: Boolean(next.design?.experimental) });
+    report(modelCore ? 'cargando' : next.design ? 'procedural' : 'sin-sonda');
+    attachNasaModel(mounted, modelCore, { isCurrent: () => probeAssembly === mounted }).then(result => {
+      if (probeAssembly !== mounted) return;
+      if (modelCore) report(result.status === 'nasa' ? 'nasa' : 'procedural');
+      if (result.status !== 'nasa') return;
       fitProbeModel(mounted);
       if (lastPlacement) placeProbe(...lastPlacement); // recoloca con la nueva escala aunque la reproducción esté en pausa
       else mounted.scale.setScalar(0.25 * visualFactor);

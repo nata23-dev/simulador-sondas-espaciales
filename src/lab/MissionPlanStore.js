@@ -14,7 +14,10 @@ export const DESTINATIONS = Object.freeze([
 ]);
 
 export function designSignature(design) {
-  return JSON.stringify({ coreId: design.coreId, parts: design.parts.map(p => [p.socketId, p.componentId, p.fuelKg ?? null]).sort((a, b) => a[0].localeCompare(b[0])) });
+  const signature = { coreId: design.coreId, parts: design.parts.map(p => [p.socketId, p.componentId, p.fuelKg ?? null]).sort((a, b) => a[0].localeCompare(b[0])) };
+  // 17: un ensamblaje experimental es otro vehículo aunque todavía tenga las mismas piezas que la sonda de la que parte; así un
+  // cálculo hecho con la configuración histórica nunca se reproduce en su nombre. Las firmas históricas no cambian.
+  return JSON.stringify(design.experimental ? { ...signature, experimental: true } : signature);
 }
 
 export function isMissionResultCurrent(result, design, options) {
