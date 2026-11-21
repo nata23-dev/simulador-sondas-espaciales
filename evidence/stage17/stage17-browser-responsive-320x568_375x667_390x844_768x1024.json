@@ -1,0 +1,439 @@
+{
+  "part": "responsive",
+  "startedAt": "2026-11-21T01:15:32.220Z",
+  "shots": [
+    "r320x568_01_etapa1.png",
+    "r320x568_02_etapa1_ingenieria.png",
+    "r320x568_03_etapa2_calculada.png",
+    "r320x568_04_etapa3_reproduccion.png",
+    "r320x568_05_etapa3_telemetria.png",
+    "r320x568_06_inmersiva.png",
+    "r375x667_01_etapa1.png",
+    "r375x667_02_etapa1_ingenieria.png",
+    "r375x667_03_etapa2_calculada.png",
+    "r375x667_04_etapa3_reproduccion.png",
+    "r375x667_05_etapa3_telemetria.png",
+    "r375x667_06_inmersiva.png",
+    "r390x844_01_etapa1.png",
+    "r390x844_02_etapa1_ingenieria.png",
+    "r390x844_03_etapa2_calculada.png",
+    "r390x844_04_etapa3_reproduccion.png",
+    "r390x844_05_etapa3_telemetria.png",
+    "r390x844_06_inmersiva.png",
+    "r768x1024_01_etapa1.png",
+    "r768x1024_02_etapa1_ingenieria.png",
+    "r768x1024_03_etapa2_calculada.png",
+    "r768x1024_04_etapa3_reproduccion.png",
+    "r768x1024_05_etapa3_telemetria.png",
+    "r768x1024_06_inmersiva.png"
+  ],
+  "checks": {
+    "r320x568": {
+      "start": {
+        "stage": "probe",
+        "tab": "overview",
+        "rail": "closed",
+        "immersive": null,
+        "visible": {
+          ".lab-workspace": true,
+          "#lab-integrated": false,
+          "#lab-interplanetary": false,
+          "#lab-mission-planner": false,
+          "#lab-launch": false,
+          "#lab-mission-center": false
+        },
+        "tabs": [
+          "Vista general [actual]",
+          "Arquitectura y componentes",
+          "Planos y documentación",
+          "Ingeniería"
+        ],
+        "summary": {
+          "probe": "Cassini",
+          "design": "5,606 kg · Δv 2.34 km/s",
+          "destination": "Marte",
+          "state": "Sonda seleccionada · lista para planificar",
+          "tone": "idle"
+        },
+        "steps": [
+          "Elegir sonda: Cassini (done)",
+          "Planificar: Misión completa · sin calcular (todo)",
+          "Reproducir: Sin misión preparada (todo)"
+        ]
+      },
+      "offscreen": {
+        "probe": [],
+        "plan": [],
+        "play": []
+      },
+      "clipped": {
+        "probe": [],
+        "plan": [],
+        "play": []
+      },
+      "doc": {
+        "probe": 0,
+        "plan": 0,
+        "play": 0
+      },
+      "step1DoHidden": true,
+      "center": {
+        "vehicle": "cassini",
+        "model": "nasa",
+        "pane": "playback",
+        "drawer": "shown",
+        "immersive": null,
+        "name": "Cassini",
+        "modelText": "Modelo 3D oficial de NASA de esta sonda",
+        "empty": false,
+        "emptyReason": "Calcula una transferencia lunar en el Planificador. La escena usará la sonda y los estados del nuevo cálculo.",
+        "elapsed": "24.478 d transcurridos",
+        "stageStatus": "EN REPRODUCCIÓN"
+      },
+      "end": {
+        "stage": "play",
+        "tab": "playback",
+        "rail": "closed",
+        "immersive": null,
+        "visible": {
+          ".lab-workspace": false,
+          "#lab-integrated": false,
+          "#lab-interplanetary": false,
+          "#lab-mission-planner": false,
+          "#lab-launch": false,
+          "#lab-mission-center": true
+        },
+        "tabs": [
+          "Reproducción [actual]",
+          "Cámaras",
+          "Telemetría",
+          "Trayectoria y maniobras",
+          "Eventos",
+          "Resultados"
+        ],
+        "summary": {
+          "probe": "Cassini",
+          "design": "5,606 kg · Δv 2.34 km/s",
+          "destination": "Tierra → Marte (2028-11-29)",
+          "state": "Reproducción en curso",
+          "tone": "play"
+        },
+        "steps": [
+          "Elegir sonda: Cassini (done)",
+          "Planificar: Misión completa · misión viable según el modelo (done)",
+          "Reproducir: Reproducción en curso · Cassini (ready)"
+        ]
+      },
+      "immersive": {
+        "lab": "true",
+        "offscreen": []
+      }
+    },
+    "r375x667": {
+      "start": {
+        "stage": "probe",
+        "tab": "overview",
+        "rail": "closed",
+        "immersive": null,
+        "visible": {
+          ".lab-workspace": true,
+          "#lab-integrated": false,
+          "#lab-interplanetary": false,
+          "#lab-mission-planner": false,
+          "#lab-launch": false,
+          "#lab-mission-center": false
+        },
+        "tabs": [
+          "Vista general [actual]",
+          "Arquitectura y componentes",
+          "Planos y documentación",
+          "Ingeniería"
+        ],
+        "summary": {
+          "probe": "Cassini",
+          "design": "5,606 kg · Δv 2.34 km/s",
+          "destination": "Marte",
+          "state": "Sonda seleccionada · lista para planificar",
+          "tone": "idle"
+        },
+        "steps": [
+          "Elegir sonda: Cassini (done)",
+          "Planificar: Misión completa · sin calcular (todo)",
+          "Reproducir: Sin misión preparada (todo)"
+        ]
+      },
+      "offscreen": {
+        "probe": [],
+        "plan": [],
+        "play": []
+      },
+      "clipped": {
+        "probe": [],
+        "plan": [],
+        "play": []
+      },
+      "doc": {
+        "probe": 0,
+        "plan": 0,
+        "play": 0
+      },
+      "step1DoHidden": true,
+      "center": {
+        "vehicle": "cassini",
+        "model": "nasa",
+        "pane": "playback",
+        "drawer": "shown",
+        "immersive": null,
+        "name": "Cassini",
+        "modelText": "Modelo 3D oficial de NASA de esta sonda",
+        "empty": false,
+        "emptyReason": "Calcula una transferencia lunar en el Planificador. La escena usará la sonda y los estados del nuevo cálculo.",
+        "elapsed": "21.831 d transcurridos",
+        "stageStatus": "EN REPRODUCCIÓN"
+      },
+      "end": {
+        "stage": "play",
+        "tab": "playback",
+        "rail": "closed",
+        "immersive": null,
+        "visible": {
+          ".lab-workspace": false,
+          "#lab-integrated": false,
+          "#lab-interplanetary": false,
+          "#lab-mission-planner": false,
+          "#lab-launch": false,
+          "#lab-mission-center": true
+        },
+        "tabs": [
+          "Reproducción [actual]",
+          "Cámaras",
+          "Telemetría",
+          "Trayectoria y maniobras",
+          "Eventos",
+          "Resultados"
+        ],
+        "summary": {
+          "probe": "Cassini",
+          "design": "5,606 kg · Δv 2.34 km/s",
+          "destination": "Tierra → Marte (2028-11-29)",
+          "state": "Reproducción en curso",
+          "tone": "play"
+        },
+        "steps": [
+          "Elegir sonda: Cassini (done)",
+          "Planificar: Misión completa · misión viable según el modelo (done)",
+          "Reproducir: Reproducción en curso · Cassini (ready)"
+        ]
+      },
+      "immersive": {
+        "lab": "true",
+        "offscreen": []
+      }
+    },
+    "r390x844": {
+      "start": {
+        "stage": "probe",
+        "tab": "overview",
+        "rail": "closed",
+        "immersive": null,
+        "visible": {
+          ".lab-workspace": true,
+          "#lab-integrated": false,
+          "#lab-interplanetary": false,
+          "#lab-mission-planner": false,
+          "#lab-launch": false,
+          "#lab-mission-center": false
+        },
+        "tabs": [
+          "Vista general [actual]",
+          "Arquitectura y componentes",
+          "Planos y documentación",
+          "Ingeniería"
+        ],
+        "summary": {
+          "probe": "Cassini",
+          "design": "5,606 kg · Δv 2.34 km/s",
+          "destination": "Marte",
+          "state": "Sonda seleccionada · lista para planificar",
+          "tone": "idle"
+        },
+        "steps": [
+          "Elegir sonda: Cassini (done)",
+          "Planificar: Misión completa · sin calcular (todo)",
+          "Reproducir: Sin misión preparada (todo)"
+        ]
+      },
+      "offscreen": {
+        "probe": [],
+        "plan": [],
+        "play": []
+      },
+      "clipped": {
+        "probe": [],
+        "plan": [],
+        "play": []
+      },
+      "doc": {
+        "probe": 0,
+        "plan": 0,
+        "play": 0
+      },
+      "step1DoHidden": true,
+      "center": {
+        "vehicle": "cassini",
+        "model": "nasa",
+        "pane": "playback",
+        "drawer": "shown",
+        "immersive": null,
+        "name": "Cassini",
+        "modelText": "Modelo 3D oficial de NASA de esta sonda",
+        "empty": false,
+        "emptyReason": "Calcula una transferencia lunar en el Planificador. La escena usará la sonda y los estados del nuevo cálculo.",
+        "elapsed": "23.722 d transcurridos",
+        "stageStatus": "EN REPRODUCCIÓN"
+      },
+      "end": {
+        "stage": "play",
+        "tab": "playback",
+        "rail": "closed",
+        "immersive": null,
+        "visible": {
+          ".lab-workspace": false,
+          "#lab-integrated": false,
+          "#lab-interplanetary": false,
+          "#lab-mission-planner": false,
+          "#lab-launch": false,
+          "#lab-mission-center": true
+        },
+        "tabs": [
+          "Reproducción [actual]",
+          "Cámaras",
+          "Telemetría",
+          "Trayectoria y maniobras",
+          "Eventos",
+          "Resultados"
+        ],
+        "summary": {
+          "probe": "Cassini",
+          "design": "5,606 kg · Δv 2.34 km/s",
+          "destination": "Tierra → Marte (2028-11-29)",
+          "state": "Reproducción en curso",
+          "tone": "play"
+        },
+        "steps": [
+          "Elegir sonda: Cassini (done)",
+          "Planificar: Misión completa · misión viable según el modelo (done)",
+          "Reproducir: Reproducción en curso · Cassini (ready)"
+        ]
+      },
+      "immersive": {
+        "lab": "true",
+        "offscreen": []
+      }
+    },
+    "r768x1024": {
+      "start": {
+        "stage": "probe",
+        "tab": "overview",
+        "rail": "closed",
+        "immersive": null,
+        "visible": {
+          ".lab-workspace": true,
+          "#lab-integrated": false,
+          "#lab-interplanetary": false,
+          "#lab-mission-planner": false,
+          "#lab-launch": false,
+          "#lab-mission-center": false
+        },
+        "tabs": [
+          "Vista general [actual]",
+          "Arquitectura y componentes",
+          "Planos y documentación",
+          "Ingeniería"
+        ],
+        "summary": {
+          "probe": "Cassini",
+          "design": "5,606 kg · Δv 2.34 km/s",
+          "destination": "Marte",
+          "state": "Sonda seleccionada · lista para planificar",
+          "tone": "idle"
+        },
+        "steps": [
+          "Elegir sonda: Cassini (done)",
+          "Planificar: Misión completa · sin calcular (todo)",
+          "Reproducir: Sin misión preparada (todo)"
+        ]
+      },
+      "offscreen": {
+        "probe": [],
+        "plan": [],
+        "play": []
+      },
+      "clipped": {
+        "probe": [],
+        "plan": [],
+        "play": []
+      },
+      "doc": {
+        "probe": 0,
+        "plan": 0,
+        "play": 0
+      },
+      "step1DoHidden": true,
+      "center": {
+        "vehicle": "cassini",
+        "model": "nasa",
+        "pane": "playback",
+        "drawer": "shown",
+        "immersive": null,
+        "name": "Cassini",
+        "modelText": "Modelo 3D oficial de NASA de esta sonda",
+        "empty": false,
+        "emptyReason": "Calcula una transferencia lunar en el Planificador. La escena usará la sonda y los estados del nuevo cálculo.",
+        "elapsed": "27.108 d transcurridos",
+        "stageStatus": "EN REPRODUCCIÓN"
+      },
+      "end": {
+        "stage": "play",
+        "tab": "playback",
+        "rail": "closed",
+        "immersive": null,
+        "visible": {
+          ".lab-workspace": false,
+          "#lab-integrated": false,
+          "#lab-interplanetary": false,
+          "#lab-mission-planner": false,
+          "#lab-launch": false,
+          "#lab-mission-center": true
+        },
+        "tabs": [
+          "Reproducción [actual]",
+          "Cámaras",
+          "Telemetría",
+          "Trayectoria y maniobras",
+          "Eventos",
+          "Resultados"
+        ],
+        "summary": {
+          "probe": "Cassini",
+          "design": "5,606 kg · Δv 2.34 km/s",
+          "destination": "Tierra → Marte (2028-11-29)",
+          "state": "Reproducción en curso",
+          "tone": "play"
+        },
+        "steps": [
+          "Elegir sonda: Cassini (done)",
+          "Planificar: Misión completa · misión viable según el modelo (done)",
+          "Reproducir: Reproducción en curso · Cassini (ready)"
+        ]
+      },
+      "immersive": {
+        "lab": "true",
+        "offscreen": []
+      }
+    }
+  },
+  "overflow": {},
+  "errors": [],
+  "finishedAt": "2026-11-21T01:18:26.738Z"
+}
