@@ -21,7 +21,6 @@ export const CONTEXT_LABELS = Object.freeze({ helio: 'Heliocéntrico (Sol)', pla
 export const AUTO_RATE = Object.freeze({ cruise: 864000, outbound: 864000, 'planet-approach': 86400, flyby: 21600, 'planet-capture': 60, 'planet-orbit': 21600,
   'moon-transfer': 3600, 'moon-approach': 600, 'moon-capture': 10, 'moon-orbit': 600, 'moon-flyby': 300, landing: 60 });
 const SAMPLES = Object.freeze({ cruise: 360, outbound: 120, kepler: 90, burn: 40, landing: 60 });
-const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const norm = a => Math.hypot(a[0], a[1], a[2]);
 const ZERO = Object.freeze([0, 0, 0]);
 const PLANET_COLOR = Object.freeze({ '199': '#a39a91', '299': '#d8b979', '399': '#3f7cc0', '499': '#c46a43', '599': '#c9a77f', '699': '#d6c38f', '799': '#8fd0d8', '899': '#5b7fd6' });
@@ -206,7 +205,7 @@ export function deriveIntegratedTelemetry(execution, sample) {
     power,
     maneuversDone: doneManeuvers.map(mv => Object.freeze({ label: mv.label, propulsiveDeltaVKmS: mv.propulsiveDeltaVKmS, propellantKg: mv.propellantKg, endEvent: mv.endEvent })),
     verdict: m.verdict, limits: MISSION_LIMITS,
-    validation: '13 implementada y probada localmente; pendiente de auditoría independiente (Gemini). Viabilidad operativa: no verificada.'
+    validation: '13 implementada y probada localmente; pendiente de auditoría. Viabilidad operativa: no verificada.'
   });
 }
 export { PHASE_STATUS };

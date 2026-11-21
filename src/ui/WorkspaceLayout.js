@@ -16,7 +16,6 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   const panes = new Map();
   const definitions = [
     ['explore', 'Explorar', ['destination-menu']],
-    ['probe', 'Sonda', ['mission-panel']],
     ['telemetry', 'Datos', ['planet-info', 'moon-info', 'voyager-science-panel']],
     ['history', 'Historia', ['historical-events-panel', 'historical-launch-card']],
     ['photos', 'Fotos', ['historical-photos-panel']],
@@ -30,9 +29,8 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
     const tour = document.querySelector('#guided-tour-dock');
     if (active === 'history' && tour && !tour.hidden) title.textContent = tour.querySelector('#tour-title').textContent;
     else if (active === 'explore') {
-      title.textContent = app.dataset.appMode === 'historico' ? 'Misiones Voyager' : app.dataset.appMode === 'experimental' ? 'Sonda Experimental 01' : 'Explorar destinos';
+      title.textContent = app.dataset.appMode === 'historico' ? 'Misiones Voyager' : app.dataset.appMode === 'experimental' ? 'Laboratorio de misiones' : 'Explorar destinos';
     }
-    else if (active === 'probe') title.textContent = 'Sonda Experimental 01';
     else if (active === 'telemetry') {
       const selectedName = app.dataset.appMode === 'historico'
         ? document.querySelector('#voyager-card-heading')?.textContent
@@ -107,18 +105,6 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
       tabs[next].click(); tabs[next].focus();
     });
   }
-  const probeIntro = document.createElement('p');
-  probeIntro.className = 'context-intro probe-intro';
-  probeIntro.textContent = 'Selecciona la sonda con Enfocar. Inicia o pausa su recorrido aquí; ajusta la trayectoria y apariencia en Visualización.';
-  panes.get('probe').prepend(probeIntro);
-  const missionPanel = document.querySelector('#mission-panel');
-  const visualSettings = document.createElement('details');
-  visualSettings.className = 'context-advanced probe-settings';
-  visualSettings.innerHTML = '<summary>Visualización de la sonda</summary>';
-  const trajectoryToggle = missionPanel.querySelector('.mission-switch');
-  const appearanceSelect = missionPanel.querySelector('.mission-visual-selector');
-  trajectoryToggle.before(visualSettings);
-  visualSettings.append(trajectoryToggle, appearanceSelect);
   const searchArea = document.createElement('section');
   searchArea.className = 'context-search';
   searchArea.innerHTML = '<label for="context-search-input">Buscar planetas y sondas</label><input id="context-search-input" type="search" placeholder="Nombre del destino" autocomplete="off" /><div id="context-search-results" role="group" aria-label="Destinos disponibles"></div><p id="context-search-status" role="status">Selecciona un destino para enfocarlo.</p>';
@@ -133,8 +119,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   destinations.push(
     { id: 'voyager-1', label: 'Voyager 1', mode: 'historico' },
     { id: 'voyager-2', label: 'Voyager 2', mode: 'historico' },
-    { id: 'both', label: 'Ambas Voyager', mode: 'historico' },
-    { id: 'experimental-probe', label: 'Sonda Experimental 01', mode: 'experimental' }
+    { id: 'both', label: 'Ambas Voyager', mode: 'historico' }
   );
   let selectedDestination = null;
   for (const destination of destinations) {
@@ -211,8 +196,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
     if (first) { event.preventDefault(); first.click(); }
   });
   for (const [parent, selectors, label] of [
-    ['#planet-info .info-content', ['.coordinates', '.info-footnotes'], 'Coordenadas y referencia'],
-    ['#mission-panel .mission-body', ['.mission-metrics', '.mission-model-note'], 'Datos de la simulación']
+    ['#planet-info .info-content', ['.coordinates', '.info-footnotes'], 'Coordenadas y referencia']
   ]) {
     const container = document.querySelector(parent);
     const items = selectors.map(selector => container?.querySelector(selector)).filter(Boolean);
@@ -414,16 +398,14 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
     const historical = app.dataset.appMode === 'historico';
     document.querySelector('#brand-eyebrow').textContent = historical ? 'MISIONES HISTÓRICAS' : app.dataset.appMode === 'experimental' ? 'SIMULACIÓN EXPERIMENTAL' : 'SISTEMA SOLAR';
     for (const key of ['history', 'photos', 'navigation']) inspector.querySelector(`[data-inspector-tab=${key}]`).hidden = !historical;
-    inspector.querySelector('[data-inspector-tab=probe]').hidden = app.dataset.appMode !== 'experimental';
     document.querySelector('#historical-journey-status').hidden = !historical;
     document.querySelector('#historical-journey-entry').hidden = !historical;
     selectedDestination = null;
     searchInput.value = '';
     refreshDestinations();
     updateIntro();
-    if (app.dataset.appMode === 'experimental') missionPanel.open = true;
-    select(app.dataset.appMode === 'experimental' ? 'probe' : 'explore', false);
-    state(matchMedia('(max-width: 760px)').matches ? 'closed' : historical || app.dataset.appMode === 'experimental' ? 'half' : 'closed');
+    select('explore', false);
+    state(matchMedia('(max-width: 760px)').matches ? 'closed' : historical ? 'half' : 'closed');
   }
   new MutationObserver(modeChanged).observe(app, {attributes:true, attributeFilter:['data-app-mode']});
   matchMedia('(max-width: 760px)').addEventListener('change', () => state(inspector.dataset.state));
@@ -443,8 +425,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
     const historicalPlanet = app.dataset.appMode === 'historico'
       && destinations.some(item => item.id === event.detail?.id && item.mode === 'planet');
     if (app.dataset.appMode === 'historico') return;
-    select(app.dataset.appMode === 'experimental' && event.detail?.id === 'experimental-probe'
-      ? 'probe' : historicalPlanet ? 'explore' : 'telemetry');
+    select(historicalPlanet ? 'explore' : 'telemetry');
   });
   // Modal: foco contenido y retorno al control que lo abrió.
   const modal = document.querySelector('#photo-lightbox-modal');

@@ -20,8 +20,7 @@ export const AREAS = Object.freeze([
     { id: 'launch', title: 'Lanzamiento terrestre', desc: 'Despegue hasta una órbita baja con un lanzador ilustrativo', mode: 'experimental', section: 'launch', stage: 'plan', tab: 'launch', icon: 'icon-rocket' }
   ] },
   { group: 'Laboratorio · 3 Reproducir', items: [
-    { id: 'center', title: 'Centro de Misión', desc: 'Reproducción 3D, cámaras, telemetría, trayectoria, eventos y resultados', mode: 'experimental', section: 'center', stage: 'play', tab: 'playback', icon: 'icon-play' },
-    { id: 'orbital', title: 'Demostración científica', desc: 'Sonda Experimental 01 (ficticia, DOPRI54): ejemplo independiente, no usa la sonda activa', mode: 'experimental', orbital: true, icon: 'icon-eye' }
+    { id: 'center', title: 'Centro de Misión', desc: 'Reproducción en el Sistema Solar, cámaras, telemetría, trayectoria, eventos y resultados', mode: 'experimental', section: 'center', stage: 'play', tab: 'playback', icon: 'icon-play' }
   ] }
 ]);
 const AREA_BY_ID = new Map(AREAS.flatMap(group => group.items).map(area => [area.id, area]));
@@ -95,7 +94,7 @@ export function createAppNavigator() {
     if (mode === 'exploracion') return 'solar';
     if (mode === 'historico') return 'voyager';
     const labNode = document.querySelector('#experimental-lab');
-    if (!labNode || labNode.hidden) return 'orbital';
+    if (!labNode || labNode.hidden) return 'hangar';
     const section = labNode.dataset.section;
     if (section === 'hangar' && labNode.dataset.tab === 'docs') return 'docs';
     if (section === 'planner') return labNode.dataset.plannerMode === 'lunar' ? 'lunar' : labNode.dataset.plannerMode;
@@ -120,7 +119,6 @@ export function createAppNavigator() {
     if (app.dataset.appMode !== area.mode) switcher.querySelector(`button[data-mode-btn="${area.mode}"]`)?.click();
     if (area.mode !== 'experimental') { await waitForMode(area.mode); return; }
     await waitForMode('experimental');
-    if (area.orbital) { document.querySelector('[data-lab-action="orbital"]')?.click(); return; }
     document.dispatchEvent(new CustomEvent('lab:navigate', { detail: { section: area.section, plannerMode: area.plannerMode, stage: area.stage, tab: area.tab, focus: area.focus, guide: area.guide } }));
   }
   toggle.addEventListener('click', () => setOpen(panel.hidden));

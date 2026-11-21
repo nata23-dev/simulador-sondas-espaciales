@@ -22,7 +22,6 @@ const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const norm = a => Math.hypot(a[0], a[1], a[2]);
 const scale = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
 const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 const unit = a => { const n = norm(a); if (!(n > 0)) throw new RangeError('Vector nulo: dirección no definida.'); return scale(a, 1 / n); };
 const DEG = 180 / Math.PI;

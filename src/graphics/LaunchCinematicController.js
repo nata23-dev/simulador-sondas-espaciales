@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { crearCoheteTitanCentaur } from './TitanCentaurRocket.js';
 import { crearPlataformaLanzamientoLC41 } from './LaunchPadLC41.js';
 import {
-  HISTORICAL_MISSIONS_CATALOG,
   VOYAGER_1_ID,
   VOYAGER_2_ID
 } from '../science/VoyagerHistoricalMissions.js';

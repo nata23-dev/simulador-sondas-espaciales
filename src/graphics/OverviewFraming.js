@@ -7,9 +7,11 @@ const HOLGURA_RADIO = 1.18;
 const DISTANCIA_MAXIMA_ENCUADRE = 6000;
 const PLANETAS_INTERIORES = new Set(['Mercurio', 'Venus', 'Tierra', 'Marte']);
 
-function cuerposEnVista(objetos, { region = REGIONES_SISTEMA.COMPLETO, usarRadiosActuales = false, sonda = null } = {}) {
-  const radioSol = usarRadiosActuales ? 0.5 : 5.8;
+function cuerposEnVista(objetos, { region = REGIONES_SISTEMA.COMPLETO, usarRadiosActuales = false, sonda = null, cuerpos = null } = {}) {
+  const radioSol = usarRadiosActuales || cuerpos ? 0.5 : 5.8;
   const lista = [{ posicion: new THREE.Vector3(), radio: radioSol }];
+  // 17.1: conjunto explícito (vista general de una misión del laboratorio): el Sol y los discos indicados.
+  if (cuerpos) return lista.concat(cuerpos);
 
   for (const [nombre, objeto] of objetos.entries()) {
     if (region === REGIONES_SISTEMA.INTERIOR && !PLANETAS_INTERIORES.has(nombre)) {
@@ -77,7 +79,8 @@ export function calcularEncuadreVista(camera, objetos, zona, opciones = null) {
       : null;
   }
 
-  let inferiorDistancia = opciones?.region === REGIONES_SISTEMA.INTERIOR ? 2 : 8;
+  const ajustado = opciones?.region === REGIONES_SISTEMA.INTERIOR || Boolean(opciones?.cuerpos);
+  let inferiorDistancia = ajustado ? 2 : 8;
   let superiorDistancia = DISTANCIA_MAXIMA_ENCUADRE;
   if (!limites(superiorDistancia)) {
     throw new Error('No se pudo encuadrar la vista con el tamaño actual del lienzo.');
@@ -91,7 +94,7 @@ export function calcularEncuadreVista(camera, objetos, zona, opciones = null) {
 
   // Reserva espacio adicional para etiquetas, movimiento orbital y perspectiva.
   const usarOpcionesRegion = Boolean(opciones);
-  const margenMultiplicador = opciones?.region === REGIONES_SISTEMA.INTERIOR ? 1.24 : 1.10;
+  const margenMultiplicador = ajustado ? 1.24 : 1.10;
   const radioSolarMaximo = 75;
   const distanciaSolar = usarOpcionesRegion
     ? 18

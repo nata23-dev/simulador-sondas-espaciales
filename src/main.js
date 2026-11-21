@@ -12,8 +12,10 @@ import { crearSelectorPlanetas } from './ui/PlanetSelector.js';
 import { crearControlesTemporales } from './ui/TimelineControls.js';
 import { crearControlesVisualizacion } from './ui/VisualizationControls.js';
 import { crearControlesHUD } from './ui/HudControls.js';
-import { crearControlesMision } from './ui/MissionControls.js';
 import { createExperimentalLaboratory } from './ui/ExperimentalLaboratory.js';
+import { createSolarSystemMissionView } from './integration/SolarSystemMissionView.js';
+import { createMissionProbeSceneModel } from './lab/MissionProbeSceneModel.js';
+import { createInterplanetaryEphemeris } from './science/InterplanetaryEphemeris.js';
 import { createAppNavigator } from './ui/AppNavigator.js';
 import { createCommandPalette } from './ui/CommandPalette.js';
 import { createFeaturedMissions } from './ui/FeaturedMissions.js';
@@ -24,18 +26,7 @@ import { createMeasurableBodyEndpoint } from './science/DistanceMeasurement.js';
 import { HORIZONS_FRAME } from './science/Frames.js';
 import { KM_PER_AU } from './science/Units.js';
 import { gregorianLabelToJulianMidnight } from './science/Time.js';
-import { jdTdbToElapsedSeconds } from './science/SimulationTime.js';
-import {
-  EXPERIMENTAL_PROBE_01_DEFINITION,
-  EXPERIMENTAL_PROBE_01_EPOCH_DATE,
-  propagateExperimentalProbe01
-} from './science/ExperimentalProbe01.js';
-import {
-  evaluateVisualPlanetsFromField,
-  physicalPositionKmToScene,
-  probeStateToVisual,
-  trajectoryRenderSamplesToScenePositions
-} from './integration/ProbeVisualAdapter.js';
+import { physicalPositionKmToScene } from './integration/ProbeVisualAdapter.js';
 import {
   loadScientificPipeline,
   queryVisualStates,
@@ -88,18 +79,14 @@ let modoOperacion = 'exploracion'; // 'exploracion' | 'historico' | 'experimenta
 let datosAstronomicos = null;
 let estadosActuales = null;
 let instanteCientificoActivo = null;
-let estadoVisualSondaActual = null;
 let planetaSeleccionado = null;
 let lunaSeleccionada = null;
 let datosLunas = null;
 let estadosLunas = {};
 let proveedorCientifico = null;
-let trayectoriaSonda = null;
-let tiempoMisionSegundos = 0;
-let modoEjecucionMision = 'listo';
-let rafMisionId = null;
-let instanteRealAnterior = 0;
 let consultaActual = 0;
+// 17.1: reproducción de la misión del laboratorio en esta misma escena (se crea junto al simulador).
+let vistaMisionLaboratorio = null;
 const modoCientifico = scientificPipelineEnabled(window.location.search);
 
 // Estado del Modo Histórico Voyager 1 y Voyager 2
@@ -111,13 +98,6 @@ let rafHistoricoId = null;
 let instanteRealHistAnterior = 0;
 let consultaHistToken = 0;
 let bucleHistOcupado = false;
-
-function detenerBucleMision() {
-  if (rafMisionId !== null) {
-    cancelAnimationFrame(rafMisionId);
-    rafMisionId = null;
-  }
-}
 
 function detenerBucleHistorico() {
   if (rafHistoricoId !== null) {
@@ -300,44 +280,6 @@ function obtenerDescriptorCientificoCuerpo(idCuerpo) {
     };
   }
 
-  if (idCuerpo === 'sonda-experimental-01') {
-    if (modoOperacion !== 'experimental') {
-      return {
-        endpoint: null,
-        posicionEscena: null,
-        motivoNoDisponible: 'Activa el modo Experimental para medir a Sonda Experimental 01.'
-      };
-    }
-    if (!trayectoriaSonda) {
-      return {
-        endpoint: null,
-        posicionEscena: null,
-        motivoNoDisponible: 'La propagación orbital de Sonda Experimental 01 no está disponible.'
-      };
-    }
-    if (!estadoVisualSondaActual) {
-      return {
-        endpoint: null,
-        posicionEscena: null,
-        motivoNoDisponible: 'Sonda Experimental 01 no dispone de estado antes de su época inicial (2026-10-10 · 00:00 TDB).'
-      };
-    }
-    return {
-      endpoint: createMeasurableBodyEndpoint({
-        id: 'sonda-experimental-01',
-        name: EXPERIMENTAL_PROBE_01_DEFINITION.name,
-        positionKm: estadoVisualSondaActual.posicionKm,
-        jdTdb: estadoVisualSondaActual.jdTdb,
-        epochLabelTdb: instanteCientificoActivo.labelTdb,
-        origin: HORIZONS_FRAME.origin,
-        frameId: HORIZONS_FRAME.id,
-        source: 'Propagación numérica DOPRI54'
-      }),
-      posicionEscena: estadoVisualSondaActual.posicionEscena,
-      motivoNoDisponible: null
-    };
-  }
-
   const estado = estadosActuales[idCuerpo];
   if (!estado) {
     return {
@@ -387,133 +329,6 @@ function obtenerDescriptorCientificoCuerpo(idCuerpo) {
     posicionEscena: estado.posicionEscena ?? physicalPositionKmToScene(positionKm),
     motivoNoDisponible: null
   };
-}
-
-function aplicarEstadoSondaEnSegundos(segundos) {
-  if (!trayectoriaSonda || modoOperacion !== 'experimental') {
-    estadoVisualSondaActual = null;
-    if (modoOperacion !== 'experimental') simulador.ocultarSonda();
-    return null;
-  }
-  const estadoDinamico = trayectoriaSonda.getStateAtElapsedSeconds(segundos);
-  const estadoVisual = probeStateToVisual(estadoDinamico);
-  estadoVisualSondaActual = estadoVisual;
-  simulador.actualizarEstadoSonda(estadoVisual.posicionEscena, segundos);
-  controlesMision.actualizarTelemetria(estadoVisual);
-  controlesMision.actualizarEnfoqueSonda(simulador.sondaSeleccionada());
-  return estadoVisual;
-}
-
-function sincronizarSondaConFechaDiaria(fecha) {
-  if (!trayectoriaSonda) {
-    estadoVisualSondaActual = null;
-    return;
-  }
-  if (modoOperacion !== 'experimental') {
-    estadoVisualSondaActual = null;
-    simulador.ocultarSonda();
-    return;
-  }
-  const jd = gregorianLabelToJulianMidnight(fecha);
-  const seg = jdTdbToElapsedSeconds(trayectoriaSonda.epochJdTdb, jd);
-  if (seg < trayectoriaSonda.minSeconds || seg > trayectoriaSonda.maxSeconds) {
-    tiempoMisionSegundos = 0;
-    estadoVisualSondaActual = null;
-    modoEjecucionMision = seg < trayectoriaSonda.minSeconds ? 'anterior_epoca' : 'fin_cobertura';
-    simulador.ocultarSonda();
-    controlesMision.actualizarTelemetria(null);
-    controlesMision.actualizarEnfoqueSonda(false);
-    controlesMision.actualizarEstadoEjecucion(modoEjecucionMision);
-    return;
-  }
-  tiempoMisionSegundos = seg;
-  aplicarEstadoSondaEnSegundos(seg);
-  modoEjecucionMision = seg === 0
-    ? 'listo'
-    : (seg >= trayectoriaSonda.maxSeconds ? 'fin_cobertura' : 'pausado');
-  controlesMision.actualizarEstadoEjecucion(
-    modoEjecucionMision,
-    controlesTemporales.obtenerVelocidad()
-  );
-}
-
-function colocarEscenaEnEpocaInicialMision() {
-  if (!datosAstronomicos || !trayectoriaSonda) return;
-  ++consultaActual;
-  tiempoMisionSegundos = 0;
-  instanteCientificoActivo = {
-    jdTdb: trayectoriaSonda.epochJdTdb,
-    labelTdb: `${EXPERIMENTAL_PROBE_01_EPOCH_DATE} · 00:00 TDB`
-  };
-  if (modoCientifico) {
-    const { states } = evaluateVisualPlanetsFromField(trayectoriaSonda.ephemerisField, 0);
-    simulador.actualizarPosiciones(states, { reencuadrarVista: false });
-    estadosActuales = states;
-    estadoDatos.textContent = `Proveedor científico · muestras exactas · ${EXPERIMENTAL_PROBE_01_EPOCH_DATE} TDB`;
-  } else {
-    const estados = obtenerEstados(datosAstronomicos, EXPERIMENTAL_PROBE_01_EPOCH_DATE);
-    simulador.actualizarPosiciones(estados, { reencuadrarVista: false });
-    estadosActuales = estados;
-    estadoDatos.textContent = `NASA/JPL Horizons · muestra diaria ${EXPERIMENTAL_PROBE_01_EPOCH_DATE} (TDB)`;
-  }
-  fechaEscena.textContent = `${EXPERIMENTAL_PROBE_01_EPOCH_DATE} · 00:00 TDB`;
-  controlesTemporales.sincronizarFechaSilenciosa(EXPERIMENTAL_PROBE_01_EPOCH_DATE, null, '00:00');
-  actualizarPanel(EXPERIMENTAL_PROBE_01_EPOCH_DATE);
-  aplicarEstadoSondaEnSegundos(0);
-  controlesDistancia.actualizar();
-}
-
-function avanzarFotogramaMision(ahora) {
-  if (modoOperacion !== 'experimental' || modoEjecucionMision !== 'simulando' || !trayectoriaSonda) {
-    rafMisionId = null;
-    return;
-  }
-  const deltaReal = Math.min(Math.max((ahora - instanteRealAnterior) / 1000, 0), 0.1);
-  instanteRealAnterior = ahora;
-  const factorVelocidad = controlesTemporales.obtenerVelocidad();
-
-  tiempoMisionSegundos = Math.min(
-    tiempoMisionSegundos + deltaReal * 86400 * factorVelocidad,
-    trayectoriaSonda.maxSeconds
-  );
-
-  const { states, calendar } = evaluateVisualPlanetsFromField(
-    trayectoriaSonda.ephemerisField,
-    tiempoMisionSegundos
-  );
-  instanteCientificoActivo = {
-    jdTdb: calendar.jdTdb,
-    labelTdb: calendar.shortLabelTdb
-  };
-  simulador.actualizarPosiciones(states, { reencuadrarVista: false });
-  estadosActuales = states;
-  aplicarEstadoSondaEnSegundos(tiempoMisionSegundos);
-  fechaEscena.textContent = calendar.labelTdb;
-  actualizarPanel(calendar.dateIso);
-  controlesDistancia.actualizar();
-
-  const etiquetaVelocidad = `${String(factorVelocidad).replace('.', ',')}×`;
-  controlesTemporales.sincronizarFechaSilenciosa(
-    calendar.dateIso,
-    `Misión · ${etiquetaVelocidad}`,
-    calendar.timeHm
-  );
-  estadoDatos.textContent = `Simulación orbital TDB · Hermite + DOPRI54 · ${calendar.shortLabelTdb}`;
-
-  if (tiempoMisionSegundos >= trayectoriaSonda.maxSeconds) {
-    rafMisionId = null;
-    modoEjecucionMision = 'fin_cobertura';
-    controlesMision.actualizarEstadoEjecucion('fin_cobertura');
-    controlesTemporales.sincronizarFechaSilenciosa(
-      calendar.dateIso,
-      'Fin de cobertura',
-      calendar.timeHm
-    );
-    estadoDatos.textContent = `Fin de cobertura de efemérides NASA/JPL Horizons (${calendar.shortLabelTdb})`;
-    return;
-  }
-
-  rafMisionId = requestAnimationFrame(avanzarFotogramaMision);
 }
 
 // =========================================================================
@@ -835,11 +650,6 @@ async function cambiarModoOperacion(nuevoModo) {
     simulador.actualizarLunas({}, false);
     simulador.vistaGeneral();
     controlesTemporales.detener();
-    detenerBucleMision();
-    if (modoEjecucionMision === 'simulando') {
-      modoEjecucionMision = 'pausado';
-      controlesMision.actualizarEstadoEjecucion('pausado');
-    }
     simulador.ocultarSonda();
     planetaSeleccionado = null;
     selectorPlanetas.actualizar(null);
@@ -882,7 +692,8 @@ async function cambiarModoOperacion(nuevoModo) {
   }
 
   const fecha2026 = controlesTemporales.obtenerFecha() || '2026-10-10';
-  if (datosAstronomicos) {
+  // 17.1: si la misión del laboratorio ocupa la escena, sus planetas están en la época de la misión: no se sobrescriben.
+  if (datosAstronomicos && !vistaMisionLaboratorio?.isControlling()) {
     const jdFecha = gregorianLabelToJulianMidnight(fecha2026);
     instanteCientificoActivo = {
       jdTdb: jdFecha,
@@ -896,31 +707,16 @@ async function cambiarModoOperacion(nuevoModo) {
     estadoDatos.textContent = `NASA/JPL Horizons · muestra diaria ${fecha2026} (TDB)`;
   }
 
-  if (nuevoModo === 'experimental') {
-    controlesDistancia.configurarModoOperacion('experimental');
-    tituloEscena.textContent = 'Sistema Solar';
-    const observedEl = document.querySelector('#observed-body');
-    if (observedEl) observedEl.textContent = 'Observando · Sonda Experimental 01';
-    etiquetaModoVista.textContent = 'DINÁMICA ORBITAL / EXPERIMENTAL';
-    hud.actualizarSeleccionSonda(true, 'Sonda Experimental 01');
-    sincronizarSondaConFechaDiaria(fecha2026);
-    if (trayectoriaSonda) {
-      simulador.mostrarTrayectoriaSonda(controlesMision.trayectoriaMarcada());
-    }
-  } else {
-    detenerBucleMision();
-    if (modoEjecucionMision === 'simulando') {
-      modoEjecucionMision = 'pausado';
-      controlesMision.actualizarEstadoEjecucion('pausado');
-    }
-    simulador.ocultarSonda();
-    controlesDistancia.configurarModoOperacion('exploracion');
-    tituloEscena.textContent = 'Sistema Solar';
-    const observedEl = document.querySelector('#observed-body');
-    if (observedEl) observedEl.textContent = 'Observando · Vista General';
-    etiquetaModoVista.textContent = 'EXPLORADOR ESPACIAL / VISTA GENERAL';
-    hud.actualizarSeleccionSonda(false);
-  }
+  // 17.1: el modo experimental es el laboratorio de misiones (la Sonda Experimental 01 ya no forma parte de la interfaz).
+  // La sonda de la escena solo aparece cuando «3 · Reproducir» dibuja una misión planificada en este Sistema Solar.
+  controlesTemporales.detener();
+  if (!vistaMisionLaboratorio?.isControlling()) simulador.ocultarSonda();
+  controlesDistancia.configurarModoOperacion('exploracion');
+  tituloEscena.textContent = 'Sistema Solar';
+  const observedEl = document.querySelector('#observed-body');
+  if (observedEl) observedEl.textContent = 'Observando · Vista General';
+  etiquetaModoVista.textContent = nuevoModo === 'experimental' ? 'LABORATORIO DE MISIONES' : 'EXPLORADOR ESPACIAL / VISTA GENERAL';
+  hud.actualizarSeleccionSonda(false);
 
   if (modoPrevio === 'historico') {
     simulador.vistaGeneral();
@@ -928,55 +724,40 @@ async function cambiarModoOperacion(nuevoModo) {
   actualizarPanel(fecha2026);
 }
 
-const controlesMision = crearControlesMision({
-  alAlternarEjecucion: () => {
-    if (!trayectoriaSonda || modoOperacion !== 'experimental') return;
-    if (modoEjecucionMision === 'simulando') {
-      detenerBucleMision();
-      modoEjecucionMision = 'pausado';
-      controlesMision.actualizarEstadoEjecucion('pausado');
-      const { calendar } = evaluateVisualPlanetsFromField(
-        trayectoriaSonda.ephemerisField,
-        tiempoMisionSegundos
-      );
-      controlesTemporales.sincronizarFechaSilenciosa(calendar.dateIso, null, calendar.timeHm);
-      return;
-    }
+// 17.1: al terminar la reproducción de una misión del laboratorio, la escena vuelve a la fecha de exploración.
+// En el modo histórico no se toca: ese modo aplica su propio instante al activarse.
+function restaurarEscenaTrasMisionLaboratorio() {
+  if (modoOperacion === 'historico' || !datosAstronomicos) return;
+  ++consultaActual;
+  const fecha = controlesTemporales.obtenerFecha() || '2026-10-10';
+  const jdFecha = gregorianLabelToJulianMidnight(fecha);
+  instanteCientificoActivo = { jdTdb: jdFecha, labelTdb: `${fecha} · 00:00 TDB` };
+  const estados = obtenerEstados(datosAstronomicos, fecha);
+  simulador.actualizarPosiciones(estados, { reencuadrarVista: false });
+  actualizarLunasExploracion(jdFecha);
+  estadosActuales = estados;
+  fechaEscena.textContent = `${fecha} · 00:00 TDB`;
+  estadoDatos.textContent = `NASA/JPL Horizons · muestra diaria ${fecha} (TDB)`;
+  actualizarPanel(fecha);
+  controlesDistancia.actualizar();
+}
 
-    controlesTemporales.detener();
-    ++consultaActual;
-    if (modoEjecucionMision === 'anterior_epoca'
-      || modoEjecucionMision === 'fin_cobertura'
-      || tiempoMisionSegundos >= trayectoriaSonda.maxSeconds) {
-      colocarEscenaEnEpocaInicialMision();
-    }
-
-    modoEjecucionMision = 'simulando';
-    controlesMision.actualizarEstadoEjecucion('simulando', controlesTemporales.obtenerVelocidad());
-    instanteRealAnterior = performance.now();
-    detenerBucleMision();
-    rafMisionId = requestAnimationFrame(avanzarFotogramaMision);
-  },
-  alReiniciar: () => {
-    if (!trayectoriaSonda || modoOperacion !== 'experimental') return;
-    detenerBucleMision();
-    controlesTemporales.detener();
-    colocarEscenaEnEpocaInicialMision();
-    modoEjecucionMision = 'listo';
-    controlesMision.actualizarEstadoEjecucion('listo');
-  },
-  alEnfocarSonda: () => {
-    if (!simulador.enfocarSonda()) {
-      estadoDatos.textContent = 'No se pudo calcular una ruta segura de cámara hacia la sonda.';
-    }
-  },
-  alAlternarTrayectoria: mostrar => {
-    simulador.mostrarTrayectoriaSonda(mostrar);
-  },
-  alSeleccionarAparienciaSonda: modo => {
-    simulador.establecerAparienciaSonda(modo);
+// Efemérides interplanetarias (2026–2046, centros de los ocho planetas) para la reproducción en la escena principal.
+let promesaEfemeridesInterplanetarias = null;
+function cargarEfemeridesInterplanetarias() {
+  if (!promesaEfemeridesInterplanetarias) {
+    const base = import.meta.env.BASE_URL;
+    const leer = async archivo => {
+      const respuesta = await fetch(`${base}${archivo}`);
+      if (!respuesta.ok) throw Error(`${archivo}: HTTP ${respuesta.status}`);
+      return respuesta.json();
+    };
+    promesaEfemeridesInterplanetarias = leer('data/interplanetary-ephemerides-catalog-v1.json')
+      .then(catalog => createInterplanetaryEphemeris({ catalog, loadJson: leer }));
+    promesaEfemeridesInterplanetarias.catch(() => { promesaEfemeridesInterplanetarias = null; });
   }
-});
+  return promesaEfemeridesInterplanetarias;
+}
 
 const selectorPlanetas = crearSelectorPlanetas({
   alElegir: nombre => {
@@ -999,8 +780,7 @@ const selectorPlanetas = crearSelectorPlanetas({
 });
 
 const controlesTemporales = crearControlesTemporales(fecha => {
-  if (!datosAstronomicos || modoOperacion === 'historico') return;
-  detenerBucleMision();
+  if (!datosAstronomicos || modoOperacion === 'historico' || vistaMisionLaboratorio?.isControlling()) return;
   const solicitud = ++consultaActual;
   const jdFecha = gregorianLabelToJulianMidnight(fecha);
   instanteCientificoActivo = {
@@ -1016,12 +796,11 @@ const controlesTemporales = crearControlesTemporales(fecha => {
     ? `Vista provisional del flujo anterior · consultando proveedor científico para ${fecha}`
     : `NASA/JPL Horizons · muestra diaria ${fecha} (TDB)`;
   actualizarPanel(fecha);
-  sincronizarSondaConFechaDiaria(fecha);
   controlesDistancia.actualizar();
   if (proveedorCientifico) {
     queryVisualStates(proveedorCientifico, jdFecha)
       .then(({ states, status }) => {
-        if (solicitud !== consultaActual || modoOperacion === 'historico') return;
+        if (solicitud !== consultaActual || modoOperacion === 'historico' || vistaMisionLaboratorio?.isControlling()) return;
         simulador.actualizarPosiciones(states);
         actualizarLunasExploracion(jdFecha);
         estadosActuales = states;
@@ -1032,12 +811,6 @@ const controlesTemporales = crearControlesTemporales(fecha => {
         if (solicitud !== consultaActual || modoOperacion === 'historico') return;
         estadoDatos.textContent = `Fallback visual del flujo anterior · proveedor científico: ${error.message}`;
       });
-  }
-});
-
-controlesTemporales.alCambiarVelocidad(factor => {
-  if (modoEjecucionMision === 'simulando') {
-    controlesMision.actualizarEstadoEjecucion('simulando', factor);
   }
 });
 
@@ -1147,9 +920,8 @@ const simulador = createSolarSystem(
       selectorPlanetas.actualizar(null);
       actualizarPanel(controlesTemporales.obtenerFecha());
     }
-    controlesMision.actualizarEnfoqueSonda(activa);
-    hud.actualizarSeleccionSonda(activa, EXPERIMENTAL_PROBE_01_DEFINITION.name);
-    if (activa) document.dispatchEvent(new CustomEvent('sim:object-selected', { detail: { id: 'experimental-probe' } }));
+    // 17.1: la única sonda de esta escena fuera del modo histórico es la de la misión del laboratorio en reproducción.
+    hud.actualizarSeleccionSonda(activa, vistaMisionLaboratorio?.getState().probeName ?? 'Sonda');
   },
   {
     alSeleccionarLuna: nombre => {
@@ -1779,8 +1551,12 @@ simulador.alCambiarVista(() => {
   }
 });
 
-simulador.alCambiarModeloSonda(info => {
-  controlesMision.actualizarEstadoModelo3D(info);
+// 17.1: «3 · Reproducir» del laboratorio dibuja las misiones heliocéntricas en esta escena (misma conversión de ejes y escala).
+vistaMisionLaboratorio = createSolarSystemMissionView({
+  scene: simulador,
+  loadEphemeris: cargarEfemeridesInterplanetarias,
+  createModel: createMissionProbeSceneModel,
+  onRelease: restaurarEscenaTrasMisionLaboratorio
 });
 simulador.alCambiarModoEscala(() => {
   controlesDistancia.actualizar();
@@ -1791,7 +1567,6 @@ bindQualityControls(document.querySelector('#quality-controls')); // 15: perfile
 botonReintentar.addEventListener('click', iniciar);
 
 async function iniciar() {
-  detenerBucleMision();
   detenerBucleHistorico();
   estadoDatos.textContent = 'Cargando efemérides de NASA/JPL Horizons…';
   botonReintentar.hidden = true;
@@ -1819,37 +1594,16 @@ async function iniciar() {
       console.error('Lunas no disponibles:', moonError);
     }
     proveedorCientifico = null;
-    trayectoriaSonda = null;
-    estadoVisualSondaActual = null;
     let errorCientifico = null;
-    let proveedorMotor = null;
 
-    try {
-      proveedorMotor = await loadScientificPipeline({ baseUrl: import.meta.env.BASE_URL });
-      if (modoCientifico) proveedorCientifico = proveedorMotor;
-    } catch (error) {
-      errorCientifico = error;
-    }
-
-    if (proveedorMotor) {
+    // 17.1: el proveedor científico solo se carga para el flujo opcional ?ephemeris=scientific; ya no hay una sonda
+    // demostrativa que propagar al arrancar.
+    if (modoCientifico) {
       try {
-        trayectoriaSonda = await propagateExperimentalProbe01({
-          ephemerisProvider: proveedorMotor
-        });
-        const muestrasRender = trayectoriaSonda.getRenderSamplesKm();
-        const verticesEscena = trajectoryRenderSamplesToScenePositions(muestrasRender);
-        simulador.configurarTrayectoriaSonda(verticesEscena, muestrasRender.timesSeconds);
-        simulador.mostrarTrayectoriaSonda(controlesMision.trayectoriaMarcada());
-        controlesMision.configurarMision({
-          definicionSonda: EXPERIMENTAL_PROBE_01_DEFINITION,
-          marco: 'Heliocéntrica · ICRF Eclíptico J2000'
-        });
-      } catch (errorProp) {
-        console.error(errorProp);
-        controlesMision.informarError(`Error de propagación orbital: ${errorProp.message}`);
+        proveedorCientifico = await loadScientificPipeline({ baseUrl: import.meta.env.BASE_URL });
+      } catch (error) {
+        errorCientifico = error;
       }
-    } else if (errorCientifico) {
-      controlesMision.informarError(`Sin proveedor de efemérides para el motor orbital: ${errorCientifico.message}`);
     }
 
     controlesTemporales.configurar(datosAstronomicos, '2026-10-10');
@@ -1873,13 +1627,10 @@ async function iniciar() {
   } catch (error) {
     ++consultaActual;
     datosAstronomicos = null;
-    trayectoriaSonda = null;
-    estadoVisualSondaActual = null;
     instanteCientificoActivo = null;
     controlesDistancia.actualizar();
     console.error(error);
     estadoDatos.textContent = `No se pudieron cargar las efemérides: ${error.message}`;
-    controlesMision.informarError(`Efemérides no disponibles: ${error.message}`);
     botonReintentar.hidden = false;
     document.querySelector('#source-menu').open = true;
   }
@@ -1896,7 +1647,10 @@ window.__SIMULADOR_DIAGNOSTICO__ = Object.freeze({
   obtenerLunas: () => ({ seleccionada: lunaSeleccionada, estados: estadosLunas,
     visibles: simulador.obtenerEstadoVisualLunas() }),
   obtenerEstadoModelosHistoricos: () => simulador.obtenerEstadoModelosHistoricos(),
-  obtenerEstadoModeloExperimental: () => simulador.obtenerEstadoModeloSonda(),
+  obtenerEstadoModeloSondaMision: () => simulador.obtenerEstadoModeloSonda(),
+  // 17.1: estado de la reproducción de la misión del laboratorio en el Sistema Solar principal y lo que dibuja la escena.
+  obtenerEstadoMisionEscenaPrincipal: () => vistaMisionLaboratorio?.getState() ?? null,
+  obtenerDiagnosticoEscena: () => simulador.obtenerDiagnosticoEscena(),
   obtenerEstadoLanzamiento: () => ({
     activo: simulador.estaEnLanzamiento(),
     fase: simulador.obtenerFaseLanzamiento?.()
@@ -1914,12 +1668,6 @@ window.__SIMULADOR_DIAGNOSTICO__ = Object.freeze({
 
 crearWorkspaceLayout({
   alBuscarDestino: id => {
-    if (id === 'experimental-probe') {
-      const focus = document.querySelector('#mission-focus-button');
-      if (focus.disabled) return false;
-      focus.click();
-      return true;
-    }
     if (id === 'voyager-1' || id === 'voyager-2' || id === 'both') {
       if (!motorHistorico) return false;
       document.querySelector(`[data-mission-choice="${id}"]`).click();
@@ -1937,7 +1685,7 @@ crearWorkspaceLayout({
     return true;
   }
 });
-const laboratorioExperimental = createExperimentalLaboratory();
+const laboratorioExperimental = createExperimentalLaboratory({ missionScene: vistaMisionLaboratorio });
 // 14: mapa de áreas en la cabecera (solo navegación).
 const navegadorAreas = createAppNavigator();
 // 14.1: búsqueda global, portada de misiones destacadas y presentación de formularios del laboratorio (solo interfaz).

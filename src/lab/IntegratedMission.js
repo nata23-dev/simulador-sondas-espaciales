@@ -95,6 +95,18 @@ function elapsedOf(departureJdTdb, jd) { return (jd - departureJdTdb) * 86400; }
  * `input`: { destinationId, moonId?, opportunity: { departureJdTdb, arrivalJdTdb, label? }, design, propulsionModule?, lander?, profile }
  * `data`: { helio, moons? }. Devuelve la misión con tramos, eventos, fases, recursos y comprobaciones de continuidad.
  */
+// 17.1: órbita resultante tras una captura de empuje finito. El encendido se corta al alcanzar el apoapsis objetivo; en un
+// encendido largo el periapsis se desplaza respecto al apuntado en la llegada (p. ej. A1 con Cassini: 3000 → 315,5 km).
+// Solo describe el estado ya calculado.
+function resultingOrbitNote(insertion, aimedPeriapsisAltitudeKm) {
+  const o = insertion.final?.orbit;
+  if (!o?.bound || !Number.isFinite(o.apoapsisAltitudeKm)) return '';
+  const km = x => String(Math.round(x)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const shifted = Number.isFinite(aimedPeriapsisAltitudeKm) && Math.abs(o.periapsisAltitudeKm - aimedPeriapsisAltitudeKm) > Math.max(1, 0.01 * Math.abs(aimedPeriapsisAltitudeKm));
+  const hours = insertion.burns?.reduce((acc, b) => acc + (b.durationSeconds ?? 0), 0) / 3600;
+  return ` Órbita resultante: ${km(o.periapsisAltitudeKm)} × ${km(o.apoapsisAltitudeKm)} km de altitud${shifted ? ` (periapsis apuntado ${km(aimedPeriapsisAltitudeKm)} km; el encendido de ${hours.toFixed(1)} h lo desplaza)` : ''}.`;
+}
+
 export function computeIntegratedMission(input, data) {
   const t0 = typeof performance !== 'undefined' ? performance.now() : 0;
   const tgt = ENCOUNTER_TARGETS[input.destinationId];
@@ -193,7 +205,7 @@ export function computeIntegratedMission(input, data) {
   phase('approach', `Aproximación hiperbólica a ${tgt.name}`, PHASE_STATUS.done, LEVEL.operational, { detail: `Periapsis apuntado ${(approachInfo.periapsisAltitudeKm).toFixed(2)} km de altitud; v∞ ${approachInfo.vInfKmS.toFixed(4)} km/s; plano B θ = ${approachInfo.bAngleDeg.toFixed(2)}°.`,
     startSeconds: tSoi, endSeconds: tSoi + (ins.segments[0]?.endSeconds ?? 0) });
   phase('capture', `Captura en ${tgt.name} (empuje finito)`, insertionLabel, ins.status === INSERTION_STATUS.target ? LEVEL.experimental : LEVEL.notViable, {
-    detail: `${ins.status}. ${ins.failure ?? ''} Propelente ${ins.totals.propellantKg.toFixed(1)} kg · Δv ${(ins.totals.propulsiveDeltaVKmS * 1000).toFixed(1)} m/s (referencia impulsiva ${(reference.totalDeltaVKmS * 1000).toFixed(1)} m/s).`,
+    detail: `${ins.status}. ${ins.failure ?? ''} Propelente ${ins.totals.propellantKg.toFixed(1)} kg · Δv ${(ins.totals.propulsiveDeltaVKmS * 1000).toFixed(1)} m/s (referencia impulsiva ${(reference.totalDeltaVKmS * 1000).toFixed(1)} m/s).${resultingOrbitNote(ins, approachInfo.periapsisAltitudeKm)}`,
     insertion: summarizeInsertion(ins, R), reference, startSeconds: tSoi, endSeconds: tAfterPlanet });
   captured = ins.final.orbit.bound && ins.status !== INSERTION_STATUS.impact;
   if (ins.status === INSERTION_STATUS.flyby) { flybyAndOutbound(ins.final, tAfterPlanet, true); return finish(); }
@@ -319,7 +331,7 @@ export function computeIntegratedMission(input, data) {
     phase('moon-approach', `Aproximación a ${moon.name}`, PHASE_STATUS.done, LEVEL.experimental, { detail: `Periapsis resultante ${moonApproach.periapsisAltitudeKm.toFixed(2)} km (objetivo ${moonApproach.periapsisTargetAltitudeKm} km); v∞ ${moonApproach.vInfKmS.toFixed(4)} km/s.`, approach: moonApproach, startSeconds: tMoonSoi });
     const moonStatus = { [INSERTION_STATUS.target]: PHASE_STATUS.done, [INSERTION_STATUS.partial]: PHASE_STATUS.partial }[mins.status] ?? PHASE_STATUS.failed;
     phase('moon-capture', `Captura en ${moon.name} (empuje finito)`, moonStatus, mins.status === INSERTION_STATUS.target ? LEVEL.experimental : LEVEL.notViable, {
-      detail: `${mins.status}. ${mins.failure ?? ''} Propelente ${mins.totals.propellantKg.toFixed(1)} kg · Δv ${(mins.totals.propulsiveDeltaVKmS * 1000).toFixed(1)} m/s (referencia impulsiva ${(mRef.totalDeltaVKmS * 1000).toFixed(1)} m/s).`,
+      detail: `${mins.status}. ${mins.failure ?? ''} Propelente ${mins.totals.propellantKg.toFixed(1)} kg · Δv ${(mins.totals.propulsiveDeltaVKmS * 1000).toFixed(1)} m/s (referencia impulsiva ${(mRef.totalDeltaVKmS * 1000).toFixed(1)} m/s).${resultingOrbitNote(mins, moonApproach.periapsisAltitudeKm)}`,
       insertion: summarizeInsertion(mins, moonR), reference: mRef, startSeconds: tMoonSoi, endSeconds: tAfterMoon });
     approachInfo.moon = moonApproach;
     // Cribado de otros satélites durante la fase joviana (validez de la cónica parcheada).

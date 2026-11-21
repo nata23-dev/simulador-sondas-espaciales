@@ -1,5 +1,5 @@
-import { VOYAGER_HISTORICAL_EVENTS, getHistoricalEventById } from '../science/VoyagerHistoricalEvents.js';
-import { VOYAGER_PHOTO_CATALOG, getVoyagerPhotoById } from '../science/VoyagerPhotoCatalog.js';
+import { VOYAGER_HISTORICAL_EVENTS } from '../science/VoyagerHistoricalEvents.js';
+import { getVoyagerPhotoById } from '../science/VoyagerPhotoCatalog.js';
 import { VOYAGER_1_ID, VOYAGER_2_ID } from '../science/VoyagerHistoricalMissions.js';
 
 /**

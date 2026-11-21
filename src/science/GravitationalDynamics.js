@@ -1,7 +1,7 @@
-import { HORIZONS_FRAME, requireVector3 } from './Frames.js';
+import { HORIZONS_FRAME } from './Frames.js';
 import { SUN_BODY_ID } from './GravitationalParameters.js';
 import { requireJdTdb, secondsBetweenJdTdb } from './Time.js';
-import { requireFiniteNumber, SECONDS_PER_DAY } from './Units.js';
+import { SECONDS_PER_DAY } from './Units.js';
 
 export const ACCELERATION_UNIT = 'km/s^2';
 

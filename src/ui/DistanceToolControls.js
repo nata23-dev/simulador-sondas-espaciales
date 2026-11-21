@@ -27,9 +27,9 @@ export const CUERPOS_BASE_SISTEMA = Object.freeze([
   { id: 'Neptuno', etiqueta: 'Neptuno' }
 ]);
 
+// 17.1: sin la Sonda Experimental 01, el modo Laboratorio mide los mismos cuerpos que la exploración.
 export const CUERPOS_MEDIBLES_SISTEMA = Object.freeze([
-  ...CUERPOS_BASE_SISTEMA,
-  { id: 'sonda-experimental-01', etiqueta: 'Sonda Experimental 01' }
+  ...CUERPOS_BASE_SISTEMA
 ]);
 
 export const CUERPOS_MEDIBLES_HISTORICOS = Object.freeze([
@@ -84,7 +84,7 @@ export function crearControlesDistancia({
     }
   }
 
-  poblarOpciones(cuerpos, 'Tierra', 'sonda-experimental-01');
+  poblarOpciones(cuerpos, 'Tierra', 'Jupiter');
 
   let lineaFijada = false;
   let ultimaMedicion = null;
@@ -196,10 +196,6 @@ export function crearControlesDistancia({
         poblarOpciones(CUERPOS_MEDIBLES_HISTORICOS, 'Tierra', 'voyager-1');
         selectorA.value = 'Tierra';
         selectorB.value = 'voyager-1';
-      } else if (modo === 'experimental') {
-        poblarOpciones(CUERPOS_MEDIBLES_SISTEMA, 'Tierra', 'sonda-experimental-01');
-        selectorA.value = 'Tierra';
-        selectorB.value = 'sonda-experimental-01';
       } else {
         poblarOpciones(CUERPOS_BASE_SISTEMA, 'Tierra', 'Jupiter');
       }

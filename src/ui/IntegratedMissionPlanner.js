@@ -17,14 +17,13 @@ import { HISTORICAL_PROBES } from '../lab/HeritageCatalog.js';
 const number = (n, digits = 1) => Number.isFinite(n) ? new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(n) : 'No disponible';
 const utcLabel = jd => tdbToTimeScales(jd).labelUtc;
 const dateOnly = jd => utcLabel(jd).slice(0, 10);
-const RJ = 69911;
 const MOON_WINDOW_FILE = 'data/interplanetary/galilean-moons-jsb-2031-2032.json';
 
 // Escenarios de demostración. Las semillas de oportunidad son los mejores candidatos de la cuadrícula 12G (docs/STAGE12G…, tabla de
 // casos A y C); el planificador los refina localmente antes de calcular. Masas, motores y energía: sonda activa de la flota.
 // 15.1: sin módulo de propulsión ni módulo de aterrizaje (retirados por decisión del usuario); el motor los admite pero la interfaz no los ofrece.
 export const INTEGRATED_SCENARIOS = Object.freeze([
-  { id: 'A1', group: 'Marte', label: 'Marte · órbita elíptica de 3000 × 100 000 km', destinationId: '499', moonId: '', departureUtc: '2028-11-30', tofDays: 316, refine: true,
+  { id: 'A1', group: 'Marte', label: 'Marte · captura elíptica, apoapsis de 100 000 km', destinationId: '499', moonId: '', departureUtc: '2028-11-30', tofDays: 316, refine: true,
     planet: { mode: 'capture', periapsisAltitudeKm: 3000, apoapsisAltitudeKm: 100000 },
     note: 'Según el modelo, Cassini y Juno se capturan con su motor principal; Voyager agota la hidracina y Dawn no puede frenar en un solo paso con su motor iónico.' },
   { id: 'A2', group: 'Marte', label: 'Marte · órbita circular baja de 400 km (exigente)', destinationId: '499', moonId: '', departureUtc: '2028-11-30', tofDays: 316, refine: true,
@@ -145,7 +144,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
 
   function fillMoons() {
     const select = $('#im-moon'), previous = select.value; select.replaceChildren(new Option('Ninguno (solo el planeta)', ''));
-    for (const [id, key] of Object.entries(MOON_WINDOW_KEYS)) if (getBodyProfile(id).parentId === $('#im-destination').value) select.append(new Option(`${getBodyProfile(id).name} (efemérides de ventana)`, id));
+    for (const id of Object.keys(MOON_WINDOW_KEYS)) if (getBodyProfile(id).parentId === $('#im-destination').value) select.append(new Option(`${getBodyProfile(id).name} (efemérides de ventana)`, id));
     select.value = [...select.options].some(o => o.value === previous) ? previous : '';
     $('#im-moon-profile').hidden = !select.value;
   }
@@ -375,7 +374,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     row(pv, 'Planeta / baricentro', `${mission.target.centerLabel} · GM ${number(mission.target.mu, 1)} km³/s² (${mission.target.massScope})`);
     row(pv, 'Efemérides', 'NASA/JPL Horizons (12G + baricentros 13), Hermite sin extrapolación');
     if (mission.moonId) row(pv, 'Satélites', `${MOON_WINDOW_FILE} · centro 500@5 · ${MOON_UNAVAILABLE_MESSAGE.toLowerCase()} fuera de la ventana`);
-    row(pv, 'Validación', '13 implementada y probada localmente; pendiente de auditoría independiente (Gemini).');
+    row(pv, 'Validación', '13 implementada y probada localmente; pendiente de auditoría.');
   }
   function renderCompare() {
     const box = $('#im-compare'); box.replaceChildren();

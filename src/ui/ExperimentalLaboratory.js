@@ -74,7 +74,8 @@ const readStored = (key, fallback) => { try { return localStorage.getItem(key) ?
 const store = (key, value) => { try { localStorage.setItem(key, value); } catch { /* preferencia opcional */ } };
 function readActiveProbe() { const id = readStored(ACTIVE_PROBE_KEY, DEFAULT_PROBE_ID); return HISTORICAL_PROBES.some(p => p.id === id) ? id : DEFAULT_PROBE_ID; }
 
-export function createExperimentalLaboratory() {
+// 17.1: `missionScene` (SolarSystemMissionView) permite reproducir las misiones heliocéntricas en el Sistema Solar principal.
+export function createExperimentalLaboratory({ missionScene = null } = {}) {
   const app = document.querySelector('#app');
   const scene = document.querySelector('.scene-panel');
   const lab = document.createElement('section');
@@ -90,7 +91,6 @@ export function createExperimentalLaboratory() {
       <nav class="lab-sections" aria-label="Etapas del laboratorio"><ol class="lab-steps">${LAB_STAGES.map(stepButton).join('')}</ol></nav>
       <div class="lab-rail-actions">
         <button type="button" class="lab-guide-launch" data-lab-action="guide" title="Recorrido paso a paso: Cassini a Marte"><svg class="icon" aria-hidden="true"><use href="#icon-target"></use></svg><span>Iniciar misión guiada</span></button>
-        <button type="button" class="lab-rail-secondary" data-lab-action="orbital" title="Ejemplo independiente: Sonda Experimental 01 con una trayectoria ficticia integrada con DOPRI54. No usa tu sonda ni tu misión."><svg class="icon" aria-hidden="true"><use href="#icon-eye"></use></svg><span>Demostración científica</span></button>
         <button type="button" class="lab-rail-secondary" data-lab-action="glossary" title="Explicación breve de los términos científicos"><svg class="icon" aria-hidden="true"><use href="#icon-help"></use></svg><span>Glosario</span></button>
       </div>
       <p class="lab-rail-note">La sonda, los cálculos y la misión preparada se conservan al cambiar de etapa.</p>
@@ -155,9 +155,6 @@ export function createExperimentalLaboratory() {
     <dialog id="lab-glossary" class="lab-dialog" aria-labelledby="lab-glossary-title"><div class="lab-dialog-head"><h3 id="lab-glossary-title">Glosario científico</h3><button type="button" data-close-dialog>Cerrar</button></div><dl class="lab-glossary-list"></dl></dialog>
     <dialog id="lab-lightbox" class="lab-dialog lab-lightbox" aria-labelledby="lab-lightbox-title"><div class="lab-dialog-head"><h3 id="lab-lightbox-title"></h3><button type="button" data-close-dialog>Cerrar</button></div><figure><img id="lab-lightbox-img" alt=""><figcaption id="lab-lightbox-caption"></figcaption></figure></dialog>`;
   scene.append(lab);
-  const returnButton = document.createElement('button');
-  returnButton.id = 'lab-return'; returnButton.type = 'button'; returnButton.textContent = 'Volver al laboratorio';
-  returnButton.hidden = true; scene.append(returnButton);
   const fleet = new Map(HISTORICAL_PROBES.map(probe => [probe.id, { ...historicalDesign(probe.id), id: `flota-${probe.id}` }]));
   let activeProbeId = readActiveProbe();
   let experimentalDesign = loadExperimental() ?? createExperimentalDesign(activeProbeId);
@@ -209,6 +206,9 @@ export function createExperimentalLaboratory() {
   });
   center = createMissionControlCenter($('#lab-mission-center'), () => go('plan', tabByStage.plan), {
     onImmersive: value => { lab.dataset.immersive = String(value); },
+    // 17.1: con una misión heliocéntrica, «3 · Reproducir» deja ver el Sistema Solar principal en el área de la escena.
+    sceneView: missionScene,
+    onSceneMode: mode => { if (mode) app.dataset.labScene = mode; else delete app.dataset.labScene; },
     onOpenResults: () => go('plan', centerPlan?.kind === 'launch' ? 'launch' : centerPlan?.kind === 'interplanetary' ? 'interplanetary' : centerPlan?.kind === 'integrated' ? 'integrated' : 'lunar')
   });
   const centerSetPlan = center.setPlan;
@@ -261,9 +261,8 @@ export function createExperimentalLaboratory() {
   }
   function setBuilder(active) {
     const enabled = app.dataset.appMode === 'experimental';
-    app.dataset.labView = enabled && active ? 'builder' : 'orbital';
+    if (enabled && active) app.dataset.labView = 'builder'; else delete app.dataset.labView;
     lab.hidden = !(enabled && active);
-    returnButton.hidden = !enabled || active;
     setTouchMode(false);
     updateSection();
   }
@@ -769,7 +768,6 @@ export function createExperimentalLaboratory() {
     planner.setDesign(design); launch.setDesign(design); interplanetary.setDesign(design); integrated.setDesign(design);
     updateStatus();
   }
-  for (const button of lab.querySelectorAll('[data-lab-action="orbital"]')) button.addEventListener('click', () => setBuilder(false));
   for (const button of lab.querySelectorAll('[data-lab-action="guide"]')) button.addEventListener('click', () => guide.start());
   $('[data-lab-action="glossary"]').addEventListener('click', () => { const dialog = $('#lab-glossary'); if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', ''); });
   $('[data-lab-action="reset-camera"]').addEventListener('click', () => stage === 'plan' ? planner.resetCamera() : stage === 'play' ? center.resetCamera() : view.resetCamera());
@@ -812,7 +810,6 @@ export function createExperimentalLaboratory() {
     centerKind: () => centerPlan?.ready ? centerPlan.kind ?? 'mission' : null
   } });
   const glossary = createLabGlossary(lab);
-  returnButton.addEventListener('click', () => setBuilder(true));
   const modeObserver = new MutationObserver(() => {
     if (app.dataset.appMode === 'experimental') { setBuilder(true); render(); }
     else { setBuilder(false); delete app.dataset.labView; }
@@ -836,7 +833,7 @@ export function createExperimentalLaboratory() {
   if (app.dataset.appMode === 'experimental') setBuilder(true);
   return { dispose: () => {
     modeObserver.disconnect(); headerObserver.disconnect(); window.removeEventListener('resize', measureHeader); clearInterval(statusTimer); document.removeEventListener('keydown', onKey);
-    glossary.dispose(); guide.dispose(); center.dispose(); integrated.dispose(); interplanetary.dispose(); launch.dispose(); planner.dispose(); view.dispose(); lab.remove(); returnButton.remove(); app.style.removeProperty('--lab-top');
-    delete app.dataset.labView;
+    glossary.dispose(); guide.dispose(); center.dispose(); integrated.dispose(); interplanetary.dispose(); launch.dispose(); planner.dispose(); view.dispose(); lab.remove(); app.style.removeProperty('--lab-top');
+    delete app.dataset.labView; delete app.dataset.labScene;
   } };
 }

@@ -203,11 +203,21 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     }
   }
 
+  // 17.1: quien ocupa la escena con sus propios paneles (Centro de Misión del laboratorio) indica el área libre del lienzo.
+  let proveedorZonaEncuadre = null;
   function obtenerZonaEncuadre() {
     const lienzo = renderer.domElement.getBoundingClientRect();
-    const destinoEl = document.querySelector('.destination-panel > summary');
+    // 17.1.1 (D-01): aunque la zona indicada sea demasiado pequeña para encuadrar, su recorte se mantiene: el lienzo no debe
+    // dibujarse fuera de la ventana de quien ocupa la escena.
+    let recorteProveedor = null;
+    if (proveedorZonaEncuadre) {
+      const zona = proveedorZonaEncuadre(lienzo);
+      if (zona && zona.right - zona.left >= 80 && zona.bottom - zona.top >= 80) {
+        return { width: container.clientWidth, height: container.clientHeight, left: zona.left, right: zona.right, top: zona.top, bottom: zona.bottom, recorte: zona.recorte ?? null };
+      }
+      recorteProveedor = zona?.recorte ?? null;
+    }
     const tiempoEl = document.querySelector('.timeline-panel:not([hidden]), .historical-timeline-panel:not([hidden])');
-    const destino = destinoEl ? destinoEl.getBoundingClientRect() : { right: lienzo.left + 120, bottom: lienzo.top + 56 };
     const tiempo = tiempoEl ? tiempoEl.getBoundingClientRect() : { top: lienzo.bottom - 90 };
     const ancho = container.clientWidth;
     const alto = container.clientHeight;
@@ -242,7 +252,18 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
         left = Math.min(Math.max(left, panelRight), ancho - 180);
       } else right = Math.max(left + 80, Math.min(right, rect.left - lienzo.left - 20));
     }
-    return { width: ancho, height: alto, left, right, top, bottom };
+    return { width: ancho, height: alto, left, right, top, bottom, recorte: recorteProveedor };
+  }
+
+  // 17.1: si quien ocupa la escena indica un recorte (la ventana de la escena del Centro de Misión), el lienzo y los rótulos
+  // solo se ven dentro de él; así no asoman por los huecos entre paneles. Solo presentación.
+  let recorteAplicado = '';
+  function aplicarRecorte(recorte) {
+    const valor = recorte
+      ? `inset(${recorte.top}px ${recorte.right}px ${recorte.bottom}px ${recorte.left}px round ${recorte.radius ?? 0}px)` : '';
+    if (valor === recorteAplicado) return;
+    recorteAplicado = valor;
+    container.style.clipPath = valor;
   }
 
   let desplazamientoProyeccionX = 0;
@@ -257,9 +278,12 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     const estadoCamara = controladorCamara.obtenerEstadoCamaraHistorica();
     const contextualPrimeraPersona = estadoCamara.modo === 'first_person'
       && estadoCamara.fovTipo === 'contextual_vertical' && estadoCamara.objetivoMirada;
-    const enfocando = contextualPrimeraPersona || (!instrumento && (controladorCamara.nombreSeleccionado()
+    // 17.1: con la zona de la misión del laboratorio la proyección se centra siempre en ella (también en la vista general),
+    // de modo que el encuadre acompaña a la ventana de la escena si la página se desplaza.
+    const enfocando = contextualPrimeraPersona || (!instrumento && (Boolean(proveedorZonaEncuadre) || controladorCamara.nombreSeleccionado()
       || controladorCamara.sondaSeleccionada() || controladorCamara.sondaHistoricaSeleccionada()));
     const zona = obtenerZonaEncuadre();
+    aplicarRecorte(proveedorZonaEncuadre ? zona.recorte : null);
     const objetivoX = enfocando ? (zona.width - zona.left - zona.right) / 2 : 0;
     const objetivoY = enfocando ? (zona.height - zona.top - zona.bottom) / 2 : 0;
     const reducirMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -274,10 +298,13 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     camera.updateProjectionMatrix();
   }
 
-  // Sonda Experimental 01 (modo simulación experimental)
+  // 17.1: sonda de la misión planificada en el laboratorio («3 · Reproducir»). Sustituye a la antigua Sonda Experimental 01:
+  // su modelo y su nombre los fija configurarSondaMision() con el diseño con el que se calculó la misión (sin Voyager.glb).
   const sonda = crearSondaVisual({
     idSonda: '__SONDA__',
-    nombreGrupo: 'SondaExperimental01'
+    nombreGrupo: 'SondaMision',
+    maxMuestrasTrayectoria: 16384,
+    cargarModeloGlb: false
   });
   sonda.mostrarSonda(false);
   scene.add(sonda.trayectoriaGrupo);
@@ -420,6 +447,19 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     const ok = controladorCamara.enfocarRegionSistema(region);
     if (ok) publicarVista();
     return ok;
+  }
+
+  // 17.1: cámaras de la misión del laboratorio en la escena principal. `proveedor()` da [{ x, y, z, radio }] en unidades de escena.
+  function encuadrarConjuntoMision(proveedor) {
+    const ok = controladorCamara.encuadrarConjuntoMision(() => (proveedor() ?? [])
+      .map(c => ({ posicion: new THREE.Vector3(c.x, c.y, c.z), radio: c.radio })));
+    if (ok) publicarVista();
+    return ok;
+  }
+
+  function encuadrarDestinoConSonda(nombre) {
+    if (!objetos.has(nombre)) return false;
+    return controladorCamara.encuadrarDestinoConSonda(nombre);
   }
 
   function vistaCinematografica() {
@@ -607,6 +647,12 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   function ocultarSonda() {
     if (controladorCamara.sondaSeleccionada()) vistaGeneral();
     sonda.mostrarSonda(false);
+  }
+
+  // 17.1: identidad visual de la sonda de la misión (nombre de la etiqueta y modelo 3D ya normalizado). Solo presentación.
+  function configurarSondaMision({ nombre = 'Sonda', modelo = null, radioObservacion } = {}) {
+    sonda.establecerModeloExterno(modelo, { radioObservacion });
+    etiquetas.establecerNombreSonda(nombre);
   }
 
   // --- API específica para Voyager 1 y Voyager 2 en Modo Histórico ---
@@ -881,6 +927,18 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     configurarTrayectoriaSonda,
     actualizarEstadoSonda,
     ocultarSonda,
+    configurarSondaMision,
+    // 17.1: diagnóstico de solo lectura (verificación automatizada): posiciones dibujadas y estado de la sonda.
+    obtenerDiagnosticoEscena: () => ({
+      planetas: Object.fromEntries([...objetos].map(([nombre, objeto]) => [nombre, objeto.posicion.position.toArray()])),
+      sonda: { visible: sonda.posicion.visible, posicion: sonda.posicion.position.toArray(), escalaVisual: sonda.visual.scale.x,
+        trayectoriaVisible: sonda.trayectoriaEsVisible() && sonda.trayectoriaGrupo.visible, seleccionada: controladorCamara.sondaSeleccionada(), modelo: sonda.obtenerEstadoModelo() },
+      lunasVisibles: [...lunasPlanetarias.moons.values()].filter(moon => moon.posicion.visible).length,
+      camara: { posicion: camera.position.toArray(), seleccionado: controladorCamara.nombreSeleccionado() ?? null },
+      modoEscala
+    }),
+    establecerFactorEscalaSonda: sonda.establecerFactorEscala,
+    establecerProveedorZonaEncuadre(fn) { proveedorZonaEncuadre = typeof fn === 'function' ? fn : null; if (!proveedorZonaEncuadre) aplicarRecorte(null); },
     mostrarTrayectoriaSonda: sonda.mostrarTrayectoria,
     trayectoriaSondaVisible: sonda.trayectoriaEsVisible,
     seleccionarSonda: controladorCamara.seleccionarSonda,
@@ -936,6 +994,8 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       return () => observadoresModoEscala.delete(fn);
     },
     enfocarRegionSistema,
+    encuadrarConjuntoMision,
+    encuadrarDestinoConSonda,
     regionSistemaActual: controladorCamara.regionSistemaActual,
     configurarVisualizacion,
     seleccionarPlaneta,

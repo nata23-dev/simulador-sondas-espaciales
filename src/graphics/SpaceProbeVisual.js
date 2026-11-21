@@ -14,7 +14,7 @@ export const METADATOS_MODELO_VOYAGER = Object.freeze({
   fuenteOficial: 'https://science.nasa.gov/resource/voyager-3d-model/',
   credito: 'NASA / JPL-Caltech / Visualization Technology Applications and Development (VTAD)',
   licencia: 'Dominio público / NASA Media Usage Guidelines (uso educativo y científico sin implicar respaldo oficial)',
-  advertenciaCientifica: 'Representación visual tridimensional oficial NASA VTAD; en modo experimental representa Sonda Experimental 01 (trayectoria simulada ficticia) y en modo histórico representa Voyager 1 (-31) y Voyager 2 (-32).'
+  advertenciaCientifica: 'Representación visual tridimensional oficial NASA VTAD de Voyager 1 (-31) y Voyager 2 (-32) en el modo histórico. La sonda de una misión del laboratorio usa el modelo de su propio diseño.'
 });
 
 // Caché compartida en memoria para evitar descargar o subir texturas de Voyager.glb más de una vez
@@ -255,7 +255,7 @@ function construirGeometriaProcedural(mallasSeleccionables, idSonda) {
  */
 export function crearSondaVisual({
   idSonda = '__SONDA__',
-  nombreGrupo = 'SondaExperimental01',
+  nombreGrupo = 'SondaMision',
   colorRecorrido = 0xf0cf8e,
   colorPendiente = 0x5ab8cf,
   colorBaliza = 0xf4dca8,
@@ -278,6 +278,13 @@ export function crearSondaVisual({
   grupoVoyagerContenedor.name = `${nombreGrupo}_Voyager_NASA_VTAD`;
   grupoVoyagerContenedor.visible = false;
   visual.add(grupoVoyagerContenedor);
+
+  // 17.1: modelo de la sonda de una misión planificada en el laboratorio (p. ej. el modelo oficial de NASA de Cassini).
+  // Lo prepara quien llama, con radio envolvente ~1 y la antena hacia +Z (eje que se orienta hacia la Tierra). Solo presentación.
+  const grupoExterno = new THREE.Group();
+  grupoExterno.name = `${nombreGrupo}_ModeloMision`;
+  grupoExterno.visible = false;
+  visual.add(grupoExterno);
 
   const materialProxy = new THREE.MeshBasicMaterial({
     transparent: true,
@@ -397,15 +404,21 @@ export function crearSondaVisual({
   let diagnosticoGeometriaVoyager = null;
   let radioBaseObservacion = 0.88;
   let ocultaPorPrimeraPersona = false;
+  let modeloExterno = null;
+  let radioObservacionExterno = 0.95;
+  // Multiplica los tamaños visuales (no la posición): cerca de un planeta la nave ampliada no debe tapar el disco a escala 1:1.
+  let factorEscala = 1;
   const observadoresModelo = new Set();
   const direccionApuntado = new THREE.Vector3();
   const puntoMira = new THREE.Vector3();
 
   function sincronizarVisibilidadModelo() {
-    const usarVoyager = aparienciaPreferida === MODELOS_VISUALES_SONDA.VOYAGER && voyagerCargado;
+    const usarExterno = Boolean(modeloExterno);
+    const usarVoyager = !usarExterno && aparienciaPreferida === MODELOS_VISUALES_SONDA.VOYAGER && voyagerCargado;
+    grupoExterno.visible = usarExterno;
     grupoVoyagerContenedor.visible = usarVoyager;
-    grupoProcedural.visible = !usarVoyager;
-    radioBaseObservacion = usarVoyager ? 1.05 : 0.76;
+    grupoProcedural.visible = !usarVoyager && !usarExterno;
+    radioBaseObservacion = usarExterno ? radioObservacionExterno : usarVoyager ? 1.05 : 0.76;
     visual.visible = !ocultaPorPrimeraPersona;
   }
 
@@ -415,11 +428,13 @@ export function crearSondaVisual({
   }
 
   function obtenerEstadoModelo() {
-    const usandoVoyager = aparienciaPreferida === MODELOS_VISUALES_SONDA.VOYAGER && voyagerCargado;
+    const usandoVoyager = !modeloExterno && aparienciaPreferida === MODELOS_VISUALES_SONDA.VOYAGER && voyagerCargado;
     return Object.freeze({
       idSonda,
       aparienciaPreferida,
-      modeloActivo: usandoVoyager ? MODELOS_VISUALES_SONDA.VOYAGER : MODELOS_VISUALES_SONDA.PROCEDURAL,
+      modeloActivo: modeloExterno ? 'mision' : usandoVoyager ? MODELOS_VISUALES_SONDA.VOYAGER : MODELOS_VISUALES_SONDA.PROCEDURAL,
+      modeloExterno: modeloExterno?.name ?? null,
+      factorEscala,
       voyagerCargado,
       errorCargaVoyager,
       metadatosVoyager: METADATOS_MODELO_VOYAGER,
@@ -485,6 +500,28 @@ export function crearSondaVisual({
     return true;
   }
 
+  function establecerModeloExterno(objeto, { radioObservacion = 0.95 } = {}) {
+    grupoExterno.clear();
+    modeloExterno = objeto ?? null;
+    if (modeloExterno) grupoExterno.add(modeloExterno);
+    radioObservacionExterno = Number.isFinite(radioObservacion) && radioObservacion > 0 ? radioObservacion : 0.95;
+    sincronizarVisibilidadModelo();
+    notificarEstadoModelo();
+  }
+
+  function actualizarAlcanceLuces() {
+    const alcanceLuz = (modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA ? 0.04 : 0.45) * factorEscala;
+    luzRellenoPrincipal.distance = alcanceLuz;
+    luzContraluzSuave.distance = alcanceLuz;
+  }
+
+  function establecerFactorEscala(factor) {
+    const valor = Number.isFinite(factor) && factor > 0 ? Math.min(factor, 1) : 1;
+    if (valor === factorEscala) return;
+    factorEscala = valor;
+    actualizarAlcanceLuces();
+  }
+
   function establecerOcultaPorPrimeraPersona(oculta) {
     ocultaPorPrimeraPersona = Boolean(oculta);
     visual.visible = !ocultaPorPrimeraPersona;
@@ -496,9 +533,7 @@ export function crearSondaVisual({
   function establecerModoEscala(nuevoModo, inmediato = false) {
     if (nuevoModo === MODOS_ESCALA_VISUAL.CIENTIFICA || nuevoModo === MODOS_ESCALA_VISUAL.EXPLORATORIA) {
       modoEscala = nuevoModo;
-      const alcanceLuz = modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA ? 0.04 : 0.45;
-      luzRellenoPrincipal.distance = alcanceLuz;
-      luzContraluzSuave.distance = alcanceLuz;
+      actualizarAlcanceLuces();
       if (inmediato) {
         visual.scale.setScalar(escalaInspeccionCercana());
       }
@@ -506,11 +541,11 @@ export function crearSondaVisual({
   }
 
   function escalaInspeccionCercana() {
-    return modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA ? 0.0025 : 0.075;
+    return (modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA ? 0.0025 : 0.075) * factorEscala;
   }
 
   function escalaNoEnfocada() {
-    return modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA ? 0.0006 : 0.012;
+    return (modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA ? 0.0006 : 0.012) * factorEscala;
   }
 
   function obtenerRadioObservacionActual() {
@@ -678,6 +713,9 @@ export function crearSondaVisual({
     mostrarSonda,
     establecerModoEscala,
     establecerApariencia,
+    establecerModeloExterno,
+    establecerFactorEscala,
+    obtenerFactorEscala: () => factorEscala,
     establecerOcultaPorPrimeraPersona,
     obtenerEstadoModelo,
     obtenerRadioObservacionActual,

@@ -114,7 +114,6 @@ export function createCommandPalette({ navigator } = {}) {
     const mode = app.dataset.appMode, lab = document.querySelector('#experimental-lab');
     const labOpen = mode === 'experimental' && lab && !lab.hidden;
     if (item.mode === 'historico' && mode !== 'historico') await navigator?.go('voyager');
-    else if (item.mode === 'experimental' && (mode !== 'experimental' || labOpen)) await navigator?.go('orbital');
     else if (item.mode === 'moon' && mode !== 'exploracion') await navigator?.go('solar');
     else if (item.mode === 'planet' && labOpen) await navigator?.go('solar');
     requestAnimationFrame(() => item.button.click());

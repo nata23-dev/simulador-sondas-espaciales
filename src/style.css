@@ -1117,52 +1117,6 @@ details[open] > :not(summary) {
 .probe-label.is-selected {
   color:#f0cf8e;
 }
-.mission-panel {
-  position:absolute;
-  z-index:4;
-  top:244px;
-  left:var(--edge);
-  width:fit-content;
-  max-width:268px;
-  max-height:calc(100% - 352px);
-  overflow-y:auto;
-  overflow-x:hidden;
-  scrollbar-width:thin;
-  scrollbar-color:#45484e transparent;
-}
-.mission-panel[open] {
-  width:268px;
-}
-.mission-panel > summary {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  width:fit-content;
-  max-width:100%;
-  min-height:44px;
-  padding:8px 14px;
-  border:1px solid var(--line);
-  border-radius:24px;
-  background:var(--surface);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  font-size:12px;
-}
-.mission-panel[open] > summary {
-  color:var(--accent);
-}
-.mission-dot {
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:#62c8de;
-  box-shadow:0 0 8px #62c8de88;
-  flex:none;
-}
-.mission-dot.is-running {
-  background:#f0cf8e;
-  box-shadow:0 0 10px #f0cf8ecc;
-}
 .mission-summary-text {
   display:grid;
   gap:1px;
@@ -1179,26 +1133,6 @@ details[open] > :not(summary) {
   font-size:12px;
   font-weight:500;
 }
-.mission-panel[open] > summary .mission-summary-text strong {
-  color:var(--accent);
-}
-.mission-body {
-  margin-top:9px;
-  padding:15px 16px;
-  background:var(--surface);
-  border:1px solid var(--line);
-  border-radius:14px;
-  box-shadow:0 12px 40px #0005;
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-}
-.mission-status-row {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  margin-bottom:10px;
-}
 .mission-status {
   color:var(--accent);
   font-size:10px;
@@ -1206,99 +1140,9 @@ details[open] > :not(summary) {
   font-variant-numeric:tabular-nums;
   white-space:nowrap;
 }
-.mission-actions {
-  display:grid;
-  grid-template-columns:1.12fr 1fr 1fr;
-  gap:5px;
-  margin-bottom:8px;
-}
-.mission-actions button {
-  min-height:34px;
-  padding:6px 8px;
-  border-color:var(--line);
-  font-size:10px;
-  gap:5px;
-}
-.mission-actions button.button-primary {
-  border-color:transparent;
-}
-.mission-actions button.is-active {
-  color:var(--accent);
-  border-color:#d3bd9155;
-  background:#d3bd9114;
-}
-.mission-actions .icon {
-  width:13px;
-  height:13px;
-}
-.mission-switch {
-  min-height:38px;
-  padding:8px 0;
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-  font-size:11px;
-}
-.mission-metrics {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin:10px 0 0;
-  padding-bottom:10px;
-  border-bottom:1px solid var(--line);
-}
-.mission-metrics dd {
-  margin:4px 0 0;
-  color:#e8eaed;
-  font-size:11px;
-  font-weight:500;
-  font-variant-numeric:tabular-nums;
-}
-.mission-metrics small {
-  display:block;
-  margin-top:2px;
-  color:var(--muted);
-  font-size:8.5px;
-  line-height:1.35;
-  font-variant-numeric:tabular-nums;
-}
-.mission-model-note {
-  margin-top:9px;
-}
-.mission-model-note p {
-  margin:3px 0 0;
-  color:#c5c8ce;
-  font-size:9.5px;
-  line-height:1.45;
-}
-@media(max-width:1100px) {
-  .mission-panel[open] {
-    width:248px;
-  }
-}
 @media(max-width:760px) {
-  .mission-panel {
-    top:218px;
-    left:16px;
-    max-width:calc(100vw - 82px);
-    max-height:calc(100dvh - 308px);
-  }
-  .mission-panel[open] {
-    z-index:6;
-    width:min(292px,calc(100vw - 32px));
-    max-width:calc(100vw - 32px);
-  }
-  .mission-panel > summary {
-    min-height:38px;
-    padding:6px 12px;
-  }
   .mission-summary-text strong {
     font-size:11px;
-  }
-}
-@media(max-height:520px) and (min-width:761px) {
-  .mission-panel {
-    top:202px;
-    max-height:calc(100% - 282px);
   }
 }
 /* Realismo espacial: marcadores discretos, modos de escala, medición 3D y selector Voyager */
@@ -1560,23 +1404,6 @@ details[open] > :not(summary) {
   border-color:var(--line);
   font-size:10px;
   color:#d2d5dc;
-}
-.mission-visual-selector {
-  display:grid;
-  gap:5px;
-  padding:9px 0;
-  border-bottom:1px solid var(--line);
-}
-.mission-visual-selector select {
-  width:100%;
-  min-height:33px;
-  padding:4px 8px;
-  font-size:10.5px;
-}
-.probe-visual-note {
-  color:var(--muted);
-  font-size:8.5px;
-  line-height:1.4;
 }
 @media(max-width:1100px) {
   .scale-mode-button .control-label,.distance-menu summary .control-label {
@@ -2782,9 +2609,6 @@ details[open] > :not(summary) {
   }
   .destination-panel {
     top:154px;
-  }
-  .mission-panel {
-    top:202px;
   }
   .historical-topbar {
     top:138px;

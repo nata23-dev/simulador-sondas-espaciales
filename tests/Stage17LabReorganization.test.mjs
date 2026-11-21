@@ -52,18 +52,18 @@ test('«Misión completa» es el flujo principal y el resto de Planificar se mar
   assert.equal(labTab('probe', 'integrated'), null, 'una pestaña solo existe dentro de su etapa');
 });
 
-test('el menú de áreas lleva a la etapa y la pestaña correctas; la demostración científica sigue aparte', () => {
+test('el menú de áreas lleva a la etapa y la pestaña correctas; la demostración científica ya no existe (17.1)', () => {
   const lab = AREAS.flatMap(group => group.items ?? [group]).filter(item => item.mode === 'experimental');
-  assert.ok(lab.length >= 9);
-  for (const item of lab.filter(i => !i.orbital)) assert.ok(labTab(item.stage, item.tab), `${item.id}: ${item.stage}/${item.tab}`);
+  assert.ok(lab.length >= 8);
+  for (const item of lab) assert.ok(labTab(item.stage, item.tab), `${item.id}: ${item.stage}/${item.tab}`);
   const byId = Object.fromEntries(lab.map(i => [i.id, i]));
   assert.deepEqual([byId.hangar.stage, byId.hangar.tab, byId.hangar.title], ['probe', 'overview', 'Elegir sonda']);
   assert.deepEqual([byId.docs.stage, byId.docs.tab], ['probe', 'docs']);
   assert.deepEqual([byId.center.stage, byId.center.tab], ['play', 'playback']);
-  assert.equal(byId.orbital.title, 'Demostración científica');
-  assert.match(byId.orbital.desc, /DOPRI54/);
-  assert.match(byId.orbital.desc, /no usa la sonda activa/);
-  assert.equal(byId.orbital.stage, undefined, 'la demostración no es una etapa del laboratorio');
+  assert.equal(byId.orbital, undefined, '17.1: sin área de la Sonda Experimental 01');
+  // El módulo científico y sus pruebas DOPRI54 se conservan aunque la interfaz ya no lo muestre.
+  assert.ok(existsSync('src/science/ExperimentalProbe01.js'));
+  assert.match(source('tests/ProbePropagationAndVisual.test.mjs'), /propagateExperimentalProbe01/);
 });
 
 test('la misión guiada conserva cinco pasos y apunta al panel de etapas o a la pestaña según dónde esté el usuario', () => {

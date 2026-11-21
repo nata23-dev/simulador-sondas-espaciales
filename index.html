@@ -56,7 +56,7 @@
         <button type="button" data-mode-btn="historico" aria-pressed="false" title="Misiones históricas reales Voyager 1 y Voyager 2 (1977–2026)">
           <span class="mode-label-full">Misiones históricas</span><span class="mode-label-short">Voyager 77–26</span>
         </button>
-        <button type="button" data-mode-btn="experimental" aria-pressed="false" title="Simulación orbital experimental (Sonda Experimental 01 · DOPRI54)">
+        <button type="button" data-mode-btn="experimental" aria-pressed="false" title="Laboratorio de misiones: elegir sonda, planificar y reproducir en el Sistema Solar">
           <span class="mode-label-full">Laboratorio</span><span class="mode-label-short">Lab.</span>
         </button>
       </nav>
@@ -287,75 +287,6 @@
           <div class="destination-regions">
             <button id="dest-inner-button" type="button">Sistema interior (2 AU)</button>
           </div>
-          </div>
-        </details>
-
-        <details class="mission-panel hud-secondary" id="mission-panel" open hidden>
-          <summary>
-            <span class="mission-dot" id="mission-dot"></span>
-            <span class="mission-summary-text">
-              <small>SONDA · EXPERIMENTAL</small>
-              <strong id="mission-probe-name">Sonda Experimental 01</strong>
-            </span>
-            <svg class="icon disclosure-icon"><use href="#icon-chevron"></use></svg>
-          </summary>
-          <div class="mission-body">
-            <div class="mission-status-row">
-              <span class="eyebrow">MISIÓN FICTICIA · PRUEBA</span>
-              <span id="mission-status" class="mission-status" role="status">Cargando…</span>
-            </div>
-            <div class="mission-actions">
-              <button id="mission-play-button" class="button-primary" type="button" disabled>
-                <svg id="mission-play-icon" class="icon"><use href="#icon-play"></use></svg>
-                <span id="mission-play-label">Iniciar</span>
-              </button>
-              <button id="mission-reset-button" type="button" disabled title="Reiniciar desde estado inicial" aria-label="Reiniciar misión">
-                <svg class="icon"><use href="#icon-reset"></use></svg>
-                <span>Reiniciar</span>
-              </button>
-              <button id="mission-focus-button" type="button" disabled aria-pressed="false" title="Seleccionar y enfocar sonda">
-                <svg class="icon"><use href="#icon-target"></use></svg>
-                <span id="mission-focus-label">Enfocar</span>
-              </button>
-            </div>
-            <label class="switch-row mission-switch" for="show-probe-trajectory">
-              <input id="show-probe-trajectory" type="checkbox" checked />
-              <span>Mostrar trayectoria<small>Propagada numéricamente (DOPRI54)</small></span>
-            </label>
-            <div class="mission-visual-selector">
-              <label class="eyebrow" for="probe-visual-select">APARIENCIA 3D (SOLO VISUAL)</label>
-              <select id="probe-visual-select">
-                <option value="voyager" selected>Voyager 3D · Oficial NASA VTAD</option>
-                <option value="procedural">Bus procedural · Respaldo</option>
-              </select>
-              <small id="probe-visual-note" class="probe-visual-note">Cargando geometría oficial Voyager (NASA/JPL-Caltech/VTAD)…</small>
-            </div>
-            <dl class="mission-metrics">
-              <div>
-                <dt>Tiempo transcurrido</dt>
-                <dd id="mission-elapsed">T+00d 00:00:00</dd>
-                <small id="mission-epoch">2026-10-10 · 00:00:00 TDB</small>
-              </div>
-              <div>
-                <dt>Rapidez</dt>
-                <dd id="mission-speed">—</dd>
-                <small id="mission-frame">Heliocéntrica · Eclíptica J2000</small>
-              </div>
-              <div>
-                <dt>Distancia al Sol</dt>
-                <dd id="mission-distance-au">—</dd>
-                <small id="mission-distance-km">—</small>
-              </div>
-              <div>
-                <dt>Posición (X, Y, Z)</dt>
-                <dd id="mission-position">—</dd>
-                <small>km · origen Sol</small>
-              </div>
-            </dl>
-            <div class="mission-model-note">
-              <span class="eyebrow">MODELO FÍSICO ACTIVO</span>
-              <p id="mission-model">Inicializando motor de dinámica orbital…</p>
-            </div>
           </div>
         </details>
 

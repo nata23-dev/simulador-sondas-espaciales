@@ -155,12 +155,11 @@ test('Tierra–Luna solo ofrece la Luna; la interfaz ya no lista destinos «pend
   for (const id of ['cassini', 'juno', 'dawn']) assert.equal(LUNAR_GUIDE[id].altitudeKm, LUNAR_DEFAULTS.defaultAltitudeKm, `${id}: el valor inicial ya es el recomendado`);
 });
 
-test('navegación: sin pestaña «Ingeniería» duplicada, con la misión guiada y la demostración orbital descrita como tal', () => {
+test('navegación: sin pestaña «Ingeniería» duplicada, con la misión guiada y sin la demostración orbital (retirada en 17.1)', () => {
   const items = AREAS.flatMap(group => group.items);
   assert.ok(!items.some(item => item.id === 'engineering'), 'la ingeniería forma parte del Hangar');
   assert.ok(items.some(item => item.id === 'guide' && item.guide), 'entrada de la misión guiada');
-  const orbital = items.find(item => item.id === 'orbital');
-  assert.match(orbital.desc, /no usa la sonda activa/i);
+  assert.ok(!items.some(item => item.id === 'orbital'), '17.1: la Sonda Experimental 01 ya no es un área de la interfaz');
   const lab = readFileSync('src/ui/ExperimentalLaboratory.js', 'utf8');
   assert.doesNotMatch(lab, /data-lab-section="engineering"/);
   assert.doesNotMatch(lab, /id="lab-planner-modes"/);

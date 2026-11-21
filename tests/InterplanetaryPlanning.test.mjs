@@ -302,7 +302,7 @@ test('W: telemetría derivada de los estados físicos, sin combustible ficticio'
   near(t.derived.sunDistanceKm, norm(s.positionKm), 1e-6, 'distancia al Sol');
   near(t.derived.destinationDistanceKm, dist(s.positionKm, s.moonPositionKm), 1e-6, 'distancia al destino');
   near(t.requirements.c3Km2S2, ex.result.departureExcess.c3Km2S2, 0, 'C3');
-  assert.match(t.time.tdb, /TDB$/); assert.match(t.time.utc, /UTC$/); assert.match(t.validation, /pendiente de auditoría/);
+  assert.match(t.time.tdb, /TDB$/); assert.match(t.time.utc, /UTC$/); assert.match(t.validation, /^12G aprobada en auditoría independiente \(Gemini\)/); // 17.1.1: 12G ya está aprobada (antes: «pendiente de auditoría»)
   assert.equal(JSON.stringify(t).includes('fuel'), false, 'no hay combustible consumido durante la cónica');
   assert.ok(t.provenance.solutions.includes('DE441') && t.provenance.solutions.includes('mar099'));
   const end = deriveInterplanetaryTelemetry(ex, sampleInterplanetaryExecution(ex, ex.durationSeconds));

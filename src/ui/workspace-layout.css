@@ -39,10 +39,10 @@
 .inspector-tabs button[aria-selected=true] { color:var(--accent); box-shadow:inset 0 -2px var(--accent); }
 #inspector-content { min-height:0; overflow:auto; overscroll-behavior:contain; padding:16px; scrollbar-width:thin; }
 .inspector-empty { font-size:13px; line-height:1.7; color:var(--muted); }
-#app #context-inspector :is(.info-panel,.mission-panel,.voyager-science-panel,.hist-side-card,.historical-topbar,.historical-launch-card) { position:static; inset:auto; width:100%; max-height:none; margin:0; padding:0; transform:none; box-shadow:none; border:0; border-radius:0; background:transparent; overflow:visible; }
+#app #context-inspector :is(.info-panel,.voyager-science-panel,.hist-side-card,.historical-topbar,.historical-launch-card) { position:static; inset:auto; width:100%; max-height:none; margin:0; padding:0; transform:none; box-shadow:none; border:0; border-radius:0; background:transparent; overflow:visible; }
 #context-inspector .inspector-pane > details > summary { pointer-events:none; padding:0 0 15px; border:0; }
 #context-inspector .inspector-pane > details > summary :is(.disclosure-icon,.collapse-hint) { display:none; }
-#app #context-inspector :is(.info-content,.mission-body,.voyager-card-body,.hist-card-body) { max-height:none; overflow:visible; padding:0; }
+#app #context-inspector :is(.info-content,.voyager-card-body,.hist-card-body) { max-height:none; overflow:visible; padding:0; }
 #app #context-inspector :is(.hist-toolbar-row,.fp-row,.fp-group) { display:flex; flex-wrap:wrap; width:100%; gap:8px; }
 #app #context-inspector .hist-pill-bar { width:100%; flex-wrap:wrap; border:0; border-bottom:1px solid var(--line); padding:10px 0; border-radius:0; }
 #app #context-inspector :is(.hist-pill-bar button,.fp-group button) { min-height:40px; font-size:12px; }
@@ -54,7 +54,7 @@
 #app #context-inspector .hist-photo-row { grid-template-columns:72px 1fr; }
 #app #context-inspector .hist-photo-thumb { width:72px; height:72px; }
 #app #context-inspector :is(p,dd) { overflow-wrap:anywhere; }
-#app #context-inspector :is(.hist-event-detail p,.mission-model-note p,.voyager-provenance-box p,.hist-photo-info h4) { font-size:12px; line-height:1.6; }
+#app #context-inspector :is(.hist-event-detail p,.voyager-provenance-box p,.hist-photo-info h4) { font-size:12px; line-height:1.6; }
 #app #context-inspector .historical-launch-card { margin-top:20px; border-top:1px solid var(--line); padding-top:15px; }
 #app .photo-comparator-panel { position:absolute; inset:155px 24px 145px; z-index:11; pointer-events:none; }
 #app .comparator-card-a { position:absolute; inset:0 auto 0 0; width:36%; max-height:100%; overflow:auto; padding:18px; pointer-events:auto; background:#101215f5; }
@@ -156,7 +156,7 @@
   #app .tools-content { max-height:calc(100dvh - 220px); }
   #app .workspace-ready { --edge:12px; }
 }
-#app #context-inspector :is(.info-panel,.mission-panel,.voyager-science-panel,.hist-side-card,.historical-topbar,.historical-launch-card) { max-width:none; }
+#app #context-inspector :is(.info-panel,.voyager-science-panel,.hist-side-card,.historical-topbar,.historical-launch-card) { max-width:none; }
 #app:has(#photo-comparator-panel:not([hidden])) #workspace-dock { display:none; }
 /* La escena del comparador usa su propia fecha; el recorrido queda guardado.
    Minimizar recupera los controles temporales sin cerrar la comparación. */
@@ -978,14 +978,14 @@
 #app #context-inspector .context-intro { margin:0 0 16px; padding-bottom:14px; border-bottom:1px solid #ffffff18; font-size:14px; line-height:1.55; color:#d3d7d7; }
 #app #context-inspector :is(button,select,input,summary) { font-size:13px; }
 #app #context-inspector :is(.eyebrow,small,dt,.hist-photo-target,.hist-photo-nasaid,.hist-probe-tag,.voyager-status-badge,.voyager-phase-label) { font-size:12px; color:#b7bdc0; }
-#app #context-inspector :is(.tour-tag,.tour-step-indicator,.hist-kind-tag,.fp-fidelity-badge,.mission-status-row) { font-size:12px; line-height:1.5; }
-#app #context-inspector :is(.hist-event-detail p,.mission-model-note p,.voyager-provenance-box p,.hist-photo-info h4) { font-size:14px; line-height:1.55; }
+#app #context-inspector :is(.tour-tag,.tour-step-indicator,.hist-kind-tag,.fp-fidelity-badge) { font-size:12px; line-height:1.5; }
+#app #context-inspector :is(.hist-event-detail p,.voyager-provenance-box p,.hist-photo-info h4) { font-size:14px; line-height:1.55; }
 #app #context-inspector :is(h2,h3,.mission-summary-text strong,.hist-photo-info h4,.voyager-card-heading) { font-size:16px; line-height:1.35; font-weight:550; color:#eceeeb; }
-#app #context-inspector :is(.hero-metric strong,.voyager-telemetry-grid dd,.mission-metrics dd) { font-size:17px; line-height:1.35; color:#f0ebe0; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
-#app #context-inspector :is(.voyager-telemetry-grid,.mission-metrics,.metrics) { display:grid; grid-template-columns:minmax(0,1fr); gap:0; margin:12px 0; }
-#app #context-inspector :is(.voyager-telemetry-grid,.mission-metrics,.metrics) > div { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2px 8px; align-items:baseline; padding:10px 0; border-bottom:1px solid #ffffff13; min-width:0; }
-#app #context-inspector :is(.voyager-telemetry-grid,.mission-metrics,.metrics) > div > small { grid-column:1 / -1; }
-#app #context-inspector :is(.voyager-telemetry-grid,.mission-metrics,.metrics) > div > dd { margin:0; text-align:right; max-width:180px; }
+#app #context-inspector :is(.hero-metric strong,.voyager-telemetry-grid dd) { font-size:17px; line-height:1.35; color:#f0ebe0; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+#app #context-inspector :is(.voyager-telemetry-grid,.metrics) { display:grid; grid-template-columns:minmax(0,1fr); gap:0; margin:12px 0; }
+#app #context-inspector :is(.voyager-telemetry-grid,.metrics) > div { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2px 8px; align-items:baseline; padding:10px 0; border-bottom:1px solid #ffffff13; min-width:0; }
+#app #context-inspector :is(.voyager-telemetry-grid,.metrics) > div > small { grid-column:1 / -1; }
+#app #context-inspector :is(.voyager-telemetry-grid,.metrics) > div > dd { margin:0; text-align:right; max-width:180px; }
 #app #context-inspector .context-advanced { margin-top:18px; padding-top:12px; }
 #app #context-inspector .context-advanced > summary { min-height:44px; font-size:14px; }
 #app #context-inspector .inspector-pane > details > summary { padding:0 0 12px; border:0; font-size:15px; }
@@ -1078,14 +1078,6 @@
 #app #pane-tour .tour-nav-btn { min-width:0; white-space:normal; overflow-wrap:anywhere; }
 
 /* La simulación utiliza sus controles existentes en una vista propia. */
-#app #pane-probe .probe-intro { margin:0 0 16px; color:#c6c9c9; font-size:14px; line-height:1.55; }
-#app #pane-probe #mission-panel > summary { display:none; }
-#app #pane-probe .mission-body { margin-top:0; }
-#app #pane-probe .mission-actions { display:flex; flex-wrap:wrap; gap:8px; }
-#app #pane-probe .mission-actions button { flex:1 1 95px; min-height:44px; }
-#app #pane-probe .probe-settings { margin:16px 0; }
-#app #pane-probe .probe-settings > summary { font-size:14px; }
-#app #pane-probe .probe-settings > :not(summary) { margin-top:12px; }
 
 @media(max-width:760px) {
   #app[data-app-mode=historico] #context-inspector:has(#pane-history:not([hidden]) #pane-tour:not([hidden])) { top:auto; bottom:178px; height:auto; max-height:min(58dvh,calc(100dvh - 260px)); }

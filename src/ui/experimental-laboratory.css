@@ -65,7 +65,6 @@
 .lab-assessment[data-valid="true"] strong { color:#a9e2c5; }
 .lab-assessment p { margin:6px 0 0; color:#b9c3d1; font-size:10px; line-height:1.45; }
 .lab-disclaimer { margin:15px 0; }
-#lab-return { position:absolute; z-index:16; top:calc(var(--lab-top,82px) + 8px); left:50%; transform:translateX(-50%); background:#0c1420f2; box-shadow:0 5px 20px #0007; }
 @media(max-width:1100px) {
   .lab-workspace { grid-template-columns:minmax(205px,25%) minmax(0,1fr) minmax(230px,28%); gap:7px; padding:7px; }
   .lab-panel-scroll { padding:10px; }
@@ -177,6 +176,9 @@
 }
 @media(max-width:420px) {
   .mc-stage { height:38dvh; min-height:255px; }
+  /* 17.1.1 · D-01: en el Sistema Solar principal la barra de cámaras ocupa dos filas; con 340 px quedan más de 100 px libres
+     entre ella y la de reproducción (con 255 px quedaban 24 px a 320–375 px de ancho). */
+  #lab-mission-center[data-scene="main"] .mc-stage { min-height:340px; }
   /* 12D.1 · DEF-12C-HER-01/02: título en dos líneas y cámaras en varias filas, todas visibles sin gesto. */
   .mc-stage .lab-stage-top { top:8px; left:8px; right:8px; flex-direction:column; align-items:flex-start; gap:1px; }
   #mc-stage-status { max-width:100%; font-size:9px; line-height:1.25; letter-spacing:.04em; overflow-wrap:anywhere; }

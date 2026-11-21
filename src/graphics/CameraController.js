@@ -95,6 +95,11 @@ export function crearControladorCamara({
   let ultimoClic = null;
   let modoVista = 'cientifica';
   let regionSistema = REGIONES_SISTEMA.COMPLETO;
+  // 17.1: vista general de una misión del laboratorio en la escena principal (trayectoria, origen, destino y sonda).
+  const REGION_MISION = 'mision';
+  let proveedorCuerposMision = null;
+  // 17.1: nombre del planeta de destino mientras la cámara de destino de la misión se recalcula en cada fotograma.
+  let miradaDestino = null;
   let posicionesListas = false;
 
   function enPrimeraPersonaORecreacion() {
@@ -215,6 +220,7 @@ export function crearControladorCamara({
   }
 
   function cancelarTransicionInteractiva() {
+    miradaDestino = null;
     if (!transicion) return;
     transicion = null;
     if (!enPrimeraPersonaORecreacion()) {
@@ -261,6 +267,16 @@ export function crearControladorCamara({
   }
 
   function encuadreActual() {
+    if (regionSistema === REGION_MISION && proveedorCuerposMision) {
+      const cuerpos = proveedorCuerposMision();
+      if (!cuerpos?.length) return calcularEncuadreVista(camera, objetos, obtenerZonaEncuadre(), null);
+      // Con la zona de la misión la proyección ya se centra en ella en cada fotograma (SolarSystem), así que el encuadre se
+      // calcula para una zona del mismo tamaño centrada en el lienzo: sigue valiendo si la página se desplaza.
+      const zona = obtenerZonaEncuadre(), ancho = zona.right - zona.left, alto = zona.bottom - zona.top;
+      const centrada = { width: zona.width, height: zona.height, left: (zona.width - ancho) / 2, right: (zona.width + ancho) / 2,
+        top: (zona.height - alto) / 2, bottom: (zona.height + alto) / 2 };
+      return calcularEncuadreVista(camera, objetos, centrada, { cuerpos });
+    }
     const opciones = regionSistema === REGIONES_SISTEMA.INTERIOR
       ? { region: REGIONES_SISTEMA.INTERIOR, usarRadiosActuales: true, sonda }
       : (obtenerModoEscala() === MODOS_ESCALA_VISUAL.CIENTIFICA
@@ -1053,6 +1069,7 @@ export function crearControladorCamara({
 
   function vistaGeneral() {
     salirDePrimeraPersonaHaciaExterior();
+    proveedorCuerposMision = null;
     regionSistema = REGIONES_SISTEMA.COMPLETO;
     cambiarVista('cientifica');
   }
@@ -1062,8 +1079,90 @@ export function crearControladorCamara({
       return false;
     }
     salirDePrimeraPersonaHaciaExterior();
+    proveedorCuerposMision = null;
     regionSistema = nuevaRegion;
     cambiarVista('cientifica');
+    return true;
+  }
+
+  /**
+   * 17.1: vista general de una misión del laboratorio. `proveedor()` devuelve los discos que deben verse
+   * ([{ posicion: Vector3, radio }], unidades de escena); el Sol se añade siempre. Se recalcula durante la transición
+   * porque los planetas siguen moviéndose si la reproducción está en curso. No cambia posiciones ni escala.
+   */
+  function encuadrarConjuntoMision(proveedor) {
+    if (typeof proveedor !== 'function') return false;
+    salirDePrimeraPersonaHaciaExterior();
+    proveedorCuerposMision = proveedor;
+    regionSistema = REGION_MISION;
+    cambiarVista('cientifica');
+    return true;
+  }
+
+  /**
+   * 17.1: pose de la cámara de destino de una misión del laboratorio, igual que en la escena local del Centro de Misión:
+   * cerca del planeta de destino (a unos 4 radios, por detrás de su «hombro» y del lado del Sol) mirando hacia la sonda.
+   * El planeta ocupa buena parte del cuadro a escala 1:1 y la sonda (o la dirección por la que llega) queda a la vista.
+   * Solo encuadre: no cambia posiciones ni escalas.
+   */
+  function poseMiradaDestino(nombre) {
+    const objPlaneta = objetos.get(nombre);
+    if (!objPlaneta || !sonda?.posicion.visible) return null;
+    const centro = objPlaneta.posicion.position;
+    const radio = Math.max(radioEncuadre(nombre), 1e-6);
+    const separacion = sonda.posicion.position.clone().sub(centro);
+    const distancia = separacion.length();
+    if (distancia < radio * 1.05) return null;
+    const haciaSonda = separacion.divideScalar(distancia);
+    const haciaSol = centro.clone().negate();
+    if (haciaSol.lengthSq() < 1e-12) haciaSol.set(0, 0, 1);
+    haciaSol.normalize();
+    // `lateral`: componente de la dirección al Sol perpendicular a la línea planeta–sonda (o una horizontal si son paralelas).
+    const lateral = haciaSol.addScaledVector(haciaSonda, -haciaSol.dot(haciaSonda));
+    if (lateral.lengthSq() < 0.04) lateral.set(-haciaSonda.z, 0, haciaSonda.x);
+    if (lateral.lengthSq() < 1e-9) lateral.set(1, 0, 0);
+    lateral.normalize();
+    const posicion = centro.clone().addScaledVector(haciaSonda, -3.2 * radio).addScaledVector(lateral, 2.2 * radio)
+      .addScaledVector(camera.up, 1.2 * radio);
+    const objetivo = centro.clone().addScaledVector(haciaSonda, Math.min(4 * radio, distancia));
+    return { posicion, objetivo };
+  }
+
+  /**
+   * 17.1: cámara de destino de la misión del laboratorio. Se recalcula en cada fotograma (el planeta y la sonda se mueven)
+   * hasta que el usuario arrastra o usa la rueda; entonces sigue al planeta y deja el control al usuario.
+   */
+  function encuadrarDestinoConSonda(nombre) {
+    if (!objetos.has(nombre) || enPrimeraPersonaORecreacion()) return false;
+    proveedorCuerposMision = null;
+    if (regionSistema === REGION_MISION) regionSistema = REGIONES_SISTEMA.COMPLETO;
+    if (!poseMiradaDestino(nombre)) {
+      miradaDestino = null;
+      seleccionar(nombre);
+      return explorarSeleccionado();
+    }
+    salirDePrimeraPersonaHaciaExterior();
+    limpiarSeleccionSondas();
+    seleccionado = nombre;
+    controls.enablePan = false;
+    controls.minDistance = distanciaMinima();
+    controls.maxDistance = DISTANCIA_MAXIMA;
+    alSeleccionar?.(nombre);
+    alSeleccionarLuna?.(null);
+    miradaDestino = nombre;
+    const pose = poseMiradaDestino(nombre);
+    const duracion = THREE.MathUtils.clamp(1.2 + camera.position.distanceTo(pose.posicion) / 1400, 1.2, 3.0);
+    iniciarTransicion('mirada', duracion);
+    return true;
+  }
+
+  /** La cámara de destino sigue activa mientras el planeta siga seleccionado y no haya otra cámara en uso. */
+  function miradaDestinoVigente() {
+    if (!miradaDestino) return false;
+    if (seleccionado !== miradaDestino || sondaEnfocada || idSondaHistoricaEnfocada || enPrimeraPersonaORecreacion()) {
+      miradaDestino = null;
+      return false;
+    }
     return true;
   }
 
@@ -1148,7 +1247,12 @@ export function crearControladorCamara({
     }
 
     if (!transicion) {
-      controls.update();
+      const pose = miradaDestinoVigente() ? poseMiradaDestino(miradaDestino) : null;
+      if (pose) {
+        camera.position.copy(pose.posicion);
+        controls.target.copy(pose.objetivo);
+        camera.lookAt(pose.objetivo);
+      } else controls.update();
       actualizarOrbitas();
       return;
     }
@@ -1159,7 +1263,19 @@ export function crearControladorCamara({
 
     let destinoObjetivo;
     let destinoPosicion;
-    if (transicion.tipo === 'fijo' && transicion.destinoFijo) {
+    const poseMirada = transicion.tipo === 'mirada' && miradaDestinoVigente() ? poseMiradaDestino(miradaDestino) : null;
+    if (transicion.tipo === 'mirada' && !poseMirada) {
+      // La cámara de destino dejó de aplicar (otra cámara, sonda oculta): se termina la transición donde esté.
+      transicion = null;
+      controls.enabled = true;
+      controls.update();
+      actualizarOrbitas();
+      return;
+    }
+    if (poseMirada) {
+      destinoObjetivo = poseMirada.objetivo;
+      destinoPosicion = poseMirada.posicion;
+    } else if (transicion.tipo === 'fijo' && transicion.destinoFijo) {
       destinoObjetivo = transicion.destinoFijo.objetivo;
       destinoPosicion = transicion.destinoFijo.posicion;
     } else {
@@ -1217,6 +1333,9 @@ export function crearControladorCamara({
         transicion.inicioPosicion.add(desplazamiento);
         transicion.inicioObjetivo.add(desplazamiento);
         transicion.control?.add(desplazamiento);
+      } else if (transicion.tipo === 'mirada') {
+        transicion.inicioPosicion.add(desplazamiento);
+        transicion.inicioObjetivo.add(desplazamiento);
       }
       return;
     }
@@ -1558,6 +1677,8 @@ export function crearControladorCamara({
     vistaCinematografica,
     vistaGeneral,
     enfocarRegionSistema,
+    encuadrarConjuntoMision,
+    encuadrarDestinoConSonda,
     regionSistemaActual: () => regionSistema,
     modoVistaActual: () => modoVista,
     nombreSeleccionado: () => seleccionado

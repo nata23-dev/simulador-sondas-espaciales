@@ -15,7 +15,7 @@ export const LANDING_OUTCOMES = Object.freeze({
 });
 export const DEFAULT_LANDING_SCHEDULE = Object.freeze({ maxDescentSeconds: 4000 });
 export const DEFAULT_DESCENT_ORBIT = Object.freeze({ periapsisAltitudeKm: 100, apoapsisAltitudeKm: 100, inclinationDeg: 30, raanDeg: 0, argumentOfPeriapsisDeg: 0, trueAnomalyDeg: 0 });
-const DEG = 180 / Math.PI, dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const DEG = 180 / Math.PI;
 
 export function classifyContact(limits, verticalMS, horizontalMS) {
   const down = Math.abs(verticalMS);

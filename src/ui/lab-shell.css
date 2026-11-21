@@ -39,7 +39,7 @@
 #experimental-lab .lab-rail-actions .icon { flex:none; width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.7; }
 #experimental-lab .lab-rail-actions .lab-guide-launch { border-color:var(--gold-line); background:var(--gold-soft); color:var(--gold-strong); font-weight:600; }
 #experimental-lab .lab-rail-actions .lab-guide-launch:hover { background:rgba(214,168,92,.24); color:var(--gold-strong); }
-#experimental-lab .lab-rail-note { margin:auto 4px 0; color:var(--text-4); font-size:11.5px; line-height:1.5; }
+#experimental-lab .lab-rail-note { margin:auto 4px 0; color:var(--text-3); font-size:11.5px; line-height:1.5; } /* 17.1: 4,5:1 o más sobre el panel */
 
 @media (min-width:821px) {
   #experimental-lab[data-rail="closed"] .lab-rail { width:66px; padding:14px 8px 16px; }
@@ -291,3 +291,22 @@
 #experimental-lab .lab-probe-card { justify-items:start; justify-content:stretch; align-content:center; }
 /* Sobre el fondo dorado de la tarjeta activa, el gris terciario quedaba en 4,39:1; el secundario supera el 4,5:1 de WCAG AA. */
 #experimental-lab .lab-probe-card[aria-pressed="true"] small, #experimental-lab .mc-vehicle:not([data-state="none"]) > :is(span, small) { color:var(--text-2); }
+
+/* ---------- 17.1: «3 · Reproducir» en el Sistema Solar principal ---------- */
+/* Con una misión heliocéntrica, el área de la escena del Centro de Misión es una ventana al lienzo principal (#solar-system):
+   el laboratorio deja de pintar su fondo y deja pasar el puntero; paneles, pestañas y controles conservan fondo y puntero. */
+#app[data-app-mode="experimental"][data-lab-view="builder"][data-lab-scene="main"] .scene-panel > #solar-system { visibility:visible; pointer-events:auto; }
+#app[data-lab-scene="main"] #experimental-lab { background:transparent; }
+/* Solo los contenedores que llevan hasta la ventana de la escena dejan pasar el puntero; todo lo que cuelga de ellos (panel de
+   etapas, cabecera, pestañas, panel lateral, misión guiada, diálogos y controles de la escena) lo recupera. Las capas de la
+   escena que ya eran transparentes al puntero (cabecera de la escena, barra de cámaras, ficha y pie) siguen siéndolo. */
+#app[data-lab-scene="main"] :is(#experimental-lab, #experimental-lab > .lab-main, #experimental-lab .lab-content, #lab-mission-center, #lab-mission-center > .mc-stage) { pointer-events:none; }
+#app[data-lab-scene="main"] :is(#experimental-lab > :not(.lab-main), #experimental-lab > .lab-main > :not(.lab-content), #experimental-lab .lab-content > :not(#lab-mission-center),
+  #lab-mission-center > :not(.mc-stage), #lab-mission-center > .mc-stage > :not(.lab-stage-top, .mc-camera-bar, .mc-hud, .lab-stage-foot, #mc-canvas)) { pointer-events:auto; }
+/* Marco opaco: las órbitas y rótulos del Sistema Solar solo se ven en la ventana de la escena, no a través de los paneles. */
+#app[data-lab-scene="main"] #experimental-lab :is(.lab-header, .lab-tabs) { background:var(--space-950); }
+#app[data-lab-scene="main"] #experimental-lab .lab-rail { background:var(--space-900); }
+#app[data-lab-scene="main"] #lab-mission-center .mc-stage { background:transparent; }
+#app[data-lab-scene="main"] #lab-mission-center #mc-canvas { visibility:hidden; }
+/* Pantallas táctiles: hasta pulsar «Activar control 3D», arrastrar sobre la escena desplaza la página y no gira la cámara. */
+#app[data-lab-scene="main"] #lab-mission-center[data-touch3d="off"] .mc-stage { pointer-events:auto; }

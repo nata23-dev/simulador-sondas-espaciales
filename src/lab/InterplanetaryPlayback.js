@@ -87,7 +87,7 @@ export function deriveInterplanetaryTelemetry(execution, sample) {
   const finished = sample.remainingSeconds <= 1e-6;
   return Object.freeze({
     missionName: execution.name, probeName: execution.design?.name ?? 'Sin sonda asociada (requisitos sin vehículo)', originName: r.originName, destinationName: r.destinationName,
-    phase: sample.elapsedSeconds === 0 ? 'departure' : finished ? 'arrival' : 'cruise-helio',
+    phase: sample.elapsedSeconds === 0 ? 'departure' : finished ? 'arrival-helio' : 'cruise-helio',
     time: Object.freeze({ utc: time.labelUtc, tdb: time.labelTdb, jdTdb: sample.jdTdb, utcPredicted: time.utcPredicted, tdbMinusUtcSeconds: time.tdbMinusUtcSeconds,
       elapsedDays: sample.elapsedSeconds / 86400, remainingDays: sample.remainingSeconds / 86400, durationDays: r.tofDays }),
     state: Object.freeze({ positionKm: sample.positionKm, velocityKmS: sample.velocityKmS, frame: INTERPLANETARY_FRAME }),
@@ -99,7 +99,7 @@ export function deriveInterplanetaryTelemetry(execution, sample) {
       solutions: [...new Set([sample.originState.dataset?.solutionId, sample.destinationState.dataset?.solutionId].filter(Boolean))],
       interpolation: `${sample.destinationState.interpolation.method} (${r.destinationName})`, source: 'NASA/JPL Horizons' }),
     model: `Cónica heliocéntrica idealizada (Lambert cero revoluciones, ${r.lambert.diagnostics.transferType}); propagación kepleriana con μ☉ = ${MU_SUN} km³/s². Sin perturbaciones planetarias.`,
-    validation: '12G implementada y probada localmente; pendiente de auditoría independiente (Gemini). Éxito de misión: no evaluado.',
+    validation: '12G aprobada en auditoría independiente (Gemini). Éxito de misión: no evaluado.',
     limits: MODEL_LIMITS
   });
 }

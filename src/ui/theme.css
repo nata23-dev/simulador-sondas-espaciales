@@ -484,7 +484,6 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
 #experimental-lab .lab-assembly-item { font-size:12px; }
 #experimental-lab :is(.lab-workspace,#lab-launch,#lab-mission-planner,#lab-interplanetary,#lab-integrated,#lab-mission-center) { animation:ui-enter var(--dur) var(--ease) both; }
 #experimental-lab .lab-empty { border:1px solid var(--line-strong); border-radius:var(--r-md); background:rgba(17,17,19,.92); color:var(--text-2); }
-#lab-return { border:1px solid var(--line-strong) !important; background:rgba(17,17,19,.9) !important; color:var(--text-1) !important; border-radius:999px !important; padding:9px 18px !important; -webkit-backdrop-filter:var(--glass); backdrop-filter:var(--glass); }
 #experimental-lab #ln-results:empty { display:grid; place-items:center; min-height:240px; border:1px dashed var(--line-strong); border-radius:var(--r-md); background:rgba(255,255,255,.012); }
 #experimental-lab #ln-results:empty::before { max-width:320px; padding:18px; color:var(--text-3); font-size:13px; line-height:1.55; text-align:center; }
 #lab-launch #ln-results:empty::before { content:"Configura el sitio, la fecha y el programa de ascenso y pulsa «Calcular lanzamiento». Aquí aparecerán fases, eventos, velocidad, altitud, combustible y la órbita resultante."; }

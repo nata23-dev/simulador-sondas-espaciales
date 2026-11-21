@@ -5,7 +5,6 @@ export function crearControlesHUD() {
   const etiqueta = document.querySelector('#immersive-label');
   const anuncio = document.querySelector('#hud-announcement');
   const destino = document.querySelector('#destination-menu');
-  const mision = document.querySelector('#mission-panel');
   const info = document.querySelector('#planet-info');
   const cuerpo = document.querySelector('#observed-body');
   const instrumentos = [...document.querySelectorAll('.hud-secondary')];
@@ -14,7 +13,7 @@ export function crearControlesHUD() {
   let focoAnterior = null;
   let planetaActual = null;
   let sondaActiva = false;
-  let nombreSondaActual = 'Sonda Experimental 01';
+  let nombreSondaActual = 'Sonda';
 
   function actualizarObservacion() {
     const etiquetaPlaneta = planetaActual === 'Jupiter' ? 'Júpiter' : planetaActual;
@@ -58,14 +57,6 @@ export function crearControlesHUD() {
   info.addEventListener('toggle', () => {
     info.querySelector('.collapse-hint').textContent = info.open ? 'Contraer' : 'Ver datos';
   });
-  if (mision) {
-    destino.addEventListener('toggle', () => {
-      if (destino.open) mision.open = false;
-    });
-    mision.addEventListener('toggle', () => {
-      if (mision.open) destino.open = false;
-    });
-  }
   document.addEventListener('keydown', event => {
     const editando = event.target.closest('input, select, textarea, [contenteditable="true"]');
     if (event.key === 'Escape') {
@@ -104,7 +95,7 @@ export function crearControlesHUD() {
     if (nombre) info.open = !window.matchMedia('(max-width: 760px)').matches;
   }
 
-  function actualizarSeleccionSonda(activa, nombreSonda = 'Sonda Experimental 01') {
+  function actualizarSeleccionSonda(activa, nombreSonda = 'Sonda') {
     sondaActiva = Boolean(activa);
     nombreSondaActual = nombreSonda;
     if (sondaActiva) planetaActual = null;

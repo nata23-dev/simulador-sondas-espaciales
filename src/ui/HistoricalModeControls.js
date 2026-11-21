@@ -686,7 +686,6 @@ export function crearControlesModoHistorico({
 
     document.querySelector('#timeline-panel').hidden = esHistorico;
     document.querySelector('#destination-menu').hidden = esHistorico;
-    document.querySelector('#mission-panel').hidden = !esExperimental;
     if (esHistorico) {
       document.querySelector('#planet-info').hidden = true;
     }
@@ -694,7 +693,7 @@ export function crearControlesModoHistorico({
     if (brandEyebrow) {
       brandEyebrow.textContent = esHistorico
         ? 'MODO HISTÓRICO · VOYAGER 1 Y 2'
-        : (esExperimental ? 'DINÁMICA ORBITAL · EXPERIMENTAL' : 'EXPLORADOR ESPACIAL');
+        : (esExperimental ? 'LABORATORIO DE MISIONES' : 'EXPLORADOR ESPACIAL');
     }
   }
 

@@ -22,7 +22,7 @@ export const GUIDE_STEPS = Object.freeze([
     isDone: api => inStage(api, 'plan', 'integrated') ?? (api.section() === 'planner' && api.plannerMode() === 'integrated'),
     act: api => api.go('planner', 'integrated') },
   { id: 'scenario', title: '3 · Elige el escenario', target: '#im-scenario',
-    text: 'En «Escenario», elige «Marte · órbita elíptica de 3000 × 100 000 km». Sale de la Tierra el 30 de noviembre de 2028 y viaja 316 días; el simulador ajusta la fecha para gastar menos energía en la salida.',
+    text: 'En «Escenario», elige «Marte · captura elíptica, apoapsis de 100 000 km». Sale de la Tierra el 30 de noviembre de 2028 y viaja 316 días; el simulador ajusta la fecha para gastar menos energía en la salida.',
     enter: api => api.go('planner', 'integrated'),
     isDone: api => api.integratedState().scenarioId === SCENARIO && api.activeProbeId() === PROBE,
     hint: api => api.activeProbeId() !== PROBE ? 'La sonda activa ya no es Cassini: vuelve a elegirla en la barra superior.' : null,

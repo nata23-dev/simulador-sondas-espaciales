@@ -18,7 +18,7 @@ export const LAB_STAGES = Object.freeze([
     tab('launch', 'Lanzamiento terrestre', 'Despegue hasta una órbita baja con un lanzador ilustrativo de dos etapas; la sonda activa es la carga útil.', 'Herramienta independiente: no se encadena con «Misión completa»')]) }),
   Object.freeze({ id: 'play', number: 3, title: 'Reproducir', tabs: Object.freeze([
     tab('playback', MC_PANES.playback, 'Centro de Misión: reproduce en 3D la misión enviada desde Planificar, con la misma sonda y los mismos estados calculados.'),
-    tab('cameras', MC_PANES.cameras, 'Seis cámaras para mirar la misma trayectoria; cambiar de cámara no altera ningún estado.'),
+    tab('cameras', MC_PANES.cameras, 'Cámaras para mirar la misma trayectoria (las disponibles dependen de la escena); cambiar de cámara no altera ningún estado.'),
     tab('telemetry', MC_PANES.telemetry, 'Estado propagado, distancias y energía en el instante que se está reproduciendo.'),
     tab('trajectory', MC_PANES.trajectory, 'Tramos, encendidos y recursos de la trayectoria calculada.'),
     tab('events', MC_PANES.events, 'Fases y eventos calculados: pulsa uno para saltar a su instante.'),

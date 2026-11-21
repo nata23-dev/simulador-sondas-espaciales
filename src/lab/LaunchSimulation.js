@@ -2,7 +2,7 @@
 // y evaluación orbital. El movimiento sale únicamente de la integración numérica (LaunchDynamics.js).
 import { FiniteThrustError } from './FiniteThrustDynamics.js';
 import { DEFAULT_TARGET_ORBIT, classifyOrbit, orbitalElements, osculatingPerigeeAltitudeKm, ORBIT_CLASSES } from './LaunchOrbit.js';
-import { EARTH_GM_KM3_S2, STANDARD_GRAVITY_M_S2, geodeticFromPosition, dot3, launchSiteState, norm3, localFrame, horizontalDirection } from './LaunchEarth.js';
+import { EARTH_GM_KM3_S2, STANDARD_GRAVITY_M_S2, geodeticFromPosition, dot3, launchSiteState, norm3, localFrame } from './LaunchEarth.js';
 import { createEnvironment, evaluateForces, runSegment } from './LaunchDynamics.js';
 import { liftoffThrustToWeight, massFlowKgS, stackMassKg, validateLauncher } from './LaunchVehicle.js';
 import { sampleIntegratedState } from './MissionPlayback.js';

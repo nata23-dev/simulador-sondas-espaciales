@@ -69,7 +69,7 @@ export function crearEtiquetasPlanetas(
   etiquetaSol.hidden = true;
   capa.append(etiquetaSol);
 
-  // Sondas (Sonda Experimental 01 + Voyager 1 + Voyager 2)
+  // Sondas (sonda de la misión del laboratorio + Voyager 1 + Voyager 2)
   const registrosSondas = [];
   if (sonda) {
     const marcadorSonda = document.createElement('span');
@@ -79,7 +79,7 @@ export function crearEtiquetasPlanetas(
 
     const etiquetaSonda = document.createElement('span');
     etiquetaSonda.className = 'probe-label';
-    etiquetaSonda.textContent = 'Sonda Experimental 01';
+    etiquetaSonda.textContent = 'Sonda';
     etiquetaSonda.hidden = true;
     capa.append(etiquetaSonda);
 
@@ -531,5 +531,11 @@ export function crearEtiquetasPlanetas(
   }
 
   mostrar(false);
-  return { actualizar, mostrar, objetivoEnPantalla, establecerHover };
+  // 17.1: el nombre de la sonda de la misión sale del diseño con el que se calculó.
+  function establecerNombreSonda(nombre) {
+    const registro = registrosSondas.find(item => item.tipo === 'sonda');
+    if (registro) registro.etiqueta.textContent = nombre || 'Sonda';
+  }
+
+  return { actualizar, mostrar, objetivoEnPantalla, establecerHover, establecerNombreSonda };
 }

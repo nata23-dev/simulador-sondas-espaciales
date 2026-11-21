@@ -37,7 +37,7 @@ export function createFiniteThrustPlanner({ controlsHost, resultsHost, getDatase
   resultsHost.innerHTML = '<div id="ft-results" class="ft-results"></div>';
   const $ = selector => controlsHost.querySelector(selector);
   const results = resultsHost.querySelector('#ft-results');
-  let design = null, result = null, viewTransfer = null, active = false, disposed = false;
+  let design = null, result = null, viewTransfer = null, active = false;
 
   function message(text, error = false) { $('#ft-message').textContent = text; $('#ft-message').dataset.error = String(error); }
   function rows() { return [...controlsHost.querySelectorAll('[data-burn]')]; }
@@ -152,6 +152,6 @@ export function createFiniteThrustPlanner({ controlsHost, resultsHost, getDatase
     isActive: () => active,
     deactivate() { active = false; },
     getViewTransfer: () => viewTransfer,
-    dispose() { disposed = true; controlsHost.replaceChildren(); resultsHost.replaceChildren(); }
+    dispose() { controlsHost.replaceChildren(); resultsHost.replaceChildren(); }
   };
 }
