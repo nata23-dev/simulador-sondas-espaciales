@@ -22,7 +22,7 @@ Simulador web (Vite + Three.js, JavaScript ES modules, sin framework) del Sistem
 
 ## Procedimiento por etapas
 
-Una etapa autorizada a la vez. Inspecciona `git status` y el código vigente (la documentación describe el momento en que se escribió). Implementa → pruebas locales → documenta en `docs/` → auditoría independiente (Gemini) → corrección puntual. No declares «validado» ni «aprobado» sin la auditoría; no llames validado a un flujo que no ejecutaste.
+Una etapa autorizada a la vez. Inspecciona `git status` y el código vigente (la documentación describe el momento en que se escribió). Implementa → pruebas locales → documenta en `docs/` → auditoría (Gemini o Claude, con el procedimiento de [GEMINI.md](GEMINI.md); véase [CLAUDE.md](CLAUDE.md)) → corrección puntual. No declares «validado» ni «aprobado» sin la auditoría; no llames validado a un flujo que no ejecutaste.
 
 ## Validación
 

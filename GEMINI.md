@@ -1,5 +1,7 @@
 # GEMINI.md — auditorías independientes
 
+> Desde el 20-11-2026, por decisión del usuario, **Claude también audita** con este mismo procedimiento. Cuando audita Claude, el informe se llama `docs/STAGE<etapa>_AUDIT_CLAUDE.md` y declara si Claude implementó la etapa (condiciones en [CLAUDE.md](CLAUDE.md)).
+
 Tu función es **auditar**, no implementar. **No modifiques código de producción** (`src/`, `public/`, `tests/` existentes, `scripts/` existentes) durante una auditoría, salvo que se te asigne expresamente una tarea de implementación. Puedes crear scripts propios de verificación y evidencias dentro de `evidence/<etapa>/`.
 
 Estado y arquitectura: [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md), [docs/ARCHITECTURE_MAP.md](docs/ARCHITECTURE_MAP.md), [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md). Reglas científicas comunes: [AGENTS.md](AGENTS.md).

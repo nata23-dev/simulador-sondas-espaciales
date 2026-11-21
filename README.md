@@ -13,11 +13,14 @@ Simulador web interactivo del Sistema Solar, de las misiones históricas **Voyag
 | --- | --- |
 | Exploración del Sistema Solar (planetas, lunas, fechas, cámaras, medición) | Implementada. Datos locales de octubre de 2026. |
 | Misiones históricas Voyager 1/2 (1977–2026) | Implementada; con cortes SPK declarados. La trayectoria global **no está certificada como continua**. |
-| Sonda Experimental 01 (DOPRI54) | Implementada con pruebas numéricas. |
+| Sonda Experimental 01 (DOPRI54) | Módulo científico y pruebas numéricas conservados; **retirada de la interfaz en 17.1**. |
 | Laboratorio: Hangar, Ingeniería, Planificador Tierra–Luna, Centro de Misión (12A–12C) | Implementado; auditorías independientes registradas en `docs/`. |
 | Empuje finito (12D) y lanzamiento terrestre (12E) | Implementados; 12E con auditoría de Gemini «aprobada con observaciones» (corregidas en 12E.1). |
-| Arquitectura multicuerpo y descenso propulsado (12F) | **Implementada y probada localmente; sin validar** hasta la auditoría independiente. |
-| Transferencias interplanetarias, ventanas de lanzamiento, descenso atmosférico, sondas de entrada | **Pendientes** (planificadas). |
+| Arquitectura multicuerpo y descenso propulsado (12F) | Implementada; aprobada por Gemini, observaciones corregidas en 12F.1. El descenso se retiró de la interfaz en 15.1; el motor se conserva. |
+| Ventanas de lanzamiento y transferencias interplanetarias (12G) y misiones interplanetarias integradas (13) | Implementadas; 12G aprobada por Gemini; 13 **pendiente de auditoría**. |
+| Identidad visual, flota NASA y laboratorio en tres etapas (14–17) | Implementadas y probadas localmente; **pendientes de auditoría**. |
+| Reproducción en el Sistema Solar principal (17.1) | Implementada; **auditada por Claude (su implementador): aprobada con observaciones**, corregidas en 17.1.1 ([informe](docs/STAGE17_1_AUDIT_CLAUDE.md)). |
+| Asistencias gravitatorias, descenso atmosférico, sondas de entrada | **No implementados.** Ver el [plan de mejora propuesto](docs/ANALISIS_INTEGRAL_Y_PLAN_DE_MEJORA.md). |
 
 «Implementada» no significa «validada», y «viable según el modelo» no significa éxito operativo. Las piezas del Hangar y el lanzador/módulo de aterrizaje demostrativos tienen parámetros **ilustrativos**.
 
@@ -49,7 +52,7 @@ La barra superior alterna los tres modos:
 
 1. **Exploración**: Sistema Solar por fecha; seleccionar un cuerpo y viajar hasta él.
 2. **Histórico**: Voyager 1 y 2, hitos, encuentros, comparador con fotografías NASA. También `?mode=historical`.
-3. **Experimental**: Sonda Experimental 01 y **Laboratorio** (Hangar, Ingeniería, Planificador, Lanzamiento, Descenso y aterrizaje). También `?mode=experimental`. Desde el laboratorio se abre el **Centro de Misión**, que reproduce la ejecución con cámaras y telemetría.
+3. **Laboratorio**: elegir sonda, planificar y reproducir. También `?mode=experimental`. El **Centro de Misión** («3 · Reproducir») reproduce la ejecución con cámaras y telemetría; desde 17.1 las misiones heliocéntricas (por ejemplo, Cassini → Marte) se reproducen en el **Sistema Solar principal**, y las geocéntricas o con satélite, en su escena local ([17.1](docs/STAGE17_1_MAIN_SCENE_PLAYBACK.md)).
 
 ## Ciencia y fidelidad
 
@@ -67,7 +70,7 @@ Nunca se mezclan en silencio UTC con TDB, AU con km, ni tamaño visual con dista
 
 - [Contexto del proyecto](docs/PROJECT_CONTEXT.md) · [Arquitectura](docs/ARCHITECTURE_MAP.md) · [Hoja de ruta](docs/DEVELOPMENT_ROADMAP.md)
 - [Guía de desarrollo](docs/DEVELOPMENT_GUIDE.md) · [Contribuir](CONTRIBUTING.md) · [Sistema visual](docs/UI_DESIGN_SYSTEM.md)
-- Agentes: [AGENTS.md](AGENTS.md) (Codex), [CLAUDE.md](CLAUDE.md) (Claude Code), [GEMINI.md](GEMINI.md) (auditorías)
+- Agentes: [AGENTS.md](AGENTS.md) (Codex), [CLAUDE.md](CLAUDE.md) (Claude Code), [GEMINI.md](GEMINI.md) (procedimiento de auditoría: Gemini o Claude)
 - [Datos científicos y su integridad](docs/DATOS_CIENTIFICOS.md) · [Índice de evidencias](evidence/README.md)
 
 ## Publicación

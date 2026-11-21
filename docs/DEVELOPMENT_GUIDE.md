@@ -36,7 +36,7 @@ Archivos `tests/*.test.mjs` con el ejecutor nativo `node:test`. Usa tolerancias 
 
 ## Auditorías
 
-Procedimiento en [GEMINI.md](../GEMINI.md). Informes en `docs/STAGE*_INDEPENDENT_AUDIT.md`; evidencias en [evidence/README.md](../evidence/README.md). Scripts de auditoría de 12E: `evidence/stage12e/audit-scripts/` (ejecutar con `node` desde la raíz).
+Auditan Gemini o Claude con el procedimiento de [GEMINI.md](../GEMINI.md) (condiciones en [CLAUDE.md](../CLAUDE.md)). Informes en `docs/STAGE*_INDEPENDENT_AUDIT.md` (Gemini) o `docs/STAGE*_AUDIT_CLAUDE.md` (Claude); evidencias en [evidence/README.md](../evidence/README.md). Scripts de auditoría de 12E: `evidence/stage12e/audit-scripts/` (ejecutar con `node` desde la raíz).
 
 ## Continuar desde otra computadora
 

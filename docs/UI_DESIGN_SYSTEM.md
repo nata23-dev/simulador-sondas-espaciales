@@ -112,7 +112,7 @@ Cambios de la etapa 17 ([detalle](STAGE17_LAB_REORGANIZATION.md)). Los estilos e
   - pasos numerados `.lab-step[data-lab-stage]` con su estado;
   - progreso `li[data-progress=todo|busy|ready|done]` y tono `data-tone`;
   - etapa activa en dorado;
-  - acciones «Iniciar misión guiada» (píldora dorada), «Demostración científica» y «Glosario»;
+  - acciones «Iniciar misión guiada» (píldora dorada) y «Glosario» («Demostración científica» se retiró en 17.1);
   - plegado a 66 px con `#lab-rail-toggle`, a partir de 821 px. En 820 px o menos, fila de tres pasos sobre el contenido; en 420 px o menos, número encima del nombre.
 - **Cabecera del laboratorio** `.lab-header`:
   - ruta en mayúsculas espaciadas, con la pestaña en dorado;
@@ -133,6 +133,13 @@ Cambios de la etapa 17 ([detalle](STAGE17_LAB_REORGANIZATION.md)). Los estilos e
   - lista de cámaras;
   - estado vacío con el motivo;
   - `#experimental-lab[data-immersive]` oculta el panel de etapas, la cabecera y las pestañas.
+  - **17.1:** con `#app[data-lab-scene="main"]` la escena es una ventana al Sistema Solar principal:
+    - el laboratorio deja pasar el puntero solo por los contenedores que llevan a la escena;
+    - cabecera, pestañas y panel de etapas son opacos;
+    - el lienzo principal se recorta al borde redondeado de `.mc-stage`;
+    - el pie `#mc-foot` declara la escala (32 unidades = 1 AU, radios 1:1, nave ampliada).
+
+    Las cámaras disponibles son tres (general, exterior y de destino) y sus descripciones cambian según la escena ([17.1](STAGE17_1_MAIN_SCENE_PLAYBACK.md)).
 - **Glosario:** términos `.lab-term` con subrayado punteado, ayuda `#lab-tooltip` y diálogo `#lab-glossary`.
 - **Retirado:** la barra superior de 16 (`.lab-nav-group`, `.lab-nav-step`) ya no se genera y sus selectores se eliminan de `theme.css`. `nav.lab-sections` se reutiliza dentro del panel de etapas. Los grupos del navegador de áreas siguen.
 - **Cabecera común** (`theme.css`):

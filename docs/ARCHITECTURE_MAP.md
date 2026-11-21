@@ -31,7 +31,7 @@ evidence/                   manifiestos, registros y capturas de verificación
 
 ## Entrada, datos y gestión de modos
 
-`index.html` declara los controles y el contenedor `#solar-system`; importa `src/main.js`. `main.js` crea escena con `createSolarSystem`, paneles/controles y `createExperimentalLaboratory`; llama `crearWorkspaceLayout` para reubicar nodos DOM existentes conservando identificadores y listeners. `iniciar()` carga `cargarEfemerides()` y lunas locales, intenta `loadScientificPipeline`, propaga `Sonda Experimental 01` y aplica el modo URL opcional. `cambiarModoOperacion()` alterna `exploracion`, `historico` y `experimental`, pausa bucles previos y configura escena/controles. La navegación usa `data-app-mode`. El parámetro `?ephemeris=scientific` es optativo para el flujo visual planetario; un fallo declarado conserva el flujo anterior. `window.__SIMULADOR_DIAGNOSTICO__` expone lecturas de estado para E2E; no es un proveedor científico ni debe usarse para mutar la escena.
+`index.html` declara los controles y el contenedor `#solar-system`; importa `src/main.js`. `main.js` crea escena con `createSolarSystem`, paneles/controles y `createExperimentalLaboratory`; llama `crearWorkspaceLayout` para reubicar nodos DOM existentes conservando identificadores y listeners. `iniciar()` carga `cargarEfemerides()` y lunas locales, carga `loadScientificPipeline` solo con `?ephemeris=scientific` y aplica el modo URL opcional (desde 17.1 ya no propaga la Sonda Experimental 01). `main.js` crea también `createSolarSystemMissionView` y lo entrega al laboratorio para «3 · Reproducir». `cambiarModoOperacion()` alterna `exploracion`, `historico` y `experimental`, pausa bucles previos y configura escena/controles. La navegación usa `data-app-mode`. El parámetro `?ephemeris=scientific` es optativo para el flujo visual planetario; un fallo declarado conserva el flujo anterior. `window.__SIMULADOR_DIAGNOSTICO__` expone lecturas de estado para E2E; no es un proveedor científico ni debe usarse para mutar la escena.
 
 ### Sistema Solar: científico → adaptador → escena → UI
 
@@ -52,7 +52,17 @@ public/data/ephemerides-catalog-v1.json + conjuntos asociados
 
 ### Sonda experimental clásica
 
-`science/ExperimentalProbe01.js` establece condiciones iniciales y llama la propagación que usa `GravitationalParameters.js`, `GravitationalDynamics.js`, `NumericalIntegrator.js` (RK4/DOPRI54) y `TrajectoryPropagator.js`. `integration/ProbeVisualAdapter.js` convierte muestras km a escena; `graphics/SpaceProbeVisual.js` las dibuja. `ui/MissionControls.js` ofrece iniciar, pausar, reiniciar, enfocar y ver telemetría. Esta propagación no consume las piezas guardadas del Hangar.
+`science/ExperimentalProbe01.js` establece condiciones iniciales y llama la propagación que usa `GravitationalParameters.js`, `GravitationalDynamics.js`, `NumericalIntegrator.js` (RK4/DOPRI54) y `TrajectoryPropagator.js`. `integration/ProbeVisualAdapter.js` convierte muestras km a escena. Desde 17.1 el módulo no tiene interfaz (se retiraron `ui/MissionControls.js` y `#mission-panel`); se conserva con sus pruebas DOPRI54.
+
+### Reproducción del laboratorio en el Sistema Solar principal (17.1)
+
+`ui/MissionControlCenter.js` recibe `sceneView` (`integration/SolarSystemMissionView.js`). Si la ejecución es heliocéntrica (`mainSceneSupport`), el adaptador:
+
+- comprueba la cobertura de los ocho planetas y carga su ventana de efemérides (`science/InterplanetaryEphemeris.js`);
+- crea el modelo con `lab/MissionProbeSceneModel.js`;
+- en cada instante del reloj llama a `SolarSystem.actualizarPosiciones` (planetas en la época TDB) y `actualizarEstadoSonda` (estado heliocéntrico ya calculado).
+
+Solo presentación: no calcula física ni extrapola. `SolarSystem` acepta un proveedor de zona de encuadre y de recorte (`establecerProveedorZonaEncuadre`), y `CameraController` añade `encuadrarConjuntoMision` y `encuadrarDestinoConSonda`. Al soltar la escena, `main.js` restaura la exploración (`restaurarEscenaTrasMisionLaboratorio`). `#app[data-lab-scene="main"]` (en `lab-shell.css`) convierte la escena del Centro de Misión en una ventana al lienzo principal.
 
 ### Histórico Voyager
 
