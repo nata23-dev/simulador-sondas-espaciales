@@ -16,7 +16,7 @@ const valueOrNA = (n, unit, digits = 1) => Number.isFinite(n) ? `${number(n, dig
 export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () => {}, onExecuteRequest = () => {} } = {}) {
   host.classList.add('mission-planner');
   host.innerHTML = `
-    <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">03 / PLANIFICADOR</span><h3>Condiciones de misión</h3></div>
+    <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">2 / PLANIFICAR · TIERRA–LUNA</span><h3>Condiciones de misión</h3></div>
       <div class="lab-panel-scroll">
         <p class="mission-intro">Viaje a la Luna desde una órbita terrestre circular que la sonda ya ocupa. La fase y el plano se eligen para apuntar al encuentro; el lanzamiento y su Δv no se incluyen.</p>
         <label class="lab-field">Sonda activa<input id="mission-probe" readonly></label>
@@ -49,7 +49,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
       <div id="mission-stage-empty" class="lab-empty">Define una salida cubierta por las efemérides y calcula la transferencia.</div>
       <div class="lab-stage-foot"><span>Tierra + gravedad lunar · efeméride local · selecciona los puntos para inspeccionar</span></div>
     </div>
-    <div class="mission-results lab-panel"><div class="lab-panel-heading"><span class="eyebrow">04 / RESULTADOS</span><h3>Evaluación de misión</h3></div>
+    <div class="mission-results lab-panel"><div class="lab-panel-heading"><span class="eyebrow">2 / PLANIFICAR · RESULTADOS</span><h3>Evaluación de misión</h3></div>
       <div class="lab-panel-scroll"><div id="mission-summary"></div><div id="mission-phases"></div><div id="ft-results-host"></div>
         <details class="mission-details"><summary>Modelo, marcos y límites</summary><p>Posiciones en km y velocidades en km/s, Tierra como centro, ejes ICRF eclípticos J2000, fechas TDB. La sonda se integra con gravedad terrestre y lunar más el término indirecto del marco geocéntrico mediante DOPRI54. La Luna procede de Horizons, interpolada con Hermite dentro de octubre de 2026.</p><p>La fase y el plano de la órbita terrestre se seleccionan para la transferencia. La elipse de Hohmann proporciona la semilla de apuntado; la trayectoria visual es el resultado numérico. No se incluyen gravedad solar, empuje finito, eclipses, correcciones ni lanzamiento. La captura lunar y el éxito de una misión completa quedan sin verificar.</p></details>
       </div></div>`;
@@ -284,7 +284,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
   $('#mission-restore-design').addEventListener('click', () => {
     if (!loadedPlan) return;
     onRestoreDesign(structuredClone(loadedPlan.designSnapshot));
-    $('#mission-restore-design').hidden = true; message('Sonda asociada restaurada en el Hangar. Recalcula la transferencia.');
+    $('#mission-restore-design').hidden = true; message('Sonda asociada restaurada en «1 · Elegir sonda». Recalcula la transferencia.');
   });
   $('#mission-focus-earth').addEventListener('click', () => trajectoryView.focus('earth'));
   $('#mission-focus-moon').addEventListener('click', () => trajectoryView.focus('moon'));

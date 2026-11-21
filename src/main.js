@@ -61,6 +61,8 @@ import { crearSuperficieLanzamientoCinematografico } from './ui/LaunchCinematicO
 import { METADATOS_HISTORICOS_LANZAMIENTO } from './graphics/LaunchCinematicController.js';
 // 14: capa visual común (tokens, componentes y movimiento). Se importa después de los demás estilos para prevalecer.
 import './ui/theme.css';
+// 17: laboratorio en tres etapas (panel lateral, pestañas y Centro de Misión con panel por pestañas); después de theme.css.
+import './ui/lab-shell.css';
 
 const ETIQUETAS_CUERPOS = {
   Jupiter: 'Júpiter',

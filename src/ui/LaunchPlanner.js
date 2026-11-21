@@ -15,7 +15,7 @@ export function createLaunchPlanner({ host, onExecuteRequest, onInvalidated }) {
   const stageBlock = index => `<details class="ft-section"><summary>Etapa ${index + 1} del lanzador</summary>${STAGE_FIELDS.map(([key, label, step]) =>
     `<label class="lab-field">${label}<input data-stage="${index}" data-key="${key}" type="number" step="${step}" min="0"></label>`).join('')}</details>`;
   host.innerHTML = `
-    <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">LANZAMIENTO</span><h3>Ascenso desde la Tierra</h3></div>
+    <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">2 / PLANIFICAR · LANZAMIENTO (INDEPENDIENTE)</span><h3>Ascenso desde la Tierra</h3></div>
       <div class="lab-panel-scroll">
         <p class="mission-intro">Despegue desde la superficie hasta una órbita baja. La carga útil es la sonda activa con su masa real al lanzamiento; el cohete es ilustrativo (no corresponde a ningún lanzador real). Este tramo no se encadena con los planificadores: termina en órbita terrestre.</p>
         <label class="lab-field">Carga útil (sonda activa)<input id="ln-payload" readonly></label>
@@ -48,7 +48,7 @@ export function createLaunchPlanner({ host, onExecuteRequest, onInvalidated }) {
         <button id="ln-execute" type="button">Reproducir en el Centro de Misión</button>
         <p id="ln-message" class="lab-message" role="status"></p>
       </div></div>
-    <div class="mission-results lab-panel"><div class="lab-panel-heading"><span class="eyebrow">RESULTADOS</span><h3>Evaluación del lanzamiento</h3></div>
+    <div class="mission-results lab-panel"><div class="lab-panel-heading"><span class="eyebrow">2 / PLANIFICAR · RESULTADOS</span><h3>Evaluación del lanzamiento</h3></div>
       <div class="lab-panel-scroll"><div id="ln-results" class="ft-results"></div></div></div>`;
   const $ = selector => host.querySelector(selector);
   const results = $('#ln-results');

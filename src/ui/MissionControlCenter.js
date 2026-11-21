@@ -59,25 +59,20 @@ const LANDING_SUMMARIES = Object.freeze({ '#mc-state-metrics': 'Estado inercial 
 const LAUNCH_SUMMARIES = Object.freeze({ '#mc-state-metrics': 'Estado inercial (ECI-L)', '#mc-derived-metrics': 'Vuelo y órbita osculante',
   '#mc-resource-metrics': 'Propulsión y masa', '#mc-energy-metrics': 'Resultado orbital y límites' });
 
-export function createMissionControlCenter(host, onOpenPlanner) {
+const CAMERA_DESCRIPTIONS = Object.freeze({ overview: 'Encuadra toda la trayectoria calculada y los cuerpos del tramo.',
+  exterior: 'Sigue a la nave desde fuera, a corta distancia.', onboard: 'Desde la posición de la nave hacia lo que elijas en «Mirar hacia».',
+  destination: 'Desde las cercanías del destino, mirando hacia la nave.', cinematic: 'Por detrás de la nave, en la dirección de su movimiento.',
+  local: 'Escena local del cuerpo central (lanzamiento y descenso).' });
+export const MC_PANES = Object.freeze({ playback: 'Reproducción', cameras: 'Cámaras', telemetry: 'Telemetría', trajectory: 'Trayectoria y maniobras', events: 'Eventos', results: 'Resultados' });
+
+export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = () => {}, onOpenResults = onOpenPlanner } = {}) {
   host.classList.add('mission-control');
+  // 17: la escena ocupa el centro y un único panel lateral reúne, por pestañas, reproducción, cámaras, telemetría,
+  // trayectoria, eventos y resultados. Mismos identificadores que antes: la lógica de reproducción no cambia.
   host.innerHTML = `
-    <aside class="mc-console lab-panel"><div class="lab-panel-heading"><span class="eyebrow">05 / CENTRO DE MISIÓN</span><h3>Control temporal</h3></div>
-      <div class="lab-panel-scroll">
-        <div id="mc-readiness" class="mc-readiness" role="status">Calcula una misión viable en el Planificador para habilitar la ejecución.</div>
-        <button id="mc-open-planner" type="button">Abrir Planificador</button>
-        <div class="lab-divider"></div>
-        <div class="mc-actions"><button id="mc-play" type="button">Iniciar</button><button id="mc-pause" type="button">Pausar</button><button id="mc-reverse" type="button">Retroceder</button><button id="mc-reset" type="button">Reiniciar</button></div>
-        <label class="lab-field">Velocidad temporal<select id="mc-rate"><option value="1">×1 · tiempo real</option><option value="10">×10</option><option value="60">×60 · 1 min/s</option><option value="600">×600 · 10 min/s</option><option value="3600" selected>×3 600 · 1 h/s</option><option value="21600">×21 600 · 6 h/s</option><option value="86400">×86 400 · 1 día/s</option><option value="864000" data-interplanetary>10 días/s</option><option value="2592000" data-interplanetary>30 días/s</option><option value="8640000" data-interplanetary>100 días/s</option><option value="auto" data-integrated>Automático por fase</option></select></label>
-        <div id="mc-context" class="mc-context" role="group" aria-label="Marco de la vista" hidden><button type="button" data-context="auto" aria-pressed="true">Automático</button><button type="button" data-context="helio" aria-pressed="false">Sol</button><button type="button" data-context="planet" aria-pressed="false">Planeta</button><button type="button" data-context="moon" aria-pressed="false">Satélite</button><button type="button" data-context="landing" aria-pressed="false">Descenso</button></div>
-        <label class="lab-field">Instante de misión<input id="mc-timeline" type="range" min="0" max="1" step="0.001" value="0"></label>
-        <div class="mc-time-row"><span id="mc-elapsed">0 s</span><span id="mc-remaining">No disponible</span></div>
-        <p id="mc-message" class="lab-message" role="status"></p>
-        <div class="lab-divider"></div><h4>Fases y eventos</h4><div id="mc-events" class="mc-events"></div>
-      </div></aside>
     <div class="mc-stage lab-stage"><div class="lab-stage-top"><span class="eyebrow">MISIÓN EN REPRODUCCIÓN / ESTADOS CALCULADOS</span><strong id="mc-stage-status">Sin plan vigente</strong>
-        <div class="mc-layout-toggles" role="group" aria-label="Paneles del Centro de Misión"><button type="button" data-mc-panel="console" aria-pressed="true" title="Mostrar u ocultar el control temporal">Control</button><button type="button" data-mc-panel="telemetry" aria-pressed="true" title="Mostrar u ocultar la telemetría">Telemetría</button><button type="button" data-mc-panel="wide" aria-pressed="false" title="Ocultar ambos paneles y ampliar la escena"><svg class="icon" aria-hidden="true"><use href="#icon-expand"></use></svg><span>Vista amplia</span></button></div></div>
-      <div id="mc-canvas" aria-label="Visualización 3D de la sonda activa y su trayectoria calculada"></div>
+        <div class="mc-layout-toggles" role="group" aria-label="Paneles del Centro de Misión"><button type="button" data-mc-panel="drawer" aria-pressed="true" aria-controls="mc-drawer" title="Mostrar u ocultar el panel lateral (la reproducción sigue)">Panel</button><button type="button" data-mc-panel="immersive" aria-pressed="false" title="Vista inmersiva: solo la escena y los controles mínimos (Esc para salir)"><svg class="icon" aria-hidden="true"><use href="#icon-expand"></use></svg><span>Vista inmersiva</span></button></div></div>
+      <div id="mc-canvas" aria-label="Visualización 3D de la sonda y de la trayectoria calculada"></div>
       <button id="mc-touch-toggle" type="button" class="lab-touch-toggle" aria-pressed="false" hidden>Activar control 3D</button>
       <div class="mc-camera-bar" role="group" aria-label="Cámaras de misión"></div>
       <div class="mc-onboard-target"><label for="mc-look">Mirar hacia</label><select id="mc-look"><option value="moon">Luna</option><option value="earth">Tierra</option><option value="velocity">Dirección del movimiento</option></select></div>
@@ -89,29 +84,83 @@ export function createMissionControlCenter(host, onOpenPlanner) {
         <button type="button" data-tr="next" aria-label="Evento siguiente" title="Evento siguiente"><svg class="icon" aria-hidden="true"><use href="#icon-skip-forward"></use></svg></button>
         <div class="mc-track" id="mc-track" role="presentation"><div class="mc-track-fill" id="mc-track-fill"></div><div class="mc-track-ticks" id="mc-track-ticks"></div></div>
         <span class="mc-tr-time" id="mc-tr-time"></span>
+        <button type="button" class="mc-exit-immersive" data-mc-panel="exit-immersive" title="Salir de la vista inmersiva (Esc)">Salir</button>
       </div>
-      <div id="mc-stage-empty" class="lab-empty">Sin trayectoria ejecutable. Revisa el Planificador y la capacidad de la sonda.</div>
+      <div id="mc-stage-empty" class="lab-empty"><strong>Sin trayectoria ejecutable</strong><span id="mc-empty-reason">Calcula una misión en «2 · Planificar» y pulsa «Reproducir en el Centro de Misión». La escena usará la sonda y los estados de ese cálculo.</span>
+        <span class="mc-empty-actions"><button type="button" id="mc-empty-plan" class="button-primary">Ir a Planificar</button><button type="button" data-lab-action="orbital" title="Ejemplo independiente: Sonda Experimental 01 con una trayectoria ficticia integrada con DOPRI54. No usa tu sonda ni tu misión.">Ver la demostración científica (DOPRI54)</button></span></div>
       <div class="lab-stage-foot"><span id="mc-foot">Centros y trayectoria: 1 unidad = 10 000 km · marcadores ilustrativos · nave ampliada en vistas cercanas: 0,25 unidades por metro · orientación visual alineada con velocidad, sin control de actitud</span></div>
     </div>
-    <aside class="mc-telemetry lab-panel"><div class="lab-panel-heading"><span class="eyebrow">06 / TELEMETRÍA</span><h3>Estado en el instante</h3></div>
-      <div class="lab-panel-scroll"><div id="mc-outcome" class="mc-outcome">Sin datos de misión.</div>
-        <details open><summary>Estado propagado y efeméride</summary><div id="mc-state-metrics" class="lab-metrics"></div></details>
-        <details open><summary>Distancias derivadas</summary><div id="mc-derived-metrics" class="lab-metrics"></div></details>
-        <details open><summary>Maniobra y recursos</summary><div id="mc-resource-metrics" class="lab-metrics"></div></details>
-        <details><summary>Potencia estimada y límites</summary><div id="mc-energy-metrics" class="lab-metrics"></div><p id="mc-energy-note" class="mission-hint"></p></details>
-        <p id="mc-model-note" class="mission-hint">La reproducción recorre una trayectoria integrada; el impulso es instantáneo. La masa se toma del presupuesto de misión, no de una combustión simulada.</p>
-      </div></aside>`;
+    <aside class="mc-drawer lab-panel" id="mc-drawer" aria-labelledby="mc-pane-title">
+      <div class="lab-panel-heading"><span class="eyebrow">3 / REPRODUCIR</span><h3 id="mc-pane-title">Reproducción</h3></div>
+      <div class="lab-panel-scroll">
+        <section class="mc-pane" data-pane="playback">
+          <div id="mc-vehicle" class="mc-vehicle" data-state="none"><span>Vehículo en la escena</span><strong id="mc-vehicle-name">Ninguno</strong><small id="mc-vehicle-model">Sin misión en reproducción</small></div>
+          <div id="mc-readiness" class="mc-readiness" role="status">Calcula una misión viable en el Planificador para habilitar la ejecución.</div>
+          <button id="mc-open-planner" type="button">Volver a «2 · Planificar»</button>
+          <div class="lab-divider"></div>
+          <div class="mc-actions"><button id="mc-play" type="button">Iniciar</button><button id="mc-pause" type="button">Pausar</button><button id="mc-reverse" type="button">Retroceder</button><button id="mc-reset" type="button">Reiniciar</button></div>
+          <label class="lab-field">Velocidad temporal<select id="mc-rate"><option value="1">×1 · tiempo real</option><option value="10">×10</option><option value="60">×60 · 1 min/s</option><option value="600">×600 · 10 min/s</option><option value="3600" selected>×3 600 · 1 h/s</option><option value="21600">×21 600 · 6 h/s</option><option value="86400">×86 400 · 1 día/s</option><option value="864000" data-interplanetary>10 días/s</option><option value="2592000" data-interplanetary>30 días/s</option><option value="8640000" data-interplanetary>100 días/s</option><option value="auto" data-integrated>Automático por fase</option></select></label>
+          <div id="mc-context" class="mc-context" role="group" aria-label="Marco de la vista" hidden><button type="button" data-context="auto" aria-pressed="true">Automático</button><button type="button" data-context="helio" aria-pressed="false">Sol</button><button type="button" data-context="planet" aria-pressed="false">Planeta</button><button type="button" data-context="moon" aria-pressed="false">Satélite</button><button type="button" data-context="landing" aria-pressed="false">Descenso</button></div>
+          <label class="lab-field">Instante de misión<input id="mc-timeline" type="range" min="0" max="1" step="0.001" value="0"></label>
+          <div class="mc-time-row"><span id="mc-elapsed">0 s</span><span id="mc-remaining">No disponible</span></div>
+          <p id="mc-message" class="lab-message" role="status"></p>
+        </section>
+        <section class="mc-pane" data-pane="cameras" hidden>
+          <p class="mission-hint">Las cámaras solo cambian el encuadre: los estados calculados son los mismos. También puedes cambiarlas desde la barra sobre la escena.</p>
+          <div id="mc-camera-list" class="mc-camera-list" role="group" aria-label="Elegir cámara"></div>
+        </section>
+        <section class="mc-pane" data-pane="telemetry" hidden>
+          <details open><summary>Estado propagado y efeméride</summary><div id="mc-state-metrics" class="lab-metrics"></div></details>
+          <details open><summary>Distancias derivadas</summary><div id="mc-derived-metrics" class="lab-metrics"></div></details>
+          <details><summary>Potencia estimada y límites</summary><div id="mc-energy-metrics" class="lab-metrics"></div><p id="mc-energy-note" class="mission-hint"></p></details>
+        </section>
+        <section class="mc-pane" data-pane="trajectory" hidden>
+          <div id="mc-trajectory" class="mc-trajectory"><p class="mission-hint">Sin trayectoria en reproducción.</p></div>
+          <details open><summary>Maniobra y recursos</summary><div id="mc-resource-metrics" class="lab-metrics"></div></details>
+        </section>
+        <section class="mc-pane" data-pane="events" hidden>
+          <p class="mission-hint">Pulsa un evento para saltar a su instante calculado; también puedes usar las marcas de la barra inferior.</p>
+          <div id="mc-events" class="mc-events"></div>
+        </section>
+        <section class="mc-pane" data-pane="results" hidden>
+          <div id="mc-outcome" class="mc-outcome">Sin datos de misión.</div>
+          <div id="mc-results" class="mc-results"></div>
+          <p id="mc-model-note" class="mission-hint">La reproducción recorre una trayectoria integrada; el impulso es instantáneo. La masa se toma del presupuesto de misión, no de una combustión simulada.</p>
+          <button type="button" id="mc-open-results">Ver los cálculos completos en Planificar</button>
+        </section>
+      </div>
+    </aside>`;
   const $ = selector => host.querySelector(selector);
   const controls = ['mc-play', 'mc-pause', 'mc-reverse', 'mc-reset', 'mc-rate', 'mc-timeline'];
   for (const mode of MISSION_CAMERA_MODES) {
     const button = document.createElement('button'); button.type = 'button'; button.dataset.camera = mode; button.textContent = CAMERA_LABELS[mode];
     $('.mc-camera-bar').append(button);
+    // 17: la pestaña «Cámaras» repite las mismas cámaras con una explicación; ambas listas llaman al mismo control.
+    const item = document.createElement('button'); item.type = 'button'; item.dataset.camera = mode; item.className = 'mc-camera-item';
+    const name = document.createElement('strong'); name.textContent = CAMERA_LABELS[mode];
+    const desc = document.createElement('small'); desc.textContent = CAMERA_DESCRIPTIONS[mode] ?? '';
+    item.append(name, desc); $('#mc-camera-list').append(item);
   }
   let execution = null, clock = null, sourceResult = null, sourceDesign = null, sourceName = null;
   let visible = false, frame = null, lastNow = null, interrupted = false, selectedEvent = 'parking';
-  let contextMode = 'auto', viewContext = null, autoRate = false;
+  let contextMode = 'auto', viewContext = null, autoRate = false, pane = 'playback', modelInfo = null;
   let view;
-  try { view = createMissionExecutionView($('#mc-canvas')); }
+  // 17: identidad del vehículo en la escena: el nombre y el modelo 3D salen del diseño con el que se calculó la misión.
+  function renderVehicle() {
+    const card = $('#mc-vehicle');
+    if (!execution) { card.dataset.state = 'none'; $('#mc-vehicle-name').textContent = 'Ninguno'; $('#mc-vehicle-model').textContent = 'Sin misión en reproducción'; delete host.dataset.vehicle; delete host.dataset.vehicleModel; return; }
+    const design = execution.design ?? sourceDesign ?? null;
+    $('#mc-vehicle-name').textContent = design?.name ?? 'Sin sonda asociada';
+    const status = modelInfo?.status ?? (design ? 'cargando' : 'sin-sonda');
+    $('#mc-vehicle-model').textContent = !design ? 'La transferencia se calculó sin vehículo: solo requisitos.'
+      : design.experimental ? 'Ensamblaje experimental: reconstrucción técnica del simulador (no hay modelo oficial de esta combinación).'
+      : status === 'nasa' ? 'Modelo 3D oficial de NASA de esta sonda' : status === 'cargando' ? 'Cargando el modelo 3D de NASA…'
+      : 'Reconstrucción procedimental (no se pudo cargar el modelo de NASA)';
+    card.dataset.state = design?.experimental ? 'experimental' : status;
+    host.dataset.vehicle = design?.basedOn ?? (design ? 'experimental' : 'ninguno');
+    host.dataset.vehicleModel = status;
+  }
+  try { view = createMissionExecutionView($('#mc-canvas'), { onModel: info => { modelInfo = info; renderVehicle(); } }); }
   catch (error) {
     $('#mc-canvas').textContent = 'No se pudo iniciar WebGL. La telemetría y la reproducción temporal siguen disponibles.';
     view = { setExecution() {}, setSample() {}, setCameraMode() {}, setLookTarget() {}, setTouchInteraction() {}, setVisible() {}, dispose() {}, getCameraMode: () => 'overview' };
@@ -134,7 +183,7 @@ export function createMissionControlCenter(host, onOpenPlanner) {
   }
   function updateAvailability() {
     for (const id of controls) $(`#${id}`).disabled = !execution;
-    for (const button of $('.mc-camera-bar').querySelectorAll('button')) {
+    for (const button of host.querySelectorAll('[data-camera]')) {
       button.disabled = !execution;
       // La cámara local solo existe para ejecuciones con cuerpo central local (lanzamiento, descenso).
       if (button.dataset.camera === 'local') button.hidden = !(execution && (['launch', 'landing'].includes(execution.kind) || (execution.kind === 'integrated' && viewContext === 'landing')));
@@ -480,6 +529,78 @@ export function createMissionControlCenter(host, onOpenPlanner) {
     if (crossing != null) clock.seek(crossing); else clock.advance(realDelta);
   }
   function startFrame() { if (frame == null && visible) { lastNow = null; frame = requestAnimationFrame(tick); } }
+  // 17: resúmenes estáticos de la misión en reproducción (salen del mismo objeto de ejecución que dibuja la escena).
+  const duration = seconds => !Number.isFinite(seconds) ? 'No disponible' : seconds < 3600 ? `${number(seconds / 60, 1)} min`
+    : seconds < 2 * 86400 ? `${number(seconds / 3600, 2)} h` : `${number(seconds / 86400, 1)} d`;
+  function staticRows(container, rows) {
+    for (const [label, value] of rows) {
+      const row = document.createElement('div'); row.className = 'lab-metric';
+      const term = document.createElement('span'); term.textContent = label;
+      const data = document.createElement('strong'); data.textContent = value;
+      row.append(term, data); container.append(row);
+    }
+  }
+  const verdictOf = ex => ex?.mission?.verdict ?? ex?.evaluation?.status ?? ex?.result?.evaluation?.status ?? ex?.result?.status ?? 'No disponible';
+  const RESTRICTIONS = Object.freeze({
+    integrated: ['La inyección desde la órbita terrestre no se modela: la misión parte del C3 de salida.', 'El lanzamiento terrestre es una herramienta independiente: no se encadena con esta misión.'],
+    interplanetary: ['Cónica heliocéntrica preliminar (Lambert): sin lanzamiento, correcciones de trayectoria ni captura.'],
+    launch: ['Termina en una órbita baja terrestre; no se encadena con la misión completa.', 'Lanzador ilustrativo: no es un cohete real.'],
+    landing: ['Descenso local aislado: no incluye el viaje ni la llegada.'],
+    'finite-thrust': ['Maniobra local desde una órbita terrestre: sin lanzamiento ni continuación interplanetaria.'],
+    mission: ['Impulso ideal e instantáneo desde una órbita terrestre: sin lanzamiento.']
+  });
+  function renderTrajectory() {
+    const box = $('#mc-trajectory'); box.replaceChildren();
+    if (!execution) { const p = document.createElement('p'); p.className = 'mission-hint'; p.textContent = 'Sin trayectoria en reproducción.'; box.append(p); return; }
+    const list = document.createElement('div'); list.className = 'lab-metrics';
+    const rows = [['Tipo', HUD_KIND[execution.kind] ?? 'Misión'], ['Misión', execution.name], ['Vehículo', execution.design?.name ?? 'Sin sonda asociada'],
+      ['Duración calculada', duration(execution.durationSeconds)], ['Eventos calculados', String(execution.events.length)]];
+    const m = execution.mission;
+    if (m) {
+      rows.push(['Tramos conectados', `${m.segments.length} · salto máximo de posición ${m.continuity.maxPositionErrorKm.toExponential(1)} km`]);
+      if (m.departure) rows.push(['C3 de salida', `${number(m.departure.c3Km2S2, 2)} km²/s²`]);
+    }
+    staticRows(list, rows); box.append(list);
+    if (m) {
+      const title = document.createElement('h4'); title.textContent = 'Encendidos integrados';
+      const table = document.createElement('table'); table.className = 'mc-maneuvers';
+      table.innerHTML = '<thead><tr><th scope="col">Maniobra</th><th scope="col">Δv</th><th scope="col">Propelente</th><th scope="col">Duración</th></tr></thead><tbody></tbody>';
+      for (const mv of m.maneuvers) {
+        const tr = document.createElement('tr');
+        for (const text of [mv.label, `${number(mv.propulsiveDeltaVKmS * 1000, 1)} m/s`, `${number(mv.propellantKg, 0)} kg`, duration(mv.durationSeconds)]) { const td = document.createElement('td'); td.textContent = text; tr.append(td); }
+        table.tBodies[0].append(tr);
+      }
+      if (!m.maneuvers.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 4; td.textContent = 'Sin encendidos (sobrevuelo balístico).'; tr.append(td); table.tBodies[0].append(tr); }
+      const segTitle = document.createElement('h4'); segTitle.textContent = 'Tramos';
+      const segments = document.createElement('ol'); segments.className = 'mc-segments';
+      for (const seg of m.segments) { const li = document.createElement('li'); li.textContent = `${seg.label ?? PHASE_LABELS[seg.phase] ?? seg.phase} · ${duration(seg.endSeconds - seg.startSeconds)}`; segments.append(li); }
+      box.append(title, table, segTitle, segments);
+    }
+  }
+  function renderResultsSummary() {
+    const box = $('#mc-results'); box.replaceChildren();
+    if (!execution) return;
+    const verdict = verdictOf(execution);
+    const head = document.createElement('p'); head.className = 'mission-status';
+    head.dataset.tone = /^(NO VIABLE|NO DESPEGA)|FALLO|IMPACTO/.test(verdict) ? 'bad' : /^(CADENA CALCULADA COMPLETA|VIABLE|LANZAMIENTO COMPLETADO)/.test(verdict) ? 'ok' : 'warn';
+    head.textContent = verdict; box.append(head);
+    const list = document.createElement('div'); list.className = 'lab-metrics';
+    const rows = [['Vehículo', execution.design?.name ?? 'Sin sonda asociada'], ['Duración', duration(execution.durationSeconds)]];
+    const m = execution.mission;
+    if (m) {
+      rows.push(['Propelente consumido', `${number(m.maneuvers.reduce((n, mv) => n + mv.propellantKg, 0), 0)} kg`], ['Masa final', `${number(m.finalMassKg, 0)} kg`]);
+      if (m.power) rows.push(['Energía eléctrica', m.power.sustainable ? 'Suficiente según el modelo' : 'Insuficiente según el modelo']);
+    }
+    staticRows(list, rows); box.append(list);
+    const limits = [...(RESTRICTIONS[execution.kind] ?? []), ...(m?.warnings ?? [])];
+    if (limits.length) {
+      const title = document.createElement('h4'); title.textContent = 'Restricciones y simplificaciones';
+      const ul = document.createElement('ul'); ul.className = 'mc-limits';
+      for (const text of limits) { const li = document.createElement('li'); li.textContent = text; ul.append(li); }
+      box.append(title, ul);
+    }
+    const note = document.createElement('p'); note.className = 'mission-hint'; note.textContent = '«Viable según el modelo» no equivale a éxito operativo.'; box.append(note);
+  }
   function clear(reason) {
     stopFrame(); execution = null; clock = null; sourceResult = null; sourceDesign = null; sourceName = null; interrupted = false; viewContext = null; $('#mc-context').hidden = true;
     view.setExecution(null); $('#mc-stage-empty').hidden = false;
@@ -487,6 +608,8 @@ export function createMissionControlCenter(host, onOpenPlanner) {
     $('#mc-stage-status').textContent = 'Sin plan vigente'; $('#mc-outcome').textContent = 'Sin datos de misión.';
     for (const selector of ['#mc-state-metrics', '#mc-derived-metrics', '#mc-resource-metrics', '#mc-energy-metrics']) $(selector).replaceChildren();
     $('#mc-energy-note').textContent = '';
+    $('#mc-empty-reason').textContent = reason ? `${reason} La escena usará la sonda y los estados del nuevo cálculo.` : 'Calcula una misión en «2 · Planificar» y pulsa «Reproducir en el Centro de Misión». La escena usará la sonda y los estados de ese cálculo.';
+    modelInfo = null; renderVehicle(); renderTrajectory(); renderResultsSummary();
     renderEvents(); updateAvailability(); message(''); updateHud();
   }
   function setPlan(candidate) {
@@ -494,7 +617,7 @@ export function createMissionControlCenter(host, onOpenPlanner) {
     if (candidate.result === sourceResult && candidate.design === sourceDesign && candidate.name === sourceName) return;
     try {
       const next = candidate.kind === 'integrated' ? createIntegratedExecution(candidate) : candidate.kind === 'interplanetary' ? createInterplanetaryExecution(candidate) : candidate.kind === 'landing' ? createLandingExecution(candidate) : candidate.kind === 'launch' ? createLaunchExecution(candidate) : candidate.kind === 'finite-thrust' ? createFiniteThrustExecution(candidate) : createMissionExecution(candidate);
-      stopFrame(); execution = next; clock = createPlaybackClock(next.durationSeconds, { maxRate: next.kind === 'interplanetary' ? INTERPLANETARY_MAX_RATE : next.kind === 'integrated' ? INTEGRATED_MAX_RATE : 86400 });
+      stopFrame(); modelInfo = null; execution = next; clock = createPlaybackClock(next.durationSeconds, { maxRate: next.kind === 'interplanetary' ? INTERPLANETARY_MAX_RATE : next.kind === 'integrated' ? INTEGRATED_MAX_RATE : 86400 });
       viewContext = null; contextMode = 'auto'; autoRate = false;
       sourceResult = candidate.result; sourceDesign = candidate.design; sourceName = candidate.name; interrupted = false;
       if (next.kind === 'integrated') { setViewContext(sampleIntegratedExecution(next, 0).context); view.setCameraMode('overview', { instant: true }); }
@@ -526,6 +649,7 @@ export function createMissionControlCenter(host, onOpenPlanner) {
         : 'Plan vigente y maniobra viable según el modelo. Reproducción de estados calculados; el lanzamiento no está incluido.';
       $('#mc-timeline').max = String(next.durationSeconds);
       renderEvents(); updateAvailability(); refresh(); message(preparedMessage(next));
+      renderVehicle(); renderTrajectory(); renderResultsSummary();
     } catch (error) { clear(error.message); }
   }
   $('#mc-open-planner').addEventListener('click', onOpenPlanner);
@@ -555,10 +679,10 @@ export function createMissionControlCenter(host, onOpenPlanner) {
     if (!clock) return;
     clock.pause(); stopFrame(); clock.seek(Number($('#mc-timeline').value)); refresh();
   });
-  for (const button of $('.mc-camera-bar').querySelectorAll('button')) button.addEventListener('click', () => {
+  for (const button of host.querySelectorAll('button[data-camera]')) button.addEventListener('click', () => {
     view.setCameraMode(button.dataset.camera);
     if (execution) $('#mc-foot').textContent = execution.kind === 'integrated' ? FOOT_INTEGRATED[viewContext] : execution.kind === 'interplanetary' ? FOOT_HELIO : button.dataset.camera === 'local' && execution.kind === 'landing' ? FOOT_LANDING_LOCAL : FOOT_DEFAULT;
-    for (const item of $('.mc-camera-bar').querySelectorAll('button')) item.setAttribute('aria-pressed', String(item === button));
+    for (const item of host.querySelectorAll('button[data-camera]')) item.setAttribute('aria-pressed', String(item.dataset.camera === button.dataset.camera));
     $('.mc-onboard-target').hidden = button.dataset.camera !== 'onboard';
   });
   $('#mc-look').addEventListener('change', () => view.setLookTarget($('#mc-look').value));
@@ -576,19 +700,36 @@ export function createMissionControlCenter(host, onOpenPlanner) {
     input.value = String(Math.min(1, Math.max(0, (event.clientX - box.left) / box.width)) * Number(input.max));
     input.dispatchEvent(new Event('input'));
   });
-  function setPanels(consoleVisible, telemetryVisible) {
-    host.dataset.console = consoleVisible ? 'shown' : 'hidden';
-    host.dataset.telemetry = telemetryVisible ? 'shown' : 'hidden';
-    const pressed = { console: consoleVisible, telemetry: telemetryVisible, wide: !consoleVisible && !telemetryVisible };
-    for (const button of host.querySelectorAll('[data-mc-panel]')) button.setAttribute('aria-pressed', String(pressed[button.dataset.mcPanel]));
+  // 17: un panel lateral con pestañas (sustituye a los paneles «Control» y «Telemetría»). Ocultarlo no detiene la reproducción.
+  function setDrawer(open) {
+    host.dataset.drawer = open ? 'shown' : 'hidden';
+    host.querySelector('[data-mc-panel="drawer"]').setAttribute('aria-pressed', String(open));
+  }
+  function setPane(next) {
+    if (!Object.hasOwn(MC_PANES, next)) return;
+    pane = next; host.dataset.pane = pane;
+    for (const section of host.querySelectorAll('.mc-pane')) section.hidden = section.dataset.pane !== pane;
+    $('#mc-pane-title').textContent = MC_PANES[pane];
+    setDrawer(true);
+  }
+  let immersive = false;
+  function setImmersive(value) {
+    if (immersive === Boolean(value)) return;
+    immersive = Boolean(value); host.dataset.immersive = String(immersive);
+    host.querySelector('[data-mc-panel="immersive"]').setAttribute('aria-pressed', String(immersive));
+    onImmersive(immersive);
   }
   for (const button of host.querySelectorAll('[data-mc-panel]')) button.addEventListener('click', () => {
-    const consoleVisible = host.dataset.console !== 'hidden', telemetryVisible = host.dataset.telemetry !== 'hidden';
-    if (button.dataset.mcPanel === 'console') setPanels(!consoleVisible, telemetryVisible);
-    else if (button.dataset.mcPanel === 'telemetry') setPanels(consoleVisible, !telemetryVisible);
-    else { const wide = consoleVisible || telemetryVisible; setPanels(!wide, !wide); }
+    const kind = button.dataset.mcPanel;
+    if (kind === 'drawer') setDrawer(host.dataset.drawer === 'hidden');
+    else if (kind === 'immersive') setImmersive(!immersive);
+    else setImmersive(false);
   });
-  setPanels(true, true);
+  const onKey = event => { if (event.key === 'Escape' && immersive && visible) setImmersive(false); };
+  document.addEventListener('keydown', onKey);
+  setDrawer(true); setPane('playback');
+  $('#mc-empty-plan').addEventListener('click', onOpenPlanner);
+  $('#mc-open-results').addEventListener('click', onOpenResults);
   $('#mc-touch-toggle').addEventListener('click', () => {
     const active = $('#mc-touch-toggle').getAttribute('aria-pressed') !== 'true';
     view.setTouchInteraction(active); $('#mc-touch-toggle').setAttribute('aria-pressed', String(active));
@@ -600,15 +741,23 @@ export function createMissionControlCenter(host, onOpenPlanner) {
   return {
     setPlan,
     start,
+    setPane, getPane: () => pane, setImmersive,
+    // 17: estado resumido para la barra de contexto del laboratorio (solo lectura).
+    getStatus() {
+      const snap = clock?.snapshot();
+      return { ready: Boolean(execution), kind: execution?.kind ?? null, name: execution?.name ?? null,
+        vehicle: execution?.design?.name ?? null, vehicleId: execution?.design?.basedOn ?? (execution?.design ? 'experimental' : null), model: modelInfo?.status ?? null,
+        playing: Boolean(snap?.playing), finished: Boolean(snap?.finished), elapsedSeconds: snap?.elapsedSeconds ?? 0, interrupted };
+    },
     setVisible(value) {
       visible = Boolean(value); view.setVisible(visible);
-      if (!visible) { clock?.pause(); stopFrame(); if (execution) refresh();
+      if (!visible) { clock?.pause(); stopFrame(); if (execution) refresh(); setImmersive(false);
         if (coarse) { view.setTouchInteraction(false); $('#mc-touch-toggle').setAttribute('aria-pressed', 'false'); $('#mc-touch-toggle').textContent = 'Activar control 3D'; } }
       else if (execution) refresh();
     },
     resetCamera() { view.setCameraMode('overview');
-      for (const button of $('.mc-camera-bar').querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.camera === 'overview'));
+      for (const button of host.querySelectorAll('[data-camera]')) button.setAttribute('aria-pressed', String(button.dataset.camera === 'overview'));
       $('.mc-onboard-target').hidden = true; },
-    dispose() { stopFrame(); document.removeEventListener('visibilitychange', onVisibilityChange); view.dispose(); host.replaceChildren(); }
+    dispose() { stopFrame(); document.removeEventListener('visibilitychange', onVisibilityChange); document.removeEventListener('keydown', onKey); view.dispose(); host.replaceChildren(); }
   };
 }

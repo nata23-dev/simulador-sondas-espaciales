@@ -62,37 +62,38 @@ export function scenarioFormValues(s) {
 export const refinementHalfSpanDays = tofDays => Math.max(1, 0.01 * tofDays);
 const probeName = id => HISTORICAL_PROBES.find(p => p.id === id)?.name ?? id;
 
-export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => {}, onInvalidated = () => {} }) {
+export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => {}, onInvalidated = () => {}, onStateChange = () => {} }) {
   host.classList.add('mission-planner', 'integrated-planner');
   const planets = Object.values(ENCOUNTER_TARGETS);
   host.innerHTML = `
-    <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">03 / PLANIFICADOR · MISIÓN COMPLETA</span><h3>Cadena de fases</h3></div>
+    <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">2 / PLANIFICAR · MISIÓN COMPLETA</span><h3>Configurar la misión</h3></div>
       <div class="lab-panel-scroll">
         <p class="mission-intro">Un solo cálculo une el viaje desde la Tierra, la llegada al planeta, el encendido de captura y, si eliges un satélite, el paso por él. Cada fase empieza donde terminó la anterior.</p>
-        <ol class="im-howto" aria-label="Cómo usar este planificador"><li>Elige un escenario</li><li>Pulsa «Calcular misión»</li><li>Reprodúcela en el Centro de Misión</li></ol>
-        <label class="lab-field">Escenario<select id="im-scenario">${[...new Set(INTEGRATED_SCENARIOS.map(s => s.group))].map(group => `<optgroup label="${group}">${INTEGRATED_SCENARIOS.filter(s => s.group === group).map(s => `<option value="${s.id}">${s.label}</option>`).join('')}</optgroup>`).join('')}<option value="custom">Personalizado (tus propios valores)</option></select></label>
-        <div id="im-outcome" class="im-outcome" aria-live="polite" hidden></div>
+        <ol id="im-flow" class="im-flow" aria-label="Progreso de la planificación"><li data-flow="destination">Destino</li><li data-flow="dates">Fechas</li><li data-flow="type">Tipo de misión</li><li data-flow="compute">Calcular trayectoria</li><li data-flow="maneuvers">Maniobras</li><li data-flow="resources">Recursos y viabilidad</li><li data-flow="play">Preparar la reproducción</li></ol>
+        <fieldset class="im-group im-basic"><legend>Configuración básica</legend>
+          <label class="lab-field">Escenario de partida<select id="im-scenario">${[...new Set(INTEGRATED_SCENARIOS.map(s => s.group))].map(group => `<optgroup label="${group}">${INTEGRATED_SCENARIOS.filter(s => s.group === group).map(s => `<option value="${s.id}">${s.label}</option>`).join('')}</optgroup>`).join('')}<option value="custom">Personalizado (tus propios valores)</option></select></label>
+          <div id="im-outcome" class="im-outcome" aria-live="polite" hidden></div>
+          <p id="im-scenario-note" class="mission-hint" hidden></p>
+          <div class="lab-two-actions"><label class="lab-field">Planeta destino<select id="im-destination">${planets.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}</select></label>
+            <label class="lab-field">Satélite (opcional)<select id="im-moon"></select></label></div>
+          <div class="lab-two-actions"><label class="lab-field">Salida (UTC)<input id="im-departure" type="date"></label><label class="lab-field">Vuelo (días)<input id="im-tof" type="number" min="20" step="0.5"></label></div>
+          <label class="lab-field">Tipo de misión en el planeta<select id="im-mode"><option value="capture">Captura en órbita</option><option value="flyby">Sobrevuelo</option></select></label>
+        </fieldset>
         <p id="im-design" class="mission-hint">Sonda activa: sin elegir.</p>
         <button id="im-compute" type="button" class="button-primary">Calcular misión</button>
         <button id="im-execute" type="button">Reproducir en el Centro de Misión</button>
         <p id="im-message" class="lab-message" role="status"></p>
-        <details class="im-advanced" id="im-advanced"><summary>Ajustar destino, fechas y órbitas</summary>
-        <p id="im-scenario-note" class="mission-hint" hidden></p>
-        <fieldset class="im-group"><legend>1 · Destino y oportunidad</legend>
-          <label class="lab-field">Planeta<select id="im-destination">${planets.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}</select></label>
-          <label class="lab-field">Satélite (fase planetocéntrica)<select id="im-moon"></select></label>
-          <div class="lab-two-actions"><label class="lab-field">Salida (UTC)<input id="im-departure" type="date"></label><label class="lab-field">Vuelo (d)<input id="im-tof" type="number" min="20" step="0.5"></label></div>
+        <details class="im-advanced" id="im-advanced"><summary>Configuración avanzada: oportunidad, encuentro y satélite</summary>
           <label class="im-check"><input id="im-refine" type="checkbox"> Refinar localmente la oportunidad (C3, ± 1 % del vuelo)</label>
-        </fieldset>
-        <fieldset class="im-group"><legend>2 · Encuentro y órbitas objetivo</legend>
-          <div class="lab-two-actions"><label class="lab-field">Modo en el planeta<select id="im-mode"><option value="capture">Captura</option><option value="flyby">Sobrevuelo</option></select></label>
-            <label class="lab-field">Esfera de influencia<select id="im-soi">${Object.entries(SOI_MODELS).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('')}</select></label></div>
-          <div class="lab-two-actions"><label class="lab-field">Periapsis (km alt.)<input id="im-rp" type="number" min="0" step="10"></label><label class="lab-field">Apoapsis objetivo (km alt.)<input id="im-ra" type="number" min="0" step="100"></label></div>
-          <div class="lab-two-actions"><label class="lab-field">Plano B<select id="im-bmode"><option value="auto">Inclinación mínima</option><option value="fixed">Ángulo θ fijo</option></select></label><label class="lab-field">θ (°)<input id="im-btheta" type="number" step="1" value="0"></label></div>
-          <div id="im-moon-profile"><label class="lab-field">Objetivo en el satélite<select id="im-moon-mode"><option value="capture">Captura en órbita (empuje finito)</option><option value="flyby">Sobrevuelo balístico</option></select></label><div class="lab-two-actions"><label class="lab-field">Periapsis en el satélite (km)<input id="im-mrp" type="number" min="1" step="5"></label><label class="lab-field">Apoapsis final (km)<input id="im-mra" type="number" min="1" step="5"></label></div>
-            <label class="lab-field">Apoapsis intermedio (km; 0 = un solo encendido)<input id="im-mri" type="number" min="0" step="100"></label></div>
-        </fieldset>
-        <p class="mission-hint">Al cambiar cualquier valor, el escenario pasa a «Personalizado».</p></details>
+          <fieldset class="im-group"><legend>Encuentro y órbita objetivo en el planeta</legend>
+            <label class="lab-field">Esfera de influencia<select id="im-soi">${Object.entries(SOI_MODELS).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('')}</select></label>
+            <div class="lab-two-actions"><label class="lab-field">Periapsis (km alt.)<input id="im-rp" type="number" min="0" step="10"></label><label class="lab-field">Apoapsis objetivo (km alt.)<input id="im-ra" type="number" min="0" step="100"></label></div>
+            <div class="lab-two-actions"><label class="lab-field">Plano B<select id="im-bmode"><option value="auto">Inclinación mínima</option><option value="fixed">Ángulo θ fijo</option></select></label><label class="lab-field">θ (°)<input id="im-btheta" type="number" step="1" value="0"></label></div>
+          </fieldset>
+          <fieldset class="im-group" id="im-moon-profile"><legend>Satélite</legend><label class="lab-field">Objetivo en el satélite<select id="im-moon-mode"><option value="capture">Captura en órbita (empuje finito)</option><option value="flyby">Sobrevuelo balístico</option></select></label><div class="lab-two-actions"><label class="lab-field">Periapsis en el satélite (km)<input id="im-mrp" type="number" min="1" step="5"></label><label class="lab-field">Apoapsis final (km)<input id="im-mra" type="number" min="1" step="5"></label></div>
+            <label class="lab-field">Apoapsis intermedio (km; 0 = un solo encendido)<input id="im-mri" type="number" min="0" step="100"></label></fieldset>
+          <p class="mission-hint">Al cambiar cualquier valor, el escenario pasa a «Personalizado».</p></details>
+        <p class="mission-hint im-integration-note"><strong>Fases conectadas en este cálculo:</strong> salida heliocéntrica → llegada → captura o sobrevuelo → satélite. <strong>No conectadas:</strong> el despegue desde la superficie (herramienta «Lanzamiento terrestre», independiente) y la inyección que da el C3 de salida, que no se modela.</p>
         <p class="mission-hint" id="im-coverage">Cargando catálogos de efemérides…</p>
       </div></div>
     <div class="mission-stage lab-stage"><div class="lab-stage-top"><span class="eyebrow">CADENA DE FASES / TRAYECTORIA CALCULADA</span><span id="im-stage-status">Sin cálculo</span></div>
@@ -101,20 +102,23 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
         <canvas id="im-plot" role="img" aria-label="Proyección eclíptica de la trayectoria calculada en el marco elegido"></canvas></div>
       <div class="lab-stage-foot"><span id="im-foot">Proyección sobre la eclíptica J2000 vista desde el norte · dorado: encendidos · azul: tramos balísticos · rojo: fase no viable</span></div>
     </div>
-    <div class="mission-results lab-panel"><div class="lab-panel-heading"><span class="eyebrow">04 / RESULTADOS</span><h3>Evaluación por fases</h3></div>
-      <div class="lab-panel-scroll"><div id="im-verdict" class="mission-status" data-tone="idle">Sin cálculo</div><div id="im-summary"></div>
-        <h4>Fases</h4><div id="im-phases" class="im-phases"></div>
-        <h4>Maniobras ejecutadas (integradas)</h4><div id="im-maneuvers" class="ip-table"></div>
-        <h4>Masa y propelente</h4><div id="im-mass"></div>
-        <h4>Energía eléctrica</h4><div id="im-power"></div>
-        <h4>Encuentro</h4><div id="im-approach"></div>
-        <h4>Continuidad entre tramos</h4><div id="im-continuity"></div>
+    <div class="mission-results lab-panel"><div class="lab-panel-heading"><span class="eyebrow">2 / PLANIFICAR · RESULTADOS</span><h3>Resultado de la misión</h3></div>
+      <div class="lab-panel-scroll"><div id="im-verdict" class="mission-status" data-tone="idle">Sin cálculo</div>
+        <div id="im-brief" class="im-brief"><p class="mission-hint">Configura la misión y pulsa «Calcular misión». Aquí aparecerá el resumen: vehículo, trayectoria, duración, maniobras, recursos, viabilidad y restricciones.</p></div>
         <div id="im-warnings"></div>
-        <h4>Comparar misiones calculadas</h4><div id="im-compare" class="ip-table"></div>
+        <h4 class="im-tech-title">Resultados técnicos</h4>
+        <details class="im-tech"><summary>Datos de la cadena</summary><div id="im-summary"></div></details>
+        <details class="im-tech"><summary>Fases</summary><div id="im-phases" class="im-phases"></div></details>
+        <details class="im-tech"><summary>Maniobras ejecutadas (integradas)</summary><div id="im-maneuvers" class="ip-table"></div></details>
+        <details class="im-tech"><summary>Masa y propelente</summary><div id="im-mass"></div></details>
+        <details class="im-tech"><summary>Energía eléctrica</summary><div id="im-power"></div></details>
+        <details class="im-tech"><summary>Encuentro</summary><div id="im-approach"></div></details>
+        <details class="im-tech"><summary>Continuidad entre tramos</summary><div id="im-continuity"></div></details>
+        <details class="im-tech"><summary>Comparar misiones calculadas</summary><div id="im-compare" class="ip-table"></div></details>
         <details class="mission-details"><summary>Modelo, datos y límites</summary><div id="im-provenance"></div>${MISSION_LIMITS.map(item => `<p>${item}</p>`).join('')}</details>
       </div></div>`;
   const $ = selector => host.querySelector(selector);
-  let helioEphemeris = null, loadError = null, moonsData = null, design = null, mission = null, data = null, execution = null, refinement = null, active = false, busy = false, plotContext = 'helio';
+  let helioEphemeris = null, loadError = null, moonsData = null, design = null, mission = null, data = null, execution = null, executionError = null, refinement = null, active = false, busy = false, plotContext = 'helio';
   function message(text, error = false) { $('#im-message').textContent = text; $('#im-message').dataset.error = String(error); }
   // 15: comparación de las últimas misiones calculadas en esta sesión (solo resúmenes; no se guardan en el navegador).
   const history = [];
@@ -133,7 +137,10 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     // Catálogo combinado: planetas (12G) + baricentros de los sistemas exteriores (13). Cuerpos distintos: no hay solapes que mezclar.
     helioEphemeris = createInterplanetaryEphemeris({ catalog: { catalogVersion: 1, datasets: [...a.datasets, ...b.datasets] }, loadJson: fetchJson });
     const cov = helioEphemeris.coverage('399');
-    $('#im-coverage').textContent = `Efemérides heliocéntricas: ${dateOnly(cov.startJdTdb)} → ${dateOnly(cov.endJdTdb)} · baricentros 5–8 (DE441) · satélites galileanos solo 2031-08-01 → 2032-06-01 (ventana de llegada adquirida).`;
+    $('#im-coverage').textContent = `Cobertura de las efemérides heliocéntricas: ${dateOnly(cov.startJdTdb)} → ${dateOnly(cov.endJdTdb)} UTC (el cálculo usa TDB, ≈ 69 s por delante de UTC) · baricentros 5–8 (DE441) · satélites galileanos solo 2031-08-01 → 2032-06-01 (ventana de llegada adquirida). Fuera de la cobertura no se calcula: no se extrapola.`;
+    // 17: el calendario de salida respeta la cobertura real de la Tierra (la del destino se comprueba al calcular).
+    $('#im-departure').min = dateOnly(cov.startJdTdb); $('#im-departure').max = dateOnly(cov.endJdTdb - 20);
+    renderFlow();
   }).catch(error => { loadError = error.message; $('#im-coverage').textContent = `${UNAVAILABLE_MESSAGE}: ${error.message}`; });
 
   function fillMoons() {
@@ -159,6 +166,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     const box = $('#im-outcome'), id = $('#im-scenario').value, probeId = design?.basedOn;
     box.replaceChildren(); box.hidden = true; delete box.dataset.tone;
     const outcome = probeId ? scenarioOutcome(id, probeId) : null;
+    if (!outcome && design?.experimental && id !== 'custom') { box.hidden = false; box.dataset.tone = 'idle'; box.textContent = 'Vehículo experimental: el resultado esperado solo está comprobado para las cuatro sondas históricas. Pulsa «Calcular misión» para ver qué ocurre.'; return; }
     if (!outcome) {
       if (id === 'custom') { box.hidden = false; box.dataset.tone = 'idle'; box.textContent = 'Valores propios: el resultado depende de lo que ajustes. Pulsa «Calcular misión» para comprobarlo.'; }
       return;
@@ -191,7 +199,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     return { issues, departure, tof, rp, ra, moonId, moonMode, mrp, mra, mri };
   }
   function invalidate(reason) {
-    const had = Boolean(mission); mission = null; execution = null; data = null; refinement = null;
+    const had = Boolean(mission); mission = null; execution = null; executionError = null; data = null; refinement = null;
     $('#im-execute').disabled = true; renderAll();
     if (had) { message(reason); if (active) { active = false; onInvalidated(); } }
   }
@@ -204,11 +212,11 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
   async function compute() {
     if (busy) return;
     if (!helioEphemeris) { message(loadError ? `${UNAVAILABLE_MESSAGE}: ${loadError}` : 'Espera la carga del catálogo de efemérides.', true); return; }
-    if (!design) { message('Elige una sonda de la flota en el Hangar.', true); return; }
+    if (!design) { message('Elige una sonda de la flota en «1 · Elegir sonda».', true); return; }
     const v = readInputs();
     if (v.issues.length) { message(v.issues.join(' '), true); return; }
     const tgt = ENCOUNTER_TARGETS[$('#im-destination').value];
-    busy = true; $('#im-compute').disabled = true; $('#im-compute').setAttribute('aria-busy', 'true'); $('#im-stage-status').textContent = 'Calculando…'; $('#im-verdict').textContent = 'Calculando la cadena…'; $('#im-verdict').dataset.tone = 'idle';
+    busy = true; $('#im-compute').disabled = true; $('#im-compute').setAttribute('aria-busy', 'true'); $('#im-stage-status').textContent = 'Calculando…'; $('#im-verdict').textContent = 'Calculando la cadena…'; $('#im-verdict').dataset.tone = 'idle'; renderFlow();
     message('Cargando efemérides y calculando: apuntado, encendidos integrados y fases…');
     await new Promise(resolve => setTimeout(resolve, 30));
     try {
@@ -230,18 +238,23 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
         bPlane: $('#im-bmode').value === 'fixed' ? { mode: 'fixed', angleDeg: Number($('#im-btheta').value) } : { mode: 'auto' }, moonMode: v.moonMode, mrp: v.mrp, mra: v.mra, mri: v.mri }, design);
       data = { helio, moons };
       mission = computeIntegratedMission(input, data);
-      execution = createIntegratedExecution({ result: mission, data, design });
-      $('#im-execute').disabled = false;
+      // 17: si la cadena se calcula pero su reproducción necesitaría efemérides fuera de la ventana cargada, se conserva el
+      // resultado y se indica que no hay trayectoria reproducible (no se extrapola ni se recorta en silencio).
+      try { execution = createIntegratedExecution({ result: mission, data, design }); executionError = null; }
+      catch (error) { execution = null; executionError = error.message; }
+      $('#im-execute').disabled = !execution;
       remember(mission);
-      message(`${mission.verdict} Cálculo en ${number(mission.computeMs, 0)} ms.`, mission.verdict.startsWith('NO VIABLE'));
-    } catch (error) { mission = null; execution = null; $('#im-execute').disabled = true; message(error.message, true); }
+      message(execution ? `${mission.verdict} Cálculo en ${number(mission.computeMs, 0)} ms.`
+        : `${mission.verdict} Reproducción 3D no disponible: ${executionError}. La cadena dura ${number(mission.durationSeconds / 86400, 1)} d y termina después de la ventana de efemérides cargada; no se extrapola.`, mission.verdict.startsWith('NO VIABLE') || !execution);
+    } catch (error) { mission = null; execution = null; executionError = null; $('#im-execute').disabled = true; message(error.message, true); }
     finally { busy = false; $('#im-compute').disabled = false; $('#im-compute').removeAttribute('aria-busy'); renderAll(); }
   }
   $('#im-compute').addEventListener('click', compute);
   $('#im-execute').disabled = true;
   $('#im-execute').addEventListener('click', () => {
     if (!mission || !isIntegratedMissionCurrent(mission, design)) { message('Calcula una misión vigente para la sonda actual.', true); return; }
-    active = true;
+    if (!execution) { message(`Esta misión no tiene trayectoria reproducible: ${executionError ?? 'no disponible'}.`, true); return; }
+    active = true; renderFlow();
     onExecuteRequest({ ready: true, kind: 'integrated', result: mission, data, design, name: `Tierra → ${mission.moonName ?? mission.destinationName} (${dateOnly(mission.departureJdTdb)})` });
   });
   for (const b of host.querySelectorAll('[data-ctx]')) b.addEventListener('click', () => { plotContext = b.dataset.ctx; for (const x of host.querySelectorAll('[data-ctx]')) x.setAttribute('aria-pressed', String(x === b)); drawPlot(); });
@@ -267,7 +280,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     const { ctx, w, h } = sizeCanvas(canvas); ctx.clearRect(0, 0, w, h); ctx.font = '11px system-ui, sans-serif'; ctx.fillStyle = '#9fb0c4';
     for (const b of host.querySelectorAll('[data-ctx]')) b.disabled = !execution?.contexts?.[b.dataset.ctx];
     const C = execution?.contexts?.[plotContext];
-    if (!C) { ctx.fillText(mission ? 'Este marco no tiene tramos en la misión calculada.' : 'Sin trayectoria calculada.', 16, 24); return; }
+    if (!C) { ctx.fillText(mission && !execution ? 'Gráfico no disponible: la cadena termina fuera de la ventana de efemérides cargada (no se extrapola).' : mission ? 'Este marco no tiene tramos en la misión calculada.' : 'Sin trayectoria calculada.', 16, 24); return; }
     const traj = C.transfer.trajectory, segs = C.segments;
     const pts = traj.map(p => p.positionKm), marks = traj.map(p => p.moonPositionKm), origin = traj.map(p => p.originPositionKm).filter(Boolean);
     // Encuadre: radio de la parte cercana (el mismo criterio que la vista 3D), con la trayectoria completa recortada al borde.
@@ -296,6 +309,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     const verdict = $('#im-verdict'), summary = $('#im-summary'); summary.replaceChildren();
     for (const id of ['#im-phases', '#im-maneuvers', '#im-mass', '#im-approach', '#im-continuity', '#im-warnings', '#im-provenance']) $(id).replaceChildren();
     $('#im-stage-status').textContent = mission ? `${mission.segments.length} tramos · ${number(mission.durationSeconds / 86400, 1)} d` : 'Sin cálculo';
+    renderBrief();
     if (!mission) { verdict.textContent = 'Sin cálculo'; verdict.dataset.tone = 'idle'; return; }
     verdict.textContent = mission.verdict;
     verdict.dataset.tone = mission.verdict.startsWith('NO VIABLE') ? 'bad' : mission.verdict.startsWith('CADENA CALCULADA COMPLETA') ? 'ok' : 'warn';
@@ -382,7 +396,53 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     clear.addEventListener('click', () => { history.length = 0; renderCompare(); });
     box.append(clear);
   }
-  function renderAll() { renderChain(); drawPlot(); renderResults(); if (!mission) renderCompare(); }
+  // 17: resumen en lenguaje claro (primer nivel de información). El detalle técnico sigue debajo, plegado.
+  function renderBrief() {
+    const box = $('#im-brief'); box.replaceChildren();
+    if (!mission) {
+      const p = document.createElement('p'); p.className = 'mission-hint';
+      p.textContent = busy ? 'Calculando la trayectoria…' : 'Configura la misión y pulsa «Calcular misión». Aquí aparecerá el resumen: vehículo, trayectoria, duración, maniobras, recursos, viabilidad y restricciones.';
+      box.append(p); return;
+    }
+    const burns = mission.maneuvers, probeBurns = burns.filter(m => m.engineKey === 'probe');
+    const usedKg = burns.reduce((n, m) => n + m.propellantKg, 0);
+    const failure = mission.phases.find(ph => ph.status === PHASE_STATUS.failed || ph.status === PHASE_STATUS.noData);
+    const tone = mission.verdict.startsWith('NO VIABLE') ? 'bad' : mission.verdict.startsWith('CADENA CALCULADA COMPLETA') ? 'ok' : 'warn';
+    const planetMode = mission.profile?.planet?.mode ?? $('#im-mode').value;
+    const moonMode = mission.profile?.moon?.mode ?? (mission.moonId ? 'capture' : null);
+    const rows = [
+      ['Misión', `Tierra → ${mission.destinationName}${mission.moonName ? ` → ${mission.moonName}` : ''} · ${planetMode === 'flyby' ? 'sobrevuelo del planeta' : 'captura en órbita'}${moonMode ? ` · ${moonMode === 'flyby' ? 'sobrevuelo' : 'captura'} en el satélite` : ''}`],
+      ['Vehículo', `${mission.vehicle.probe.name}${design?.experimental ? ' (ensamblaje experimental, hipotético)' : ' (configuración histórica)'} · ${number(mission.vehicle.totalKg, 0)} kg`],
+      ['Trayectoria', `${mission.segments.length} tramos integrados · salida ${dateOnly(mission.departureJdTdb)} → llegada ${dateOnly(mission.arrivalJdTdb)} (UTC)`],
+      ['Duración', `${number(mission.durationSeconds / 86400, 1)} días`],
+      ['Maniobras', burns.length ? `${burns.length} encendido${burns.length === 1 ? '' : 's'} · Δv de la sonda ${number(probeBurns.reduce((n, m) => n + m.propulsiveDeltaVKmS, 0) * 1000, 0)} m/s` : 'Sin encendidos (sobrevuelo balístico)'],
+      ['Recursos', `Propelente usado ${number(usedKg, 0)} kg · masa final ${number(mission.finalMassKg, 0)} kg${mission.power ? ` · margen eléctrico mínimo ${number(mission.power.worst.marginW, 0)} W` : ''}`],
+      ['Viabilidad', tone === 'ok' ? 'Completa según el modelo (no equivale a éxito operativo)' : failure ? `No viable: falla en «${failure.label}»` : 'Calculada, pero no alcanza todos los objetivos'],
+      ['Restricciones', 'Inyección desde la Tierra no modelada (C3) · capacidad del lanzador no evaluada · lanzamiento no encadenado'],
+      ['Reproducción 3D', execution ? 'Disponible: pulsa «Reproducir en el Centro de Misión»' : `No disponible: ${executionError ?? 'sin trayectoria reproducible'} (no se extrapola)`]
+    ];
+    const list = document.createElement('dl'); list.className = 'im-brief-list'; list.dataset.tone = tone;
+    for (const [label, value] of rows) { const item = document.createElement('div'); const dt = document.createElement('dt'); dt.textContent = label; const dd = document.createElement('dd'); dd.textContent = value; item.append(dt, dd); list.append(item); }
+    box.append(list);
+  }
+  // 17: progreso del flujo destino → fechas → tipo → cálculo → maniobras → recursos → reproducción.
+  function renderFlow() {
+    const v = readInputs();
+    const done = { destination: Boolean($('#im-destination').value), dates: /^\d{4}-\d{2}-\d{2}$/.test(v.departure) && v.tof >= 20, type: Boolean($('#im-mode').value),
+      compute: Boolean(mission), maneuvers: Boolean(mission), resources: Boolean(mission), play: Boolean(mission) && active };
+    let current = null;
+    for (const item of host.querySelectorAll('#im-flow > li')) {
+      const key = item.dataset.flow;
+      item.dataset.state = done[key] ? 'done' : current ? 'todo' : 'current';
+      if (!done[key] && !current) current = key;
+      if (key === 'compute' && busy) item.dataset.state = 'busy';
+      if (key === 'resources' && mission?.verdict.startsWith('NO VIABLE')) item.dataset.state = 'bad';
+      if (key === 'play' && mission && !execution) item.dataset.state = 'bad';
+      if (item.dataset.state === 'current') item.setAttribute('aria-current', 'step'); else item.removeAttribute('aria-current');
+    }
+    onStateChange(); // 17: la barra de resumen del laboratorio refleja «calculando», «calculada» o «invalidada» al instante.
+  }
+  function renderAll() { renderChain(); drawPlot(); renderResults(); if (!mission) renderCompare(); renderFlow(); }
   const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { if (!host.hidden) drawPlot(); }) : null;
   observer?.observe($('#im-plot'));
   $('#im-bmode').addEventListener('change', syncEnabled); $('#im-mode').addEventListener('change', syncEnabled); $('#im-moon-mode').addEventListener('change', syncEnabled);
@@ -390,13 +450,13 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
   return {
     setDesign(next) {
       design = next;
-      $('#im-design').textContent = next ? `Sonda activa: ${next.name}. Todas las maniobras usan su propio motor y propelente (configuración histórica). Puedes cambiarla en la cabecera.` : 'Sonda activa: sin elegir.';
+      $('#im-design').textContent = next ? `Sonda activa: ${next.name}. Todas las maniobras usan su propio motor y propelente (${next.experimental ? 'ensamblaje experimental: resultados hipotéticos' : 'configuración histórica'}). Puedes cambiarla en la barra superior.` : 'Sonda activa: sin elegir.';
       renderOutcome();
       if (mission && !isIntegratedMissionCurrent(mission, design)) invalidate('La sonda activa cambió: el cálculo anterior se invalidó.');
     },
     setVisible(visible) { if (visible) drawPlot(); },
-    isActive: () => active, deactivate() { active = false; },
-    getState: () => ({ mission, refinement, scenarioId: $('#im-scenario').value, busy, executable: Boolean(mission) && !$('#im-execute').disabled }),
+    isActive: () => active, deactivate() { active = false; renderFlow(); },
+    getState: () => ({ mission, refinement, scenarioId: $('#im-scenario').value, busy, executable: Boolean(mission && execution) && !$('#im-execute').disabled, executionError }),
     compute, applyScenario,
     dispose() { observer?.disconnect(); host.replaceChildren(); }
   };

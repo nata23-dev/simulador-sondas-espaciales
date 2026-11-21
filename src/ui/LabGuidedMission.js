@@ -1,28 +1,31 @@
 // Etapa 16 — misión guiada del laboratorio para quien llega por primera vez: Cassini a Marte (escenario A1 de «Misión completa»),
 // un caso que el motor completa de principio a fin (tests/Stage16Coherence.test.mjs). Solo navega y pulsa los mismos controles
 // que el usuario: no calcula nada por su cuenta, no cambia datos y cada paso se da por hecho mirando el estado real de la interfaz.
+// 17: el laboratorio se recorre con el panel lateral de etapas; el objetivo resaltado puede depender de dónde está el usuario.
 import { GUIDED_MISSION } from '../lab/FleetGuide.js';
 
 const { probeId: PROBE, scenarioId: SCENARIO } = GUIDED_MISSION;
 const COMPLETE = /^CADENA CALCULADA COMPLETA/;
+const inStage = (api, stage, tab) => api.stage ? api.stage() === stage && (!tab || api.tab() === tab) : null;
 
 export const GUIDE_STEPS = Object.freeze([
   { id: 'intro', title: 'Tu primera misión: Cassini a Marte',
     text: 'En cinco pasos vas a elegir una sonda real, calcular su viaje a Marte con posiciones de NASA/JPL y verlo en 3D. Haz cada paso tú mismo o pulsa «Hazlo por mí».' },
   { id: 'probe', title: '1 · Elige la sonda', target: `.lab-probe-card[data-probe-id="${PROBE}"]`,
-    text: 'En el Hangar están las cuatro sondas. Elige Cassini: lleva 3000 kg de propelente y un motor de 445 N, suficiente para frenar al llegar. En el centro verás su modelo 3D de NASA y a la derecha, su ingeniería.',
+    text: 'En «1 · Elegir sonda» están las cuatro sondas reales. Elige Cassini: lleva 3000 kg de propelente y un motor de 445 N, suficiente para frenar al llegar. A la derecha verás su modelo 3D de NASA; sus cifras están en las pestañas «Arquitectura y componentes» e «Ingeniería».',
     enter: api => api.go('hangar'),
     isDone: api => api.activeProbeId() === PROBE,
     act: api => { api.go('hangar'); api.selectProbe(PROBE); } },
-  { id: 'planner', title: '2 · Abre «Misión completa»', target: '.lab-sections [data-planner-mode="integrated"]',
-    text: 'Es el planificador principal: une el viaje desde la Tierra, la llegada y la captura en un solo cálculo. Está en la barra de arriba, en el paso «2 · Planificar».',
-    isDone: api => api.section() === 'planner' && api.plannerMode() === 'integrated',
+  { id: 'planner', title: '2 · Abre «Misión completa»',
+    target: api => api.stage && api.stage() === 'plan' ? '[data-lab-tab="integrated"]' : '[data-lab-stage="plan"]',
+    text: 'Es el planificador principal: une el viaje desde la Tierra, la llegada y la captura en un solo cálculo. En el panel de etapas, pulsa «2 · Planificar»: se abre en la pestaña «Misión completa».',
+    isDone: api => inStage(api, 'plan', 'integrated') ?? (api.section() === 'planner' && api.plannerMode() === 'integrated'),
     act: api => api.go('planner', 'integrated') },
   { id: 'scenario', title: '3 · Elige el escenario', target: '#im-scenario',
     text: 'En «Escenario», elige «Marte · órbita elíptica de 3000 × 100 000 km». Sale de la Tierra el 30 de noviembre de 2028 y viaja 316 días; el simulador ajusta la fecha para gastar menos energía en la salida.',
     enter: api => api.go('planner', 'integrated'),
     isDone: api => api.integratedState().scenarioId === SCENARIO && api.activeProbeId() === PROBE,
-    hint: api => api.activeProbeId() !== PROBE ? 'La sonda activa ya no es Cassini: vuelve a elegirla en la cabecera.' : null,
+    hint: api => api.activeProbeId() !== PROBE ? 'La sonda activa ya no es Cassini: vuelve a elegirla en la barra superior.' : null,
     act: api => { if (api.activeProbeId() !== PROBE) api.selectProbe(PROBE); api.go('planner', 'integrated'); api.applyScenario(SCENARIO); } },
   { id: 'compute', title: '4 · Calcula la misión', target: '#im-compute',
     text: 'Pulsa «Calcular misión». En unos segundos verás la cadena de fases en verde (crucero, llegada a Marte y captura) y, a la derecha, el propelente que gasta el encendido.',
@@ -37,12 +40,12 @@ export const GUIDE_STEPS = Object.freeze([
     },
     act: async api => { if (api.activeProbeId() !== PROBE) api.selectProbe(PROBE); api.go('planner', 'integrated'); if (api.integratedState().scenarioId !== SCENARIO) api.applyScenario(SCENARIO); await api.computeIntegrated(); } },
   { id: 'play', title: '5 · Reprodúcela en 3D', target: '#im-execute',
-    text: 'Pulsa «Reproducir en el Centro de Misión». Allí la barra inferior avanza el tiempo, las cámaras de arriba cambian la vista y la lista «Fases y eventos» salta directamente a la captura en Marte.',
+    text: 'Pulsa «Reproducir en el Centro de Misión». Se abre «3 · Reproducir»: la barra inferior avanza el tiempo, la pestaña «Cámaras» cambia la vista y «Eventos» salta directamente a la captura en Marte.',
     isDone: api => api.section() === 'center' && api.centerKind() === 'integrated',
     hint: api => api.integratedState().executable ? null : 'Primero hace falta un cálculo vigente: vuelve al paso 4.',
     act: api => api.executeIntegrated() },
   { id: 'done', title: 'Misión en marcha',
-    text: 'Cassini ya viaja hacia Marte. Para seguir: cambia a Voyager en la cabecera y vuelve a calcular (verás por qué no puede frenar), o elige «Júpiter (órbita tipo Juno) y sobrevuelo de Europa» con Juno.' }
+    text: 'Cassini ya viaja hacia Marte. Para seguir: cambia a Voyager en la barra superior y vuelve a calcular (verás por qué no puede frenar), o elige «Júpiter (órbita tipo Juno) y sobrevuelo de Europa» con Juno.' }
 ]);
 
 // 16: desplaza solo las zonas que el usuario puede desplazar. scrollIntoView también mueve contenedores con overflow
@@ -71,12 +74,14 @@ export function createLabGuidedMission({ host, api }) {
   const $ = selector => dock.querySelector(selector);
   const progress = $('.lab-guide-progress');
   for (const step of GUIDE_STEPS.slice(1, -1)) { const dot = document.createElement('li'); dot.dataset.step = step.id; progress.append(dot); }
-  let index = 0, timer = null, autoAdvance = false, acting = false, target = null, minimized = false;
+  let index = 0, timer = null, autoAdvance = false, acting = false, target = null, targetSelector = null, minimized = false;
   const step = () => GUIDE_STEPS[index];
   const done = s => (s.isDone ? Boolean(s.isDone(api)) : true);
 
-  function setTarget(selector) {
-    target?.classList.remove('lab-guide-target'); target = null;
+  const selectorOf = value => typeof value === 'function' ? value(api) : value ?? null;
+  function setTarget(value) {
+    const selector = selectorOf(value);
+    target?.classList.remove('lab-guide-target'); target = null; targetSelector = selector;
     if (!selector || dock.hidden) return;
     target = host.querySelector(selector);
     target?.classList.add('lab-guide-target');
@@ -109,8 +114,8 @@ export function createLabGuidedMission({ host, api }) {
   }
   function tick() {
     if (dock.hidden) return;
-    if (target && !target.isConnected) setTarget(step().target);
-    else if (!target && step().target) setTarget(step().target);
+    const wanted = selectorOf(step().target);
+    if ((target && !target.isConnected) || wanted !== targetSelector || (!target && wanted)) { setTarget(step().target); if (wanted !== null) revealInScrollAreas(target); }
     render();
   }
   async function act() {

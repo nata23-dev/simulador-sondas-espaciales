@@ -21,7 +21,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
   host.classList.add('mission-planner', 'interplanetary-planner');
   const destinations = listMissionDestinations();
   host.innerHTML = `
-    <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">03 / PLANIFICADOR · INTERPLANETARIO</span><h3>Ventanas de lanzamiento</h3></div>
+    <div class="mission-controls lab-panel"><div class="lab-panel-heading"><span class="eyebrow">2 / PLANIFICAR · VENTANAS INTERPLANETARIAS</span><h3>Ventanas de lanzamiento</h3></div>
       <div class="lab-panel-scroll">
         <p class="mission-intro">Busca las mejores fechas para salir de la Tierra hacia un planeta: prueba miles de combinaciones de salida y duración con posiciones reales de NASA/JPL Horizons (problema de Lambert, cero revoluciones). Para calcular la llegada y la captura, usa «Misión completa».</p>
         <label class="lab-field">Origen<select id="ip-origin"><option value="399">Tierra</option><option disabled>Otros planetas · pendiente de validación</option></select></label>
@@ -44,7 +44,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
       <div id="ip-legend" class="ip-legend"></div>
       <div class="lab-stage-foot"><span>Haz clic en el mapa para seleccionar una combinación · color: métrica del criterio (escala logarítmica) · gris: sin cobertura · rojo: no convergente · negro: geometría mal condicionada</span></div>
     </div>
-    <div class="mission-results lab-panel"><div class="lab-panel-heading"><span class="eyebrow">04 / RESULTADOS</span><h3>Oportunidades calculadas</h3></div>
+    <div class="mission-results lab-panel"><div class="lab-panel-heading"><span class="eyebrow">2 / PLANIFICAR · RESULTADOS</span><h3>Oportunidades calculadas</h3></div>
       <div class="lab-panel-scroll"><div id="ip-selected"></div><div id="ip-refine" class="ft-results" aria-live="polite"></div><div id="ip-hangar"></div>
         <h4>Candidatos (mínimos locales de la cuadrícula)</h4>
         <label class="lab-field">Ordenar por<select id="ip-sort"><option value="score">Criterio elegido</option><option value="c3">C3 de salida</option><option value="arr">v∞ de llegada</option><option value="dep">Fecha de salida</option><option value="tof">Duración</option></select></label>
