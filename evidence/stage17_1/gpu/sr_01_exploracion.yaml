@@ -1,0 +1,66 @@
+- banner:
+  - heading "Simulador de Sondas Espaciales" [level=1]
+  - navigation "Ubicación actual": Sistema Solar
+  - navigation "Modo de operación del simulador":
+    - button "Sistema Solar" [pressed]
+    - button "Misiones históricas"
+    - button "Laboratorio"
+  - button "Áreas"
+  - button "Buscar destino": Buscar
+  - group: Menú
+- main:
+  - region "Visualización interactiva del Sistema Solar":
+    - status
+    - region "Controles de fecha astronómica":
+      - text: Fecha TDB
+      - textbox "Fecha TDB": 2026-10-10
+      - button "Día anterior":
+        - img
+      - button "Reproducir":
+        - img
+        - text: Reproducir
+      - button "Día siguiente":
+        - img
+      - text: Velocidad
+      - combobox "Velocidad":
+        - option "0,5×"
+        - option "1×" [selected]
+        - option "2×"
+        - option "4×"
+      - group: Tiempo
+      - text: 01 OCT 2026
+      - slider "Desplazarse entre muestras diarias TDB": "9"
+      - text: 01 NOV 2026
+    - navigation "Vista y cámara":
+      - button "Explorar y consultar datos":
+        - img
+      - button "Reencuadrar objetivo actual":
+        - img
+      - button "Alternar vista cinematográfica":
+        - img
+      - group:
+        - img
+      - button "Cambiar escala visual" [pressed]:
+        - img
+      - button "Activar modo inmersivo":
+        - img
+    - complementary "Misiones destacadas":
+      - text: Misiones destacadas
+      - button "Contraer" [expanded]
+      - button "Voyager 1 Lanzada el 5 sep 1977 Gran Mancha Roja de Júpiter fotografiada por Voyager 1 en 1979":
+        - strong: Voyager 1
+        - text: Lanzada el 5 sep 1977
+        - img "Gran Mancha Roja de Júpiter fotografiada por Voyager 1 en 1979"
+      - button "Voyager 2 Neptuno · 25 ago 1989 Neptuno y su Gran Mancha Oscura fotografiados por Voyager 2 en 1989":
+        - strong: Voyager 2
+        - text: Neptuno · 25 ago 1989
+        - img "Neptuno y su Gran Mancha Oscura fotografiados por Voyager 2 en 1989"
+      - 'button "Tu primera misión: Cassini a Marte Laboratorio · misión guiada en 5 pasos"':
+        - strong: "Tu primera misión: Cassini a Marte"
+        - text: Laboratorio · misión guiada en 5 pasos
+      - button "Misión completa a Europa Laboratorio · pendiente de auditoría independiente Europa fotografiada por Voyager 1 en 1979":
+        - strong: Misión completa a Europa
+        - text: Laboratorio · pendiente de auditoría independiente
+        - img "Europa fotografiada por Voyager 1 en 1979"
+      - button "Todas las áreas"
+      - text: "Fotografías: NASA/JPL (Voyager)"

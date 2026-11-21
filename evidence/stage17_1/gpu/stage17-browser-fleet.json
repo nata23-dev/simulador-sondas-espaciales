@@ -1,0 +1,114 @@
+{
+  "part": "fleet",
+  "gpu": true,
+  "startedAt": "2026-11-21T04:42:21.654Z",
+  "shots": [
+    "v1600_01_voyager_vista_general.png",
+    "v1600_02_voyager_reproduccion.png",
+    "v1600_01_cassini_vista_general.png",
+    "v1600_02_cassini_reproduccion.png",
+    "v1600_01_dawn_vista_general.png",
+    "v1600_02a_dawn_A1_sin_reproduccion.png",
+    "v1600_02_dawn_reproduccion.png",
+    "v1600_01_juno_vista_general.png",
+    "v1600_02_juno_reproduccion.png"
+  ],
+  "checks": {
+    "fleet": {
+      "voyager": {
+        "hangar": {
+          "status": "nasa",
+          "label": "Voyager 1 y 2 · NASA 3D Resources"
+        },
+        "scenario": "A1",
+        "verdict": "NO VIABLE para el escenario configurado: Captura en Marte (empuje finito) — no viable para el escenario configurado.",
+        "center": {
+          "vehicle": "voyager",
+          "model": "nasa",
+          "pane": "playback",
+          "drawer": "shown",
+          "immersive": null,
+          "name": "Voyager 1 y 2",
+          "modelText": "Modelo 3D oficial de NASA de esta sonda",
+          "empty": false,
+          "emptyReason": "Calcula una transferencia lunar en el Planificador. La escena usará la sonda y los estados del nuevo cálculo.",
+          "elapsed": "9.071 d transcurridos",
+          "stageStatus": "EN REPRODUCCIÓN"
+        }
+      },
+      "cassini": {
+        "hangar": {
+          "status": "nasa",
+          "label": "Cassini · NASA 3D Resources"
+        },
+        "scenario": "A1",
+        "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+        "center": {
+          "vehicle": "cassini",
+          "model": "nasa",
+          "pane": "playback",
+          "drawer": "shown",
+          "immersive": null,
+          "name": "Cassini",
+          "modelText": "Modelo 3D oficial de NASA de esta sonda",
+          "empty": false,
+          "emptyReason": "Cambiaste de vehículo después de preparar la misión (calculada con Voyager 1 y 2). Para no reproducir estados de otro vehículo, recalcula en «2 · Planificar». La escena usará la sonda y los estados del nuevo cálculo.",
+          "elapsed": "12.404 d transcurridos",
+          "stageStatus": "EN REPRODUCCIÓN"
+        }
+      },
+      "dawn": {
+        "hangar": {
+          "status": "nasa",
+          "label": "Dawn · NASA 3D Resources"
+        },
+        "a1": {
+          "verdict": "NO VIABLE para el escenario configurado: Captura en Marte (empuje finito) — no viable para el escenario configurado.",
+          "message": "NO VIABLE para el escenario configurado: Captura en Marte (empuje finito) — no viable para el escenario configurado. Reproducción 3D no disponible: Efemérides no disponibles para el intervalo solicitado. La cadena dura 771.2 d y termina después de la ventana de efemérides cargada; no se extrapola.",
+          "execute": false,
+          "state": "Misión no viable según el modelo · sin reproducción 3D disponible",
+          "flowPlay": "bad"
+        },
+        "scenario": "A3",
+        "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+        "center": {
+          "vehicle": "dawn",
+          "model": "nasa",
+          "pane": "playback",
+          "drawer": "shown",
+          "immersive": null,
+          "name": "Dawn",
+          "modelText": "Modelo 3D oficial de NASA de esta sonda",
+          "empty": false,
+          "emptyReason": "Cambiaste de vehículo después de preparar la misión (calculada con Cassini). Para no reproducir estados de otro vehículo, recalcula en «2 · Planificar». La escena usará la sonda y los estados del nuevo cálculo.",
+          "elapsed": "12.485 d transcurridos",
+          "stageStatus": "EN REPRODUCCIÓN"
+        }
+      },
+      "juno": {
+        "hangar": {
+          "status": "nasa",
+          "label": "Juno · NASA 3D Resources"
+        },
+        "scenario": "A1",
+        "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+        "center": {
+          "vehicle": "juno",
+          "model": "nasa",
+          "pane": "playback",
+          "drawer": "shown",
+          "immersive": null,
+          "name": "Juno",
+          "modelText": "Modelo 3D oficial de NASA de esta sonda",
+          "empty": false,
+          "emptyReason": "Cambiaste de vehículo después de preparar la misión (calculada con Dawn). Para no reproducir estados de otro vehículo, recalcula en «2 · Planificar». La escena usará la sonda y los estados del nuevo cálculo.",
+          "elapsed": "12.274 d transcurridos",
+          "stageStatus": "EN REPRODUCCIÓN"
+        }
+      }
+    }
+  },
+  "overflow": {},
+  "errors": [],
+  "finishedAt": "2026-11-21T04:42:59.348Z"
+}

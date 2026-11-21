@@ -19,8 +19,10 @@ const PORT = 5191;
 const server = process.env.APP_URL ? null : await createServer({ server: { port: PORT, strictPort: true }, configFile: path.resolve('vite.config.js'), logLevel: 'error' });
 await server?.listen();
 const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true,
-  args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--no-sandbox'] });
-const log = { part: PART, startedAt: new Date().toISOString(), shots: [], checks: {}, overflow: {}, errors: [] };
+  // GPU=1: GPU real por Direct3D 11 (revisión con hardware); por defecto, SwiftShader (reproducible en cualquier equipo).
+  args: process.env.GPU === '1' ? ['--use-gl=angle', '--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl', '--no-sandbox']
+    : ['--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--no-sandbox'] });
+const log = { part: PART, gpu: process.env.GPU === '1', startedAt: new Date().toISOString(), shots: [], checks: {}, overflow: {}, errors: [] };
 const URL = process.env.APP_URL ?? `http://localhost:${PORT}/`;
 const PROBES = ['voyager', 'cassini', 'dawn', 'juno'];
 
@@ -231,11 +233,10 @@ try {
     await page.evaluate(() => { const t = document.querySelector('#mc-timeline'); t.value = String(Number(t.max) * 0.9999); t.dispatchEvent(new Event('input', { bubbles: true })); t.dispatchEvent(new Event('change', { bubbles: true })); });
     await page.click('#mc-play'); await h.wait(3000);
     log.checks.finished = await h.text('#lab-ctx-state');
-    // 11: la demostración científica es un ejemplo aparte y no toca la misión preparada.
-    await page.click('.lab-rail [data-lab-action="orbital"]'); await h.wait(1500);
-    log.checks.demo = { labHidden: await page.locator('#experimental-lab').evaluate(el => el.hidden), crumb: await h.text('.app-crumb-leaf').catch(() => null), returnVisible: await page.locator('#lab-return').isVisible() };
-    await h.shot('09_demostracion_cientifica');
-    await page.click('#lab-return'); await h.wait(900);
+    // 11 (17.1): la demostración de la Sonda Experimental 01 ya no existe; la misión se reproduce en el Sistema Solar principal.
+    log.checks.demo = await page.evaluate(() => ({ orbitalAction: Boolean(document.querySelector('[data-lab-action="orbital"]')), returnButton: Boolean(document.querySelector('#lab-return')),
+      missionPanel: Boolean(document.querySelector('#mission-panel')), labScene: document.querySelector('#app').dataset.labScene ?? null,
+      scene: window.__SIMULADOR_DIAGNOSTICO__?.obtenerEstadoMisionEscenaPrincipal?.() ?? null }));
     log.checks.afterDemo = { lab: await h.labState(), center: await h.center() };
     // 12: cambiar de sonda invalida la misión preparada y lo explica; no queda nada reproducible de la sonda anterior.
     await h.probe('juno'); await h.wait(800);
@@ -529,7 +530,197 @@ try {
     log.checks.a11ySummary = summary;
   });
 
+  // 17.1: «3 · Reproducir» en el Sistema Solar principal. Cassini → Marte (A1) con la escena principal, sus cámaras, la
+  // llegada, la salida y el regreso a la etapa, la restauración de la exploración y Tierra–Luna en la escena local.
+  // Lee la escena con el diagnóstico de solo lectura; las posiciones se comparan en unidades de escena (32 = 1 AU).
+  const sceneSizes = [[1366, 768], [390, 844], [1920, 1080], [768, 1024]];
+  if (['all', 'scene'].includes(PART)) for (const [w, hgt] of sceneSizes) {
+    if (ONLY && !ONLY.includes(`${w}x${hgt}`)) continue;
+    const full = w === 1366;
+    await session(w, hgt, `e${w}`, async h => {
+      const { page } = h, key = `scene${w}x${hgt}`, checks = log.checks[key] = {};
+      const diag = () => page.evaluate(() => { const d = window.__SIMULADOR_DIAGNOSTICO__;
+        return { mission: d.obtenerEstadoMisionEscenaPrincipal(), scene: d.obtenerDiagnosticoEscena(), mode: d.obtenerModoOperacion(), labScene: document.querySelector('#app').dataset.labScene ?? null,
+          labView: document.querySelector('#app').dataset.labView ?? null,
+          mainCanvasVisible: getComputedStyle(document.querySelector('#solar-system')).visibility, localCanvasVisible: getComputedStyle(document.querySelector('#mc-canvas')).visibility,
+          footer: document.querySelector('#mc-foot')?.textContent?.trim() ?? null,
+          hitAtStage: (() => { const s = document.querySelector('#lab-mission-center .mc-stage')?.getBoundingClientRect(); if (!s || !s.width) return null;
+            const el = document.elementFromPoint(s.left + s.width / 2, s.top + s.height * 0.45); return el ? (el.closest('#solar-system') ? 'escena principal' : el.id || el.className || el.tagName) : null; })() }; });
+      const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+      // En pantallas estrechas el Centro de Misión se desplaza: la escena se lleva a la vista antes de medir o capturar.
+      const toStage = async () => { await page.locator('#lab-mission-center .mc-stage').evaluate(el => el.scrollIntoView({ block: 'start' })); await h.wait(900); };
+      await h.home();
+      await h.area('solar'); await h.wait(1500);
+      const before = await diag(); checks.exploracion = { planets: before.scene.planetas, probe: before.scene.sonda.visible, moons: before.scene.lunasVisibles, escala: before.scene.modoEscala };
+      await h.lab(); await h.model();
+      await page.click('.lab-probe-card[data-probe-id="cassini"]'); await h.model(['nasa', 'procedural']);
+      checks.verdict = await prepare(h, 'A1');
+      await page.waitForFunction(() => window.__SIMULADOR_DIAGNOSTICO__.obtenerEstadoMisionEscenaPrincipal()?.controlling === true, null, { timeout: 60000 });
+      await h.wait(1500); await toStage();
+      const start = await diag();
+      const m = start.mission, s = start.scene;
+      checks.inicio = { mission: m, labScene: start.labScene, mainCanvas: start.mainCanvasVisible, localCanvas: start.localCanvasVisible, hitAtStage: start.hitAtStage, footer: start.footer,
+        escala: s.modoEscala, moons: s.lunasVisibles, probe: s.sonda, camara: s.camara, center: await h.center(),
+        // Época de salida: la Tierra y la sonda en el mismo punto (la sonda sale de una órbita de aparcamiento).
+        sondaTierraAU: dist(s.sonda.posicion, s.planetas.Tierra) / 32,
+        // Los planetas ya no están en la fecha de exploración, sino en la de la misión.
+        tierraMovidaAU: dist(s.planetas.Tierra, before.scene.planetas.Tierra) / 32 };
+      // Puntero: cada control visible del laboratorio recibe el clic; el centro de la escena llega al lienzo principal.
+      checks.puntero = await page.evaluate(() => {
+        // Las marcas de eventos de la barra se excluyen: con toda la misión en la barra, eventos cercanos comparten píxel.
+        const sels = ['.lab-rail button', '#lab-tabs button', '.lab-header button', '.lab-header select', '.mc-camera-bar button', '.mc-layout-toggles button', '.mc-transport button:not(.mc-tick)', '#mc-drawer button', '#mc-drawer select', '#lab-guide button'];
+        const blocked = [], total = { checked: 0 }, siteHeader = document.querySelector('.app-header')?.getBoundingClientRect().bottom ?? 0;
+        for (const el of document.querySelectorAll(sels.join(','))) {
+          const r = el.getBoundingClientRect(); if (!r.width || !r.height || el.closest('[hidden]') || r.top < siteHeader || r.top > innerHeight || r.right < 0 || r.left > innerWidth) continue;
+          const x = Math.min(Math.max(r.left + r.width / 2, 0), innerWidth - 1), y = Math.min(Math.max(r.top + r.height / 2, 0), innerHeight - 1), top = document.elementFromPoint(x, y);
+          total.checked++; if (!(top === el || el.contains(top))) blocked.push(`${el.textContent.trim().slice(0, 24) || el.getAttribute('aria-label') || el.className}: ${top?.id || top?.className || top?.tagName}`);
+        }
+        return { ...total, blocked };
+      });
+      await h.shot('01_cassini_marte_escena_principal_general');
+      // Reloj del Centro de Misión → escena: el tiempo avanza y los planetas y la sonda se mueven.
+      await page.click('#mc-play').catch(() => {}); await h.wait(4000);
+      const playing = await diag();
+      checks.reproduciendo = { elapsed: (await h.center()).elapsed, t: playing.mission.elapsedSeconds, jd: playing.mission.jdTdb,
+        sondaMovidaAU: dist(playing.scene.sonda.posicion, s.sonda.posicion) / 32, marteMovidaAU: dist(playing.scene.planetas.Marte, s.planetas.Marte) / 32 };
+      await page.click('#mc-pause').catch(() => {});
+      if (full) {
+        await h.tab('cameras');
+        const cams = {};
+        for (const mode of ['exterior', 'destination', 'overview']) {
+          const item = page.locator(`#mc-camera-list [data-camera="${mode}"]`);
+          if (await item.count() === 0 || await item.evaluate(el => el.hidden) || await item.isDisabled()) { cams[mode] = 'no disponible'; continue; }
+          await page.click(`#mc-camera-list [data-camera="${mode}"]`); await h.wait(2500);
+          const d = await diag();
+          cams[mode] = { pressed: await page.locator(`.mc-camera-bar [data-camera="${mode}"]`).getAttribute('aria-pressed'), viewMode: d.mission.cameraMode, camara: d.scene.camara, probeScale: d.scene.sonda.escalaVisual };
+          await h.shot(`02_camara_${mode}`);
+        }
+        cams.onboard = await page.locator('#mc-camera-list [data-camera="onboard"]').evaluate(el => ({ hidden: el.hidden, disabled: el.disabled })).catch(() => 'sin botón');
+        checks.camaras = cams;
+        await h.tab('playback');
+      }
+      // Llegada: el instante se lleva al final del cálculo; la sonda queda en órbita de Marte, reducida, sin salir de la cobertura.
+      await page.evaluate(() => { const t = document.querySelector('#mc-timeline'); t.value = String(Number(t.max)); t.dispatchEvent(new Event('input', { bubbles: true })); t.dispatchEvent(new Event('change', { bubbles: true })); });
+      await h.wait(1500);
+      if (full) { await page.click('.mc-camera-bar [data-camera="destination"]').catch(() => {}); await h.wait(2500); }
+      await toStage();
+      const end = await diag();
+      checks.llegada = { mission: end.mission, center: await h.center(), state: await h.text('#lab-ctx-state'), sondaMarteKm: dist(end.scene.sonda.posicion, end.scene.planetas.Marte) / 32 * 149597870.7,
+        probeScale: end.scene.sonda.escalaVisual, events: await page.locator('#mc-events li, #mc-events button').evaluateAll(list => list.slice(0, 12).map(e => e.textContent.trim().replace(/\s+/g, ' '))).catch(() => []) };
+      await h.shot('03_llegada_marte');
+      if (full) {
+        // Cámara de destino calculada: el disco de Marte ocupa buena parte del cuadro (se mide su radio proyectado en píxeles).
+        checks.destinoDisco = await page.evaluate(() => {
+          const d = window.__SIMULADOR_DIAGNOSTICO__.obtenerDiagnosticoEscena();
+          const cam = d.camara.posicion, mars = d.planetas.Marte, dist = Math.hypot(cam[0] - mars[0], cam[1] - mars[1], cam[2] - mars[2]);
+          const radio = 3389.5 / 149597870.7 * 32, canvas = document.querySelector('#solar-system canvas');
+          const fov = 48 * Math.PI / 180; // campo vertical de la cámara principal (PerspectiveCamera de 48°)
+          return { distanciaRadios: dist / radio, radioPx: Math.asin(Math.min(1, radio / dist)) / (fov / 2) * canvas.clientHeight / 2 };
+        });
+        // Vista general y vista inmersiva: la ventana crece y la vista general se recalcula sola.
+        await page.click('.mc-camera-bar [data-camera="overview"]'); await h.wait(2500);
+        const before = (await diag()).scene.camara.posicion;
+        await page.click('[data-mc-panel="immersive"]'); await h.wait(3500);
+        const after = (await diag()).scene.camara.posicion;
+        checks.inmersivaReencuadre = { antes: before, despues: after, cambio: dist(before, after) };
+        await h.shot('03b_inmersiva_reencuadrada');
+        await page.keyboard.press('Escape'); await h.wait(2500);
+        await page.click('.mc-camera-bar [data-camera="destination"]'); await h.wait(2500);
+      }
+      if (!full) return;
+      // Salir de «3 · Reproducir» devuelve la escena (sin misión ni sonda) y volver la recupera.
+      await h.stage('plan'); await h.wait(1200);
+      const away = await diag();
+      checks.fueraDeReproducir = { mission: away.mission.controlling, labScene: away.labScene, probe: away.scene.sonda.visible, escala: away.scene.modoEscala };
+      await h.stage('play'); await h.wait(1500);
+      const back = await diag();
+      checks.regresoAReproducir = { controlling: back.mission.controlling, labScene: back.labScene, t: back.mission.elapsedSeconds };
+      // Salir del laboratorio: el Sistema Solar vuelve a la fecha de exploración, con lunas y sin la sonda.
+      await h.area('solar'); await h.wait(2500);
+      const after = await diag();
+      checks.trasSalir = { mode: after.mode, controlling: after.mission.controlling, labScene: after.labScene, probe: after.scene.sonda.visible, moons: after.scene.lunasVisibles, escala: after.scene.modoEscala,
+        maxDiferenciaPlanetasUnidades: Math.max(...Object.keys(before.scene.planetas).map(n => dist(after.scene.planetas[n], before.scene.planetas[n]))) };
+      await h.shot('04_exploracion_restaurada');
+      // Tierra–Luna (geocéntrica) sigue en la escena local del Centro de Misión, con la explicación.
+      await h.lab(); await h.stage('plan'); await h.tab('lunar');
+      await page.click('#mission-calculate'); await h.wait(3000);
+      if (await page.locator('#mission-execute').isEnabled()) {
+        await page.click('#mission-execute'); await h.wait(1500); await h.waitModelInCenter().catch(() => {});
+        const lunar = await diag();
+        checks.tierraLuna = { mission: lunar.mission, labScene: lunar.labScene, localCanvas: lunar.localCanvasVisible, footer: lunar.footer, status: await h.text('#mc-stage-status'), center: await h.center(),
+          message: await h.text('#mc-message').catch(() => null) };
+        await h.shot('05_tierra_luna_escena_local');
+      } else checks.tierraLuna = { execute: false, message: await h.text('#mission-status').catch(() => null) };
+      // Ventanas interplanetarias (Lambert heliocéntrico): también se reproducen en el Sistema Solar principal.
+      await h.stage('plan'); await h.tab('interplanetary'); await h.wait(800);
+      await page.click('#ip-search');
+      await page.waitForFunction(() => !document.querySelector('#ip-search').disabled, null, { timeout: 240000 }); await h.wait(800);
+      if (await page.locator('#ip-execute').isEnabled()) {
+        await page.click('#ip-execute'); await h.wait(1500);
+        await page.waitForFunction(() => window.__SIMULADOR_DIAGNOSTICO__.obtenerEstadoMisionEscenaPrincipal()?.controlling === true, null, { timeout: 60000 }).catch(() => {});
+        await h.wait(1500); await toStage();
+        const lambert = await diag();
+        checks.lambert = { mission: lambert.mission, labScene: lambert.labScene, hitAtStage: lambert.hitAtStage, footer: lambert.footer, destination: await h.text('#lab-ctx-destination'),
+          sondaTierraAU: dist(lambert.scene.sonda.posicion, lambert.scene.planetas.Tierra) / 32, center: await h.center() };
+        await h.shot('06_ventana_interplanetaria_escena_principal');
+      } else checks.lambert = { execute: false, message: await h.text('#ip-message').catch(() => null) };
+    });
+  }
+
   // Coherencia visual con los otros dos modos (solo capturas para comparar).
+  // 17.1 · Lector de pantalla (revisión automática, NO sustituye a NVDA/Narrador): árbol de accesibilidad de cada pantalla
+  // (lo que el lector recorre) y registro de lo que anunciarían las regiones vivas durante la misión Cassini → Marte.
+  if (['sr'].includes(PART)) await session(1366, 768, 'r1366', async h => {
+    const { page } = h, checks = log.checks.sr = {};
+    const snapshot = async name => { const yaml = await page.locator('body').ariaSnapshot(); await fs.writeFile(path.join(out, `sr_${name}.yaml`), yaml); return yaml; };
+    const structure = () => page.evaluate(() => {
+      const visible = el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden' && !el.closest('[hidden],[aria-hidden="true"],[inert]'); };
+      const name = el => (el.getAttribute('aria-label') || (el.getAttribute('aria-labelledby') ? el.getAttribute('aria-labelledby').split(/\s+/).map(id => document.getElementById(id)?.textContent ?? '').join(' ') : '') || el.textContent || el.title || el.alt || '').trim().replace(/\s+/g, ' ');
+      const headings = [...document.querySelectorAll('h1,h2,h3,h4,[role="heading"]')].filter(visible).map(el => `${el.tagName === 'DIV' ? 'h' + el.getAttribute('aria-level') : el.tagName.toLowerCase()} ${name(el).slice(0, 60)}`);
+      const landmarks = [...document.querySelectorAll('header,nav,main,aside,footer,[role="banner"],[role="navigation"],[role="main"],[role="complementary"],[role="region"][aria-label],section[aria-label],section[aria-labelledby]')]
+        .filter(visible).map(el => `${el.getAttribute('role') || el.tagName.toLowerCase()}: ${(el.getAttribute('aria-label') || (el.getAttribute('aria-labelledby') ? name(el).slice(0, 30) : '')).slice(0, 50)}`);
+      // Lienzos 3D: deben tener una alternativa de texto (role="img" con nombre) o estar ocultos al lector con el contenido equivalente en texto.
+      const canvases = [...document.querySelectorAll('canvas')].filter(visible).map(c => ({ id: c.id || c.parentElement?.id || '', role: c.getAttribute('role'), label: c.getAttribute('aria-label') || c.closest('[aria-label]')?.getAttribute('aria-label') || null, hidden: c.getAttribute('aria-hidden') }));
+      const unnamed = [...document.querySelectorAll('button,a[href],input,select,textarea,[role="button"],[role="tab"],[role="slider"]')].filter(visible)
+        .filter(el => !name(el) && !(el.labels?.length && [...el.labels].some(l => l.textContent.trim())) && !el.getAttribute('placeholder')).map(el => el.id || el.className || el.tagName);
+      const live = [...document.querySelectorAll('[aria-live]:not([aria-live="off"]),[role="status"],[role="alert"],[role="log"],output')].map(el => el.id || el.className);
+      return { h1: headings.filter(x => x.startsWith('h1')).length, headings, landmarks, canvases, unnamed, live };
+    });
+    // Registro de anuncios: cambios de texto en regiones vivas visibles (lo que leería un lector de pantalla).
+    await page.addInitScript(() => {
+      window.__ANUNCIOS__ = [];
+      const record = el => { if (!el) return; const region = el.closest?.('[aria-live]:not([aria-live="off"]),[role="status"],[role="alert"],[role="log"],output'); if (!region || region.closest('[hidden]')) return;
+        const text = region.textContent.trim().replace(/\s+/g, ' '); const id = region.id || region.className; const last = window.__ANUNCIOS__.findLast(a => a.id === id);
+        if (text && (!last || last.text !== text)) window.__ANUNCIOS__.push({ t: performance.now(), id, text: text.slice(0, 160) }); };
+      new MutationObserver(list => { for (const m of list) record(m.target.nodeType === 1 ? m.target : m.target.parentElement); })
+        .observe(document, { subtree: true, childList: true, characterData: true });
+    });
+    await h.home();
+    const s1 = await structure(); await snapshot('01_exploracion'); checks.exploracion = s1;
+    await h.lab(); await h.model();
+    checks.laboratorio = await structure(); await snapshot('02_laboratorio_elegir_sonda');
+    await page.click('.lab-probe-card[data-probe-id="cassini"]'); await h.model(['nasa', 'procedural']);
+    const mark = () => page.evaluate(() => window.__ANUNCIOS__.length);
+    const since = async (from, label) => { const list = await page.evaluate(n => window.__ANUNCIOS__.slice(n), from);
+      const span = list.length > 1 ? (list.at(-1).t - list[0].t) / 1000 : 0; return { label, count: list.length, perSecond: span > 0 ? +(list.length / span).toFixed(2) : null, sample: list.slice(0, 14).map(a => `${a.id}: ${a.text}`) }; };
+    const announcements = [];
+    let m0 = await mark(); checks.verdict = await prepare(h, 'A1'); announcements.push(await since(m0, 'calcular y enviar al Centro de Misión (la reproducción empieza sola)'));
+    checks.reproducir = await structure(); await snapshot('03_reproducir_centro_de_mision');
+    m0 = await mark(); await page.click('#mc-play'); checks.estadoDuranteReproduccion = [];
+    for (let i = 0; i < 6; i++) { await h.wait(1000); checks.estadoDuranteReproduccion.push(await page.evaluate(() => [document.querySelector('#lab-ctx-state').textContent, document.querySelector('#mc-stage-status').textContent, document.querySelector('#mc-announcer')?.textContent ?? null])); }
+    announcements.push(await since(m0, 'reproducir 6 s'));
+    m0 = await mark(); await page.click('#mc-pause'); await h.wait(800); announcements.push(await since(m0, 'pausar'));
+    m0 = await mark(); await page.click('.mc-camera-bar [data-camera="destination"]'); await h.wait(1500); announcements.push(await since(m0, 'cámara de destino'));
+    m0 = await mark();
+    await page.evaluate(() => { const t = document.querySelector('#mc-timeline'); t.value = String(Number(t.max)); t.dispatchEvent(new Event('input', { bubbles: true })); t.dispatchEvent(new Event('change', { bubbles: true })); });
+    await h.wait(1500); announcements.push(await since(m0, 'ir al final (llegada a Marte)'));
+    checks.anuncios = announcements;
+    checks.llegada = await structure(); await snapshot('04_llegada');
+    // Teclado: la línea de tiempo se maneja con flechas y anuncia su valor.
+    checks.lineaDeTiempo = await page.evaluate(() => { const t = document.querySelector('#mc-timeline');
+      return { role: t.getAttribute('role') || t.type, label: t.getAttribute('aria-label') || t.labels?.[0]?.textContent?.trim() || null, valuetext: t.getAttribute('aria-valuetext') }; });
+  });
+
   if (['all', 'modes'].includes(PART)) await session(1366, 768, 'm1366', async h => {
     const { page } = h;
     await h.home();

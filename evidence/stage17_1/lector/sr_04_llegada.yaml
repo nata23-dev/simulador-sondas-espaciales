@@ -1,0 +1,122 @@
+- banner:
+  - heading "Simulador de Sondas Espaciales" [level=1]
+  - navigation "Ubicación actual": Laboratorio Reproducción
+  - navigation "Modo de operación del simulador":
+    - button "Sistema Solar"
+    - button "Misiones históricas"
+    - button "Laboratorio" [pressed]
+  - button "Áreas"
+  - button "Buscar destino": Buscar
+  - group: Menú
+- main:
+  - region "Visualización interactiva del Sistema Solar":
+    - region "Laboratorio de misiones con sondas históricas":
+      - complementary "Etapas del laboratorio":
+        - text: Etapas
+        - button "Ocultar o mostrar el panel de etapas" [expanded]
+        - navigation "Etapas del laboratorio":
+          - list:
+            - listitem:
+              - button "1 Elegir sonda Cassini":
+                - text: "1"
+                - strong: Elegir sonda
+                - text: Cassini
+            - listitem:
+              - button "2 Planificar Misión completa · misión viable según el modelo":
+                - text: "2"
+                - strong: Planificar
+                - text: Misión completa · misión viable según el modelo
+            - listitem:
+              - button "3 Reproducir Simulación finalizada · Cassini":
+                - text: "3"
+                - strong: Reproducir
+                - text: Simulación finalizada · Cassini
+        - button "Iniciar misión guiada"
+        - button "Glosario"
+        - paragraph: La sonda, los cálculos y la misión preparada se conservan al cambiar de etapa.
+      - navigation "Ubicación en el laboratorio": 3 · Reproducir ›Reproducción
+      - heading "Reproducción" [level=2]
+      - paragraph: "Centro de Misión: reproduce en 3D la misión enviada desde Planificar, con la misma sonda y los mismos estados calculados."
+      - term: Sonda
+      - definition:
+        - combobox "Sonda":
+          - option "Voyager 1 y 2"
+          - option "Cassini" [selected]
+          - option "Dawn"
+          - option "Juno"
+          - option "Experimental"
+        - text: 5,606 kg · Δv 2.34 km/s
+      - term: Destino
+      - definition: Tierra → Marte (2028-11-29)
+      - term: Estado
+      - definition: Simulación finalizada
+      - button "Restablecer cámara"
+      - navigation "Herramientas de la etapa":
+        - button "Reproducción"
+        - button "Cámaras"
+        - button "Telemetría"
+        - button "Trayectoria y maniobras"
+        - button "Eventos"
+        - button "Resultados"
+      - text: MISIÓN EN REPRODUCCIÓN / ESTADOS CALCULADOS
+      - strong: FINALIZADA LA REPRODUCCIÓN
+      - group "Paneles del Centro de Misión":
+        - button "Panel" [pressed]
+        - button "Vista inmersiva"
+      - group "Cámaras de misión":
+        - button "Vista general"
+        - button "Seguimiento exterior"
+        - button "Cámara de destino" [pressed]
+      - text: Misión completa
+      - strong: Captura en Marte (empuje finito)
+      - text: FINALIZADA LA REPRODUCCIÓN · 316.873 d transcurridos
+      - term: Altitud
+      - definition: 99,961.52 km
+      - term: Velocidad
+      - definition: 0.17021 km/s
+      - term: Distancia al Sol
+      - definition: 1.42303 AU
+      - term: Masa
+      - definition: 3,246.9 kg
+      - group "Reproducción en la escena":
+        - button "Evento anterior"
+        - button "Reproducir hacia atrás"
+        - button "Reproducir"
+        - button "Evento siguiente"
+        - 'button "Ir a: Salida heliocéntrica desde la Tierra (C3 8.99 km²/s²)"'
+        - 'button "Ir a: Entrada en la esfera de influencia de Marte (0.577 millones de km)"'
+        - 'button "Ir a: Inserción en órbita de Marte · inicio"'
+        - 'button "Ir a: Inserción en órbita de Marte · apagado: apoapsis objetivo alcanzado"'
+        - 'button "Ir a: Fin de la cadena calculada"'
+        - text: 0 d restantes
+      - text: "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · nave ampliada (menor cerca del destino), orientada a la Tierra · sin satélites"
+      - complementary "Reproducción":
+        - text: 3 / REPRODUCIR
+        - heading "Reproducción" [level=3]
+        - text: Vehículo en la escena
+        - strong: Cassini
+        - text: Modelo 3D oficial de NASA de esta sonda
+        - status: "Misión integrada Tierra → Marte vigente (4 tramos conectados). CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada."
+        - button "Volver a «2 · Planificar»"
+        - button "Reiniciar e iniciar"
+        - button "Pausar"
+        - button "Retroceder"
+        - button "Reiniciar"
+        - text: Velocidad temporal
+        - combobox "Velocidad temporal":
+          - option "×1 · tiempo real"
+          - option "×10"
+          - option "×60 · 1 min/s"
+          - option "×600 · 10 min/s"
+          - option "×3 600 · 1 h/s"
+          - option "×21 600 · 6 h/s"
+          - option "×86 400 · 1 día/s"
+          - option "10 días/s"
+          - option "30 días/s"
+          - option "100 días/s"
+          - option "Automático por fase" [selected]
+        - text: Instante de misión
+        - slider "Instante de misión": "27377841.149"
+        - text: 316.873 d transcurridos 0 d restantes
+        - status: Misión integrada preparada en la salida heliocéntrica desde la Tierra hacia Marte.
+        - status: "Fase: Captura en Marte (empuje finito)"

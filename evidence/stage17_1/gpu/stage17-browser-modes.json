@@ -1,0 +1,19 @@
+{
+  "part": "modes",
+  "gpu": true,
+  "startedAt": "2026-11-21T04:46:36.573Z",
+  "shots": [
+    "m1366_01_sistema_solar.png",
+    "m1366_02a_historico_bienvenida.png",
+    "m1366_02_historico_voyager.png",
+    "m1366_03_laboratorio_etapa1.png",
+    "m1366_04_laboratorio_panel_plegado.png"
+  ],
+  "checks": {
+    "historicWelcome": true,
+    "railClosed": "closed"
+  },
+  "overflow": {},
+  "errors": [],
+  "finishedAt": "2026-11-21T04:47:01.047Z"
+}

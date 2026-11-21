@@ -1,0 +1,704 @@
+{
+ "auditor": "Claude (Opus 5.5), implementador de 17.1",
+ "fecha": "2026-11-21T08:21:53.340Z",
+ "resultados": [
+  {
+   "grupo": "A integridad",
+   "ok": true,
+   "name": "SHA-256 de ip-barycenters-outer-2026-2046.json = metadato",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": "06b084acbbdc0397"
+  },
+  {
+   "grupo": "A integridad",
+   "ok": true,
+   "name": "SHA-256 de ip-planets-inner-2026-2031.json = metadato",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": "6f4e63b9d0db4622"
+  },
+  {
+   "grupo": "A integridad",
+   "ok": true,
+   "name": "SHA-256 de ip-planets-inner-2031-2036.json = metadato",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": "ca7fc94d5e3a2528"
+  },
+  {
+   "grupo": "A integridad",
+   "ok": true,
+   "name": "SHA-256 de ip-planets-inner-2036-2041.json = metadato",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": "b8528e736ee6e649"
+  },
+  {
+   "grupo": "A integridad",
+   "ok": true,
+   "name": "SHA-256 de ip-planets-inner-2041-2046.json = metadato",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": "9b3e06c2305de064"
+  },
+  {
+   "grupo": "A integridad",
+   "ok": true,
+   "name": "SHA-256 de ip-planets-outer-2026-2046.json = metadato",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": "cd4c6de0646c0fb7"
+  },
+  {
+   "grupo": "A integridad",
+   "ok": true,
+   "name": "public/: único cambio = retirada de public/icons.svg (plantilla de Vite)",
+   "value": 0,
+   "limit": 0,
+   "unit": "archivos",
+   "note": ""
+  },
+  {
+   "grupo": "A integridad",
+   "ok": true,
+   "name": "Sin cambios en public/data ni public/models; en src/science solo limpieza de importaciones",
+   "value": 0,
+   "limit": 0,
+   "unit": "archivos",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "199: dato tabulado en 7 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "DE441"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "199: dato tabulado en 7 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "199: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 17.30809925951339,
+   "limit": 24.336,
+   "unit": "km",
+   "note": "declarado 18.72 km; medido/declarado = 0.92"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "299: dato tabulado en 7 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "DE441"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "299: dato tabulado en 7 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "299: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 0.1591624519429671,
+   "limit": 0.23399999999999999,
+   "unit": "km",
+   "note": "declarado 0.18 km; medido/declarado = 0.88"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "399: dato tabulado en 7 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "DE441"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "399: dato tabulado en 7 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "399: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 0.057937950970056586,
+   "limit": 0.1144,
+   "unit": "km",
+   "note": "declarado 0.088 km; medido/declarado = 0.66"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "499: dato tabulado en 7 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "mar099"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "499: dato tabulado en 7 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "499: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 0.006760585742783236,
+   "limit": 0.01183,
+   "unit": "km",
+   "note": "declarado 0.0091 km; medido/declarado = 0.74"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "599: dato tabulado en 1 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "jup365_merged"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "599: dato tabulado en 1 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "599: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 98.47426694477429,
+   "limit": 122.85000000000001,
+   "unit": "km",
+   "note": "declarado 94.5 km; medido/declarado = 1.04"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "699: dato tabulado en 1 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "sat441l"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "699: dato tabulado en 1 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "699: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 7.07146157243251,
+   "limit": 8.931000000000001,
+   "unit": "km",
+   "note": "declarado 6.87 km; medido/declarado = 1.03"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "799: dato tabulado en 1 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "ura184_merged"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "799: dato tabulado en 1 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "799: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 18.375946483096282,
+   "limit": 22.061,
+   "unit": "km",
+   "note": "declarado 16.97 km; medido/declarado = 1.08"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "899: dato tabulado en 1 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "nep098_merged"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "899: dato tabulado en 1 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "899: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 46.23706061839036,
+   "limit": 61.62,
+   "unit": "km",
+   "note": "declarado 47.4 km; medido/declarado = 0.98"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "5: dato tabulado en 1 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "DE441"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "5: dato tabulado en 1 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "5: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 0.003459495244592452,
+   "limit": 0.011469185920009816,
+   "unit": "km",
+   "note": "cota Hermite ×5 (h = 4 d) = 0.011 km"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "6: dato tabulado en 1 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "DE441"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "6: dato tabulado en 1 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "6: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 0.0007936279989889154,
+   "limit": 0.01,
+   "unit": "km",
+   "note": "cota Hermite ×5 (h = 4 d) = 0.010 km"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "7: dato tabulado en 1 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "DE441"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "7: dato tabulado en 1 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "7: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 0.000838800857099241,
+   "limit": 0.01,
+   "unit": "km",
+   "note": "cota Hermite ×5 (h = 4 d) = 0.010 km"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "8: dato tabulado en 1 nodos frente a Horizons (posición)",
+   "value": 0,
+   "limit": 0.001,
+   "unit": "km",
+   "note": "DE441"
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "8: dato tabulado en 1 nodos frente a Horizons (velocidad)",
+   "value": 0,
+   "limit": 1e-9,
+   "unit": "km/s",
+   "note": ""
+  },
+  {
+   "grupo": "B Horizons",
+   "ok": true,
+   "name": "8: interpolación del proyecto fuera de nodos (7 instantes, incluidos salida y llegada de A1) frente a Horizons",
+   "value": 0.0008402113740017926,
+   "limit": 0.01,
+   "unit": "km",
+   "note": "cota Hermite ×5 (h = 4 d) = 0.010 km"
+  },
+  {
+   "grupo": "C captura",
+   "ok": true,
+   "name": "Inicio del encendido (periapsis − ½ duración estimada) frente al del cálculo",
+   "value": 1.9615981727838516e-8,
+   "limit": 0.01,
+   "unit": "s",
+   "note": ""
+  },
+  {
+   "grupo": "C captura",
+   "ok": true,
+   "name": "Δv impulsivo de referencia (vis-viva propio) frente al del cálculo",
+   "value": 1.554312234475219e-11,
+   "limit": 0.000001,
+   "unit": "m/s",
+   "note": ""
+  },
+  {
+   "grupo": "C captura",
+   "ok": true,
+   "name": "Estado al encender: RK4 propio (crucero desde la SOI) frente al del cálculo",
+   "value": 7.492524214344704e-8,
+   "limit": 0.01,
+   "unit": "km",
+   "note": ""
+  },
+  {
+   "grupo": "C captura",
+   "ok": true,
+   "name": "Convergencia del RK4 propio (periapsis, paso 1 s frente a 0,5 s)",
+   "value": 3.001332515850663e-11,
+   "limit": 0.01,
+   "unit": "km",
+   "note": ""
+  },
+  {
+   "grupo": "C captura",
+   "ok": true,
+   "name": "Duración del encendido: RK4 propio frente al cálculo (DOPRI54)",
+   "value": 0.00000775412809161935,
+   "limit": 0.5,
+   "unit": "s",
+   "note": ""
+  },
+  {
+   "grupo": "C captura",
+   "ok": true,
+   "name": "Propelente consumido: RK4 propio frente al cálculo",
+   "value": 0.0000011294732757960446,
+   "limit": 0.1,
+   "unit": "kg",
+   "note": ""
+  },
+  {
+   "grupo": "C captura",
+   "ok": true,
+   "name": "Δv propulsivo: RK4 propio frente al cálculo",
+   "value": 0.0000010626237667565874,
+   "limit": 0.1,
+   "unit": "m/s",
+   "note": ""
+  },
+  {
+   "grupo": "C captura",
+   "ok": true,
+   "name": "Periapsis final: RK4 propio frente al cálculo (315,5 km)",
+   "value": 0.000004162684490438551,
+   "limit": 0.5,
+   "unit": "km",
+   "note": "RK4 315.548 km"
+  },
+  {
+   "grupo": "C captura",
+   "ok": true,
+   "name": "Apoapsis final: RK4 propio frente al cálculo (100 000 km)",
+   "value": 0.00044711150985676795,
+   "limit": 1,
+   "unit": "km",
+   "note": "RK4 100000.000 km"
+  },
+  {
+   "grupo": "C captura",
+   "ok": true,
+   "name": "Pérdida gravitatoria = Δv propulsivo − Δv impulsivo (RK4 propio) frente al cálculo",
+   "value": 0.0000010626393098789322,
+   "limit": 0.1,
+   "unit": "m/s",
+   "note": "397.2 m/s"
+  },
+  {
+   "grupo": "D conservación",
+   "ok": true,
+   "name": "Crucero heliocéntrico: variación relativa de la energía (201 muestras de la reproducción)",
+   "value": 1.9965336545956874e-14,
+   "limit": 1e-9,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "grupo": "D conservación",
+   "ok": true,
+   "name": "Crucero heliocéntrico: variación relativa del momento angular",
+   "value": 1.26171152724774e-14,
+   "limit": 1e-9,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "grupo": "D conservación",
+   "ok": true,
+   "name": "Órbita final en Marte: variación relativa de la energía",
+   "value": 2.6512419116895326e-14,
+   "limit": 1e-9,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "grupo": "D conservación",
+   "ok": true,
+   "name": "Órbita final en Marte: variación relativa del momento angular",
+   "value": 2.7850481678608655e-14,
+   "limit": 1e-9,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "grupo": "E cobertura",
+   "ok": true,
+   "name": "Misión que termina 1 día después del fin de cobertura: rechazada",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": "Las efemérides de Mercurio no cubren toda la misión: el Sistema Solar principal no extrapola, así que se usa la escena del Centro de Misión."
+  },
+  {
+   "grupo": "E cobertura",
+   "ok": true,
+   "name": "… con la razón «no extrapola» y sin tocar la escena",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "grupo": "E cobertura",
+   "ok": true,
+   "name": "Misión que empieza 2 días antes del inicio de cobertura: rechazada sin tocar la escena",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": "Las efemérides de Mercurio no cubren toda la misión: el Sistema Solar principal no extrapola, así que se usa la escena del Centro de Misión."
+  },
+  {
+   "grupo": "E cobertura",
+   "ok": true,
+   "name": "Misión que termina exactamente en el último nodo: admitida (sin extrapolar)",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "grupo": "F determinismo",
+   "ok": true,
+   "name": "A1 calculada dos veces: maniobras, tramos y veredicto idénticos",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "grupo": "F capacidad",
+   "ok": true,
+   "name": "Puntos de la trayectoria heliocéntrica de A1 frente al máximo dibujable (16 384)",
+   "value": 582,
+   "limit": 16384,
+   "unit": "puntos",
+   "note": ""
+  }
+ ],
+ "notas": {
+  "gitPublic": [
+   "D  public/icons.svg"
+  ],
+  "cambiosDatosCiencia": [
+   "src/science/GravitationalDynamics.js",
+   "src/science/PlanetaryEncounter.js"
+  ],
+  "horizons": {
+   "5": {
+    "solution": "DE441",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%275%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "6": {
+    "solution": "DE441",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%276%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "7": {
+    "solution": "DE441",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%277%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "8": {
+    "solution": "DE441",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%278%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "199": {
+    "solution": "DE441",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27199%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "299": {
+    "solution": "DE441",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27299%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "399": {
+    "solution": "DE441",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27399%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "499": {
+    "solution": "mar099",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27499%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "599": {
+    "solution": "jup365_merged",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27599%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "699": {
+    "solution": "sat441l",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27699%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "799": {
+    "solution": "ura184_merged",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27799%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   },
+   "899": {
+    "solution": "nep098_merged",
+    "apiVersion": "1.2",
+    "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27899%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&CENTER=%27500%4010%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_TABLE=%272%27&VEC_CORR=%27NONE%27&OUT_UNITS=%27KM-S%27&CSV_FORMAT=%27YES%27&TIME_TYPE=%27TDB%27&TLIST_TYPE=%27JD%27&TLIST=…"
+   }
+  },
+  "entradaSOI": {
+   "t": 27016572.22175896,
+   "positionKm": [
+    574835.1011481689,
+    374.64098166217445,
+    52364.90735847341
+   ],
+   "velocityKmS": [
+    -3.147510320307564,
+    0.05132296947133064,
+    -0.286803707423866
+   ],
+   "massKg": 5606,
+   "dvAccKmS": 0,
+   "mu": 42828.375816,
+   "R": 3389.5,
+   "thrustN": 445,
+   "ispS": 311,
+   "raTargetKm": 103389.5,
+   "massFloorKg": 2606
+  },
+  "capturaRK4": [
+   {
+    "pasoS": 2,
+    "durationS": 16168.58811563742,
+    "propellantKg": 2359.125495789662,
+    "dvKmS": 1.6656690517432402,
+    "rpAltKm": 315.54793876868007,
+    "raAltKm": 99999.99999999997
+   },
+   {
+    "pasoS": 1,
+    "durationS": 16168.588115636216,
+    "propellantKg": 2359.1254957908095,
+    "dvKmS": 1.6656690517432116,
+    "rpAltKm": 315.5479387687601,
+    "raAltKm": 99999.99999999996
+   },
+   {
+    "pasoS": 0.5,
+    "durationS": 16168.588115636643,
+    "propellantKg": 2359.125495790872,
+    "dvKmS": 1.6656690517432684,
+    "rpAltKm": 315.5479387687301,
+    "raAltKm": 99999.99999999999
+   }
+  ],
+  "fronteraExacta": {
+   "ok": true
+  },
+  "puntosTrayectoriaA1": 582
+ }
+}

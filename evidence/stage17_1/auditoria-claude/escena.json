@@ -1,0 +1,150 @@
+{
+ "auditor": "Claude (Opus 5.5), implementador de 17.1",
+ "fecha": "2026-11-21T08:22:50.213Z",
+ "resultados": [
+  {
+   "ok": true,
+   "name": "Mercurio: escena principal frente a Horizons en 5 instantes (crucero, encendido, órbita final)",
+   "value": 12.92031799869347,
+   "limit": 24.337,
+   "unit": "km",
+   "note": "límite = 1,3 × error de interpolación declarado"
+  },
+  {
+   "ok": true,
+   "name": "Venus: escena principal frente a Horizons en 5 instantes (crucero, encendido, órbita final)",
+   "value": 0.16297107038019237,
+   "limit": 0.235,
+   "unit": "km",
+   "note": "límite = 1,3 × error de interpolación declarado"
+  },
+  {
+   "ok": true,
+   "name": "Tierra: escena principal frente a Horizons en 5 instantes (crucero, encendido, órbita final)",
+   "value": 0.0799557527268548,
+   "limit": 0.1154,
+   "unit": "km",
+   "note": "límite = 1,3 × error de interpolación declarado"
+  },
+  {
+   "ok": true,
+   "name": "Marte: escena principal frente a Horizons en 5 instantes (crucero, encendido, órbita final)",
+   "value": 0.007756866324748858,
+   "limit": 0.012830000000000001,
+   "unit": "km",
+   "note": "límite = 1,3 × error de interpolación declarado"
+  },
+  {
+   "ok": true,
+   "name": "Jupiter: escena principal frente a Horizons en 5 instantes (crucero, encendido, órbita final)",
+   "value": 98.43168276705975,
+   "limit": 122.85100000000001,
+   "unit": "km",
+   "note": "límite = 1,3 × error de interpolación declarado"
+  },
+  {
+   "ok": true,
+   "name": "Saturno: escena principal frente a Horizons en 5 instantes (crucero, encendido, órbita final)",
+   "value": 6.5785544248429835,
+   "limit": 8.932,
+   "unit": "km",
+   "note": "límite = 1,3 × error de interpolación declarado"
+  },
+  {
+   "ok": true,
+   "name": "Urano: escena principal frente a Horizons en 5 instantes (crucero, encendido, órbita final)",
+   "value": 3.5440104721236425,
+   "limit": 22.062,
+   "unit": "km",
+   "note": "límite = 1,3 × error de interpolación declarado"
+  },
+  {
+   "ok": true,
+   "name": "Neptuno: escena principal frente a Horizons en 5 instantes (crucero, encendido, órbita final)",
+   "value": 47.38760735039511,
+   "limit": 61.620999999999995,
+   "unit": "km",
+   "note": "límite = 1,3 × error de interpolación declarado"
+  },
+  {
+   "ok": true,
+   "name": "Sonda en crucero: las 3 posiciones dibujadas son coplanarias con el Sol",
+   "value": 7.856681237299682e-18,
+   "limit": 1e-9,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "ok": true,
+   "name": "Sonda en crucero: Gibbs + RK4 propio desde la posición dibujada intermedia reproduce la primera (−100 d) con μ☉",
+   "value": 1.0745380149674385e-7,
+   "limit": 0.05,
+   "unit": "km",
+   "note": ""
+  },
+  {
+   "ok": true,
+   "name": "Sonda en crucero: … y la última (+150 d)",
+   "value": 0.0000045589290250389206,
+   "limit": 0.05,
+   "unit": "km",
+   "note": ""
+  },
+  {
+   "ok": true,
+   "name": "Sin error de la vista en «nodo 2462150.5»",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "ok": true,
+   "name": "Sin error de la vista en «intermedio 2462250.37»",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "ok": true,
+   "name": "Sin error de la vista en «nodo 2462400.5»",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "ok": true,
+   "name": "Sonda (mitad del encendido): (sonda − Marte) dibujada frente a RK4 propio = |v|·Δt del desplazamiento de 0.221 s (±20 %)",
+   "value": 0.0010300969877861308,
+   "limit": 0.2,
+   "unit": "",
+   "note": "medido 0.905 km, previsto 0.906 km, a 6801 km del centro de Marte"
+  },
+  {
+   "ok": true,
+   "name": "Sin error de la vista en «mitad del encendido»",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": ""
+  },
+  {
+   "ok": true,
+   "name": "Sonda (final - 1 h): (sonda − Marte) dibujada frente a RK4 propio = |v|·Δt del desplazamiento de 0.221 s (±20 %)",
+   "value": 0.11252990228303437,
+   "limit": 0.2,
+   "unit": "",
+   "note": "medido 0.042 km, previsto 0.038 km, a 103266 km del centro de Marte"
+  },
+  {
+   "ok": true,
+   "name": "Sin error de la vista en «final - 1 h»",
+   "value": 0,
+   "limit": 0,
+   "unit": "",
+   "note": ""
+  }
+ ]
+}

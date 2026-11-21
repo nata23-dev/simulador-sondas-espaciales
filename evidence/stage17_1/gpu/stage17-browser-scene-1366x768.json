@@ -1,0 +1,347 @@
+{
+  "part": "scene",
+  "gpu": true,
+  "startedAt": "2026-11-21T04:15:24.884Z",
+  "shots": [
+    "e1366_01_cassini_marte_escena_principal_general.png",
+    "e1366_02_camara_exterior.png",
+    "e1366_02_camara_destination.png",
+    "e1366_02_camara_overview.png",
+    "e1366_03_llegada_marte.png",
+    "e1366_03b_inmersiva_reencuadrada.png",
+    "e1366_04_exploracion_restaurada.png",
+    "e1366_05_tierra_luna_escena_local.png",
+    "e1366_06_ventana_interplanetaria_escena_principal.png"
+  ],
+  "checks": {
+    "scene1366x768": {
+      "exploracion": {
+        "planets": {
+          "Mercurio": [
+            5.590830628026618,
+            -1.5746619051375819,
+            12.993609141284029
+          ],
+          "Venus": [
+            22.983028186944665,
+            -1.2828216669563977,
+            -3.1484859303488335
+          ],
+          "Tierra": [
+            30.671042079346844,
+            -0.000675416041737584,
+            -8.990419051869162
+          ],
+          "Marte": [
+            0.19954759143623965,
+            1.0471904437178023,
+            -50.20359162908192
+          ],
+          "Jupiter": [
+            -113.34890114621501,
+            2.0102657984543764,
+            -126.56744427658855
+          ],
+          "Saturno": [
+            295.89853906499496,
+            -12.790573787316381,
+            -58.107877738376
+          ],
+          "Urano": [
+            284.76678768532315,
+            -1.638317862805651,
+            -553.0591761122765
+          ],
+          "Neptuno": [
+            954.7525143865142,
+            -22.930189580282025,
+            -45.0726087017592
+          ]
+        },
+        "probe": false,
+        "moons": 10,
+        "escala": "cientifica"
+      },
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "inicio": {
+        "mission": {
+          "ready": true,
+          "controlling": true,
+          "kind": "integrated",
+          "probeName": "Cassini",
+          "model": "nasa",
+          "cameraMode": "overview",
+          "elapsedSeconds": 2720303.9999999995,
+          "jdTdb": 2462136.68692337,
+          "destination": "Marte",
+          "destinationBodyId": "499",
+          "trajectoryPoints": 581,
+          "error": null
+        },
+        "labScene": "main",
+        "mainCanvas": "visible",
+        "localCanvas": "hidden",
+        "hitAtStage": "escena principal",
+        "footer": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · nave ampliada (menor cerca del destino), orientada a la Tierra · sin satélites",
+        "escala": "cientifica",
+        "moons": 0,
+        "probe": {
+          "visible": true,
+          "posicion": [
+            -6.699976334270377,
+            0.7800541877993842,
+            -31.2613727310332
+          ],
+          "escalaVisual": 0.0006000000000003929,
+          "trayectoriaVisible": true,
+          "seleccionada": false,
+          "modelo": {
+            "idSonda": "__SONDA__",
+            "aparienciaPreferida": "voyager",
+            "modeloActivo": "mision",
+            "modeloExterno": "modelo-Cassini",
+            "factorEscala": 1,
+            "voyagerCargado": false,
+            "errorCargaVoyager": null,
+            "metadatosVoyager": {
+              "id": "nasa-vtad-voyager-gltf",
+              "nombre": "Voyager (modelo 3D oficial NASA)",
+              "archivoRelativo": "models/voyager/Voyager.glb",
+              "fuenteOficial": "https://science.nasa.gov/resource/voyager-3d-model/",
+              "credito": "NASA / JPL-Caltech / Visualization Technology Applications and Development (VTAD)",
+              "licencia": "Dominio público / NASA Media Usage Guidelines (uso educativo y científico sin implicar respaldo oficial)",
+              "advertenciaCientifica": "Representación visual tridimensional oficial NASA VTAD de Voyager 1 (-31) y Voyager 2 (-32) en el modo histórico. La sonda de una misión del laboratorio usa el modelo de su propio diseño."
+            },
+            "diagnosticoGeometriaVoyager": null
+          }
+        },
+        "camara": {
+          "posicion": [
+            -68.49925053126775,
+            109.64273493882791,
+            183.7679366171012
+          ],
+          "seleccionado": null
+        },
+        "center": {
+          "vehicle": "cassini",
+          "model": "nasa",
+          "pane": "playback",
+          "drawer": "shown",
+          "immersive": null,
+          "name": "Cassini",
+          "modelText": "Modelo 3D oficial de NASA de esta sonda",
+          "empty": false,
+          "emptyReason": "Calcula una transferencia lunar en el Planificador. La escena usará la sonda y los estados del nuevo cálculo.",
+          "elapsed": "31.541 d transcurridos",
+          "stageStatus": "EN REPRODUCCIÓN"
+        },
+        "sondaTierraAU": 0.05180264823187823,
+        "tierraMovidaAU": 1.317085714011751
+      },
+      "puntero": {
+        "checked": 29,
+        "blocked": []
+      },
+      "reproduciendo": {
+        "elapsed": "77.103 d transcurridos",
+        "t": 6656860.800000003,
+        "jd": 2462182.24892337,
+        "sondaMovidaAU": 0.8061082246939575,
+        "marteMovidaAU": 0.5749532373370062
+      },
+      "camaras": {
+        "exterior": {
+          "pressed": "true",
+          "viewMode": "exterior",
+          "camara": {
+            "posicion": [
+              -29.6128882294112,
+              1.4998708397473166,
+              -19.178524002159577
+            ],
+            "seleccionado": null
+          },
+          "probeScale": 0.0024999999999764082
+        },
+        "destination": {
+          "pressed": "true",
+          "viewMode": "destination",
+          "camara": {
+            "posicion": [
+              -51.943391200558146,
+              1.513913145413141,
+              -11.432118017363777
+            ],
+            "seleccionado": "Marte"
+          },
+          "probeScale": 0.0006000000000221065
+        },
+        "overview": {
+          "pressed": "true",
+          "viewMode": "overview",
+          "camara": {
+            "posicion": [
+              -64.92375655779598,
+              102.72018356656135,
+              175.226196046408
+            ],
+            "seleccionado": null
+          },
+          "probeScale": 0.0006000000000000009
+        },
+        "onboard": {
+          "hidden": true,
+          "disabled": false
+        }
+      },
+      "llegada": {
+        "mission": {
+          "ready": true,
+          "controlling": true,
+          "kind": "integrated",
+          "probeName": "Cassini",
+          "model": "nasa",
+          "cameraMode": "destination",
+          "elapsedSeconds": 27377841.149,
+          "jdTdb": 2462422.075084817,
+          "destination": "Marte",
+          "destinationBodyId": "499",
+          "trajectoryPoints": 581,
+          "error": null
+        },
+        "center": {
+          "vehicle": "cassini",
+          "model": "nasa",
+          "pane": "playback",
+          "drawer": "shown",
+          "immersive": null,
+          "name": "Cassini",
+          "modelText": "Modelo 3D oficial de NASA de esta sonda",
+          "empty": false,
+          "emptyReason": "Calcula una transferencia lunar en el Planificador. La escena usará la sonda y los estados del nuevo cálculo.",
+          "elapsed": "316.873 d transcurridos",
+          "stageStatus": "PAUSADA"
+        },
+        "state": "Reproducción en pausa",
+        "sondaMarteKm": 103351.02331266862,
+        "probeScale": 0.000060000000000000056,
+        "events": [
+          "Salida heliocéntrica desde la Tierra (C3 8.99 km²/s²)2028-11-29 · 16:49:37 UTC · salida",
+          "Entrada en la esfera de influencia de Marte (0.577 millones de km)2029-10-08 · 09:25:49 UTC · esfera de influencia",
+          "Inserción en órbita de Marte · inicio2029-10-10 · 09:17:30 UTC · motor encendido",
+          "Inserción en órbita de Marte · apagado: apoapsis objetivo alcanzado2029-10-10 · 13:46:58 UTC · motor apagado",
+          "Fin de la cadena calculada2029-10-12 · 13:46:58 UTC · fin"
+        ]
+      },
+      "destinoDisco": {
+        "distanciaRadios": 4.165889476666571,
+        "radioPx": 222.226928058381
+      },
+      "inmersivaReencuadre": {
+        "antes": [
+          -68.44990512269827,
+          109.56051718184952,
+          183.6691405974357
+        ],
+        "despues": [
+          -30.139579731476175,
+          49.442984633354925,
+          97.86888984447161
+        ],
+        "cambio": 111.55035535834092
+      },
+      "fueraDeReproducir": {
+        "mission": false,
+        "labScene": null,
+        "probe": false,
+        "escala": "cientifica"
+      },
+      "regresoAReproducir": {
+        "controlling": true,
+        "labScene": "main",
+        "t": 27377841.149
+      },
+      "trasSalir": {
+        "mode": "exploracion",
+        "controlling": false,
+        "labScene": null,
+        "probe": false,
+        "moons": 10,
+        "escala": "cientifica",
+        "maxDiferenciaPlanetasUnidades": 0
+      },
+      "tierraLuna": {
+        "mission": {
+          "ready": false,
+          "controlling": false,
+          "kind": null,
+          "probeName": null,
+          "model": null,
+          "cameraMode": "destination",
+          "elapsedSeconds": 0,
+          "jdTdb": null,
+          "destination": null,
+          "destinationBodyId": null,
+          "trajectoryPoints": 0,
+          "error": null
+        },
+        "labScene": null,
+        "localCanvas": "visible",
+        "footer": "Centros y trayectoria: 1 unidad = 10 000 km · marcadores ilustrativos · nave ampliada en vistas cercanas: 0,25 unidades por metro · orientación visual alineada con velocidad, sin control de actitud",
+        "status": "EN REPRODUCCIÓN",
+        "center": {
+          "vehicle": "cassini",
+          "model": "nasa",
+          "pane": "playback",
+          "drawer": "shown",
+          "immersive": "false",
+          "name": "Cassini",
+          "modelText": "Modelo 3D oficial de NASA de esta sonda",
+          "empty": false,
+          "emptyReason": "Calcula una transferencia lunar en el Planificador. La escena usará la sonda y los estados del nuevo cálculo.",
+          "elapsed": "5,535 s transcurridos",
+          "stageStatus": "EN REPRODUCCIÓN"
+        },
+        "message": "Misión preparada en la órbita terrestre inicial. Las misiones alrededor de la Tierra (lanzamiento, Tierra–Luna y empuje finito) se reproducen en la escena local del Centro de Misión: a la escala del Sistema Solar no se distinguirían de la Tierra."
+      },
+      "lambert": {
+        "mission": {
+          "ready": true,
+          "controlling": true,
+          "kind": "interplanetary",
+          "probeName": "Cassini",
+          "model": "nasa",
+          "cameraMode": "overview",
+          "elapsedSeconds": 3451680,
+          "jdTdb": 2462144.4508007327,
+          "destination": "Marte",
+          "destinationBodyId": "499",
+          "trajectoryPoints": 481,
+          "error": null
+        },
+        "labScene": "main",
+        "hitAtStage": "escena principal",
+        "footer": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · nave ampliada (menor cerca del destino), orientada a la Tierra · sin satélites",
+        "destination": "Tierra → Marte (2028-11-29)",
+        "sondaTierraAU": 0.06416222691822548,
+        "center": {
+          "vehicle": "cassini",
+          "model": "nasa",
+          "pane": "playback",
+          "drawer": "shown",
+          "immersive": "false",
+          "name": "Cassini",
+          "modelText": "Modelo 3D oficial de NASA de esta sonda",
+          "empty": false,
+          "emptyReason": "Calcula una transferencia lunar en el Planificador. La escena usará la sonda y los estados del nuevo cálculo.",
+          "elapsed": "40.06 d transcurridos",
+          "stageStatus": "EN REPRODUCCIÓN"
+        }
+      }
+    }
+  },
+  "overflow": {},
+  "errors": [],
+  "finishedAt": "2026-11-21T04:16:43.071Z"
+}

@@ -1,0 +1,351 @@
+{
+  "part": "sr",
+  "gpu": true,
+  "startedAt": "2026-11-21T04:30:38.576Z",
+  "shots": [],
+  "checks": {
+    "sr": {
+      "exploracion": {
+        "h1": 1,
+        "headings": [
+          "h1 Simulador de Sondas Espaciales"
+        ],
+        "landmarks": [
+          "header: ",
+          "nav: Ubicación actual",
+          "nav: Modo de operación del simulador",
+          "main: ",
+          "section: Visualización interactiva del Sistema Solar",
+          "section: Controles de fecha astronómica",
+          "nav: Vista y cámara",
+          "aside: Misiones destacadas"
+        ],
+        "canvases": [
+          {
+            "id": "solar-system",
+            "role": null,
+            "label": "Visualización interactiva del Sistema Solar",
+            "hidden": null
+          }
+        ],
+        "unnamed": [],
+        "live": [
+          "distance-status-msg",
+          "data-status",
+          "scale-mode-badge",
+          "comp-minimized-time",
+          "comp-recreation-date-b",
+          "hud-announcement",
+          "playback-status",
+          "fp-scene-indicator",
+          "historical-journey-status",
+          "context-search-status",
+          "selected-planet",
+          "historical-launch-card",
+          "hist-photo-date-status",
+          "",
+          "camera-context",
+          "lab-ctx-state",
+          "lab-message",
+          "lab-history-sheet",
+          "lab-assembly-status",
+          "ln-message",
+          "mission-probe-advice",
+          "mission-message",
+          "ft-message",
+          "ip-satellite",
+          "ip-message",
+          "ip-refine",
+          "im-outcome",
+          "im-message",
+          "mc-readiness",
+          "mc-message",
+          "mc-announcer",
+          "lab-guide-status"
+        ]
+      },
+      "laboratorio": {
+        "h1": 1,
+        "headings": [
+          "h1 Simulador de Sondas Espaciales",
+          "h2 Vista general",
+          "h4 Cassini"
+        ],
+        "landmarks": [
+          "header: ",
+          "nav: Ubicación actual",
+          "nav: Modo de operación del simulador",
+          "main: ",
+          "section: Visualización interactiva del Sistema Solar",
+          "section: Laboratorio de misiones con sondas históricas",
+          "aside: Etapas del laboratorio",
+          "nav: Etapas del laboratorio",
+          "header: ",
+          "nav: Ubicación en el laboratorio",
+          "nav: Herramientas de la etapa",
+          "aside: Vista general"
+        ],
+        "canvases": [
+          {
+            "id": "lab-canvas",
+            "role": null,
+            "label": "Modelo 3D interactivo de la sonda activa",
+            "hidden": null
+          }
+        ],
+        "unnamed": [],
+        "live": [
+          "distance-status-msg",
+          "data-status",
+          "scale-mode-badge",
+          "comp-minimized-time",
+          "comp-recreation-date-b",
+          "hud-announcement",
+          "playback-status",
+          "fp-scene-indicator",
+          "historical-journey-status",
+          "context-search-status",
+          "selected-planet",
+          "historical-launch-card",
+          "hist-photo-date-status",
+          "",
+          "camera-context",
+          "lab-ctx-state",
+          "lab-message",
+          "lab-history-sheet",
+          "lab-assembly-status",
+          "ln-message",
+          "mission-probe-advice",
+          "mission-message",
+          "ft-message",
+          "ip-satellite",
+          "ip-message",
+          "ip-refine",
+          "im-outcome",
+          "im-message",
+          "mc-readiness",
+          "mc-message",
+          "mc-announcer",
+          "lab-guide-status"
+        ]
+      },
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "reproducir": {
+        "h1": 1,
+        "headings": [
+          "h1 Simulador de Sondas Espaciales",
+          "h2 Reproducción",
+          "h3 Reproducción"
+        ],
+        "landmarks": [
+          "header: ",
+          "nav: Ubicación actual",
+          "nav: Modo de operación del simulador",
+          "main: ",
+          "section: Visualización interactiva del Sistema Solar",
+          "section: Laboratorio de misiones con sondas históricas",
+          "aside: Etapas del laboratorio",
+          "nav: Etapas del laboratorio",
+          "header: ",
+          "nav: Ubicación en el laboratorio",
+          "nav: Herramientas de la etapa",
+          "aside: Reproducción"
+        ],
+        "canvases": [
+          {
+            "id": "solar-system",
+            "role": null,
+            "label": "Visualización interactiva del Sistema Solar",
+            "hidden": null
+          }
+        ],
+        "unnamed": [],
+        "live": [
+          "distance-status-msg",
+          "data-status",
+          "scale-mode-badge",
+          "comp-minimized-time",
+          "comp-recreation-date-b",
+          "hud-announcement",
+          "playback-status",
+          "fp-scene-indicator",
+          "historical-journey-status",
+          "context-search-status",
+          "selected-planet",
+          "historical-launch-card",
+          "hist-photo-date-status",
+          "",
+          "camera-context",
+          "lab-ctx-state",
+          "lab-message",
+          "lab-history-sheet",
+          "lab-assembly-status",
+          "ln-message",
+          "mission-probe-advice",
+          "mission-message",
+          "ft-message",
+          "ip-satellite",
+          "ip-message",
+          "ip-refine",
+          "im-outcome",
+          "im-message",
+          "mc-readiness",
+          "mc-message",
+          "mc-announcer",
+          "lab-guide-status"
+        ]
+      },
+      "estadoDuranteReproduccion": [
+        [
+          "Reproducción en curso",
+          "EN REPRODUCCIÓN",
+          ""
+        ],
+        [
+          "Reproducción en curso",
+          "EN REPRODUCCIÓN",
+          ""
+        ],
+        [
+          "Reproducción en curso",
+          "EN REPRODUCCIÓN",
+          ""
+        ],
+        [
+          "Reproducción en curso",
+          "EN REPRODUCCIÓN",
+          ""
+        ],
+        [
+          "Reproducción en curso",
+          "EN REPRODUCCIÓN",
+          ""
+        ],
+        [
+          "Reproducción en curso",
+          "EN REPRODUCCIÓN",
+          ""
+        ]
+      ],
+      "anuncios": [
+        {
+          "label": "calcular y enviar al Centro de Misión",
+          "count": 9,
+          "perSecond": 4.27,
+          "sample": [
+            "lab-ctx-state: Lista para planificar",
+            "lab-ctx-state: Calculando trayectoria…",
+            "im-message: Cargando efemérides y calculando: apuntado, encendidos integrados y fases…",
+            "im-message: CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada. Cálculo en 14 ms.",
+            "lab-ctx-state: Misión viable según el modelo · lista para enviar a Reproducir",
+            "mc-readiness: Misión integrada Tierra → Marte vigente (4 tramos conectados). CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verifica",
+            "mc-message: Misión integrada preparada en la salida heliocéntrica desde la Tierra hacia Marte.",
+            "lab-ctx-state: Lista para reproducir"
+          ]
+        },
+        {
+          "label": "reproducir 6 s",
+          "count": 0,
+          "perSecond": null,
+          "sample": []
+        },
+        {
+          "label": "pausar",
+          "count": 1,
+          "perSecond": null,
+          "sample": [
+            "lab-ctx-state: Reproducción en pausa"
+          ]
+        },
+        {
+          "label": "cámara de destino",
+          "count": 0,
+          "perSecond": null,
+          "sample": []
+        },
+        {
+          "label": "ir al final (llegada a Marte)",
+          "count": 2,
+          "perSecond": 7.34,
+          "sample": [
+            "mc-announcer: Fase: Captura en Marte (empuje finito)",
+            "lab-ctx-state: Simulación finalizada"
+          ]
+        }
+      ],
+      "llegada": {
+        "h1": 1,
+        "headings": [
+          "h1 Simulador de Sondas Espaciales",
+          "h2 Reproducción",
+          "h3 Reproducción"
+        ],
+        "landmarks": [
+          "header: ",
+          "nav: Ubicación actual",
+          "nav: Modo de operación del simulador",
+          "main: ",
+          "section: Visualización interactiva del Sistema Solar",
+          "section: Laboratorio de misiones con sondas históricas",
+          "aside: Etapas del laboratorio",
+          "nav: Etapas del laboratorio",
+          "header: ",
+          "nav: Ubicación en el laboratorio",
+          "nav: Herramientas de la etapa",
+          "aside: Reproducción"
+        ],
+        "canvases": [
+          {
+            "id": "solar-system",
+            "role": null,
+            "label": "Visualización interactiva del Sistema Solar",
+            "hidden": null
+          }
+        ],
+        "unnamed": [],
+        "live": [
+          "distance-status-msg",
+          "data-status",
+          "scale-mode-badge",
+          "comp-minimized-time",
+          "comp-recreation-date-b",
+          "hud-announcement",
+          "playback-status",
+          "fp-scene-indicator",
+          "historical-journey-status",
+          "context-search-status",
+          "selected-planet",
+          "historical-launch-card",
+          "hist-photo-date-status",
+          "",
+          "camera-context",
+          "lab-ctx-state",
+          "lab-message",
+          "lab-history-sheet",
+          "lab-assembly-status",
+          "ln-message",
+          "mission-probe-advice",
+          "mission-message",
+          "ft-message",
+          "ip-satellite",
+          "ip-message",
+          "ip-refine",
+          "im-outcome",
+          "im-message",
+          "mc-readiness",
+          "mc-message",
+          "mc-announcer",
+          "lab-guide-status"
+        ]
+      },
+      "lineaDeTiempo": {
+        "role": "range",
+        "label": "Instante de misión",
+        "valuetext": "316.873 d transcurridos · 0 d restantes · Captura en Marte (empuje finito)"
+      }
+    }
+  },
+  "overflow": {},
+  "errors": [],
+  "finishedAt": "2026-11-21T04:31:02.929Z"
+}
