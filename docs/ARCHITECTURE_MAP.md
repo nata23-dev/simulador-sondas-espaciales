@@ -120,6 +120,25 @@ Otros cambios:
 - `ui/LabGuidedMission.js`: pasos `GUIDE_STEPS`, con `isDone` y `act` sobre una API que expone `ExperimentalLaboratory`. Esa API usa los mismos controles de la interfaz, sin atajos internos. También exporta `revealInScrollAreas`.
 - `ui/IntegratedMissionPlanner.js` exporta `integratedMissionInput` y `scenarioFormValues`, que usan tanto la interfaz como las pruebas.
 
+**Laboratorio en tres etapas (17):**
+
+- `ui/LabStages.js`: `LAB_STAGES` (etapas `probe`, `plan` y `play`, cada una con sus pestañas) y `labTab`. No usa el DOM. Lo comparten `ExperimentalLaboratory`, la misión guiada, `AppNavigator` y las pruebas.
+- `ui/ExperimentalLaboratory.js`:
+  - estado `stage` y `tabByStage`; `go(stage, tab)` muestra los contenedores de la etapa y, en «Reproducir», llama a `center.setPane(tab)`;
+  - `lab:navigate` acepta `{ stage, tab }` y los nombres antiguos;
+  - la barra de estado se calcula con `planState`, `playState` y `updateStatus`;
+  - `center.setPlan` está envuelto para conservar el motivo de una invalidación;
+  - antes de pasar un diseño nuevo a los planificadores, se compara `designSignature` con el de la misión preparada y, si difiere, se vacía el Centro.
+- `lab/FleetDocuments.js`: documentos oficiales por sonda (`public/images/fleet/`), fuentes de la ficha y grupos de la pestaña de arquitectura.
+- `lab/ExperimentalAssembly.js`: ensamblaje experimental sobre el bus de una sonda real, con las reglas de `ProbeDesign.applyPartChange` y la verificación de `ProbeEngineering`.
+- `lab/MissionPlanStore.designSignature`: añade `experimental: true` a los ensamblajes experimentales. Las firmas históricas no cambian.
+- `lab/ProbeAssemblyView.setDesign(design, { procedural })`: muestra el esquema técnico en lugar del modelo de NASA.
+- `ui/IntegratedMissionPlanner`:
+  - `renderFlow` (siete pasos) y `renderBrief` (resultado principal);
+  - `getState().executable` y `executionError`: si `createIntegratedExecution` falla (por ejemplo, por efemérides fuera de la ventana cargada), se conserva el resultado y se desactiva la reproducción;
+  - `onStateChange` avisa al laboratorio al empezar y terminar un cálculo.
+- `ui/MissionControlCenter`: `MC_PANES`, `setPane`, `getPane`, `setImmersive` y `getStatus()` (incluye `vehicle`). `ui/LabGlossary.js` añade la ayuda contextual y el diálogo del glosario.
+
 **Misiones integradas (13):** `interplanetary-ephemerides-catalog-v1.json` + `encounter-ephemerides-catalog-v1.json` (baricentros 5–8) y la ventana `interplanetary/galilean-moons-jsb-2031-2032.json` (`science/PlanetocentricWindow`) → `lab/EncounterDesign.aimEncounter` (Lambert a la SOI; `science/PlanetaryEncounter`) → `lab/OrbitalInsertion.simulateInsertion` (DOPRI54, masa variable) → `lab/IntegratedMission.computeIntegratedMission` (tramos `kepler`/`burn`/`landing`, conversión de marcos y continuidad; descenso por `BodyLandingSimulation` de 12F) → `ui/IntegratedMissionPlanner` (modalidad «Misión completa») → `lab/IntegratedMissionPlayback` (contextos heliocéntrico, planeta, satélite y descenso) → Centro de Misión (`kind: 'integrated'`). [13](STAGE13_INTEGRATED_MISSIONS.md).
 
 `MissionPhysics.js` usa efeméride geocéntrica lunar local `public/data/moons-2026-10.json`, el integrador existente y el término indirecto Tierra–Luna. El Centro muestra dos lados de la inyección impulsiva en `t=0` y Hermite entre nudos posteriores; su reloj visual no cambia la trayectoria. `MissionExecutionView.js` convierte centros km a 1 unidad/10 000 km y amplía la nave solo para inspección. [12A](../ETAPA-12A-LABORATORIO.md), [12B](STAGE12B_MISSION_PLANNER.md), [12C](STAGE12C_MISSION_CONTROL.md).

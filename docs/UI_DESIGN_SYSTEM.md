@@ -106,6 +106,42 @@ Cambios de la etapa 16 ([detalle](STAGE16_COHERENCE.md)):
 - Cabecera: el resumen `#lab-ctx-design` puede pasar a una segunda línea. Centro de Misión: en pantallas de más de 760 px, su fila superior no se parte en dos.
 - Se eliminan los selectores sin uso de 15/15.1 (`.lab-component*`, `.lab-part-*`, `.lab-replacement*`, `.lab-hangar-modes`, `#lab-landing`/`#ld-*`, `#lab-load-preset`, `#lab-import`, `#lab-export`, `[data-section="engineering"]`).
 
+Cambios de la etapa 17 ([detalle](STAGE17_LAB_REORGANIZATION.md)). Los estilos están en `src/ui/lab-shell.css`, que se carga después de `theme.css` y sustituye la barra de secciones de 16:
+
+- **Panel de etapas** `aside.lab-rail`:
+  - pasos numerados `.lab-step[data-lab-stage]` con su estado;
+  - progreso `li[data-progress=todo|busy|ready|done]` y tono `data-tone`;
+  - etapa activa en dorado;
+  - acciones «Iniciar misión guiada» (píldora dorada), «Demostración científica» y «Glosario»;
+  - plegado a 66 px con `#lab-rail-toggle`, a partir de 821 px. En 820 px o menos, fila de tres pasos sobre el contenido; en 420 px o menos, número encima del nombre.
+- **Cabecera del laboratorio** `.lab-header`:
+  - ruta en mayúsculas espaciadas, con la pestaña en dorado;
+  - título, descripción y cadena (`#lab-tool-chain`: verde si las fases están conectadas, gris si es una herramienta independiente);
+  - barra `dl.lab-context` «Sonda · Destino · Estado» con `#lab-ctx-state[data-tone]`.
+- **Pestañas** `nav.lab-tabs`: texto con subrayado dorado en la activa e insignia «Principal» en «Misión completa». En móvil pasan a botones en rejilla.
+- **Controles segmentados** `.lab-vehicle-mode` y `.lab-arch-view`: «Configuración histórica / Ensamblaje experimental» y «Modelo de NASA / Esquema técnico».
+- **Ensamblaje experimental:** recuadro `.lab-experimental-banner` con borde dorado y lista de diferencias.
+- **Planos y documentación:** tarjetas `.lab-doc-card[data-kind=diagram|photo|reconstruction]` con insignia por tipo (azul para el diagrama, gris para la fotografía, dorado para la reconstrucción) y diálogo de ampliación `#lab-lightbox`.
+- **Ingeniería:** resumen `.lab-eng-summary` de siete tarjetas antes del veredicto y del detalle plegable.
+- **«Misión completa»:**
+  - recorrido `#im-flow` con `li[data-state=done|current|todo|busy|bad]`;
+  - resultado principal `#im-brief`;
+  - resultados técnicos plegados `details.im-tech`.
+- **Centro de Misión:**
+  - rejilla escena + panel, con `data-drawer=hidden` para ocultar el panel;
+  - tarjeta «Vehículo en la escena» `.mc-vehicle`;
+  - lista de cámaras;
+  - estado vacío con el motivo;
+  - `#experimental-lab[data-immersive]` oculta el panel de etapas, la cabecera y las pestañas.
+- **Glosario:** términos `.lab-term` con subrayado punteado, ayuda `#lab-tooltip` y diálogo `#lab-glossary`.
+- **Retirado:** la barra superior de 16 (`.lab-nav-group`, `.lab-nav-step`) ya no se genera y sus selectores se eliminan de `theme.css`. `nav.lab-sections` se reutiliza dentro del panel de etapas. Los grupos del navegador de áreas siguen.
+- **Cabecera común** (`theme.css`):
+  - entre 761 y 1100 px, el nombre del simulador ocupa dos líneas (11 px, `letter-spacing:.1em`), porque en una se ocultaba bajo las pestañas de modo;
+  - hasta 760 px, dos líneas con `-webkit-line-clamp:2` en lugar de puntos suspensivos;
+  - por debajo de 420 px, `column-gap:8px` entre los iconos;
+  - el icono `.brand-mark` lleva `aria-hidden="true"`.
+- **Contraste:** el texto secundario sobre el fondo dorado (`--gold-soft`) usa `--text-2`; `--text-3` queda en 4,39:1, por debajo de WCAG AA.
+
 ## Componentes y comportamiento
 
 | Componente | Implementación y regla que conservar |
