@@ -138,6 +138,20 @@ Otros cambios:
 - Etapa 26 ([detalle](STAGE26_PERFORMANCE.md)):
   - `ui/FpsMeter.js` (`crearMedidorFps`, creado en `main.js`): contador opcional con su propio `requestAnimationFrame`, casilla `#show-fps` en el menú «Capas», preferencia `simulador:mostrar-fps` y `?fps=1`;
   - `SolarSystem.precompilarEscena()`: compila en paralelo (`compileAsync`, tope de 2 s) los programas nuevos al abrir una misión del laboratorio (`SolarSystemMissionView.take`) y mantiene mientras tanto el fotograma anterior.
+- Etapa 27 ([detalle](STAGE27_ADAPTIVE_PERFORMANCE.md)), `graphics/QualityProfile.js`:
+  - funciones puras: `clasificarRenderizador`, `perfilInicialAuto` y `createResolutionController`;
+  - estado por escena (`CONTEXTO_PRINCIPAL` y `'lanzamiento'`);
+  - `reportFrame(dt, { contexto, cpu })` solo en fotogramas dibujados y `suspenderAdaptacion(promesa)` durante cargas;
+  - `opcionesRenderizador(extra, contexto)` crea todos los `WebGLRenderer` (suavizado según el detalle y `powerPreference`), y `setGpuPreference`;
+  - `launch/LaunchWorld.ajustesLanzamiento(detalle)` dice qué dibuja el lanzamiento en cada nivel, y `reducirDetalle` baja sombras y nubes sin recompilar.
+- Etapa 28 ([detalle](STAGE28_DEPARTURE_PATCH.md)):
+  - `lab/EarthDeparture.js`: `hyperbolicExcessVelocity`, `DEPARTURE_PATCH_MODELS` (`'asymptote'` por defecto, `'velocity'` de la 21) y `earthBeyondSoiCorrection` (Sol + Tierra con `propagateNBody` de `NBodyCruise.js`);
+  - `IntegratedMission.js` itera la corrección en las rondas del lanzamiento, declara el salto de la frontera en `patches` y `checkContinuity` lo excluye del error máximo;
+  - `compareMissionCruise` arranca la nave real desde `launch.soiExitHelioState`.
+- Etapa 29 ([detalle](STAGE29_MENUS.md)):
+  - `ui/AppNavigator.js` es el único «Menú» de la cabecera y adopta `#main-tools` (herramientas y ayuda, creado en `WorkspaceLayout.js`);
+  - los eventos `app:menu-open` y `app:close-menu` coordinan su cierre con el inspector y «Capas»;
+  - `CommandPalette` abre el menú con `navigator.open()`.
 
 **Flota fija con modelos de NASA (15.1):**
 

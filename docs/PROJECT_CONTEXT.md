@@ -73,12 +73,16 @@ Está probada localmente y pendiente de auditoría independiente. **En la 15.1**
 - **24** ([experiencia de uso](STAGE24_USER_EXPERIENCE.md)): mejora el Centro de Misión.
 - **25** ([lanzamiento 3D de las Voyager](STAGE25_VOYAGER_LAUNCH.md)): acercamiento desde el Sistema Solar hasta LC-41 y lanzamiento hasta `Voyager.glb`.
 - **26** ([rendimiento y contador de FPS](STAGE26_PERFORMANCE.md), petición del 22-11-2026): el lanzamiento 3D ya no se bloquea con el reloj en marcha y la reproducción del laboratorio en el Sistema Solar va a la cadencia completa; contador de FPS opcional en el menú «Capas». Sin cambios de física ni datos.
+- **27** ([rendimiento adaptativo](STAGE27_ADAPTIVE_PERFORMANCE.md), 22-11-2026): la calidad automática detecta la GPU o el dibujo por software y ajusta la resolución y el detalle de cada escena buscando 50–60 FPS; perfil «Mínima» y preferencia de GPU. Sin cambios de física ni datos.
+- **28** ([salida desde la plataforma](STAGE28_DEPARTURE_PATCH.md), 22-11-2026): empalme convencional por la asíntota y apuntado con la gravedad terrestre fuera de la SOI. **Cambia física.**
+- **29** ([menús](STAGE29_MENUS.md), 22-11-2026): un solo «Menú» y «Buscar» solo busca.
 
-Además, ESLint (solo reglas de errores) corre en la CI y la O-03 de 17.1 se resolvió con pruebas de comportamiento ([tareas continuas](CONTINUOUS_QUALITY.md)). 402 pruebas.
+Además, ESLint (solo reglas de errores) corre en la CI y la O-03 de 17.1 se resolvió con pruebas de comportamiento ([tareas continuas](CONTINUOUS_QUALITY.md)). 420 pruebas.
 
 **Pendientes del plan:**
-- la revisión independiente de 20, 21, 22 y del perfil científico de 25, que cambian o añaden física;
-- la decisión sobre el C3 del empalme de 21 (≈ 0,86 km²/s² por debajo del convencional);
+- la revisión independiente de 20, 21, 22, 28 y del perfil científico de 25, que cambian o añaden física;
+- ~~la decisión sobre el C3 del empalme de 21~~: resuelta en la [etapa 28](STAGE28_DEPARTURE_PATCH.md), pendiente de su revisión independiente;
+- medir el rendimiento en un equipo modesto o un móvil reales;
 - la revisión visual por una persona;
 - la prueba con NVDA o Narrador.
 

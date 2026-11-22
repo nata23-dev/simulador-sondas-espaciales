@@ -60,7 +60,8 @@ Reglas de la capa: las bases de botones y campos usan `:where()` (especificidad 
 
 Componentes de la 14.1:
 
-- paleta de búsqueda global: `#command-palette`, que se abre con Ctrl/⌘+K, `/` o «Buscar»;
+- paleta de búsqueda global: `#command-palette`, que se abre con Ctrl/⌘+K, `/` o «Buscar». Desde la 29, sin texto muestra solo cuerpos y sondas; las áreas y las acciones aparecen al escribir;
+- un solo «Menú» en la cabecera (29): `#app-nav-toggle` abre `#app-nav-panel`, con las áreas y, debajo, `#main-tools` (Herramientas y Ayuda y datos, mismos encabezados y filas que las áreas). Ya no hay `#tools-menu` ni `.main-menu`. La cabecera queda en marca, modos, «Buscar» y «Menú»; en móvil, tres columnas;
 - portada «Misiones destacadas» (`#featured-panel`);
 - ruta de la cabecera (`.app-crumb`);
 - indicador del tiempo (`.temporal-state[data-state]`);
@@ -79,7 +80,7 @@ Componentes de la etapa 15 ([detalle](STAGE15_HERITAGE_HANGAR.md)). Usan los mis
   - veredicto `#lab-assessment[data-tone]`;
   - tabla de energía `.lab-power-table`;
   - compatibilidades agrupadas por tipo y gravedad.
-- Menú «Vista»: perfiles de calidad `#quality-controls` (`.menu-pill-group--quad`, `.menu-note`).
+- Menú «Vista»: perfiles de calidad `#quality-controls`. Desde la 27 usa `.menu-pill-group--quality`: «Automática» en toda la fila y debajo Alta, Media, Baja y Mínima. Le siguen el grupo «Procesador gráfico» (`[data-gpu]`, `[data-gpu-status]` y el aviso `[data-gpu-note]`, con `.menu-heading--sub` y `.menu-note--aviso`) y `.menu-note`. La 29 retira de este menú los botones de escala repetidos (la escala vive en el botón del dock) y rotula los de encuadre con «Encuadre».
 - Contador de FPS (26): interruptor `#show-fps` («Mostrar FPS») dentro de `#quality-controls`, apagado por defecto; `?fps=1` lo muestra sin cambiar la preferencia guardada. El contador `.fps-meter` es fijo, abajo a la derecha en escritorio (`z-index:29`, `pointer-events:none`). Muestra los FPS de los últimos 0,5 s y, debajo, el tiempo medio por fotograma y el peor, con color por estado (`data-state`: `bien` ≥ 50 FPS, `aviso` 30–50, `mal` < 30). Hasta 760 px va bajo la cabecera, sin el detalle; en el lanzamiento y en el laboratorio, a media altura del borde derecho, para no tapar el reloj ni los botones.
 - Planificador de misión completa:
   - secciones «Energía eléctrica» (`#im-power`) y «Comparación» (`#im-compare`);
