@@ -160,13 +160,22 @@
               </div>
               <div class="menu-section" id="quality-controls">
                 <span class="menu-heading">Calidad gráfica</span>
-                <div class="menu-pill-group menu-pill-group--quad" role="group" aria-label="Perfil de calidad gráfica">
-                  <button type="button" data-quality="auto" aria-pressed="true">Automática</button>
+                <div class="menu-pill-group menu-pill-group--quality" role="group" aria-label="Perfil de calidad gráfica">
+                  <button type="button" data-quality="auto" aria-pressed="true" title="Se adapta al equipo y ajusta la resolución y el detalle para mantener 50–60 FPS">Automática</button>
                   <button type="button" data-quality="alto" aria-pressed="false">Alta</button>
                   <button type="button" data-quality="medio" aria-pressed="false">Media</button>
                   <button type="button" data-quality="bajo" aria-pressed="false">Baja</button>
+                  <button type="button" data-quality="minimo" aria-pressed="false" title="Para equipos sin aceleración gráfica: menos resolución, sin sombras ni entorno">Mínima</button>
                 </div>
                 <small class="menu-note" data-quality-status>Resolución de render ×1</small>
+                <!-- 27: procesador gráfico. El navegador decide si dibuja con la GPU o con la CPU; aquí se informa y, en equipos con dos GPU, se elige cuál pedir. -->
+                <span class="menu-heading menu-heading--sub">Procesador gráfico</span>
+                <div class="menu-pill-group" role="group" aria-label="Procesador gráfico preferido">
+                  <button type="button" data-gpu="rendimiento" aria-pressed="true" title="En equipos con dos GPU, pide la más potente">Alto rendimiento</button>
+                  <button type="button" data-gpu="ahorro" aria-pressed="false" title="En equipos con dos GPU, pide la integrada: menos consumo y calor">Ahorro de energía</button>
+                </div>
+                <small class="menu-note" data-gpu-status>Detectando el procesador gráfico…</small>
+                <small class="menu-note menu-note--aviso" data-gpu-note hidden>Se aplica al recargar la página.</small>
                 <label class="switch-row"><input id="show-fps" type="checkbox" /><span>Mostrar FPS<small>Contador discreto en una esquina de la escena</small></span></label>
               </div>
               <div class="menu-actions menu-actions-grid">

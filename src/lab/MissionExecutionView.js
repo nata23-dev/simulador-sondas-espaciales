@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createProbeAssemblyModel, disposeProbeAssemblyModel } from './ProbeAssemblyView.js';
-import { registerRenderer } from '../graphics/QualityProfile.js';
+import { registerRenderer, opcionesRenderizador } from '../graphics/QualityProfile.js';
 import { attachNasaModel, localBounds } from '../graphics/NasaProbeModels.js';
 
 const SCENE_SCALE = 1 / 10000;
@@ -99,7 +99,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
   const scene = new THREE.Scene(); scene.background = new THREE.Color('#050a13');
   const camera = new THREE.PerspectiveCamera(46, 1, 0.005, 300);
   camera.position.set(0, 22, 53);
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  const renderer = new THREE.WebGLRenderer(opcionesRenderizador({ antialias: true }));
   const unregisterQuality = registerRenderer(renderer);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.append(renderer.domElement);

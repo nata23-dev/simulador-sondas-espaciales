@@ -663,6 +663,12 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
 
 /* Etapa 15: perfiles de calidad gráfica en el menú de capas. */
 .menu-pill-group--quad { grid-template-columns:repeat(2,minmax(0,1fr)); }
+/* 27: «Automática» ocupa la fila; debajo, los cuatro perfiles fijos. */
+.menu-pill-group--quality { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.menu-pill-group--quality > [data-quality="auto"] { grid-column:1 / -1; }
+.menu-heading--sub { display:block; margin-top:14px; }
+.menu-note--aviso { color:var(--warn); }
+.menu-note[data-software="true"] { color:var(--warn); }
 .menu-note { display:block; margin-top:7px; color:var(--text-3); font-size:11px; line-height:1.4; }
 
 /* ---------- Etapa 26 · contador de FPS (opcional; Menú → Calidad gráfica) ---------- */

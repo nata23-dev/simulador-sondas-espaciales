@@ -10,6 +10,7 @@ import {
 } from '../science/VoyagerLaunchProfile.js';
 import { crearLineaTiempo, formatearRelojMision } from './LaunchTimeline.js';
 import { crearMundoLanzamiento, CENTRO_TIERRA, enuAEscena } from './LaunchWorld.js';
+import { onQualityChange, reportFrame } from '../graphics/QualityProfile.js';
 import { crearTitanIIIECentaur, prepararFundido } from './TitanIIIECentaur3D.js';
 import { crearPlataformaLC41_1977, PLATAFORMA_1977 } from './LC41Pad1977.js';
 import { crearPenacho, crearHumo, crearEstela } from './LaunchEffects.js';
@@ -30,7 +31,7 @@ function ultimoEventoHasta(eventos, t) {
  * Crea el lanzamiento en `contenedor`. Devuelve el controlador; `listo` se resuelve cuando la escena está compilada y con texturas.
  * `alCambiar(estado)` informa al panel (≈ 8 veces por segundo); `alTerminar({ misionId })` al acabar o saltar.
  */
-export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', calidad = 'alto', baseUrl = '/', fovInicial = 48,
+export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', calidad = 'alto', detalle = 'alto', baseUrl = '/', fovInicial = 48,
   alCambiar = () => {}, alTerminar = () => {}, reducirMovimiento = false, escritorio = true } = {}) {
   const mision = LANZAMIENTOS_VOYAGER[misionId];
   if (!mision) throw new RangeError(`Lanzamiento desconocido: ${misionId}`);
@@ -47,8 +48,14 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   canvas.setAttribute('role', 'img');
   canvas.setAttribute('aria-label', `Reconstrucción 3D del lanzamiento de la ${mision.nombre} desde el Complejo 41 de Cabo Cañaveral`);
   contenedor.append(canvas);
-  const mundo = crearMundoLanzamiento({ canvas, mision, calidad, baseUrl, escritorio });
-  const { escena, camara, renderer } = mundo;
+  const mundo = crearMundoLanzamiento({ canvas, mision, calidad, detalle, baseUrl, escritorio });
+  const { escena, camara, renderer, ajustes } = mundo;
+  // 27: si la calidad automática baja el nivel de detalle durante el lanzamiento, se aplica lo que no obliga a recompilar.
+  let detalleVigente = ajustes.detalle;
+  const bajaDetalle = onQualityChange(estado => {
+    if (estado.contexto !== 'lanzamiento' || !estado.detalle || estado.detalle === detalleVigente) return;
+    detalleVigente = estado.detalle; mundo.reducirDetalle(estado.detalle);
+  });
 
   const plataforma = crearPlataformaLC41_1977();
   escena.add(plataforma.grupo);
@@ -78,7 +85,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   unirPenacho(P.centaur, 'rl10', t => Math.max(tramo(t, tMes1, tMeco1, 1.5), tramo(t, tMes2, tMeco2, 1.5)));
   unirPenacho(P.moduloPropulsion, 'pm', t => tramo(t, tPmI, tPmO, 0.6) * (t > tPmO - 3 ? suave((tPmO - t) / 3) * 0.7 + 0.3 : 1));
 
-  const humo = crearHumo(calidad === 'bajo' ? 900 : 2200);
+  const humo = crearHumo(ajustes.humo);
   escena.add(humo.malla);
   const estela = crearEstela(420);
   escena.add(estela.malla);
@@ -178,12 +185,15 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
 
   // ---- Humo determinista (función del instante) ----
   const salidas = PLATAFORMA_1977.salidasFosoLlamasM;
-  const nubeSuelo = Array.from({ length: calidad === 'bajo' ? 160 : 340 }, (_, k) => ({
-    te: 0.05 + 14 * Math.pow(k / 340, 1.25), salida: salidas[k % 2], ang: (azar(k, 1) - 0.5) * 0.9, vel: 0.6 + 0.8 * azar(k, 2),
-    sube: 0.6 + 0.9 * azar(k, 3), tam: 0.7 + 0.6 * azar(k, 4), semilla: azar(k, 5)
+  // 27: con menos partículas (detalle bajo o mínimo) las emisiones se reparten por el mismo intervalo de tiempo y cada bocanada es
+  // algo mayor, para cubrir lo mismo. Con detalle alto (340 y 90) las fórmulas son las de la etapa 25.
+  const nSuelo = ajustes.nubeSuelo, nBase = ajustes.nubeBase, escalaSuelo = Math.pow(340 / nSuelo, 0.25);
+  const nubeSuelo = Array.from({ length: nSuelo }, (_, k) => ({
+    te: 0.05 + 14 * Math.pow(k / nSuelo, 1.25), salida: salidas[k % 2], ang: (azar(k, 1) - 0.5) * 0.9, vel: 0.6 + 0.8 * azar(k, 2),
+    sube: 0.6 + 0.9 * azar(k, 3), tam: (0.7 + 0.6 * azar(k, 4)) * escalaSuelo, semilla: azar(k, 5)
   }));
-  const nubeBase = Array.from({ length: calidad === 'bajo' ? 40 : 90 }, (_, k) => ({
-    te: 0.1 + 9 * (k / 90), ang: azar(k, 7) * Math.PI * 2, rad: 6 + 14 * azar(k, 8), sube: 0.5 + azar(k, 9), semilla: azar(k, 10)
+  const nubeBase = Array.from({ length: nBase }, (_, k) => ({
+    te: 0.1 + 9 * (k / nBase), ang: azar(k, 7) * Math.PI * 2, rad: 6 + 14 * azar(k, 8), sube: 0.5 + azar(k, 9), semilla: azar(k, 10)
   }));
   // Estela: puntos de emisión a lo largo de la trayectoria mientras arden los motores sólidos y el aire es denso (< 45 km).
   const estelaPuntos = [];
@@ -376,7 +386,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   }
   function fotograma() {
     if (destruido) return;
-    const ahoraMs = performance.now(), dt = instanteAnterior === null ? 0 : Math.min(0.1, (ahoraMs - instanteAnterior) / 1000);
+    const ahoraMs = performance.now(), intervalo = instanteAnterior === null ? 0 : (ahoraMs - instanteAnterior) / 1000, dt = Math.min(0.1, intervalo);
     instanteAnterior = ahoraMs; tiempoAnim += dt;
     if (!pausado && !terminado) {
       p = Math.min(linea.duracion, p + dt * velocidad);
@@ -395,6 +405,8 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     estela.actualizar(puntosEstela, camara, mundoInfo.dirSol, nEstela);
     renderer.render(escena, camara);
     const ahora = performance.now();
+    // 27: resolución dinámica del lanzamiento con su intervalo real (sin el tope de 0,1 s) y el tiempo de CPU del fotograma.
+    if (intervalo > 0) reportFrame(intervalo, { contexto: 'lanzamiento', cpu: (ahora - ahoraMs) / 1000 });
     const evento = ultimoEventoHasta(linea.eventos, t);
     if (evento !== ultimoEvento || ahora - ultimoInforme > 120) {
       ultimoInforme = ahora;
@@ -465,6 +477,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     destruir() {
       if (destruido) return;
       destruido = true;
+      bajaDetalle();
       renderer.setAnimationLoop(null);
       observador.disconnect();
       for (const { pen } of penachos) pen.destruir();

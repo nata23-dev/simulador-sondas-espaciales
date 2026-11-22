@@ -38,8 +38,12 @@ test('el perfil se aplica a los renderizadores registrados y el automático redu
   setQualityProfile('alto'); assert.equal(calls.at(-1), 2);
   setQualityProfile('auto');
   const start = getQualityState().pixelRatioCap;
-  for (let i = 0; i < 20 * 5; i++) reportFrame(1 / 20); // 5 s a 20 FPS
-  assert.ok(getQualityState().pixelRatioCap < start, 'baja un escalón');
+  // 27: equipo limitado por los píxeles (el tiempo de cada fotograma crece con el cuadrado de la relación): a la relación de
+  // partida va a 20 FPS. La resolución dinámica baja y se queda abajo, porque al bajar los FPS mejoran.
+  const fotograma = () => Math.max(1 / 60, (1 / 20) * (getQualityState().pixelRatio / start) ** 2);
+  for (let t = 0; t < 8;) { const dt = fotograma(); reportFrame(dt); t += dt; }
+  assert.ok(getQualityState().pixelRatioCap < start, 'baja la resolución');
+  assert.ok(1 / fotograma() >= 48, `y llega a la zona de 50–60 FPS (${(1 / fotograma()).toFixed(1)})`);
   assert.equal(calls.at(-1), getQualityState().pixelRatio);
   assert.equal(getQualityState().adapted, true);
   unregister();

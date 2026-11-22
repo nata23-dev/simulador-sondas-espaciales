@@ -3,7 +3,7 @@ import { crearWorkspaceLayout } from './ui/WorkspaceLayout.js';
 
 import { cargarEfemerides, obtenerEstados } from './astronomy/Ephemerides.js';
 import { createSolarSystem } from './graphics/SolarSystem.js';
-import { bindQualityControls, getQualityState, equipoEscritorio } from './graphics/QualityProfile.js';
+import { bindQualityControls, getQualityState, equipoEscritorio, suspenderAdaptacion } from './graphics/QualityProfile.js';
 import { crearMedidorFps } from './ui/FpsMeter.js';
 import { precargarEnReposo, conexionLimitada } from './graphics/DeferredTextures.js';
 import { claveTexturaPlaneta } from './graphics/PlanetFactory.js';
@@ -898,6 +898,9 @@ async function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
   lanzamientoEnCurso = true;
   misionLanzamiento = misionId;
   const solicitud = ++solicitudLanzamiento;
+  // 27: la preparación (acercamiento, texturas, compilación) no cuenta para la resolución dinámica.
+  let finPreparacion = () => {};
+  suspenderAdaptacion(new Promise(resolve => { finPreparacion = resolve; }));
   detenerBucleHistorico();
   recorridoGuiado?.mostrar(false);
   overlayLanzamiento?.mostrar(true, metadatosLanzamiento(misionId));
@@ -914,6 +917,7 @@ async function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
       contenedor: document.querySelector('.scene-panel'),
       misionId,
       calidad: getQualityState().profile,
+      detalle: getQualityState('lanzamiento').detalle, // 27: lo que aprendió el lanzamiento anterior (o el perfil del equipo)
       escritorio: equipoEscritorio(),
       baseUrl: import.meta.env.BASE_URL,
       fovInicial,
@@ -929,6 +933,8 @@ async function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
   } catch (error) {
     console.error('No se pudo abrir el lanzamiento 3D:', error);
     if (solicitud === solicitudLanzamiento) cerrarLanzamiento3D();
+  } finally {
+    finPreparacion();
   }
 }
 
@@ -1620,7 +1626,7 @@ simulador.alCambiarModoEscala(() => {
 
 crearControlesVisualizacion(simulador);
 bindQualityControls(document.querySelector('#quality-controls')); // 15: perfiles de calidad gráfica (solo presentación)
-crearMedidorFps({ casilla: document.querySelector('#show-fps') }); // 26: contador de FPS opcional (también ?fps=1)
+crearMedidorFps({ casilla: document.querySelector('#show-fps'), calidad: () => getQualityState() }); // 26: contador de FPS opcional (también ?fps=1); 27: con la resolución
 botonReintentar.addEventListener('click', iniciar);
 
 async function iniciar() {

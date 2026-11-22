@@ -29,10 +29,14 @@ export function estadoFps(fps) {
 }
 
 const coma = (x, d = 0) => x.toFixed(d).replace('.', ',');
-/** Texto del medidor, p. ej. «60 FPS» y «16,7 ms · peor 18». Función pura (probada). */
-export function textoFps(resumen) {
-  if (!resumen) return { principal: '— FPS', detalle: 'midiendo…' };
-  return { principal: `${Math.round(resumen.fps)} FPS`, detalle: `${coma(resumen.mediaMs, 1)} ms · peor ${coma(resumen.peorMs)}` };
+/**
+ * Texto del medidor, p. ej. «60 FPS» y «16,7 ms · peor 18». Función pura (probada).
+ * 27: con `calidad` (estado de QualityProfile) añade la resolución de render y si se dibuja por software («CPU»).
+ */
+export function textoFps(resumen, calidad = null) {
+  const extra = calidad ? ` · ×${coma(calidad.pixelRatio, calidad.pixelRatio % 1 ? 2 : 0).replace(/(,\d)0$/, '$1')}${calidad.gpu?.software ? ' · CPU' : ''}` : '';
+  if (!resumen) return { principal: '— FPS', detalle: `midiendo…${extra}` };
+  return { principal: `${Math.round(resumen.fps)} FPS`, detalle: `${coma(resumen.mediaMs, 1)} ms · peor ${coma(resumen.peorMs)}${extra}` };
 }
 
 function leerPreferencia() {
@@ -45,13 +49,14 @@ function guardarPreferencia(valor) { try { globalThis.localStorage?.setItem(CLAV
 
 /**
  * Crea el medidor dentro de `contenedor` y lo conecta con la casilla `casilla` (opcional). Devuelve { mostrar, visible, destruir }.
- * `ventanaMs`: cada cuánto se actualiza el texto (por defecto 500 ms).
+ * `ventanaMs`: cada cuánto se actualiza el texto (por defecto 500 ms). 27: `calidad`, función que devuelve el estado de la
+ * calidad gráfica de la escena que se dibuja (resolución y procesador), para mostrarlo junto a los FPS.
  */
-export function crearMedidorFps({ contenedor = document.body, casilla = null, ventanaMs = 500 } = {}) {
+export function crearMedidorFps({ contenedor = document.body, casilla = null, ventanaMs = 500, calidad = null } = {}) {
   const raiz = document.createElement('div');
   raiz.className = 'fps-meter';
   raiz.hidden = true;
-  raiz.title = 'Fotogramas por segundo medidos en este navegador: media de los últimos 0,5 s, tiempo medio por fotograma y el peor fotograma. Más de 25 ms en un fotograma se nota como un tirón.';
+  raiz.title = 'Fotogramas por segundo medidos en este navegador: media de los últimos 0,5 s, tiempo medio por fotograma, el peor fotograma y la resolución de render (×1 = un píxel de render por píxel de la pantalla; «CPU»: dibujo por software). Más de 25 ms en un fotograma se nota como un tirón.';
   raiz.innerHTML = '<span class="fps-meter__value">— FPS</span><span class="fps-meter__detail">midiendo…</span>';
   const valor = raiz.querySelector('.fps-meter__value'), detalle = raiz.querySelector('.fps-meter__detail');
   contenedor.append(raiz);
@@ -60,7 +65,7 @@ export function crearMedidorFps({ contenedor = document.body, casilla = null, ve
   const intervalos = [];
   function pintar() {
     const resumen = resumirFotogramas(intervalos);
-    const texto = textoFps(resumen);
+    const texto = textoFps(resumen, calidad?.() ?? null);
     valor.textContent = texto.principal; detalle.textContent = texto.detalle;
     raiz.dataset.state = resumen ? estadoFps(resumen.fps) : 'bien';
     intervalos.length = 0;

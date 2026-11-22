@@ -11,7 +11,7 @@ import { Sky } from 'three/addons/objects/Sky.js';
 import { LC41, RADIO_TIERRA_M, solEnLC41, matrizEcuatorialAEnu } from '../science/VoyagerLaunchProfile.js';
 import { cargarCatalogoHipparcos } from '../graphics/StarCatalog.js';
 import { crearSolEspacio } from './LaunchEffects.js';
-import { registerRenderer } from '../graphics/QualityProfile.js';
+import { registerRenderer, opcionesRenderizador } from '../graphics/QualityProfile.js';
 
 const DEG = Math.PI / 180;
 const R = RADIO_TIERRA_M;
@@ -31,9 +31,29 @@ export const RECURSOS_LANZAMIENTO = Object.freeze({
  * calidad alta, o automática en un equipo de escritorio que la admita. En los demás casos, la de 4096 px (≈ 90 MB).
  * Función pura (probada).
  */
-export function archivoGlobo({ calidad = 'auto', escritorio = true, maxTextura = 16384 } = {}) {
-  const grande = maxTextura >= 8192 && (calidad === 'alto' || (calidad === 'auto' && escritorio));
+export function archivoGlobo({ calidad = 'auto', escritorio = true, maxTextura = 16384, detalle = 'alto' } = {}) {
+  const grande = maxTextura >= 8192 && detalle === 'alto' && (calidad === 'alto' || (calidad === 'auto' && escritorio));
   return grande ? RECURSOS_LANZAMIENTO.globo.archivo : RECURSOS_LANZAMIENTO.globo.ligero;
+}
+
+/**
+ * 27: qué se dibuja en cada nivel de detalle (función pura, probada). Solo presentación: la trayectoria, el Sol, las estrellas,
+ * los acontecimientos y la telemetría son los mismos en todos los niveles.
+ *   · alto/medio: como en la etapa 25 (medio con algo menos de humo).
+ *   · bajo: sin sombras ni suavizado de bordes, mallas de la Tierra con la mitad de divisiones y menos humo.
+ *   · minimo: además, sin reflejos del cielo (entorno) ni capa de nubes, y con un tercio del humo. Para GPU muy modestas o
+ *     dibujo por software, donde cada píxel cuesta mucho.
+ */
+export function ajustesLanzamiento(detalle = 'alto') {
+  const nivel = ['alto', 'medio', 'bajo', 'minimo'].includes(detalle) ? detalle : 'alto';
+  const completo = nivel === 'alto' || nivel === 'medio';
+  return Object.freeze({
+    detalle: nivel, antialias: completo, sombras: completo, entorno: nivel !== 'minimo', nubes: nivel !== 'minimo',
+    divisiones: completo ? 1 : 0.5,
+    humo: { alto: 2200, medio: 1600, bajo: 900, minimo: 600 }[nivel],
+    nubeSuelo: { alto: 340, medio: 260, bajo: 160, minimo: 110 }[nivel],
+    nubeBase: { alto: 90, medio: 70, bajo: 40, minimo: 28 }[nivel]
+  });
 }
 
 /**
@@ -150,15 +170,17 @@ function colorBV(bv) {
  * Crea el renderizador y el mundo sobre `canvas`. `mision`: LANZAMIENTOS_VOYAGER[...]; `calidad`: 'bajo' | 'medio' | 'alto'.
  * Devuelve el renderizador, la escena, la cámara y `actualizar({ tMision, ms, camara, foco })`.
  */
-export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', baseUrl = '/', escritorio = true }) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: calidad !== 'bajo', logarithmicDepthBuffer: true, powerPreference: 'high-performance' });
+export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detalle = 'alto', baseUrl = '/', escritorio = true }) {
+  const ajustes = ajustesLanzamiento(detalle);
+  // 27: preferencia de GPU del menú y suavizado de bordes según el nivel de detalle.
+  const renderer = new THREE.WebGLRenderer(opcionesRenderizador({ canvas, antialias: ajustes.antialias, logarithmicDepthBuffer: true }, 'lanzamiento'));
   // 26: la resolución interna sigue el perfil de calidad del menú (Alta ×2, Media ×1,5, Baja ×1) y, en «Automática», baja sola si
   // el lanzamiento no sostiene 30 FPS, igual que la escena principal. Antes el lanzamiento usaba siempre ×2 salvo en «Baja».
-  const bajaCalidad = registerRenderer(renderer);
+  const bajaCalidad = registerRenderer(renderer, 'lanzamiento'); // 27: resolución dinámica propia del lanzamiento
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.55;
-  renderer.shadowMap.enabled = calidad !== 'bajo';
+  renderer.shadowMap.enabled = ajustes.sombras;
   renderer.shadowMap.type = THREE.PCFShadowMap; // r186: PCFSoftShadowMap se retiró (PCF ya filtra)
 
   const escena = new THREE.Scene();
@@ -176,7 +198,8 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', baseUr
 
   // ---- Tierra ----
   const matGlobo = new THREE.MeshStandardMaterial({ color: 0x1b3d6b, roughness: 0.92, metalness: 0, envMapIntensity: 0 });
-  const globo = parcheEsferico({ lat: [-90, 90], lon: [-180, 180], radio: R - 150, segLat: 128, segLon: 256 }, matGlobo);
+  const div = n => Math.max(8, Math.round(n * ajustes.divisiones));
+  const globo = parcheEsferico({ lat: [-90, 90], lon: [-180, 180], radio: R - 150, segLat: div(128), segLon: div(256) }, matGlobo);
   globo.renderOrder = 0; escena.add(globo);
   const mascara = mascaraBordes(), mascaraAncha = mascaraBordes(0.3);
   const capas = {};
@@ -189,7 +212,7 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', baseUr
     m.renderOrder = orden; m.visible = false; escena.add(m); capas[clave] = m;
   }
   const matNubes = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, roughness: 1, envMapIntensity: 0 });
-  const nubes = parcheEsferico({ lat: [-90, 90], lon: [-180, 180], radio: R + 9000, segLat: 96, segLon: 192 }, matNubes);
+  const nubes = parcheEsferico({ lat: [-90, 90], lon: [-180, 180], radio: R + 9000, segLat: div(96), segLon: div(192) }, matNubes);
   nubes.renderOrder = 8; nubes.visible = false; escena.add(nubes);
   // 26: dos mallas (vista desde dentro y desde fuera) con los mismos uniformes. Antes se cambiaba material.side a 80 km, y en
   // three.js la cara forma parte del programa: el cambio obligaba a compilar un sombreador en pleno vuelo.
@@ -197,19 +220,20 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', baseUr
   const matAtmosferaFuera = new THREE.ShaderMaterial({ uniforms: matAtmosferaDentro.uniforms, vertexShader: matAtmosferaDentro.vertexShader,
     fragmentShader: matAtmosferaDentro.fragmentShader, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.FrontSide });
   matAtmosferaDentro.side = THREE.BackSide;
-  const geoAtmosfera = new THREE.SphereGeometry(R + 80000, 128, 64);
+  const geoAtmosfera = new THREE.SphereGeometry(R + 80000, div(128), div(64));
   const atmosferaDentro = new THREE.Mesh(geoAtmosfera, matAtmosferaDentro), atmosferaFuera = new THREE.Mesh(geoAtmosfera, matAtmosferaFuera);
   for (const a of [atmosferaDentro, atmosferaFuera]) { a.position.copy(CENTRO_TIERRA); a.renderOrder = 9; escena.add(a); }
   const uAtmosfera = matAtmosferaDentro.uniforms;
 
   const cargasTexturas = Promise.all([
-    cargar('globo', archivoGlobo({ calidad, escritorio, maxTextura: renderer.capabilities.maxTextureSize })).then(t => { if (t) { matGlobo.map = t; matGlobo.color.set(0xffffff); matGlobo.needsUpdate = true; } }),
+    cargar('globo', archivoGlobo({ calidad, escritorio, detalle: ajustes.detalle, maxTextura: renderer.capabilities.maxTextureSize })).then(t => { if (t) { matGlobo.map = t; matGlobo.color.set(0xffffff); matGlobo.needsUpdate = true; } }),
     ...['florida', 'cabo', 'lc41'].map(clave => cargar(clave, RECURSOS_LANZAMIENTO[clave].archivo).then(t => {
       if (!t) return; const m = capas[clave]; m.material.map = t; m.material.opacity = 1; m.material.needsUpdate = true; m.visible = true;
     })),
-    cargar('nubes', RECURSOS_LANZAMIENTO.nubes.archivo).then(t => {
-      if (!t) return; t.colorSpace = THREE.NoColorSpace; matNubes.alphaMap = t; matNubes.needsUpdate = true; nubes.visible = true;
-    })
+    // 27: sin capa de nubes en el nivel mínimo (ni se descarga su textura).
+    ajustes.nubes ? cargar('nubes', RECURSOS_LANZAMIENTO.nubes.archivo).then(t => {
+      if (!t) return; t.colorSpace = THREE.NoColorSpace; matNubes.alphaMap = t; matNubes.needsUpdate = true; nubes.visible = permitirNubes;
+    }) : null
   ]);
 
   // ---- Cielo (Preetham) con brillo regulable para desvanecerlo al subir ----
@@ -275,6 +299,7 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', baseUr
   cieloEntorno.material.uniforms.cloudCoverage.value = 0;
   escEntorno.add(cieloEntorno);
   function generarEntorno(dirSol) {
+    if (!ajustes.entorno) return; // 27: nivel mínimo, sin reflejos del cielo
     cieloEntorno.material.uniforms.sunPosition.value.copy(dirSol);
     entorno?.dispose();
     entorno = pmrem.fromScene(escEntorno, 0, 0.1, 100).texture;
@@ -287,6 +312,7 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', baseUr
    * camino síncrono de siempre, con el mismo resultado.
    */
   async function precompilarEntorno() {
+    if (!ajustes.entorno) return;
     try {
       pmrem._setSize(256);
       pmrem._allocateTargets().dispose();
@@ -305,6 +331,12 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', baseUr
   const cargas = Promise.all([cargasTexturas, estrellasListas, entornoPrecompilado]);
 
   const v = new THREE.Vector3(), arriba = new THREE.Vector3(), dirSol = new THREE.Vector3(), M4 = new THREE.Matrix4();
+  // 27: si la calidad automática baja el detalle durante el lanzamiento, se apagan las sombras y las nubes sin recompilar nada.
+  let permitirSombras = ajustes.sombras, permitirNubes = ajustes.nubes;
+  function reducirDetalle(nuevo) {
+    const a = ajustesLanzamiento(nuevo);
+    permitirSombras = permitirSombras && a.sombras; permitirNubes = permitirNubes && a.nubes;
+  }
   const colorDia = new THREE.Color(), colorNiebla = new THREE.Color();
   let entornoListo = false;
 
@@ -335,6 +367,7 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', baseUr
     atmosferaFuera.visible = fuera > 0.001 && altitud > 80000;
     atmosferaDentro.visible = fuera > 0.001 && altitud <= 80000;
     matNubes.opacity = (nuboso ? 0.9 : 0.75) * THREE.MathUtils.smoothstep(altitud, 12000, 45000);
+    nubes.visible = permitirNubes && Boolean(matNubes.alphaMap) && matNubes.opacity > 0.002;
     // Capas de detalle: se ocultan cuando están muy lejos (ahorro) o son innecesarias.
     capas.lc41.visible = Boolean(capas.lc41.material.map) && altitud < 400000;
     // El Cabo se desvanece al subir: desde más de ≈ 50 km su mar turquesa destacaría como un recuadro sobre Blue Marble.
@@ -358,7 +391,7 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', baseUr
     sol.color.copy(colorDia); sol.intensity = 2.8;
     const objetivo = foco ?? camara.position;
     sol.position.copy(objetivo).addScaledVector(dirSol, 400); sol.target.position.copy(objetivo); sol.target.updateMatrixWorld();
-    const sombras = renderer.shadowMap.enabled && objetivo.distanceTo(camara.position) < 1500 && altitud < 3000 && objetivo.y < 300;
+    const sombras = renderer.shadowMap.enabled && permitirSombras && objetivo.distanceTo(camara.position) < 1500 && altitud < 3000 && objetivo.y < 300;
     sol.shadow.intensity = sombras ? 1 : 0;
     // Sin sombras visibles no se dibuja el mapa de sombras; pero se dibuja al menos una vez, para que su textura de profundidad
     // exista: sin ella, three enlaza al muestreador de sombra una textura vacía que WebGL rechaza («Mismatch between texture
@@ -404,7 +437,7 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', baseUr
   }
 
   return {
-    renderer, escena, camara, cargas, actualizar, redimensionar, capas, subirTexturas,
+    renderer, escena, camara, cargas, actualizar, redimensionar, capas, subirTexturas, ajustes, reducirDetalle,
     estadoTexturas: () => Object.fromEntries(Object.keys(RECURSOS_LANZAMIENTO).map(k => [k, Boolean(texturas[k])])),
     destruir() {
       escena.traverse(o => { if (o.isMesh || o.isPoints) { o.geometry?.dispose(); if (o.material && o !== cielo) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.dispose()); } });

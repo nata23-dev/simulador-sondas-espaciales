@@ -1,7 +1,8 @@
 // Etapa 26 · Repaso general de fluidez: intervalos entre fotogramas y fotogramas largos (> 50 ms, con su causa según Long
 // Animation Frames de Chrome) por fase —exploración, modo histórico, laboratorio y reproducción de A1 en el Sistema Solar—, sobre
 // la compilación de producción (vite preview) con la GPU real (ANGLE/Direct3D 11).
-// Uso: npm run build && node scripts/profile-general-performance.mjs [salida.json]   (DPR=2 para pantalla de alta densidad)
+// Uso: npm run build && node scripts/profile-general-performance.mjs [salida.json]   (DPR=2 para pantalla de alta densidad;
+//   SOFTWARE=1 para dibujar con la CPU, como un navegador sin aceleración por hardware)
 // Una sola instancia de Chrome y de Vite a la vez.
 import path from 'node:path';
 import fs from 'node:fs/promises';
@@ -12,7 +13,8 @@ const { preview } = await import(pathToFileURL(path.resolve('node_modules/vite/d
 const { chromium } = await import(pathToFileURL(path.join(process.env.LOCALAPPDATA, 'CodexScientificTools/voyager-e2e/node_modules/playwright/index.mjs')).href);
 const server = await preview({ preview: { port: 5200, strictPort: true }, configFile: path.resolve('vite.config.js'), logLevel: 'error' });
 const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true,
-  args: ['--use-gl=angle', '--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist', '--no-sandbox'] });
+  // 27: SOFTWARE=1 dibuja con SwiftShader (CPU), como un navegador sin aceleración por hardware.
+  args: [...(process.env.SOFTWARE === '1' ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : ['--use-gl=angle', '--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist']), '--no-sandbox'] });
 const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: Number(process.env.DPR ?? 1) });
 const page = await ctx.newPage();
 const errores = []; page.on('pageerror', e => errores.push(e.message)); page.on('console', m => { if (m.type() === 'error') errores.push(m.text()); });

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { crearPlaneta } from './PlanetFactory.js';
-import { registerRenderer, reportFrame } from './QualityProfile.js';
+import { registerRenderer, reportFrame, opcionesRenderizador } from './QualityProfile.js';
 import { crearLunasPlanetarias, establecerInspeccionVisualIo } from './MoonVisuals.js';
 import { solicitarTexturasVisibles } from './DeferredTextures.js';
 import { crearControladorCamara } from './CameraController.js';
@@ -145,9 +145,8 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   const camera = new THREE.PerspectiveCamera(48, 1, 0.05, 36000);
   camera.position.set(320, 450, 830);
 
-  const renderer = new THREE.WebGLRenderer({
-    antialias: true
-  });
+  // 27: preferencia de GPU del menú; sin suavizado de bordes (MSAA) en equipos que empiezan con detalle bajo o mínimo.
+  const renderer = new THREE.WebGLRenderer(opcionesRenderizador({ antialias: true }));
 
   registerRenderer(renderer); // 15: relación de píxeles según el perfil de calidad (tope 2, como antes en «Alta»)
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -916,10 +915,10 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
 
   function animar(tiempo) {
     requestAnimationFrame(animar);
+    const inicioCpu = performance.now();
     const delta = Math.max((tiempo - tiempoAnterior) / 1000, 0);
     tiempoAnterior = tiempo;
-    reportFrame(delta);
-    if (renderPausado) return; // el lanzamiento 3D ocupa la pantalla
+    if (renderPausado) return; // el lanzamiento 3D ocupa la pantalla (y él informa de sus fotogramas)
     if (precompilacion) return; // 26: se mantiene el fotograma anterior mientras se compilan los programas nuevos
     const dtClamped = Math.min(delta, 0.1);
 
@@ -973,6 +972,8 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       }
     );
     renderer.render(scene, camera);
+    // 27: resolución dinámica con el intervalo y el tiempo de CPU de este fotograma (solo de los que se dibujan).
+    reportFrame(delta, { cpu: (performance.now() - inicioCpu) / 1000 });
   }
 
   window.addEventListener('resize', ajustarTamano);
