@@ -112,7 +112,6 @@ const PROFILES = Object.freeze(buildProfiles());
 const BY_ID = new Map(PROFILES.map(p => [p.id, p]));
 
 export const listBodyProfiles = () => PROFILES;
-export const hasBodyProfile = id => BY_ID.has(String(id));
 export function getBodyProfile(id) {
   const profile = BY_ID.get(String(id));
   if (!profile) throw new RangeError(`Cuerpo desconocido: ${id}.`);
@@ -142,7 +141,6 @@ export function landingCapability(profileOrId) {
     reason: `Descenso propulsado en vacío justificado: ${p.atmosphere.note} Modelo de un solo cuerpo; sin rotación del cuerpo ni perturbaciones de terceros cuerpos.`,
     missing: p.rotation ? [] : ['rotación del cuerpo'], vacuumJustification: p.atmosphere.note };
 }
-export const landingDestinations = () => PROFILES.filter(p => landingCapability(p).state !== CAPABILITY.notApplicable);
 
 // ---- Contratos de marcos y tiempo (documentales y verificables) ----------------------------------------------------------
 export const FRAME_CONTRACTS = Object.freeze({

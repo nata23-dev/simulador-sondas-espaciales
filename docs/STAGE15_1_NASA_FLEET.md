@@ -81,7 +81,7 @@ Las cifras proceden de `computeIntegratedMission`, con las mismas efemérides qu
 - **Compilación:** `npm run build` correcto, también con `GITHUB_PAGES=true` y el prefijo `/simulador-sondas-espaciales/`. `git diff --check` limpio.
 - **Navegador** (`scripts/verify-stage15_1-browser.mjs`, Chrome sin interfaz con SwiftShader, evidencia en `evidence/stage15_1/`):
   - las cuatro sondas se muestran con el modelo de NASA (estado `nasa`);
-  - el decodificador Draco se descarga desde `libs/draco/gltf/` una vez por carga de página (HTTP 200);
+  - el decodificador Draco se descarga desde `libs/draco/gltf/` una vez por carga de página (HTTP 200); *(etapa 18: ahora desde `assets/`, la copia de three)*;
   - no queda ningún control de personalización;
   - la sonda activa se conserva al recargar;
   - el cambio de sonda desde la cabecera invalida el cálculo;
@@ -95,7 +95,7 @@ Las cifras proceden de `computeIntegratedMission`, con las mismas efemérides qu
 - **Modelo 3D y cálculos:** el modelo es solo presentación. El centro de masas, las masas por subsistema y los consumos sin fuente siguen siendo estimaciones del catálogo, y la malla no los corrige. Sobre el modelo de NASA no se dibujan el marcador del centro de masas ni las piezas seleccionadas, que sí aparecían en la reconstrucción.
 - **Juno:** su diámetro de antena no tiene fuente contrastada en el catálogo. El modelo mide 2,38 m y el catálogo indica 2,5 m, marcado como «desconocido».
 - **Voyager:** el modelo representa una nave genérica de la serie. La flota agrupa Voyager 1 y 2 en una sola configuración.
-- **Compilación:** `DRACOLoader` hace que Vite copie en `dist/assets` otro juego de decodificadores, de unos 1,3 MB, que no se descarga en tiempo de ejecución (ver `public/libs/draco/README.md`).
+- **Compilación:** `DRACOLoader` hace que Vite copie en `dist/assets` otro juego de decodificadores, de unos 1,3 MB, que no se descarga en tiempo de ejecución (ver `public/libs/draco/README.md`). *Etapa 18: resuelto; la copia de `public/libs/draco` se retiró y se usa solo la de three ([STAGE18_FAST_LOADING.md](STAGE18_FAST_LOADING.md)).*
 - **Sin descensos:** con los dos módulos retirados, ninguna misión de la interfaz llega a la superficie. Es coherente con las cuatro sondas, que no eran módulos de aterrizaje.
 - **Lanzador:** el lanzador ilustrativo de dos etapas de «Lanzamiento» se mantiene porque no se pidió retirarlo. Es un cohete ilustrativo, no uno real.
 - **Revisiones pendientes:** auditoría de Gemini, revisión con GPU real y publicación. Commits y push solo con autorización.

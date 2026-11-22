@@ -1,4 +1,4 @@
-import './experimental-laboratory.css';
+// 18: su hoja (experimental-laboratory.css) la importa main.js para conservar el orden de la cascada.
 import { getComponent } from '../lab/ComponentCatalog.js';
 import { historicalDesign } from '../lab/ProbeDesign.js';
 import { calculateEngineering, ENGINEERING_STATUS } from '../lab/ProbeEngineering.js';
@@ -206,6 +206,8 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   });
   center = createMissionControlCenter($('#lab-mission-center'), () => go('plan', tabByStage.plan), {
     onImmersive: value => { lab.dataset.immersive = String(value); },
+    // 24: las pestañas de la hoja inferior (móvil, vista inmersiva) cambian la pestaña del laboratorio.
+    onPane: id => go('play', id),
     // 17.1: con una misión heliocéntrica, «3 · Reproducir» deja ver el Sistema Solar principal en el área de la escena.
     sceneView: missionScene,
     onSceneMode: mode => { if (mode) app.dataset.labScene = mode; else delete app.dataset.labScene; },
@@ -788,7 +790,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   }
   setRail(readStored(RAIL_KEY, window.innerWidth >= 1200 ? 'open' : 'closed') === 'open');
   $('#lab-rail-toggle').addEventListener('click', () => { const open = lab.dataset.rail !== 'open'; setRail(open); store(RAIL_KEY, open ? 'open' : 'closed'); });
-  const onKey = event => { if (event.key === 'Escape' && lab.dataset.immersive === 'true') center.setImmersive(false); };
+  const onKey = event => { if (!event.defaultPrevented && event.key === 'Escape' && lab.dataset.immersive === 'true') center.setImmersive(false); };
   document.addEventListener('keydown', onKey);
 
   // 16: misión guiada. Solo usa los mismos controles y estados que el usuario.

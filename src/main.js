@@ -3,7 +3,10 @@ import { crearWorkspaceLayout } from './ui/WorkspaceLayout.js';
 
 import { cargarEfemerides, obtenerEstados } from './astronomy/Ephemerides.js';
 import { createSolarSystem } from './graphics/SolarSystem.js';
-import { bindQualityControls } from './graphics/QualityProfile.js';
+import { bindQualityControls, getQualityState, equipoEscritorio } from './graphics/QualityProfile.js';
+import { crearMedidorFps } from './ui/FpsMeter.js';
+import { precargarEnReposo, conexionLimitada } from './graphics/DeferredTextures.js';
+import { claveTexturaPlaneta } from './graphics/PlanetFactory.js';
 import { MODOS_ESCALA_VISUAL } from './graphics/ScaleModeConfig.js';
 import { crearPanelInfoPlaneta } from './ui/PlanetInfoPanel.js';
 import { crearPanelInfoLuna } from './ui/MoonInfoPanel.js';
@@ -12,7 +15,9 @@ import { crearSelectorPlanetas } from './ui/PlanetSelector.js';
 import { crearControlesTemporales } from './ui/TimelineControls.js';
 import { crearControlesVisualizacion } from './ui/VisualizationControls.js';
 import { crearControlesHUD } from './ui/HudControls.js';
-import { createExperimentalLaboratory } from './ui/ExperimentalLaboratory.js';
+// 18: la hoja del laboratorio se carga aquí, en su lugar de siempre en la cascada (antes de theme.css y lab-shell.css), aunque el
+// código del laboratorio se descargue al entrar en él: si llegara después, sus reglas pisarían las de capas posteriores.
+import './ui/experimental-laboratory.css';
 import { createSolarSystemMissionView } from './integration/SolarSystemMissionView.js';
 import { createMissionProbeSceneModel } from './lab/MissionProbeSceneModel.js';
 import { createInterplanetaryEphemeris } from './science/InterplanetaryEphemeris.js';
@@ -48,8 +53,8 @@ import {
 import { crearModalBienvenidaHistorica } from './ui/HistoricalWelcomeModal.js';
 import { crearRecorridoHistoricoGuiado, HITOS_RECORRIDO_GUIADO } from './ui/HistoricalGuidedTour.js';
 import { getVoyagerPhotoById } from './science/VoyagerPhotoCatalog.js';
-import { crearSuperficieLanzamientoCinematografico } from './ui/LaunchCinematicOverlay.js';
-import { METADATOS_HISTORICOS_LANZAMIENTO } from './graphics/LaunchCinematicController.js';
+import { crearSuperficieLanzamientoCinematografico, metadatosLanzamiento } from './ui/LaunchCinematicOverlay.js';
+import { LANZAMIENTOS_VOYAGER, LC41, instanteUtcMs, puntoSubsolar } from './science/VoyagerLaunchProfile.js';
 // 14: capa visual común (tokens, componentes y movimiento). Se importa después de los demás estilos para prevalecer.
 import './ui/theme.css';
 // 17: laboratorio en tres etapas (panel lateral, pestañas y Centro de Misión con panel por pestañas); después de theme.css.
@@ -117,7 +122,8 @@ function actualizarPanel(fecha) {
     datosAstronomicos?.metadatos,
     fecha
   );
-  let estadoPanelLuna = estadosLunas[lunaSeleccionada];
+  // 23: con la misión del laboratorio en la escena, el satélite está en la época de la misión, no en la de exploración.
+  let estadoPanelLuna = vistaMisionLaboratorio?.isControlling() ? vistaMisionLaboratorio.moonInfoState(lunaSeleccionada) : estadosLunas[lunaSeleccionada];
   if (modoOperacion === 'historico' && lunaSeleccionada && ultimoSnapshotHistorico) {
     const lunar = ultimoSnapshotHistorico.moons?.[lunaSeleccionada]?.state;
     const parent = ultimoSnapshotHistorico.planets?.[MOONS[lunaSeleccionada].parent]?.state;
@@ -658,6 +664,7 @@ async function cambiarModoOperacion(nuevoModo) {
     const dockHist = document.querySelector('#hist-mission-dock');
     if (dockHist) dockHist.hidden = false;
 
+    simulador.precargarModelosHistoricos();
     try {
       await inicializarModoHistoricoSiNecesario();
       if (modoOperacion !== 'historico') return;
@@ -683,8 +690,7 @@ async function cambiarModoOperacion(nuevoModo) {
     ++consultaHistToken;
     simulador.ocultarModoHistoricoEscena();
     recorridoGuiado?.mostrar(false);
-    overlayLanzamiento?.mostrar(false);
-    simulador.cancelarLanzamiento();
+    cerrarLanzamiento3D();
     const dockHist = document.querySelector('#hist-mission-dock');
     if (dockHist) dockHist.hidden = true;
     const fpIndicator = document.querySelector('#fp-scene-indicator');
@@ -858,8 +864,25 @@ function continuarRecorridoHistorico() {
   actualizarOrientacionHistorica();
 }
 
-function alCompletarLanzamiento({ misionId }) {
+// 25: lanzamiento 3D en su propio módulo (carga diferida): acercamiento a la Tierra en la escena principal, fundido a la escena de
+// Cabo Cañaveral y, al terminar, vuelta al Sistema Solar en el instante del lanzamiento.
+let lanzamiento3D = null;
+let lanzamientoEnCurso = false;
+let misionLanzamiento = null;
+let solicitudLanzamiento = 0;
+
+function cerrarLanzamiento3D() {
+  solicitudLanzamiento += 1;
+  lanzamiento3D?.destruir();
+  lanzamiento3D = null;
+  lanzamientoEnCurso = false;
+  overlayLanzamiento?.establecerCargando(null);
   overlayLanzamiento?.mostrar(false);
+  simulador.terminarAproximacionTierra();
+}
+
+function alCompletarLanzamiento({ misionId }) {
+  cerrarLanzamiento3D();
   if (!motorHistorico) return;
   const launchJd = HISTORICAL_MISSIONS_CATALOG[misionId].launchJdTdb;
   motorHistorico.setTimeJdTdb(launchJd);
@@ -870,12 +893,43 @@ function alCompletarLanzamiento({ misionId }) {
   }).catch(console.error);
 }
 
-function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
-  if (modoOperacion !== 'historico') return;
+async function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
+  if (modoOperacion !== 'historico' || lanzamientoEnCurso) return;
+  lanzamientoEnCurso = true;
+  misionLanzamiento = misionId;
+  const solicitud = ++solicitudLanzamiento;
   detenerBucleHistorico();
   recorridoGuiado?.mostrar(false);
-  overlayLanzamiento?.mostrar(true, METADATOS_HISTORICOS_LANZAMIENTO[misionId]);
-  simulador.iniciarLanzamientoCinematografico(misionId);
+  overlayLanzamiento?.mostrar(true, metadatosLanzamiento(misionId));
+  overlayLanzamiento?.establecerCargando('Acercándose a la Tierra…');
+  const fovInicial = simulador.obtenerFovCamara();
+  try {
+    const [modulo] = await Promise.all([
+      import('./launch/VoyagerLaunchDirector.js'),
+      simulador.aproximarATierraParaLanzamiento({ duracionS: 3.2, subsolar: puntoSubsolar(instanteUtcMs(LANZAMIENTOS_VOYAGER[misionId], -24)), sitio: LC41 })
+    ]);
+    if (solicitud !== solicitudLanzamiento) return;
+    overlayLanzamiento?.establecerCargando('Preparando Cabo Cañaveral, 1977…');
+    lanzamiento3D = modulo.crearLanzamientoVoyager3D({
+      contenedor: document.querySelector('.scene-panel'),
+      misionId,
+      calidad: getQualityState().profile,
+      escritorio: equipoEscritorio(),
+      baseUrl: import.meta.env.BASE_URL,
+      fovInicial,
+      reducirMovimiento: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
+      alCambiar: estado => overlayLanzamiento?.actualizar(estado),
+      alTerminar: datos => alCompletarLanzamiento(datos)
+    });
+    overlayLanzamiento?.configurarLinea(lanzamiento3D.linea.eventos, lanzamiento3D.linea.duracion);
+    await lanzamiento3D.listo;
+    if (solicitud !== solicitudLanzamiento) return;
+    overlayLanzamiento?.establecerCargando(null);
+    simulador.establecerRenderPausado(true);
+  } catch (error) {
+    console.error('No se pudo abrir el lanzamiento 3D:', error);
+    if (solicitud === solicitudLanzamiento) cerrarLanzamiento3D();
+  }
 }
 
 function ejecutarHitoGuiado(hito) {
@@ -943,12 +997,6 @@ const simulador = createSolarSystem(
       const m = HISTORICAL_MISSIONS_CATALOG[idSondaHist];
       hud.actualizarSeleccionSonda(true, m?.name ?? idSondaHist);
       document.dispatchEvent(new CustomEvent('sim:object-selected', { detail: { id: idSondaHist } }));
-    },
-    alFinalizarLanzamiento: datos => {
-      alCompletarLanzamiento(datos);
-    },
-    alCambiarFaseLanzamiento: datos => {
-      overlayLanzamiento?.actualizarFase(datos);
     },
     obtenerComparadorActivo: () => comparadorAbierto
   }
@@ -1331,10 +1379,18 @@ const controlesHistoricos = crearControlesModoHistorico({
 });
 
 overlayLanzamiento = crearSuperficieLanzamientoCinematografico({
-  alPausar: () => simulador.pausarLanzamiento(),
-  alReanudar: () => simulador.reanudarLanzamiento(),
-  alSaltar: () => simulador.saltarLanzamiento(),
-  alReiniciar: () => simulador.reiniciarLanzamiento()
+  alPausar: () => lanzamiento3D?.alternarPausa(),
+  alSiguiente: () => lanzamiento3D?.siguienteEvento(),
+  alAnterior: () => lanzamiento3D?.eventoAnterior(),
+  alVelocidad: k => lanzamiento3D?.establecerVelocidad(k),
+  alReiniciar: () => lanzamiento3D?.reiniciar(),
+  alIrAEvento: id => lanzamiento3D?.irAEvento(id),
+  // Durante el acercamiento todavía no hay escena: se vuelve directamente al instante del lanzamiento.
+  alSaltar: () => (lanzamiento3D ? lanzamiento3D.saltar() : lanzamientoEnCurso && alCompletarLanzamiento({ misionId: misionLanzamiento }))
+});
+document.addEventListener('keydown', ev => {
+  if (!overlayLanzamiento?.esVisible() || ev.defaultPrevented) return;
+  if (ev.key === 'Escape') { ev.preventDefault(); overlayLanzamiento.overlay.querySelector('#launch-skip-btn').click(); }
 });
 
 modalBienvenida = crearModalBienvenidaHistorica({
@@ -1564,6 +1620,7 @@ simulador.alCambiarModoEscala(() => {
 
 crearControlesVisualizacion(simulador);
 bindQualityControls(document.querySelector('#quality-controls')); // 15: perfiles de calidad gráfica (solo presentación)
+crearMedidorFps({ casilla: document.querySelector('#show-fps') }); // 26: contador de FPS opcional (también ?fps=1)
 botonReintentar.addEventListener('click', iniciar);
 
 async function iniciar() {
@@ -1651,10 +1708,12 @@ window.__SIMULADOR_DIAGNOSTICO__ = Object.freeze({
   // 17.1: estado de la reproducción de la misión del laboratorio en el Sistema Solar principal y lo que dibuja la escena.
   obtenerEstadoMisionEscenaPrincipal: () => vistaMisionLaboratorio?.getState() ?? null,
   obtenerDiagnosticoEscena: () => simulador.obtenerDiagnosticoEscena(),
-  obtenerEstadoLanzamiento: () => ({
-    activo: simulador.estaEnLanzamiento(),
-    fase: simulador.obtenerFaseLanzamiento?.()
-  }),
+  obtenerEstadoLanzamiento: () => ({ activo: lanzamientoEnCurso, cargado: Boolean(lanzamiento3D), ...(lanzamiento3D?.estado() ?? {}) }),
+  // 25: saltar a un instante de misión (s desde la ignición de los motores sólidos) y pausar, para revisiones y capturas.
+  irALanzamiento: t => lanzamiento3D?.irAMision(t),
+  interiorLanzamiento: () => lanzamiento3D?.interno ?? null,
+  pausarLanzamiento: () => lanzamiento3D?.pausar(),
+  reanudarLanzamiento: () => lanzamiento3D?.reanudar(),
   obtenerEstadoRecorridoGuiado: () => ({
     activo: recorridoGuiado?.esVisible() ?? false,
     hito: recorridoGuiado?.obtenerHitoActual() ?? null
@@ -1685,13 +1744,38 @@ crearWorkspaceLayout({
     return true;
   }
 });
-const laboratorioExperimental = createExperimentalLaboratory({ missionScene: vistaMisionLaboratorio });
 // 14: mapa de áreas en la cabecera (solo navegación).
 const navegadorAreas = createAppNavigator();
 // 14.1: búsqueda global, portada de misiones destacadas y presentación de formularios del laboratorio (solo interfaz).
 const paletaBusqueda = createCommandPalette({ navigator: navegadorAreas });
 const misionesDestacadas = createFeaturedMissions({ navigator: navegadorAreas });
-const mejorasLaboratorio = createLabFormEnhancer();
-if (import.meta.hot) import.meta.hot.dispose(() => { mejorasLaboratorio.dispose(); misionesDestacadas.dispose(); paletaBusqueda.dispose(); navegadorAreas.dispose(); laboratorioExperimental.dispose(); });
+// 18: el laboratorio (≈ 1 MB de código, su CSS y un segundo contexto WebGL) se carga la primera vez que se entra en él.
+// Mientras llega, la última petición de navegación («lab:navigate») se retiene y se repite al crearlo.
+let laboratorioExperimental = null, mejorasLaboratorio = null, promesaLaboratorio = null, navegacionLaboratorioPendiente = null;
+const retenerNavegacionLaboratorio = event => { if (!laboratorioExperimental) { navegacionLaboratorioPendiente = event.detail; event.stopImmediatePropagation(); } };
+document.addEventListener('lab:navigate', retenerNavegacionLaboratorio, true);
+function cargarLaboratorio() {
+  promesaLaboratorio ??= import('./ui/ExperimentalLaboratory.js').then(({ createExperimentalLaboratory }) => {
+    laboratorioExperimental = createExperimentalLaboratory({ missionScene: vistaMisionLaboratorio });
+    mejorasLaboratorio = createLabFormEnhancer();
+    navegadorAreas.attachLab();
+    document.removeEventListener('lab:navigate', retenerNavegacionLaboratorio, true);
+    const pendiente = navegacionLaboratorioPendiente; navegacionLaboratorioPendiente = null;
+    if (pendiente) document.dispatchEvent(new CustomEvent('lab:navigate', { detail: pendiente }));
+    return laboratorioExperimental;
+  }).catch(error => {
+    promesaLaboratorio = null;
+    console.error('No se pudo cargar el laboratorio:', error);
+    estadoDatos.textContent = `No se pudo cargar el laboratorio (${error.message}). Comprueba la conexión y vuelve a entrar.`;
+  });
+  return promesaLaboratorio;
+}
+const observadorModoLaboratorio = new MutationObserver(() => { if (document.querySelector('#app')?.dataset.appMode === 'experimental') cargarLaboratorio(); });
+observadorModoLaboratorio.observe(document.querySelector('#app'), { attributes: true, attributeFilter: ['data-app-mode'] });
+if (document.querySelector('#app')?.dataset.appMode === 'experimental') cargarLaboratorio();
+if (import.meta.hot) import.meta.hot.dispose(() => { observadorModoLaboratorio.disconnect(); mejorasLaboratorio?.dispose(); misionesDestacadas.dispose(); paletaBusqueda.dispose(); navegadorAreas.dispose(); laboratorioExperimental?.dispose(); });
 actualizarOrientacionHistorica();
 iniciar();
+// 18: las texturas se piden al verse cada cuerpo; la Tierra (destino habitual y escenario del lanzamiento) se adelanta cuando el
+// navegador queda libre, salvo con «ahorro de datos» o conexión lenta.
+if (!conexionLimitada()) precargarEnReposo([claveTexturaPlaneta('Tierra')]);

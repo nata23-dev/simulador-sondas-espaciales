@@ -3,10 +3,11 @@
 // Los archivos se sirven sin modificar desde public/models (procedencia, commit y SHA-256 en public/models/nasa/README.md).
 // Solo son presentación: masas, potencia, propulsión y centro de masas salen del catálogo de herencia (HeritageCatalog.js),
 // nunca de la malla. Cassini, Dawn y Juno usan compresión Draco obligatoria (KHR_draco_mesh_compression); el decodificador
-// es el que trae three 0.186.1, copiado sin cambios en public/libs/draco/gltf/.
+// es el que trae three 0.186.1 (DRACO_GLTF_CONFIG: Vite lo publica una sola vez, con su huella en el nombre). 18: antes había
+// además una copia en public/libs/draco/gltf/, retirada.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { DRACOLoader, DRACO_GLTF_CONFIG } from 'three/addons/loaders/DRACOLoader.js';
 
 const NASA_REPOSITORY = 'https://github.com/nasa/NASA-3D-Resources';
 const USAGE_GUIDELINES = 'https://www.nasa.gov/nasa-brand-center/images-and-media';
@@ -61,7 +62,7 @@ let gltfLoader = null;
 function loader() {
   if (gltfLoader) return gltfLoader;
   const draco = new DRACOLoader();
-  draco.setDecoderPath(`${baseUrl()}libs/draco/gltf/`);
+  draco.setDecoderPath(DRACO_GLTF_CONFIG);
   gltfLoader = new GLTFLoader().setDRACOLoader(draco);
   return gltfLoader;
 }

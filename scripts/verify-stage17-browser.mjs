@@ -85,7 +85,15 @@ async function session(width, height, prefix, fn) {
     },
     async lab() { await h.area('hangar'); await page.waitForFunction(() => !document.querySelector('#experimental-lab').hidden, null, { timeout: 30000 }); },
     async stage(id) { await page.click(`[data-lab-stage="${id}"]`); await h.wait(700); },
-    async tab(id) { await page.click(`#lab-tabs [data-lab-tab="${id}"]`); await h.wait(700); },
+    async tab(id) {
+      // 24: en pantallas estrechas el Centro de Misión entra en vista inmersiva y sus pestañas están en la hoja inferior.
+      const sheet = await page.evaluate(pane => document.querySelector('#experimental-lab')?.dataset.immersive === 'true' && Boolean(document.querySelector(`[data-sheet-pane="${pane}"]`)), id);
+      if (sheet) {
+        if (await page.evaluate(() => document.querySelector('#lab-mission-center').dataset.sheet !== 'open')) await page.click('[data-mc-panel="sheet"]');
+        await page.click(`[data-sheet-pane="${id}"]`); await h.wait(700); return;
+      }
+      await page.click(`#lab-tabs [data-lab-tab="${id}"]`); await h.wait(700);
+    },
     async probe(id) { await page.selectOption('#lab-ctx-probe', id); await h.wait(600); },
     async model(state = ['nasa', 'procedural', 'esquema'], timeout = 90000) {
       await page.waitForFunction(states => states.includes(document.querySelector('#lab-assembly-status')?.dataset.state), state, { timeout }); await h.wait(500);
@@ -409,7 +417,14 @@ try {
         res.offscreen.play = await h.offscreen(); res.clipped.play = await h.clipped(); res.doc.play = await h.docOverflow();
         res.center = await h.center(); res.end = await h.labState();
         await h.tab('telemetry'); await h.shot('05_etapa3_telemetria');
-        if (await page.locator('[data-mc-panel="immersive"]').isVisible()) {
+        // 24: en pantallas estrechas la reproducción ya empieza en vista inmersiva (con la hoja inferior abierta tras elegir la pestaña).
+        res.autoImmersive = (await h.labState()).immersive === 'true';
+        if (res.autoImmersive) {
+          await page.keyboard.press('Escape'); await h.wait(500); await h.shot('06_inmersiva');
+          res.immersive = { lab: (await h.labState()).immersive, offscreen: await h.offscreen() };
+          await page.click('[data-mc-panel="exit-immersive"]'); await h.wait(500);
+          res.afterExit = (await h.labState()).immersive;
+        } else if (await page.locator('[data-mc-panel="immersive"]').isVisible()) {
           await page.click('[data-mc-panel="immersive"]'); await h.wait(1200); await h.shot('06_inmersiva');
           res.immersive = { lab: (await h.labState()).immersive, offscreen: await h.offscreen() };
           await page.click('[data-mc-panel="exit-immersive"]').catch(() => page.keyboard.press('Escape')); await h.wait(500);
@@ -498,7 +513,8 @@ try {
           return { name: (el.getAttribute('aria-label') || el.textContent || el.id || el.tagName).trim().replace(/\s+/g, ' ').slice(0, 48),
             visible: r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth,
             // Anillo de foco: contorno o sombra exterior del tema (los campos del laboratorio usan sombra en lugar de contorno).
-            ring: el.matches(':focus-visible') && ((cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0) || cs.boxShadow !== 'none'),
+            // En la parada del botón del calendario de un campo de fecha, Chrome solo marca :focus-within en el campo (etapa 24).
+            ring: (el.matches(':focus-visible') || el.matches('input:is([type="date"],[type="datetime-local"]):focus-within')) && ((cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0) || cs.boxShadow !== 'none'),
             style: `${el.tagName.toLowerCase()}${el.type ? `[${el.type}]` : ''} fv=${el.matches(':focus-visible')} outline=${cs.outlineStyle} ${cs.outlineWidth} shadow=${cs.boxShadow.slice(0, 40)}` };
         }));
       }
@@ -542,7 +558,7 @@ try {
       const diag = () => page.evaluate(() => { const d = window.__SIMULADOR_DIAGNOSTICO__;
         return { mission: d.obtenerEstadoMisionEscenaPrincipal(), scene: d.obtenerDiagnosticoEscena(), mode: d.obtenerModoOperacion(), labScene: document.querySelector('#app').dataset.labScene ?? null,
           labView: document.querySelector('#app').dataset.labView ?? null,
-          mainCanvasVisible: getComputedStyle(document.querySelector('#solar-system')).visibility, localCanvasVisible: getComputedStyle(document.querySelector('#mc-canvas')).visibility,
+          mainCanvasVisible: getComputedStyle(document.querySelector('#solar-system')).visibility, localCanvasVisible: document.querySelector('#mc-canvas') ? getComputedStyle(document.querySelector('#mc-canvas')).visibility : null, // 18: el laboratorio se crea al entrar en él
           footer: document.querySelector('#mc-foot')?.textContent?.trim() ?? null,
           hitAtStage: (() => { const s = document.querySelector('#lab-mission-center .mc-stage')?.getBoundingClientRect(); if (!s || !s.width) return null;
             const el = document.elementFromPoint(s.left + s.width / 2, s.top + s.height * 0.45); return el ? (el.closest('#solar-system') ? 'escena principal' : el.id || el.className || el.tagName) : null; })() }; });

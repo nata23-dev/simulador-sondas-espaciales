@@ -30,6 +30,6 @@ En los cuatro modelos el eje +Y es el de la antena de alta ganancia. Esa es la c
 
 ## Detalles técnicos
 
-- **Compresión:** Cassini, Dawn y Juno exigen `KHR_draco_mesh_compression` e incluyen texturas WebP con alternativa PNG (`EXT_texture_webp`). El decodificador Draco de `public/libs/draco/gltf/` es una copia literal de `three@0.186.1/examples/jsm/libs/draco/gltf/` (Draco, de Google, con licencia Apache 2.0). No se añadió ninguna dependencia.
+- **Compresión:** Cassini, Dawn y Juno exigen `KHR_draco_mesh_compression` e incluyen texturas WebP con alternativa PNG (`EXT_texture_webp`). Desde la etapa 18 el decodificador Draco es el que incluye `three@0.186.1` (`examples/jsm/libs/draco/gltf/`, Draco de Google, licencia Apache 2.0), referenciado con `DRACO_GLTF_CONFIG`; Vite lo publica una sola vez en `assets/`. La copia que había en `public/libs/draco/` (idéntica) se retiró. No se añadió ninguna dependencia.
 - **Cubo auxiliar:** Cassini y Dawn traen un cubo de exportación de Blender de 1 m (nodo `_root`, sin material). Es el padre de toda la nave, así que se oculta su material y no el nodo, igual que se hacía ya con `Voyager.glb`.
 - **Respaldo:** si un modelo no se puede descargar, el Hangar y el Centro de Misión muestran la reconstrucción procedimental de la etapa 15 y lo indican.

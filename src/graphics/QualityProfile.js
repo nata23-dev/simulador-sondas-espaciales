@@ -24,6 +24,12 @@ export function autoInitialCap({ coarsePointer = false, deviceMemoryGb = null, c
   return constrained ? 1.5 : 2;
 }
 
+/** 26: ¿equipo de escritorio? (mismo criterio que el tope inicial del modo automático). Decide, por ejemplo, la textura del globo
+ * del lanzamiento 3D en calidad automática. */
+export function equipoEscritorio() {
+  return autoInitialCap(deviceInfo()) === 2;
+}
+
 /** Seguimiento de FPS por ventanas: devuelve true cuando conviene bajar un escalón (lógica pura, probada). */
 export function createFrameMonitor({ windowSeconds = WINDOW_SECONDS, slowFps = SLOW_FPS, slowWindows = SLOW_WINDOWS } = {}) {
   let elapsed = 0, frames = 0, slowRun = 0;

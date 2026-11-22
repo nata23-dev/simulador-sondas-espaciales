@@ -12,7 +12,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'evidence/voyager-stage10/io-texture-audit.json'
 SOURCES = {
-    'voyagerAOriginal': 'public/textures/moons/io-voyager-usgs.jpg',
+    'voyagerAOriginal': 'source-assets/textures/moons/io-voyager-usgs.jpg',
     'voyagerAStage07B': 'public/textures/moons/io-voyager-usgs-seam-feathered.png',
     'galileoColorB': 'evidence/voyager-stage10/source/Jupiter - Io (B).jpg',
 }

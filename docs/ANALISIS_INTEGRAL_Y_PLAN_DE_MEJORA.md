@@ -2,7 +2,7 @@
 
 **Fecha:** 20-11-2026. **Rama:** `revision/modo-historico-voyager`, con la etapa 17.1 y sus correcciones sin commit.
 
-Este documento es un análisis, no una aprobación: la auditoría independiente sigue siendo de Gemini. El plan del final es una **propuesta** y nada de él se ha empezado.
+Este documento es un análisis, no una aprobación: la auditoría independiente sigue siendo de Gemini. El plan del final era una **propuesta**. **Actualización del 21-11-2026:** el usuario lo aprobó y las etapas 18–25 y las tareas continuas están implementadas (estado al final del §8).
 
 ## 1. Qué hace el simulador
 
@@ -55,12 +55,12 @@ Base del código: unas 36 000 líneas en `src/` (Vite + Three.js, sin dependenci
 
 Estos puntos cambian el modelo físico, los datos o el alcance, así que requieren tu decisión y, después, validación de Gemini.
 
-1. **El periapsis de captura se desplaza en encendidos largos.** El cálculo lo hace bien y ahora lo dice, pero no lo compensa: un planificador real apuntaría la llegada a otro periapsis para acabar en la órbita pedida. Afecta a A1 (3000 → 315 km) y a C1/C2 (4200 → 3735 km en Júpiter).
-2. **La salida es una condición inicial, no un lanzamiento.** La misión empieza en la Tierra con la v∞ ya aplicada («la inyección la realiza un lanzador externo no modelado»). El lanzamiento de 12E existe, pero no está enlazado.
-3. **El crucero es una cónica pura**, sin correcciones de trayectoria ni perturbaciones de otros planetas. Se declara, pero no se cuantifica el error frente a un modelo de n cuerpos.
-4. **Las misiones con satélite (C1/C2 → Europa) y las geocéntricas** siguen en la escena local del Centro de Misión.
+1. **El periapsis de captura se desplaza en encendidos largos.** El cálculo lo hace bien y ahora lo dice, pero no lo compensa: un planificador real apuntaría la llegada a otro periapsis para acabar en la órbita pedida. Afecta a A1 (3000 → 315 km) y a C1/C2 (4200 → 3735 km en Júpiter). **Atendido en la etapa 20** ([captura apuntada](STAGE20_AIMED_CAPTURE.md)): la órbita final de A1 queda en 3 000 km y la de C1 en 4 200 km; revisión independiente pendiente.
+2. **La salida es una condición inicial, no un lanzamiento.** La misión empieza en la Tierra con la v∞ ya aplicada («la inyección la realiza un lanzador externo no modelado»). El lanzamiento de 12E existe, pero no está enlazado. **Atendido en la etapa 21** ([lanzamiento → inyección](STAGE21_LAUNCH_INJECTION.md)): con «Empezar en la plataforma», la misión despega del LC-41, espera en una órbita de aparcamiento y la Centaur D-1T la inyecta, con la trayectoria continua hasta el crucero. Sigue siendo opcional, con un lanzador ilustrativo; el C3 del empalme en la SOI queda ≈ 0,86 km²/s² por debajo del convencional. Revisión independiente pendiente.
+3. **El crucero es una cónica pura**, sin correcciones de trayectoria ni perturbaciones de otros planetas. Se declara, pero no se cuantifica el error frente a un modelo de n cuerpos. **Atendido en la etapa 22** ([crucero de n cuerpos](STAGE22_NBODY_CRUISE.md)): la comparación cuantifica la perturbación de los otros planetas (29–76 mil km, TCM-1 < 1 m/s) y la aproximación de las SOI (Marte ≈ 14 mil km, Júpiter ≈ 5,7 millones de km y, con la plataforma, la Tierra ≈ 13 millones de km). La misión sigue siendo de cónicas; revisión independiente pendiente.
+4. **Las misiones con satélite (C1/C2 → Europa) y las geocéntricas** siguen en la escena local del Centro de Misión. **Atendido en la etapa 23** para C1/C2 ([satélites en la escena principal](STAGE23_MAIN_SCENE_MOONS.md)): Ío, Europa, Ganímedes y Calisto se dibujan con la ventana de Horizons del cálculo y el sobrevuelo de Europa se reproduce en el Sistema Solar; las geocéntricas y los descensos siguen en la escena local.
 5. **Trayectoria Voyager 1977–2026**: los cortes SPK siguen sin fuente homogénea (documentado en las etapas 08–09).
-6. **Pendientes de etapas anteriores:** auditorías de 12C, 13 y 14 a 17 (12E, 12F y 12G están aprobadas por Gemini; 17.1, por Claude con observaciones: [informe](STAGE17_1_AUDIT_CLAUDE.md)); campo de fecha sin anillo de foco desde la etapa 17.
+6. **Pendientes de etapas anteriores:** auditorías de 12C, 13 y 14 a 17 (12E, 12F y 12G están aprobadas por Gemini; 17.1, por Claude con observaciones: [informe](STAGE17_1_AUDIT_CLAUDE.md)); campo de fecha sin anillo de foco desde la etapa 17 (**corregido en la etapa 24**).
 
 ## 5. Qué sobra o se pensó para algo que no se usa
 
@@ -113,5 +113,22 @@ Cada bloque es una etapa autorizable por separado: implementación, pruebas, rev
 | **23 · Satélites en la escena principal** | Lunas galileanas de la ventana de la misión en la escena principal para C1/C2 | Europa reproducida en el Sistema Solar | Medio |
 | **24 · Experiencia de uso** | Puntos 1–8 del §7 | Uso más claro y accesible | Bajo |
 | Continuo | Auditorías pendientes (Gemini o Claude); prueba real con NVDA o Narrador; ESLint (solo reglas de errores) en la CI; sustituir las pruebas que solo comprueban texto del código por pruebas de comportamiento (O-03 de la auditoría de 17.1) | Garantías | — |
+
+### Estado de ejecución (21-11-2026)
+
+Todas las etapas las implementó y auditó Claude, con métodos distintos de los de la implementación. Las auditorías no sustituyen la revisión independiente donde hay física nueva.
+
+| Etapa | Estado | Pendiente |
+| --- | --- | --- |
+| 18 | Hecha: arranque de 20,13 MB a 3,87 MB ([detalle](STAGE18_FAST_LOADING.md)) | — |
+| 19 | Hecha; el motor de aterrizaje se conserva ([detalle](STAGE19_CLEANUP.md)) | Aligerar `evidence/` en Git |
+| 20 | Hecha: A1 en 3 000 km, C1 en 4 200 km ([detalle](STAGE20_AIMED_CAPTURE.md)) | Revisión independiente |
+| 21 | Hecha, opcional ([detalle](STAGE21_LAUNCH_INJECTION.md)) | Revisión independiente; decisión sobre el C3 del empalme |
+| 22 | Hecha, en paralelo a la cónica ([detalle](STAGE22_NBODY_CRUISE.md)) | Revisión independiente |
+| 23 | Hecha para C1/C2 ([detalle](STAGE23_MAIN_SCENE_MOONS.md)) | — |
+| 24 | Hecha ([detalle](STAGE24_USER_EXPERIENCE.md)) | Prueba con lector de pantalla real |
+| 25 (petición añadida) | Hecha: lanzamiento 3D de las Voyager desde LC-41 ([detalle](STAGE25_VOYAGER_LAUNCH.md)) | Revisión independiente del perfil científico |
+| 26 (petición del 22-11-2026) | Hecha: rendimiento del lanzamiento 3D y general, contador de FPS ([detalle](STAGE26_PERFORMANCE.md)) | Medir en un equipo modesto real |
+| Continuo | ESLint en la CI y O-03 hechos ([detalle](CONTINUOUS_QUALITY.md)) | NVDA o Narrador; auditorías de Gemini |
 
 Lo que este plan **no** propone: cambiar datos de Horizons, hashes, kernels, fotografías o modelos de NASA; inventar parámetros de sondas; extrapolar efemérides fuera de su cobertura.

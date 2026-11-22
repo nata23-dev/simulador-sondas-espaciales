@@ -124,11 +124,14 @@
 #experimental-lab .lab-doc-card > :not(img) { margin:0 10px; }
 #experimental-lab .lab-doc-card strong { color:var(--text-1); font-size:12.5px; font-weight:500; line-height:1.35; }
 #experimental-lab .lab-doc-card small { color:var(--text-3); font-size:11px; line-height:1.35; }
-#experimental-lab .lab-doc-kind { justify-self:start; margin-top:8px !important; padding:1px 8px; border:1px solid var(--blue-line); border-radius:999px; color:var(--blue); font-size:10px; font-weight:600; letter-spacing:.04em; }
+#experimental-lab .lab-doc-kind { justify-self:start; margin-top:8px; padding:1px 8px; border:1px solid var(--blue-line); border-radius:999px; color:var(--blue); font-size:10px; font-weight:600; letter-spacing:.04em; }
 #experimental-lab .lab-doc-card[data-kind="photo"] .lab-doc-kind, .lab-lightbox .lab-doc-kind { border-color:var(--line-strong); color:var(--text-2); }
 #experimental-lab .lab-doc-recon { border-style:dashed; padding-top:4px; }
 #experimental-lab .lab-doc-recon .lab-doc-kind { border-color:rgba(242,191,107,.4); color:var(--warn); }
-#experimental-lab .lab-doc-missing { display:grid; place-items:center; aspect-ratio:4 / 3; margin:0 !important; color:var(--text-3); font-size:11.5px; background:#0e0e10; }
+#experimental-lab .lab-doc-missing { display:grid; place-items:center; aspect-ratio:4 / 3; margin:0; color:var(--text-3); font-size:11.5px; background:#0e0e10; }
+/* 24: dentro de la tarjeta ganan a `.lab-doc-card > :not(img)` (margen lateral de 10 px) sin !important. */
+#experimental-lab .lab-doc-card > .lab-doc-kind { margin-top:8px; }
+#experimental-lab .lab-doc-card > .lab-doc-missing { margin:0; }
 #experimental-lab .lab-docs-warning { padding:9px 11px; border-left:2px solid var(--warn); background:rgba(242,191,107,.06); }
 
 /* Ingeniería: resumen primero. */
@@ -164,7 +167,7 @@
 #lab-mission-center[data-drawer="hidden"] .mc-drawer { display:none; }
 #experimental-lab .mc-pane[hidden] { display:none; }
 #experimental-lab .mc-drawer .lab-panel-heading { padding:12px 16px 10px; }
-#experimental-lab .mc-drawer .lab-panel-heading h3 { font-size:17px; }
+#experimental-lab .mc-drawer .lab-panel-heading :is(h3, .lab-panel-title) { font-size:17px; }
 #experimental-lab .mc-drawer details { margin:8px 0; }
 #experimental-lab .mc-drawer details > summary { cursor:pointer; min-height:38px; padding:9px 12px; border-radius:var(--r-sm); background:rgba(255,255,255,.03); color:var(--text-1); font-size:13px; }
 #experimental-lab .mc-drawer .lab-metric strong { flex:0 1 auto; min-width:0; overflow-wrap:anywhere; }
@@ -198,6 +201,48 @@
 #experimental-lab[data-immersive="true"] .mc-drawer { display:none; }
 #experimental-lab[data-immersive="true"] .mc-stage { border:0; border-radius:0; }
 #experimental-lab[data-immersive="true"] .mc-exit-immersive { display:inline-flex; align-items:center; flex:none; min-height:32px; padding:5px 12px; border:1px solid var(--line-strong); border-radius:999px; background:transparent; color:var(--text-1); font-size:12px; }
+
+/* ---------- Etapa 24: experiencia de uso del Centro de Misión ---------- */
+/* Marcas agrupadas (varias en el mismo píxel) y barra ampliada alrededor de un grupo. */
+.mc-tick.is-group { width:18px; margin-left:-9px; }
+.mc-tick.is-group::after { width:11px; height:11px; margin:-5.5px 0 0 -5.5px; border:1.5px solid #d6d6dc; background:rgba(12,12,14,.95); box-shadow:none; }
+.mc-tick.is-group::before { content:attr(data-count); position:absolute; left:50%; bottom:calc(50% + 7px); transform:translateX(-50%); color:var(--text-2); font-size:9.5px; font-weight:600; line-height:1; font-variant-numeric:tabular-nums; pointer-events:none; }
+.mc-tick.is-group[aria-current="step"]::after { border-color:var(--gold); background:var(--gold-soft); }
+.mc-track[data-zoom="on"]::before { background:repeating-linear-gradient(90deg,rgba(214,168,92,.38) 0 6px,rgba(214,168,92,.12) 6px 10px); }
+.mc-transport > :is(.mc-zoom-exit, .mc-sheet-toggle) { width:auto; min-width:0; padding:0 11px; border:1px solid var(--line-strong); border-radius:999px; font-size:12px; white-space:nowrap; }
+.mc-transport > .mc-zoom-exit { border-color:var(--gold-line); color:var(--gold-strong); }
+.mc-transport > .mc-zoom-exit[hidden], .mc-transport > .mc-sheet-toggle { display:none; }
+#experimental-lab .mc-sheet-head { display:none; }
+/* Unidades de las distancias derivadas. */
+#experimental-lab .mc-units { display:flex; flex-wrap:wrap; align-items:center; gap:4px; margin:2px 0 4px; }
+#experimental-lab .mc-units > span { margin-right:6px; color:var(--text-3); font-size:10px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; }
+#experimental-lab .mc-units button { min-height:30px; padding:4px 11px; border:1px solid var(--line-soft); border-radius:999px; background:transparent; color:var(--text-2); font-size:12px; }
+#experimental-lab .mc-units button[aria-pressed="true"] { border-color:var(--line-focus); background:rgba(255,255,255,.08); color:var(--text-1); }
+#experimental-lab .mc-units-note { margin:0 0 6px; }
+/* Resultados: órbita final de la captura y ficha de la misión real. */
+#experimental-lab :is(.mc-capture, .mc-real) { margin:14px 0; padding:12px; border:1px solid var(--line-soft); border-radius:var(--r-md); background:rgba(255,255,255,.02); }
+#experimental-lab :is(.mc-capture, .mc-real) h4 { margin:0 0 8px; color:var(--text-1); font-size:13px; font-weight:600; }
+#experimental-lab .mc-capture-plot { display:block; width:100%; max-width:250px; height:auto; margin:0 auto; }
+#experimental-lab .mc-capture-plot ellipse { fill:none; stroke-width:1.6; }
+#experimental-lab .mc-capture-plot .is-achieved { stroke:var(--gold); }
+#experimental-lab .mc-capture-plot .is-target { stroke:var(--text-2); stroke-dasharray:4 4; opacity:.75; }
+#experimental-lab .mc-capture-plot .is-body { fill:var(--body,#cfd3da); }
+#experimental-lab .mc-capture-plot .is-apsis { fill:var(--gold-strong); }
+#experimental-lab .mc-capture-plot text { fill:var(--text-2); font-size:10px; font-weight:600; }
+#experimental-lab .mc-capture-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:4px 14px; margin:6px 0 8px; color:var(--text-2); font-size:11.5px; }
+#experimental-lab .mc-capture-legend span::before { content:""; display:inline-block; width:16px; height:0; margin-right:6px; vertical-align:middle; border-top:2px solid var(--gold); }
+#experimental-lab .mc-capture-legend .is-target::before { border-top:2px dashed var(--text-2); }
+#experimental-lab .mc-capture-legend .is-body::before { width:9px; height:9px; border:0; border-radius:50%; background:var(--body,#cfd3da); }
+#experimental-lab .mc-capture-table td { font-variant-numeric:tabular-nums; }
+#experimental-lab .mc-real { border-left:2px solid var(--gold-line); }
+#experimental-lab .mc-real-summary { margin:0 0 8px; color:var(--text-1); font-size:12.5px; line-height:1.5; }
+#experimental-lab .mc-real-name { margin:10px 0 4px; color:var(--text-2); font-size:12px; }
+#experimental-lab .mc-real-name strong { color:var(--text-1); font-weight:600; }
+#experimental-lab .mc-real-list { display:grid; gap:3px; margin:0; padding:0; list-style:none; color:var(--text-2); font-size:12px; line-height:1.4; }
+#experimental-lab .mc-real-list time { display:inline-block; min-width:84px; color:var(--gold-strong); font-variant-numeric:tabular-nums; }
+#experimental-lab .mc-real-list li[data-match="true"] { color:var(--text-1); font-weight:500; }
+#experimental-lab .mc-real-source { margin:6px 0 0; color:var(--text-2); font-size:11px; overflow-wrap:anywhere; }
+#experimental-lab .mc-real-source a { color:var(--blue); }
 
 /* ---------- Ventanas: glosario, ampliación de imágenes y ayudas ---------- */
 #experimental-lab .lab-dialog { width:min(720px,calc(100vw - 24px)); max-height:calc(100dvh - 24px); padding:0; overflow:auto; border:1px solid var(--line-strong); border-radius:var(--r-md); background:var(--panel-solid); color:var(--text-1); }
@@ -257,6 +302,18 @@
   #experimental-lab[data-immersive="true"] #lab-mission-center .mc-stage { height:calc(100dvh - var(--lab-top,82px)); }
   #experimental-lab[data-immersive="true"] .mc-layout-toggles { display:none; }
   #experimental-lab .lab-eng-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  /* 24: en la vista inmersiva el panel se abre como hoja inferior sobre la escena (botón «Panel» de la barra de reproducción). */
+  #experimental-lab[data-immersive="true"] .mc-transport > .mc-sheet-toggle { display:inline-flex; align-items:center; }
+  #experimental-lab[data-immersive="true"] #lab-mission-center[data-sheet="open"] .mc-drawer { position:fixed; z-index:45; left:0; right:0; bottom:0; display:flex; flex-direction:column; max-height:min(64dvh,560px); margin:0; padding-bottom:env(safe-area-inset-bottom,0); border:1px solid var(--line-strong); border-bottom:0; border-radius:16px 16px 0 0; background:var(--panel-solid); box-shadow:0 -18px 48px rgba(0,0,0,.6); animation:ui-enter var(--dur) var(--ease) both; }
+  #experimental-lab[data-immersive="true"] #lab-mission-center[data-sheet="open"] .mc-drawer::before { content:""; flex:none; width:40px; height:4px; margin:8px auto 0; border-radius:4px; background:var(--line-strong); }
+  #experimental-lab[data-immersive="true"] #lab-mission-center[data-sheet="open"] .mc-drawer .lab-panel-heading { padding:6px 12px 8px; }
+  #experimental-lab[data-immersive="true"] #lab-mission-center[data-sheet="open"] .mc-drawer .lab-panel-heading > :is(.eyebrow, .lab-panel-title) { display:none; }
+  #experimental-lab[data-immersive="true"] #lab-mission-center[data-sheet="open"] .mc-drawer .lab-panel-scroll { flex:1 1 auto; min-height:0; overflow:auto; overscroll-behavior:contain; padding-bottom:12px; }
+  #experimental-lab[data-immersive="true"] #lab-mission-center[data-sheet="open"] .mc-sheet-head { display:flex; align-items:center; gap:6px; }
+  #experimental-lab .mc-sheet-tabs { display:flex; flex:1 1 auto; gap:4px; min-width:0; overflow-x:auto; scrollbar-width:none; }
+  #experimental-lab .mc-sheet-tabs button { flex:none; min-height:36px; padding:6px 11px; border:1px solid var(--line-soft); border-radius:999px; background:transparent; color:var(--text-2); font-size:12px; }
+  #experimental-lab .mc-sheet-tabs button[aria-pressed="true"] { border-color:var(--gold-line); background:var(--gold-soft); color:var(--gold-strong); }
+  #experimental-lab .mc-sheet-close { flex:none; width:38px; min-width:38px; height:38px; min-height:38px; padding:0; border:1px solid var(--line-soft); border-radius:50%; background:transparent; color:var(--text-1); font-size:20px; line-height:1; }
 }
 @media (max-width:420px) {
   /* Número encima del nombre: los tres pasos caben completos incluso a 320 px. */

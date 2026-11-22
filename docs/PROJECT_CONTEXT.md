@@ -1,6 +1,6 @@
 # Contexto del proyecto
 
-**Corte documental:** 18 de noviembre de 2026. **Rama observada:** `revision/modo-historico-voyager`. Este documento describe el árbol local inspeccionado; no equivale a una publicación ni a una aprobación científica general. Véanse [arquitectura](ARCHITECTURE_MAP.md), [diseño](UI_DESIGN_SYSTEM.md) y [etapas](DEVELOPMENT_ROADMAP.md).
+**Corte documental:** 21 de noviembre de 2026. **Rama observada:** `revision/modo-historico-voyager`. Este documento describe el árbol local inspeccionado; no equivale a una publicación ni a una aprobación científica general. Véanse [arquitectura](ARCHITECTURE_MAP.md), [diseño](UI_DESIGN_SYSTEM.md) y [etapas](DEVELOPMENT_ROADMAP.md).
 
 ## Visión y evolución
 
@@ -61,7 +61,26 @@ Está probada localmente y pendiente de auditoría independiente. **En la 15.1**
 
 **En la 17** ([detalle](STAGE17_LAB_REORGANIZATION.md)) el laboratorio se reorganiza en tres etapas con panel lateral y pestañas (Elegir sonda, Planificar, Reproducir) y una barra «Sonda · Destino · Estado». Elegir sonda reúne la ficha, la arquitectura por subsistemas, diagramas y fotografías oficiales de NASA/JPL con su procedencia, la ingeniería resumida y un ensamblaje experimental de piezas de herencia, separado de la flota histórica y marcado como hipotético. «Misión completa» es el flujo principal; las demás herramientas se rotulan como independientes. El Centro de Misión se recorre por pestañas y admite vista inmersiva. No se ofrece reproducción si la trayectoria no es ejecutable dentro de la ventana de efemérides ni si la misión se calculó con otro vehículo. Sin cambios de física ni datos. 311 pruebas y revisión automática de accesibilidad; pendiente de auditoría de Gemini, de revisión con GPU y de prueba con lector de pantalla.
 
-**En la 17.1** ([detalle](STAGE17_1_MAIN_SCENE_PLAYBACK.md)) «3 · Reproducir» dibuja las misiones heliocéntricas del laboratorio (Cassini → Marte y las ventanas interplanetarias) en el Sistema Solar principal: los ocho planetas en la época TDB de cada instante, con las mismas efemérides que el cálculo y sin extrapolar; la sonda con su modelo; y la trayectoria calculada, gobernadas por el reloj del Centro de Misión. Las misiones geocéntricas y las que dependen de un satélite siguen en la escena local. La Sonda Experimental 01 se retira de la interfaz; DOPRI54 y sus pruebas se conservan. Sin cambios de física ni datos. Auditada por Claude, que también la implementó: aprobada con observaciones ([informe](STAGE17_1_AUDIT_CLAUDE.md)). Su defecto menor (escena casi invisible a 320–375 px) y un texto de validación desfasado se corrigieron en 17.1.1. 323 pruebas; revisada con la GPU real; pendiente de revisión visual por una persona y de prueba con un lector de pantalla real. El análisis del proyecto y el plan de mejora propuesto (sin aprobar) están en [ANALISIS_INTEGRAL_Y_PLAN_DE_MEJORA.md](ANALISIS_INTEGRAL_Y_PLAN_DE_MEJORA.md).
+**En la 17.1** ([detalle](STAGE17_1_MAIN_SCENE_PLAYBACK.md)) «3 · Reproducir» dibuja las misiones heliocéntricas del laboratorio (Cassini → Marte y las ventanas interplanetarias) en el Sistema Solar principal: los ocho planetas en la época TDB de cada instante, con las mismas efemérides que el cálculo y sin extrapolar; la sonda con su modelo; y la trayectoria calculada, gobernadas por el reloj del Centro de Misión. Las misiones geocéntricas y las que dependen de un satélite siguen en la escena local. La Sonda Experimental 01 se retira de la interfaz; DOPRI54 y sus pruebas se conservan. Sin cambios de física ni datos. Auditada por Claude, que también la implementó: aprobada con observaciones ([informe](STAGE17_1_AUDIT_CLAUDE.md)). Su defecto menor (escena casi invisible a 320–375 px) y un texto de validación desfasado se corrigieron en 17.1.1. 323 pruebas; revisada con la GPU real; pendiente de revisión visual por una persona y de prueba con un lector de pantalla real. El análisis del proyecto y el plan de mejora están en [ANALISIS_INTEGRAL_Y_PLAN_DE_MEJORA.md](ANALISIS_INTEGRAL_Y_PLAN_DE_MEJORA.md).
+
+**Plan de mejora 18–25** (aprobado por el usuario el 21-11-2026; [índice](README.md#plan-de-mejora)). Cada etapa la implementó y auditó Claude, con métodos distintos de los de la implementación; todas quedan aprobadas con observaciones.
+- **18** ([carga rápida](STAGE18_FAST_LOADING.md)): el arranque baja de 20,13 MB y 65 peticiones a 3,87 MB y 20, sin cambiar ningún archivo servido.
+- **19** ([limpieza](STAGE19_CLEANUP.md)): se retira lo que nada usa y se conserva el motor de aterrizaje 12F.
+- **20** ([captura apuntada](STAGE20_AIMED_CAPTURE.md)): la órbita final coincide con la pedida (A1: 3 000 km; C1: 4 200 km).
+- **21** ([lanzamiento → inyección](STAGE21_LAUNCH_INJECTION.md)): con «Empezar en la plataforma», la misión despega del LC-41 y llega al crucero con una inyección de empuje finito.
+- **22** ([crucero de n cuerpos](STAGE22_NBODY_CRUISE.md)): cuantifica, en paralelo, el error de las cónicas parcheadas y la TCM-1 necesaria.
+- **23** ([satélites en la escena principal](STAGE23_MAIN_SCENE_MOONS.md)): el sobrevuelo de Europa se ve en el Sistema Solar con la ventana de Horizons del cálculo.
+- **24** ([experiencia de uso](STAGE24_USER_EXPERIENCE.md)): mejora el Centro de Misión.
+- **25** ([lanzamiento 3D de las Voyager](STAGE25_VOYAGER_LAUNCH.md)): acercamiento desde el Sistema Solar hasta LC-41 y lanzamiento hasta `Voyager.glb`.
+- **26** ([rendimiento y contador de FPS](STAGE26_PERFORMANCE.md), petición del 22-11-2026): el lanzamiento 3D ya no se bloquea con el reloj en marcha y la reproducción del laboratorio en el Sistema Solar va a la cadencia completa; contador de FPS opcional en el menú «Capas». Sin cambios de física ni datos.
+
+Además, ESLint (solo reglas de errores) corre en la CI y la O-03 de 17.1 se resolvió con pruebas de comportamiento ([tareas continuas](CONTINUOUS_QUALITY.md)). 402 pruebas.
+
+**Pendientes del plan:**
+- la revisión independiente de 20, 21, 22 y del perfil científico de 25, que cambian o añaden física;
+- la decisión sobre el C3 del empalme de 21 (≈ 0,86 km²/s² por debajo del convencional);
+- la revisión visual por una persona;
+- la prueba con NVDA o Narrador.
 
 ## Limitaciones y próximos objetivos
 

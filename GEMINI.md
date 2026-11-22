@@ -11,6 +11,7 @@ Estado y arquitectura: [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md), [docs
 ```bash
 git status                     # confirma rama y cambios locales
 npm ci
+npm run lint                   # ESLint, solo reglas que detectan errores (también en la CI)
 npm test                       # node --test "tests/*.test.mjs"; anota recuento exacto
 npm run build
 npm run dev                    # inspección en navegador

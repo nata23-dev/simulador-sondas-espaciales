@@ -32,7 +32,7 @@ El usuario pidió:
 | --- | --- | --- |
 | «Misión completa» heliocéntrica sin satélite (A1–A3 Tierra → Marte) | Sistema Solar principal | Todos los tramos se pueden expresar respecto al Sol |
 | Ventanas interplanetarias (Lambert) | Sistema Solar principal | Cónica heliocéntrica |
-| «Misión completa» con satélite o descenso (C1/C2 → Europa) | Escena local del Centro de Misión | La escena principal no tiene satélites cargados en la época de la misión |
+| «Misión completa» con satélite o descenso (C1/C2 → Europa) | Escena local del Centro de Misión | La escena principal no tiene satélites cargados en la época de la misión (**desde la etapa 23**, C1/C2 se reproducen en el Sistema Solar principal con los satélites galileanos de la ventana del cálculo: [detalle](STAGE23_MAIN_SCENE_MOONS.md)) |
 | Tierra–Luna, empuje finito, lanzamiento terrestre | Escena local | A escala del Sistema Solar no se distinguirían de la Tierra |
 | Cualquier misión con un planeta sin cobertura en todo el intervalo | Escena local | No se extrapola |
 
@@ -213,7 +213,7 @@ Detalle y nueva verificación en el [informe](STAGE17_1_AUDIT_CLAUDE.md#8-correc
 
 - Revisión visual por una persona con GPU; prueba con un lector de pantalla real (NVDA o Narrador); opcionalmente, segunda auditoría de Gemini.
 - Observaciones abiertas de la auditoría: O-01, O-02, O-04, O-06 y parte de O-03 ([informe](STAGE17_1_AUDIT_CLAUDE.md)).
-- Las misiones con satélite, las geocéntricas y el lanzamiento siguen en la escena local. Mostrarlas en la escena principal exigiría efemérides de satélites en la época de la misión.
+- Las misiones con satélite, las geocéntricas y el lanzamiento siguen en la escena local. Mostrarlas en la escena principal exigiría efemérides de satélites en la época de la misión. **Etapa 23:** C1/C2 ya se reproducen en la escena principal con la ventana galileana del cálculo ([detalle](STAGE23_MAIN_SCENE_MOONS.md)).
 - En la barra de reproducción, los eventos muy próximos (inserción y fin de la cadena) comparten píxel a escala de toda la misión, como antes.
 - En capturas con encendidos largos, el periapsis final difiere del apuntado (A1: 315,5 km frente a 3000 km). El cálculo lo dice, pero no lo compensa: es una propuesta de cambio de modelo ([plan](ANALISIS_INTEGRAL_Y_PLAN_DE_MEJORA.md)).
 - La reproducción no certifica una misión operativa: el resultado sigue siendo «según el modelo».

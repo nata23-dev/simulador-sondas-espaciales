@@ -10,6 +10,7 @@ Git y Node.js ≥ 22 (`engines` en `package.json`; CI prueba 22 y 24). `npm ci` 
 | --- | --- |
 | `npm run dev` | Servidor de desarrollo de Vite. |
 | `npm test` | `node --test "tests/*.test.mjs"`. |
+| `npm run lint` | ESLint con solo reglas que detectan errores (variables sin declarar, constantes reasignadas, código inalcanzable, claves duplicadas, literales que pierden precisión…), sin reglas de estilo ([detalle](CONTINUOUS_QUALITY.md)). También corre en la CI. |
 | `npm run build` | Build de producción en `dist/` (ruta `/`). |
 | `GITHUB_PAGES=true npm run build` | Build con base `/simulador-sondas-espaciales/` (PowerShell: `$env:GITHUB_PAGES='true'; npm run build`). |
 | `npm run preview` | Sirve `dist/`. |

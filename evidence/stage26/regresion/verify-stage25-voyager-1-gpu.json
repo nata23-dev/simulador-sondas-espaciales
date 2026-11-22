@@ -1,0 +1,345 @@
+{
+  "gpu": true,
+  "viewport": [
+    1600,
+    900
+  ],
+  "startedAt": "2026-11-22T06:21:18.545Z",
+  "misiones": {
+    "voyager-1": {
+      "capturas": [
+        {
+          "archivo": "voyager-1-01-aproximacion-inicio.png",
+          "reloj": "T − 00:23",
+          "tMision": -23.5,
+          "plano": "aproximacion",
+          "fase": "aproximacion",
+          "altitudKm": 0,
+          "velocidadKmS": 0.408415709953885,
+          "modeloNasa": "cargado",
+          "pedido": -23.5
+        },
+        {
+          "archivo": "voyager-1-02-aproximacion-florida.png",
+          "reloj": "T − 00:17",
+          "tMision": -17,
+          "plano": "aproximacion",
+          "fase": "aproximacion",
+          "altitudKm": 0,
+          "velocidadKmS": 0.408415709953885,
+          "modeloNasa": "cargado",
+          "pedido": -17
+        },
+        {
+          "archivo": "voyager-1-03-aproximacion-cabo.png",
+          "reloj": "T − 00:12",
+          "tMision": -12.5,
+          "plano": "aproximacion",
+          "fase": "aproximacion",
+          "altitudKm": 0,
+          "velocidadKmS": 0.408415709953885,
+          "modeloNasa": "cargado",
+          "pedido": -12.5
+        },
+        {
+          "archivo": "voyager-1-04-plataforma-general.png",
+          "reloj": "T − 00:08",
+          "tMision": -8,
+          "plano": "plataforma-general",
+          "fase": "cuenta-atras",
+          "altitudKm": 0,
+          "velocidadKmS": 0.408415709953885,
+          "modeloNasa": "cargado",
+          "pedido": -8
+        },
+        {
+          "archivo": "voyager-1-05-base-cuenta-atras.png",
+          "reloj": "T − 00:02",
+          "tMision": -2.0000000000000018,
+          "plano": "plataforma-base",
+          "fase": "cuenta-atras",
+          "altitudKm": 0,
+          "velocidadKmS": 0.408415709953885,
+          "modeloNasa": "cargado",
+          "pedido": -2
+        },
+        {
+          "archivo": "voyager-1-06-ignicion.png",
+          "reloj": "T + 00:00",
+          "tMision": 0.6000000000000004,
+          "plano": "despegue-suelo",
+          "fase": "despegue",
+          "altitudKm": 0.00043024953361600637,
+          "velocidadKmS": 0.4084235398438609,
+          "modeloNasa": "cargado",
+          "pedido": 0.6
+        },
+        {
+          "archivo": "voyager-1-07-despegue.png",
+          "reloj": "T + 00:05",
+          "tMision": 5.000000000000002,
+          "plano": "despegue-suelo",
+          "fase": "despegue",
+          "altitudKm": 0.08411510824318975,
+          "velocidadKmS": 0.4099592453551251,
+          "modeloNasa": "cargado",
+          "pedido": 5
+        },
+        {
+          "archivo": "voyager-1-08-seguimiento.png",
+          "reloj": "T + 00:29",
+          "tMision": 29.999999999999993,
+          "plano": "seguimiento-largo",
+          "fase": "ascenso-srm",
+          "altitudKm": 3.4053040075674654,
+          "velocidadKmS": 0.5003370497542096,
+          "modeloNasa": "cargado",
+          "pedido": 30
+        },
+        {
+          "archivo": "voyager-1-09-persecucion.png",
+          "reloj": "T + 01:19",
+          "tMision": 79.99999999999999,
+          "plano": "persecucion",
+          "fase": "ascenso-srm",
+          "altitudKm": 24.00962118477095,
+          "velocidadKmS": 1.0074775847352497,
+          "modeloNasa": "cargado",
+          "pedido": 80
+        },
+        {
+          "archivo": "voyager-1-10-ignicion-etapa1.png",
+          "reloj": "T + 01:55",
+          "tMision": 115.10000000000001,
+          "plano": "persecucion",
+          "fase": "ascenso-srm",
+          "altitudKm": 45.51496132208686,
+          "velocidadKmS": 1.4226100758266285,
+          "modeloNasa": "cargado",
+          "pedido": 115.1
+        },
+        {
+          "archivo": "voyager-1-11-separacion-srm.png",
+          "reloj": "T + 02:04",
+          "tMision": 124.7,
+          "plano": "lateral-separacion",
+          "fase": "etapa1",
+          "altitudKm": 51.18785299864691,
+          "velocidadKmS": 1.472145499495278,
+          "modeloNasa": "cargado",
+          "pedido": 124.7
+        },
+        {
+          "archivo": "voyager-1-12-etapa2.png",
+          "reloj": "T + 04:24",
+          "tMision": 264.2,
+          "plano": "lateral-etapas",
+          "fase": "etapa2",
+          "altitudKm": 114.56095430958177,
+          "velocidadKmS": 4.24734256655449,
+          "modeloNasa": "cargado",
+          "pedido": 264.2
+        },
+        {
+          "archivo": "voyager-1-13-cofia.png",
+          "reloj": "T + 04:33",
+          "tMision": 273.4,
+          "plano": "lateral-etapas",
+          "fase": "etapa2",
+          "altitudKm": 119.2098838549694,
+          "velocidadKmS": 4.318831309108809,
+          "modeloNasa": "cargado",
+          "pedido": 273.4
+        },
+        {
+          "archivo": "voyager-1-14-separacion-titan.png",
+          "reloj": "T + 07:58",
+          "tMision": 478.1,
+          "plano": "persecucion-orbital",
+          "fase": "centaur-1",
+          "altitudKm": 163.73761395157968,
+          "velocidadKmS": 6.888729775560125,
+          "modeloNasa": "cargado",
+          "pedido": 478.1
+        },
+        {
+          "archivo": "voyager-1-15-centaur-mes1.png",
+          "reloj": "T + 08:24",
+          "tMision": 504.6000000000001,
+          "plano": "orbita-aparcamiento",
+          "fase": "centaur-1",
+          "altitudKm": 165.3414674724182,
+          "velocidadKmS": 7.040633532107786,
+          "modeloNasa": "cargado",
+          "pedido": 504.6
+        },
+        {
+          "archivo": "voyager-1-16-aparcamiento.png",
+          "reloj": "T + 19:53",
+          "tMision": 1193.9999999999995,
+          "plano": "orbita-aparcamiento",
+          "fase": "aparcamiento",
+          "altitudKm": 166.67860683156735,
+          "velocidadKmS": 7.8040519986928025,
+          "modeloNasa": "cargado",
+          "pedido": 1194
+        },
+        {
+          "archivo": "voyager-1-17-mes2.png",
+          "reloj": "T + 53:49",
+          "tMision": 3229.7999999999997,
+          "plano": "persecucion-orbital",
+          "fase": "centaur-2",
+          "altitudKm": 166.7802882556189,
+          "velocidadKmS": 8.094694218049755,
+          "modeloNasa": "cargado",
+          "pedido": 3229.8
+        },
+        {
+          "archivo": "voyager-1-18-separacion-nave.png",
+          "reloj": "T + 1:01:51",
+          "tMision": 3711.2,
+          "plano": "lateral-separacion-nave",
+          "fase": "separacion",
+          "altitudKm": 1045.770962128805,
+          "velocidadKmS": 12.647963086428197,
+          "modeloNasa": "cargado",
+          "pedido": 3711.2
+        },
+        {
+          "archivo": "voyager-1-19-modulo-propulsion.png",
+          "reloj": "T + 1:02:17",
+          "tMision": 3737.2,
+          "plano": "persecucion-pm",
+          "fase": "inyeccion",
+          "altitudKm": 1176.425183722727,
+          "velocidadKmS": 13.096542477354662,
+          "modeloNasa": "cargado",
+          "pedido": 3737.2
+        },
+        {
+          "archivo": "voyager-1-20-mastiles-nasa.png",
+          "reloj": "T + 1:03:53",
+          "tMision": 3833.3,
+          "plano": "nave-despliegue",
+          "fase": "despliegue",
+          "altitudKm": 1801.7602357066096,
+          "velocidadKmS": 14.295045117833336,
+          "modeloNasa": "cargado",
+          "pedido": 3833.3
+        },
+        {
+          "archivo": "voyager-1-21-final.png",
+          "reloj": "T + 1:14:10",
+          "tMision": 4450,
+          "plano": "nave-final",
+          "fase": "final",
+          "altitudKm": 7637.367200153928,
+          "velocidadKmS": 12.79725454260878,
+          "modeloNasa": "cargado",
+          "pedido": 4450
+        }
+      ],
+      "estados": {},
+      "red": {
+        "bytesLanzamiento": 6257527,
+        "recursos": [
+          {
+            "url": "/src/launch/VoyagerLaunchDirector.js",
+            "bytes": 174439,
+            "estado": 200
+          },
+          {
+            "url": "/src/launch/LaunchTimeline.js",
+            "bytes": 65449,
+            "estado": 200
+          },
+          {
+            "url": "/src/launch/LaunchWorld.js",
+            "bytes": 153936,
+            "estado": 200
+          },
+          {
+            "url": "/src/launch/TitanIIIECentaur3D.js",
+            "bytes": 102925,
+            "estado": 200
+          },
+          {
+            "url": "/src/launch/LC41Pad1977.js",
+            "bytes": 63513,
+            "estado": 200
+          },
+          {
+            "url": "/src/launch/LaunchEffects.js",
+            "bytes": 98291,
+            "estado": 200
+          },
+          {
+            "url": "/data/hipparcos-vmag-6p5.tsv",
+            "bytes": 406267,
+            "estado": 200
+          },
+          {
+            "url": "/textures/earth_clouds.jpg",
+            "bytes": 965676,
+            "estado": 200
+          },
+          {
+            "url": "/launch/cape-usgs-2048.jpg",
+            "bytes": 713942,
+            "estado": 200
+          },
+          {
+            "url": "/launch/florida-bmng-2048.jpg",
+            "bytes": 256044,
+            "estado": 200
+          },
+          {
+            "url": "/launch/lc41-usgs-2048.jpg",
+            "bytes": 889023,
+            "estado": 200
+          },
+          {
+            "url": "/launch/earth-bmng-8192.jpg",
+            "bytes": 2368022,
+            "estado": 200
+          }
+        ]
+      },
+      "checks": {
+        "cargaInicial": true,
+        "modoTrasPulsar": "historico",
+        "panelVisible": true,
+        "escenaLista": true,
+        "msHastaEscena": 5148,
+        "fpsDespegue": 142.1,
+        "siguienteEvento": "etapa1-ignicion",
+        "reanudadoX4": {
+          "pausado": false,
+          "velocidad": 4,
+          "rotulo": "×4"
+        },
+        "marcas": 8,
+        "anuncio": "T + 01:52: Ignición de la etapa I.",
+        "cerrado": true,
+        "fechaEscena": "1977-09-05 · 12:56:00 UTC",
+        "cancelarDuranteAcercamiento": true,
+        "sinLienzoTardio": true
+      },
+      "cambiosModo": [
+        {
+          "ms": 1795328485039,
+          "texto": "MODO historico     at establecerModoVisualApp (http://localhost:5191/src/ui/HistoricalModeControls.js:671:11) |     at HTMLButtonElement.<anonymous> (http://localhost:5191/src/ui/HistoricalModeControls.js:704:7)"
+        },
+        {
+          "ms": 1795328485053,
+          "texto": "MODO historico     at MutationObserver.observe.attributes (http://localhost:5191/src/ui/HistoricalModeControls.js:717:40)"
+        }
+      ]
+    }
+  },
+  "errors": [
+    "voyager-1 [warning]: THREE.WebGLProgram: Program Info Log: (210,91-147): warning X4122: sum of 0.996094 and -2.98545e-017 cannot be represented accurately in double precision\n(209,41-69): warning X4122: sum of 1 and -1.49272e-017 cannot be represented accurately in double precision\n(210,92-120): warning X4122: sum of 1 and -1.49272e-017 cannot be represented accurately in double precision\n(209,41-69): warning X4122: sum of 1 and -1.66644e-018 cannot be represented accurately in double precision\n(210,92-120): warning X4122: sum of 1 and -1.66644e-018 cannot be represented accurately in double precision"
+  ],
+  "finishedAt": "2026-11-22T06:22:18.717Z"
+}

@@ -27,7 +27,7 @@ const plannerEphemeris = createInterplanetaryEphemeris({ catalog, loadJson });
 const sceneEphemeris = createInterplanetaryEphemeris({ catalog: interplanetaryCatalog, loadJson });
 
 // Réplica de IntegratedMissionPlanner.compute() (misma ventana, refinamiento y entrada que en el navegador).
-async function runScenario(id, design) {
+async function runScenario(id, design, { compensate = true } = {}) {
   const v = scenarioFormValues(INTEGRATED_SCENARIOS.find(s => s.id === id)), target = ENCOUNTER_TARGETS[v.destinationId];
   let departureJdTdb = datetimeLocalUtcToJdTdb(v.departureUtc), tofDays = v.tofDays;
   const covE = plannerEphemeris.coverage('399'), covT = plannerEphemeris.coverage(target.ephemerisId), margin = Math.max(30, 0.02 * tofDays) + 140;
@@ -36,7 +36,7 @@ async function runScenario(id, design) {
     const r = refineTransferCandidate(helio, { destinationId: target.ephemerisId, departureJdTdb, tofDays, criterion: 'c3', halfSpanDepartureDays: refinementHalfSpanDays(tofDays), halfSpanTofDays: refinementHalfSpanDays(tofDays) });
     if (Number.isFinite(r.score)) { departureJdTdb = r.departureJdTdb; tofDays = r.tofDays; }
   }
-  const mission = computeIntegratedMission(integratedMissionInput({ ...v, destinationId: target.id, departureJdTdb, tofDays }, design), { helio, moons: null });
+  const mission = computeIntegratedMission(integratedMissionInput({ ...v, destinationId: target.id, departureJdTdb, tofDays, compensate }, design), { helio, moons: null });
   return createIntegratedExecution({ result: mission, data: { helio, moons: null }, design });
 }
 
@@ -68,6 +68,8 @@ const closeVec = (a, b, tol, label) => { for (const k of ['x', 'y', 'z']) close(
 
 const cassini = fleet('cassini');
 const missionA1 = runScenario('A1', cassini);
+// Modo de 17.1 (sin la captura apuntada de la etapa 20), que se conserva como opción del perfil.
+const missionA1Sin = runScenario('A1', cassini, { compensate: false });
 
 test('17.1: conversión de ejes de la escena principal (x,y,z) → (x,z,−y) a 32 unidades por AU, también con vectores [x,y,z]', () => {
   const p = kmToScene([KM_PER_AU, 2 * KM_PER_AU, 3 * KM_PER_AU]);
@@ -241,34 +243,26 @@ test('17.1: la vista general de la misión deja la trayectoria, la Tierra, el de
   }
 });
 
-test('17.1: línea de tiempo al final = final exacto del cálculo; valor legible y fases anunciadas para lectores de pantalla', () => {
+// O-03: el comportamiento (final exacto de la línea de tiempo, texto para lectores de pantalla, anuncio de fase, pose de la cámara
+// de destino, cesión del control al usuario y reencuadre al cambiar la ventana) se prueba en MissionCameraBehaviour.test.mjs con el
+// controlador de cámara real, la vista de la escena principal y las funciones puras del Centro de Misión. Aquí solo queda el
+// cableado con el DOM, que en Node no se puede ejercitar (lo recorre el navegador en las verificaciones de 17.1 y 23).
+test('17.1: cableado del Centro de Misión con la línea de tiempo, el anunciador y el tamaño de la escena (DOM)', () => {
   const center = source('src/ui/MissionControlCenter.js');
-  // El control usa paso de 0,001 s: su valor máximo no coincide con la duración en coma flotante. Se salta al final exacto.
-  assert.match(center, /clock\.seek\(max - value < 0\.0015 \? max : value\)/);
-  // El lector de pantalla oye «X d transcurridos · Y d restantes · fase» en lugar de los segundos en bruto.
-  assert.match(center, /setAttribute\('aria-valuetext'/);
-  // Región oculta (sr-only) que anuncia los cambios de fase; no se anuncia la preparación inicial.
+  assert.match(center, /clock\.seek\(instanteLineaTiempo\(value, max\)\)/);
+  // 26: setAttr escribe el atributo solo si cambia (mismo resultado que setAttribute, sin mutaciones repetidas en cada fotograma).
+  assert.match(center, /setAttr\(\$\('#mc-timeline'\), 'aria-valuetext', textoValorLineaTiempo\(/);
+  assert.match(center, /const setAttr = \(element, name, value\) => \{ if \(element\.getAttribute\(name\) !== value\) element\.setAttribute\(name, value\); \};/);
   assert.match(center, /id="mc-announcer" class="sr-only" role="status" aria-live="polite"/);
-  assert.match(center, /if \(hudPhase && phase\) \$\('#mc-announcer'\)\.textContent = `Fase: \$\{phase\}`/);
-});
-
-test('17.1: cámara de destino recalculada en cada fotograma hasta que el usuario toma el control; la vista general se reencuadra al cambiar la ventana', () => {
-  const camera = source('src/graphics/CameraController.js'), view = source('src/integration/SolarSystemMissionView.js'), center = source('src/ui/MissionControlCenter.js');
-  // Pose a unos 4 radios del planeta, del lado del Sol, mirando hacia la sonda; solo encuadre.
-  assert.match(camera, /function poseMiradaDestino\(nombre\)/);
-  assert.match(camera, /addScaledVector\(haciaSonda, -3\.2 \* radio\)/);
-  // Arrastrar o usar la rueda devuelve el control al usuario.
-  assert.match(camera, /function cancelarTransicionInteractiva\(\) \{\n    miradaDestino = null;/);
-  // Cambio de tamaño de la ventana de la escena (vista inmersiva, panel oculto): solo se recalcula la vista general.
-  assert.match(view, /reframe\(\) \{ if \(controlling && prepared && cameraMode === 'overview'\)/);
+  assert.match(center, /const anuncio = anuncioCambioFase\(hudPhase, phase\);\n\s*if \(anuncio\) \$\('#mc-announcer'\)\.textContent = anuncio;/);
   assert.match(center, /new ResizeObserver/);
   assert.match(center, /stageObserver\?\.disconnect\(\)/);
 });
 
 test('17.1: la captura muestra la órbita resultante; A1 no promete un periapsis que el encendido largo no conserva', async () => {
-  const execution = await missionA1, capture = execution.mission.phases.find(p => p.id === 'capture');
+  const execution = await missionA1Sin, capture = execution.mission.phases.find(p => p.id === 'capture');
   const orbit = execution.mission.maneuvers.at(-1).orbitAfter;
-  // El cálculo no cambia: el apoapsis es el objetivo (100 000 km) y el periapsis baja de 3000 a ~315,5 km durante 4,5 h de encendido.
+  // Sin compensar (opción de 20; antes era el único modo): el apoapsis es el objetivo (100 000 km) y el periapsis baja de 3000 a ~315,5 km durante 4,5 h de encendido.
   assert.ok(Math.abs(orbit.apoapsisAltitudeKm - 100000) < 1 && Math.abs(orbit.periapsisAltitudeKm - 315.55) < 0.1, JSON.stringify(orbit));
   assert.match(capture.detail, /Órbita resultante: 316 × 100 000 km de altitud \(periapsis apuntado 3 000 km; el encendido de 4\.5 h lo desplaza\)\./);
   const a1 = INTEGRATED_SCENARIOS.find(s => s.id === 'A1');

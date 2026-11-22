@@ -20,7 +20,9 @@ Simulador web interactivo del Sistema Solar, de las misiones históricas **Voyag
 | Ventanas de lanzamiento y transferencias interplanetarias (12G) y misiones interplanetarias integradas (13) | Implementadas; 12G aprobada por Gemini; 13 **pendiente de auditoría**. |
 | Identidad visual, flota NASA y laboratorio en tres etapas (14–17) | Implementadas y probadas localmente; **pendientes de auditoría**. |
 | Reproducción en el Sistema Solar principal (17.1) | Implementada; **auditada por Claude (su implementador): aprobada con observaciones**, corregidas en 17.1.1 ([informe](docs/STAGE17_1_AUDIT_CLAUDE.md)). |
-| Asistencias gravitatorias, descenso atmosférico, sondas de entrada | **No implementados.** Ver el [plan de mejora propuesto](docs/ANALISIS_INTEGRAL_Y_PLAN_DE_MEJORA.md). |
+| Plan de mejora 18–25 (21-11-2026) | Implementado y probado localmente: carga rápida, limpieza, captura apuntada, lanzamiento → inyección opcional desde LC-41, crucero de n cuerpos en paralelo a la cónica, satélites galileanos en la escena principal, experiencia de uso del Centro de Misión y lanzamiento 3D de las Voyager. Cada etapa, **auditada por Claude (su implementador): aprobada con observaciones**; **pendiente la revisión independiente** de 20, 21, 22 y del perfil científico de 25 ([índice](docs/README.md#plan-de-mejora)). |
+| Rendimiento y contador de FPS (26, 22-11-2026) | Implementado y probado en Chrome con GPU real: lanzamiento 3D sin bloqueos con el reloj en marcha, reproducción del laboratorio en el Sistema Solar a la cadencia completa y contador opcional en el menú «Capas» (o `?fps=1`). Sin cambios de física ni datos. **Auditado por Claude (su implementador): aprobado con observaciones** ([detalle](docs/STAGE26_PERFORMANCE.md), [informe](docs/STAGE26_AUDIT_CLAUDE.md)). |
+| Asistencias gravitatorias, descenso atmosférico, sondas de entrada | **No implementados.** Ver el [análisis y plan de mejora](docs/ANALISIS_INTEGRAL_Y_PLAN_DE_MEJORA.md). |
 
 «Implementada» no significa «validada», y «viable según el modelo» no significa éxito operativo. Las piezas del Hangar y el lanzador/módulo de aterrizaje demostrativos tienen parámetros **ilustrativos**.
 
@@ -39,6 +41,7 @@ cd simulador-sondas-espaciales
 git checkout revision/modo-historico-voyager   # rama de desarrollo, si aún no es la predeterminada
 npm ci                  # instala desde package-lock.json
 npm run dev             # servidor de desarrollo; abre la URL que muestre Vite
+npm run lint            # ESLint, solo reglas que detectan errores
 npm test                # node --test "tests/*.test.mjs"
 npm run build           # build de producción en dist/
 npm run preview         # previsualiza dist/
@@ -51,8 +54,8 @@ Flujo comprobado en Windows (ver el informe de consolidación). Linux y macOS: n
 La barra superior alterna los tres modos:
 
 1. **Exploración**: Sistema Solar por fecha; seleccionar un cuerpo y viajar hasta él.
-2. **Histórico**: Voyager 1 y 2, hitos, encuentros, comparador con fotografías NASA. También `?mode=historical`.
-3. **Laboratorio**: elegir sonda, planificar y reproducir. También `?mode=experimental`. El **Centro de Misión** («3 · Reproducir») reproduce la ejecución con cámaras y telemetría; desde 17.1 las misiones heliocéntricas (por ejemplo, Cassini → Marte) se reproducen en el **Sistema Solar principal**, y las geocéntricas o con satélite, en su escena local ([17.1](docs/STAGE17_1_MAIN_SCENE_PLAYBACK.md)).
+2. **Histórico**: Voyager 1 y 2, hitos, encuentros, comparador con fotografías NASA y «Ver lanzamiento 3D»: acercamiento desde el Sistema Solar hasta el Complejo 41 de Cabo Cañaveral y lanzamiento del Titan IIIE-Centaur hasta la nave desplegada ([25](docs/STAGE25_VOYAGER_LAUNCH.md)). También `?mode=historical`.
+3. **Laboratorio**: elegir sonda, planificar y reproducir. También `?mode=experimental`. El **Centro de Misión** («3 · Reproducir») reproduce la ejecución con cámaras y telemetría; desde 17.1 las misiones heliocéntricas (por ejemplo, Cassini → Marte) se reproducen en el **Sistema Solar principal**, con los satélites galileanos de Horizons para el sobrevuelo de Europa ([23](docs/STAGE23_MAIN_SCENE_MOONS.md)); las geocéntricas, en su escena local ([17.1](docs/STAGE17_1_MAIN_SCENE_PLAYBACK.md)).
 
 ## Ciencia y fidelidad
 
@@ -75,7 +78,7 @@ Nunca se mezclan en silencio UTC con TDB, AU con km, ni tamaño visual con dista
 
 ## Publicación
 
-GitHub Pages se despliega con `.github/workflows/deploy.yml` al enviar a `main`; la integración continua (`ci.yml`) ejecuta pruebas y build en cada push. Vite usa la ruta `/simulador-sondas-espaciales/` solo con `GITHUB_PAGES=true`.
+GitHub Pages se despliega con `.github/workflows/deploy.yml` al enviar a `main`; la integración continua (`ci.yml`) ejecuta ESLint, pruebas y build en cada push. Vite usa la ruta `/simulador-sondas-espaciales/` solo con `GITHUB_PAGES=true`.
 
 ## Licencia y créditos
 

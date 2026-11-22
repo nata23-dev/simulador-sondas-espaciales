@@ -1,0 +1,198 @@
+{
+  "gpu": true,
+  "startedAt": "2026-11-22T06:58:35.420Z",
+  "checks": {
+    "inicial": {
+      "existe": true,
+      "visible": false,
+      "texto": "— FPSmidiendo…",
+      "estado": null,
+      "caja": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "controlesDebajo": [],
+      "eventosPasan": true,
+      "encima": false
+    },
+    "exploracion": {
+      "existe": true,
+      "visible": true,
+      "texto": "138 FPS7,3 ms · peor 22",
+      "estado": "bien",
+      "caja": [
+        1490,
+        850,
+        98,
+        41
+      ],
+      "controlesDebajo": [],
+      "eventosPasan": true,
+      "encima": false
+    },
+    "historico": {
+      "existe": true,
+      "visible": true,
+      "texto": "142 FPS7,0 ms · peor 8",
+      "estado": "bien",
+      "caja": [
+        1496,
+        850,
+        92,
+        41
+      ],
+      "controlesDebajo": [],
+      "eventosPasan": true,
+      "encima": false
+    },
+    "movilHistorico": {
+      "existe": true,
+      "visible": true,
+      "texto": "142 FPS7,0 ms · peor 8",
+      "estado": "bien",
+      "caja": [
+        268,
+        108,
+        66,
+        23
+      ],
+      "controlesDebajo": [
+        "Medición científica de distancias 3D"
+      ],
+      "eventosPasan": true,
+      "encima": false,
+      "desbordePx": 0
+    },
+    "lanzamientoListo": true,
+    "lanzamiento": {
+      "existe": true,
+      "visible": true,
+      "texto": "142 FPS7,1 ms · peor 7",
+      "estado": "bien",
+      "caja": [
+        1496,
+        850,
+        92,
+        41
+      ],
+      "controlesDebajo": [],
+      "eventosPasan": true,
+      "encima": false
+    },
+    "movilLanzamiento": {
+      "existe": true,
+      "visible": true,
+      "texto": "142 FPS7,0 ms · peor 8",
+      "estado": "bien",
+      "caja": [
+        316,
+        422,
+        66,
+        23
+      ],
+      "controlesDebajo": [],
+      "eventosPasan": true,
+      "encima": false,
+      "desbordePx": 0
+    },
+    "trasRecargar": {
+      "existe": true,
+      "visible": true,
+      "texto": "142 FPS7,0 ms · peor 8",
+      "estado": "bien",
+      "caja": [
+        1496,
+        850,
+        92,
+        41
+      ],
+      "controlesDebajo": [],
+      "eventosPasan": true,
+      "encima": false,
+      "casilla": true
+    },
+    "movilExploracion": {
+      "existe": true,
+      "visible": true,
+      "texto": "142 FPS7,0 ms · peor 7",
+      "estado": "bien",
+      "caja": [
+        268,
+        108,
+        66,
+        23
+      ],
+      "controlesDebajo": [
+        "Medición científica de distancias 3D"
+      ],
+      "eventosPasan": true,
+      "encima": false,
+      "desbordePx": 0
+    },
+    "desactivado": {
+      "existe": true,
+      "visible": false,
+      "texto": "143 FPS7,0 ms · peor 7",
+      "estado": "bien",
+      "caja": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "controlesDebajo": [],
+      "eventosPasan": true,
+      "encima": false,
+      "guardado": "0"
+    },
+    "parametroUrl": {
+      "existe": true,
+      "visible": true,
+      "texto": "140 FPS7,2 ms · peor 14",
+      "estado": "bien",
+      "caja": [
+        1490,
+        850,
+        98,
+        41
+      ],
+      "controlesDebajo": [],
+      "eventosPasan": true,
+      "encima": false,
+      "casilla": true,
+      "guardado": "0"
+    },
+    "movilLaboratorio": {
+      "existe": true,
+      "visible": true,
+      "texto": "141 FPS7,1 ms · peor 7",
+      "estado": "bien",
+      "caja": [
+        316,
+        422,
+        66,
+        23
+      ],
+      "controlesDebajo": [
+        "distance-pin-button"
+      ],
+      "eventosPasan": true,
+      "encima": false,
+      "desbordePx": 0
+    }
+  },
+  "shots": [
+    "fps-01-menu-capas.png",
+    "fps-02-exploracion.png",
+    "fps-03-historico.png",
+    "fps-03b-movil-historico.png",
+    "fps-04-lanzamiento.png",
+    "fps-05-movil-lanzamiento.png",
+    "fps-06-movil-exploracion.png",
+    "fps-07-movil-laboratorio.png"
+  ],
+  "errors": [],
+  "finishedAt": "2026-11-22T06:59:21.643Z"
+}

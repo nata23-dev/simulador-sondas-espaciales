@@ -1,0 +1,183 @@
+{
+  "gpu": true,
+  "startedAt": "2026-11-22T01:47:52.527Z",
+  "shots": [
+    "01_planificador_salida_plataforma.png",
+    "02_planificador_fases.png",
+    "03_grafico_tierra.png",
+    "04_centro_mision_despegue.png",
+    "05_centro_mision_inyeccion_exterior.png",
+    "06_resultados.png",
+    "07_movil_casilla_plataforma.png"
+  ],
+  "checks": {
+    "scenarioAfterCheck": "A1",
+    "plataforma": {
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "scenario": "A1",
+      "launch": true,
+      "summary": [
+        "Destino: Marte · centro de Marte (499)",
+        "Despegue (TDB → UTC): 2028-11-29 · 13:00:03 UTC · LC-41, Cabo Cañaveral",
+        "Periapsis de llegada: 2029-10-10 · 11:06:26 UTC",
+        "Duración de la cadena: 317.03 d",
+        "C3 de salida (apuntado al periapsis): 8.117 km²/s² · inyección de empuje finito calculada",
+        "Masa en la inyección: 5,606 kg de nave + Centaur D-1T (15,490 kg) · al despegue 946 t",
+        "Oportunidad: refinada (C3 8.996 → 8.995 hacia el centro del destino; 110 evaluaciones)"
+      ],
+      "launchBox": {
+        "hidden": false,
+        "rows": [
+          "Sitio: Complejo de Lanzamiento 41 (LC-41), Cabo Cañaveral, Florida (28.5833°, -80.5828°)",
+          "Despegue: 2028-11-29 · 13:00:03 UTC · 3.83 h antes de la salida prevista · GMST 263.951°",
+          "Acimut: Acimut 70.23° (hacia el noreste): con 90° la inclinación (29.38°) no supera en 0.5° la declinación de la asíntota (29.21°); se busca una inclinación de |δ| + 1°.",
+          "Lanzador (ilustrativo): Lanzador demostrativo superpesado (×9) · 946 t · empuje/peso 1.41 · Max-Q 37.5 kPa a 11 km",
+          "Órbita de aparcamiento: 169 × 575 km · i 30.21° · periodo 92 min · espera 44.2 min",
+          "Inyección: 384 s · Δv 3,553.7 m/s (impulsivo 3,520.2; pérdidas 33.5) · 11,769 kg (quedan 1,725 kg)",
+          "C3 conseguido: 8.117 km²/s²",
+          "Salida de la esfera de influencia: 2028-12-02 · 19:40:15 UTC · 3.24 d tras la inyección · radio 923,910 km",
+          "Empalme con el crucero: 0.0025 mm/s de diferencia con el Lambert · 1 iteraciones · 2 vuelta(s)"
+        ],
+        "terms": [
+          "azimuth",
+          "parking-orbit",
+          "c3",
+          "handoff"
+        ]
+      },
+      "phases": [
+        "Lanzamiento desde Cabo Cañaveral (12E)",
+        "Órbita de aparcamiento",
+        "Inyección interplanetaria (empuje finito, Centaur D-1T)",
+        "Salida de la esfera de influencia terrestre",
+        "Crucero heliocéntrico",
+        "Aproximación hiperbólica a Marte"
+      ],
+      "maneuvers": [
+        "Inyección interplanetaria384 s3,553.7 m/s3,520.2 m/s11,769 kgapuntado",
+        "Inserción en órbita de Marte16,424 s1,700.9 m/s1,453.2 m/s2,396 kgapoapsis objetivo"
+      ],
+      "plotEarth": {
+        "disabled": false
+      }
+    },
+    "mcAlEntrar": {
+      "scene": "main",
+      "phase": "Salida de la esfera de influencia terrestre",
+      "elapsed": "0.135 d transcurridos",
+      "status": "EN REPRODUCCIÓN",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · n",
+      "outcome": "Salida de la esfera de influencia terrestre · COMPLETADA SEGÚN EL MODELO. CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: "
+    },
+    "mcInicio": {
+      "scene": "main",
+      "phase": "Lanzamiento desde Cabo Cañaveral (12E)",
+      "elapsed": "0 d transcurridos",
+      "status": "PREPARADA",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · n",
+      "outcome": "Lanzamiento desde Cabo Cañaveral (12E) · COMPLETADA SEGÚN EL MODELO. CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no ve"
+    },
+    "eventosSalida": [
+      "Despegue desde Complejo de Lanzamiento 41 (LC-41), Cabo Cañaveral, Florida2028-11-29 · 13:00:03 UTC · despegue",
+      "Órbita de aparcamiento: 169 × 575 km, 30.21° de inclinación2028-11-29 · 13:10:17 UTC · órbita",
+      "Encendido de inyección de la Centaur D-1T2028-11-29 · 13:54:30 UTC · motor encendido",
+      "Fin de la inyección: C3 = 8.12 km²/s²2028-11-29 · 14:00:54 UTC · motor apagado",
+      "Salida de la esfera de influencia terrestre (0.924 millones de km)2028-12-02 · 19:40:15 UTC · esfera de influencia"
+    ],
+    "timelineMaxSeconds": 27391125.67312185,
+    "mcT700": {
+      "scene": "main",
+      "phase": "Órbita de aparcamiento",
+      "elapsed": "0.008 d transcurridos",
+      "status": "PAUSADA",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · n",
+      "outcome": "Órbita de aparcamiento · COMPLETADA SEGÚN EL MODELO. CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada."
+    },
+    "mcT1500": {
+      "scene": "main",
+      "phase": "Órbita de aparcamiento",
+      "elapsed": "0.017 d transcurridos",
+      "status": "PAUSADA",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · n",
+      "outcome": "Órbita de aparcamiento · COMPLETADA SEGÚN EL MODELO. CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada."
+    },
+    "mcT3000": {
+      "scene": "main",
+      "phase": "Órbita de aparcamiento",
+      "elapsed": "0.035 d transcurridos",
+      "status": "PAUSADA",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · n",
+      "outcome": "Órbita de aparcamiento · COMPLETADA SEGÚN EL MODELO. CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada."
+    },
+    "mcInyeccion": {
+      "t": 3400,
+      "scene": "main",
+      "phase": "Inyección interplanetaria (empuje finito, Centaur D-1T)",
+      "elapsed": "0.039 d transcurridos",
+      "status": "PAUSADA",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · n",
+      "outcome": "Inyección interplanetaria (empuje finito, Centaur D-1T) · COMPLETADA SEGÚN EL MODELO. CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad"
+    },
+    "mcCrucero": {
+      "scene": "main",
+      "phase": "Crucero heliocéntrico",
+      "elapsed": "4 d transcurridos",
+      "status": "PAUSADA",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · n",
+      "outcome": "Crucero heliocéntrico · COMPLETADA SEGÚN EL MODELO. CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada."
+    },
+    "resultados": [
+      "C3 de salida8.12 km²/s²",
+      "Propelente sonda «Cassini»3,000 kg",
+      "Propelente consumido2,396 kg",
+      "Masa final3,210 kg",
+      "Propelente de la Centaur D-1T (inyección)11,769 kg (quedan 1,725 kg)"
+    ],
+    "sinPlataforma": {
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "scenario": "A1",
+      "launch": false,
+      "summary": [
+        "Destino: Marte · centro de Marte (499)",
+        "Salida (TDB → UTC): 2028-11-29 · 16:49:37 UTC",
+        "Periapsis de llegada: 2029-10-10 · 11:06:26 UTC",
+        "Duración de la cadena: 316.87 d",
+        "C3 de salida (apuntado al periapsis): 8.993 km²/s² · inyección externa no modelada",
+        "Masa en la inyección: 5,606 kg · capacidad del lanzador: no evaluada",
+        "Oportunidad: refinada (C3 8.996 → 8.995 hacia el centro del destino; 110 evaluaciones)"
+      ],
+      "launchBox": {
+        "hidden": true,
+        "rows": [],
+        "terms": []
+      },
+      "phases": [
+        "Inyección interplanetaria",
+        "Crucero heliocéntrico",
+        "Aproximación hiperbólica a Marte",
+        "Captura en Marte (empuje finito)",
+        "Energía eléctrica (solar y RTG)"
+      ],
+      "maneuvers": [
+        "Inserción en órbita de Marte16,428 s1,701.4 m/s1,453.6 m/s2,397 kgapoapsis objetivo"
+      ],
+      "plotEarth": {
+        "disabled": true
+      }
+    },
+    "movil": {
+      "pageOverflowPx": 0,
+      "label": [
+        33,
+        357
+      ],
+      "hint": [
+        33,
+        357
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": [],
+  "finishedAt": "2026-11-22T01:48:22.807Z"
+}

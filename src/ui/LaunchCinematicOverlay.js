@@ -1,132 +1,157 @@
-import { FASES_LANZAMIENTO } from '../graphics/LaunchCinematicController.js';
+// Panel del lanzamiento 3D (etapa 25): reloj de misión, factor de aceleración, altitud y velocidad del modelo, fase,
+// acontecimientos con su fuente, controles y avisos de fidelidad. Los anuncios para lector de pantalla van a una región
+// «polite» y solo cuando cambia el acontecimiento.
+import { LANZAMIENTOS_VOYAGER, FUENTES_LANZAMIENTO } from '../science/VoyagerLaunchProfile.js';
 
-export function crearSuperficieLanzamientoCinematografico({
-  alPausar,
-  alReanudar,
-  alSaltar,
-  alReiniciar
-}) {
+const FECHA = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const HORA = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' });
+// 26: formateadores reutilizados (se usan en cada fotograma del lanzamiento); mismo resultado que toLocaleString('es-ES', …).
+const formatosNum = new Map();
+const NUM = (v, d) => {
+  let formato = formatosNum.get(d);
+  if (!formato) formatosNum.set(d, formato = new Intl.NumberFormat('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d }));
+  return formato.format(v);
+};
+const FUENTE_TEXTO = { tc6: 'informe de vuelo TC-6', prensa: 'dossier de prensa de NASA', reconstruido: 'reconstruido' };
+// Acontecimientos con marca en la barra (los demás se ven en el panel cuando ocurren).
+const MARCAS = ['despegue', 'srm-separacion', 'cofia', 'meco1', 'mes2', 'separacion-nave', 'pm-apagado', 'mastiles'];
+
+export function metadatosLanzamiento(misionId) {
+  const m = LANZAMIENTOS_VOYAGER[misionId];
+  if (!m) return null;
+  const despegue = Date.parse(m.srmIgnicionUtc) + m.eventos.find(e => e.id === 'despegue').t * 1000;
+  return { misionId, nombreMision: m.nombre, vehiculo: m.vehiculo, fecha: FECHA.format(despegue), horaUtc: HORA.format(despegue) };
+}
+
+export function crearSuperficieLanzamientoCinematografico({ alPausar, alSiguiente, alAnterior, alVelocidad, alSaltar, alReiniciar, alIrAEvento }) {
   const overlay = document.createElement('div');
   overlay.id = 'launch-cinematic-overlay';
   overlay.className = 'launch-cinematic-overlay';
   overlay.hidden = true;
-
   overlay.innerHTML = `
-    <div class="launch-cinematic-topbar hud-secondary">
+    <div class="launch-cinematic-topbar">
       <div class="launch-mission-badge">
-        <span class="launch-tag">LANZAMIENTO HISTÓRICO 1977</span>
+        <span class="launch-tag">Lanzamiento histórico · 1977</span>
         <h2 id="launch-overlay-title" class="launch-title">Voyager 2</h2>
-        <p id="launch-overlay-meta" class="launch-meta">
-          20 de agosto de 1977 · 14:29:44 UTC · Titan IIIE-Centaur · LC-41 Cabo Cañaveral
-        </p>
+        <p id="launch-overlay-meta" class="launch-meta"></p>
       </div>
-      <div class="launch-top-actions">
-        <button type="button" id="launch-skip-btn" class="button-secondary launch-action-btn">
-          Saltar introducción ⏭
-        </button>
+      <div class="launch-telemetry" aria-label="Reloj de misión y estado del vehículo">
+        <div class="launch-clock-row"><span class="launch-clock" id="launch-clock">T − 00:24</span><span class="launch-rate" id="launch-rate" title="Velocidad de la reproducción respecto al tiempo real">×1</span></div>
+        <p class="launch-utc" id="launch-utc"></p>
+        <dl class="launch-readouts">
+          <div><dt>Altitud</dt><dd id="launch-alt">0 km</dd></div>
+          <div><dt title="Respecto a un sistema que no gira con la Tierra (incluye 0,41 km/s de rotación terrestre en LC-41)">Vel. inercial</dt><dd id="launch-vel">0,00 km/s</dd></div>
+          <div><dt title="Respecto al suelo, que gira con la Tierra">Vel. suelo</dt><dd id="launch-vel-ground">0,00 km/s</dd></div>
+        </dl>
+        <p class="launch-model-note">Ascenso ilustrativo calibrado, no telemetría</p>
       </div>
+      <button type="button" id="launch-skip-btn" class="launch-action-btn">Volver al Sistema Solar</button>
     </div>
 
-    <div class="launch-cinematic-bottombar hud-secondary">
+    <p class="launch-loading" id="launch-loading" role="status" hidden>Acercándose a la Tierra…</p>
+
+    <div class="launch-cinematic-bottombar">
       <div class="launch-phase-container">
-        <span class="launch-phase-tag" id="launch-phase-tag">Fase: Preparación en plataforma</span>
-        <p class="launch-phase-desc" id="launch-phase-desc">
-          El Titan IIIE-Centaur se encuentra en la plataforma LC-41 listo para la ignición.
-        </p>
+        <span class="launch-phase-tag" id="launch-phase-tag">Aproximación a Cabo Cañaveral</span>
+        <p class="launch-phase-desc" id="launch-phase-desc"></p>
+        <p class="launch-event" id="launch-event"></p>
       </div>
-
       <div class="launch-progress-row">
-        <div class="launch-progress-track">
-          <div class="launch-progress-fill" id="launch-progress-bar" style="width: 0%"></div>
+        <div class="launch-progress-track" id="launch-progress-track">
+          <div class="launch-progress-fill" id="launch-progress-bar"></div>
         </div>
+        <div class="launch-ticks" id="launch-ticks"></div>
       </div>
-
       <div class="launch-control-row">
-        <button type="button" id="launch-pause-btn" class="launch-ctrl-btn">Pausar</button>
-        <button type="button" id="launch-replay-btn" class="launch-ctrl-btn">Repetir ↺</button>
-        <span class="launch-honesty-note">
-          Reconstrucción visual cinematográfica basada en datos oficiales de NASA. La trayectoria interplanetaria utiliza efemérides Horizons.
-        </span>
+        <button type="button" id="launch-prev-btn" class="launch-ctrl-btn" aria-label="Acontecimiento anterior">⏮</button>
+        <button type="button" id="launch-pause-btn" class="launch-ctrl-btn launch-ctrl-btn--main">Pausar</button>
+        <button type="button" id="launch-next-btn" class="launch-ctrl-btn" aria-label="Siguiente acontecimiento">⏭</button>
+        <div class="launch-speed" role="group" aria-label="Velocidad de reproducción">
+          <button type="button" class="launch-ctrl-btn" data-speed="1" aria-pressed="true">×1</button>
+          <button type="button" class="launch-ctrl-btn" data-speed="2" aria-pressed="false">×2</button>
+          <button type="button" class="launch-ctrl-btn" data-speed="4" aria-pressed="false">×4</button>
+        </div>
+        <button type="button" id="launch-replay-btn" class="launch-ctrl-btn">Repetir</button>
+        <details class="launch-fidelity">
+          <summary>Fidelidad y fuentes</summary>
+          <ul>
+            <li><strong>Documentado:</strong> hora de lanzamiento, lugar (LC-41), secuencia de vuelo (<a href="${FUENTES_LANZAMIENTO.tc6.url}" target="_blank" rel="noopener">informe TC-6</a> para la Voyager 1; <a href="${FUENTES_LANZAMIENTO.prensa.url}" target="_blank" rel="noopener">dossier de prensa</a> para la Voyager 2), medidas, empujes y masas del vehículo (<a href="${FUENTES_LANZAMIENTO.resumen.url}" target="_blank" rel="noopener">resumen de sistemas</a>).</li>
+            <li><strong>Calculado:</strong> posición del Sol y de las estrellas para el instante (contrastada con JPL Horizons).</li>
+            <li><strong>Ilustrativo:</strong> trayectoria de ascenso (modelo sin atmósfera calibrado para llegar a la órbita de aparcamiento documentada), llamas, humo, viento y nubes (más nubosidad el 20 de agosto según la fotografía PIA21744).</li>
+            <li><strong>Aproximado:</strong> plataforma y torres de 1977, a partir de fotografías; el terreno es la ortoimagen del USGS de 2024 y la Tierra, Blue Marble de NASA.</li>
+            <li>Al final se muestra el modelo 3D oficial de NASA de la Voyager con los mástiles desplegados; el despliegue real del magnetómetro fue posterior.</li>
+          </ul>
+        </details>
       </div>
     </div>
+    <p class="sr-only" id="launch-live" aria-live="polite"></p>
   `;
-
   document.querySelector('.scene-panel').append(overlay);
 
-  const elTitle = overlay.querySelector('#launch-overlay-title');
-  const elMeta = overlay.querySelector('#launch-overlay-meta');
-  const elPhaseTag = overlay.querySelector('#launch-phase-tag');
-  const elPhaseDesc = overlay.querySelector('#launch-phase-desc');
-  const elProgressBar = overlay.querySelector('#launch-progress-bar');
-  const btnPause = overlay.querySelector('#launch-pause-btn');
-  const btnReplay = overlay.querySelector('#launch-replay-btn');
-  const btnSkip = overlay.querySelector('#launch-skip-btn');
-
-  let pausado = false;
-
-  const DESCRIPCIONES_FASE = {
-    [FASES_LANZAMIENTO.APROXIMACION_TIERRA]: {
-      tag: 'Aproximación a Cabo Cañaveral',
-      desc: 'Descenso orbital hacia el Complejo de Lanzamiento 41 en la costa atlántica de Florida.'
-    },
-    [FASES_LANZAMIENTO.PREPARACION_PLATAFORMA]: {
-      tag: 'T-5s · Preparación en plataforma LC-41',
-      desc: 'El Titan IIIE-Centaur de 48.8 m con sus dos propulsores sólidos UA1205 retrae los brazos umbilicales de servicio.'
-    },
-    [FASES_LANZAMIENTO.DESPEGUE]: {
-      tag: 'T+0s · Despegue e Ignición',
-      desc: 'Ignición simultánea de los dos propulsores de combustible sólido UA1205 generando 10.6 millones de Newtons de empuje.'
-    },
-    [FASES_LANZAMIENTO.ASCENSO_ATMOSFERICO]: {
-      tag: 'Ascenso atmosférico a velocidad supersónica',
-      desc: 'El cohete atraviesa la estratosfera; la curvatura terrestre se amplía y el cielo se oscurece hacia el negro espacial.'
-    },
-    [FASES_LANZAMIENTO.SEPARACION_ETAPAS]: {
-      tag: 'Separación de propulsores y cofia',
-      desc: 'Los propulsores sólidos UA1205 se separan lateralmente; la cofia Centaur Standard Shroud se abre revelando a Voyager.'
-    },
-    [FASES_LANZAMIENTO.INYECCION_VOYAGER]: {
-      tag: 'Inyección hacia Júpiter y despliegue',
-      desc: 'La etapa criogénica Centaur D-1T y Star-37E inyectan a la sonda en su trayectoria de escape interplanetaria.'
-    }
+  const $ = sel => overlay.querySelector(sel);
+  const el = {
+    titulo: $('#launch-overlay-title'), meta: $('#launch-overlay-meta'), reloj: $('#launch-clock'), factor: $('#launch-rate'), utc: $('#launch-utc'),
+    alt: $('#launch-alt'), vel: $('#launch-vel'), velSuelo: $('#launch-vel-ground'), carga: $('#launch-loading'), fase: $('#launch-phase-tag'), faseTexto: $('#launch-phase-desc'),
+    evento: $('#launch-event'), barra: $('#launch-progress-bar'), marcas: $('#launch-ticks'), vivo: $('#launch-live'), pausa: $('#launch-pause-btn')
   };
-
-  btnPause.addEventListener('click', () => {
-    pausado = !pausado;
-    btnPause.textContent = pausado ? 'Reanudar' : 'Pausar';
-    if (pausado) alPausar?.();
-    else alReanudar?.();
+  $('#launch-pause-btn').addEventListener('click', () => alPausar?.());
+  $('#launch-next-btn').addEventListener('click', () => alSiguiente?.());
+  $('#launch-prev-btn').addEventListener('click', () => alAnterior?.());
+  $('#launch-replay-btn').addEventListener('click', () => alReiniciar?.());
+  $('#launch-skip-btn').addEventListener('click', () => alSaltar?.());
+  const botonesVelocidad = [...overlay.querySelectorAll('[data-speed]')];
+  for (const b of botonesVelocidad) b.addEventListener('click', () => {
+    const k = Number(b.dataset.speed);
+    botonesVelocidad.forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+    alVelocidad?.(k);
   });
-
-  btnReplay.addEventListener('click', () => {
-    pausado = false;
-    btnPause.textContent = 'Pausar';
-    alReiniciar?.();
-  });
-
-  btnSkip.addEventListener('click', () => {
-    alSaltar?.();
-  });
+  let faseActual = null;
 
   return {
     overlay,
     mostrar(visible = true, meta = null) {
       overlay.hidden = !visible;
-      pausado = false;
-      btnPause.textContent = 'Pausar';
+      if (!visible) return;
+      el.pausa.textContent = 'Pausar';
+      botonesVelocidad.forEach(o => o.setAttribute('aria-pressed', String(o.dataset.speed === '1')));
       if (meta) {
-        elTitle.textContent = meta.nombreMision;
-        elMeta.textContent = `${meta.fechaLanzamientoUtc} · ${meta.vehiculo}`;
+        el.titulo.textContent = meta.nombreMision;
+        el.meta.textContent = `${meta.fecha} · ${meta.horaUtc} UTC · ${meta.vehiculo} · LC-41, Cabo Cañaveral (Florida)`;
       }
+      el.marcas.replaceChildren(); el.evento.textContent = ''; faseActual = null;
     },
     esVisible: () => !overlay.hidden,
-    actualizarFase({ fase, progresoNormalizado }) {
-      const info = DESCRIPCIONES_FASE[fase];
-      if (info) {
-        elPhaseTag.textContent = `Fase: ${info.tag}`;
-        elPhaseDesc.textContent = info.desc;
+    establecerCargando(texto) { el.carga.hidden = !texto; el.carga.textContent = texto ?? ''; overlay.classList.toggle('is-loading', Boolean(texto)); },
+    /** Marcas de acontecimientos en la barra de progreso (`eventos` con p; `duracion` en segundos de presentación). */
+    configurarLinea(eventos, duracion) {
+      el.marcas.replaceChildren(...eventos.filter(e => MARCAS.includes(e.id)).map(e => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'launch-tick'; b.style.left = `${(100 * e.p / duracion).toFixed(2)}%`;
+        b.title = e.nombre; b.setAttribute('aria-label', `Ir a: ${e.nombre}`);
+        b.addEventListener('click', () => alIrAEvento?.(e.id));
+        return b;
+      }));
+    },
+    actualizar(estado) {
+      el.reloj.textContent = estado.reloj;
+      const f = estado.factor * estado.velocidad;
+      el.factor.textContent = estado.pausado ? 'En pausa' : `×${f >= 10 || Math.abs(f - Math.round(f)) < 0.05 ? Math.round(f) : NUM(f, 1)}`;
+      el.factor.dataset.estado = estado.pausado ? 'pausa' : f > 1.05 ? 'acelerado' : 'real';
+      el.utc.textContent = `${HORA.format(estado.utcMs)} UTC`;
+      el.alt.textContent = `${NUM(estado.altitudKm, estado.altitudKm < 10 ? 2 : 0)} km`;
+      el.vel.textContent = `${NUM(estado.velocidadKmS, 2)} km/s`;
+      el.velSuelo.textContent = `${NUM(estado.velocidadSueloKmS, 2)} km/s`;
+      el.pausa.textContent = estado.pausado ? 'Reanudar' : 'Pausar';
+      el.barra.style.width = `${(100 * estado.progreso).toFixed(2)}%`;
+      if (estado.fase.id !== faseActual) {
+        faseActual = estado.fase.id;
+        el.fase.textContent = estado.fase.titulo; el.faseTexto.textContent = estado.fase.texto;
       }
-      elProgressBar.style.width = `${Math.round(progresoNormalizado * 100)}%`;
+      if (estado.evento) {
+        const e = estado.evento;
+        el.evento.textContent = `${e.nombre} · ${e.t < 0 ? '' : 'T + '}${e.t < 60 ? `${NUM(e.t, 1)} s` : `${Math.floor(e.t / 60)} min ${NUM(e.t % 60, 0)} s`} · ${FUENTE_TEXTO[e.fuente]}${e.nota ? ` (${e.nota})` : ''}`;
+      } else el.evento.textContent = 'Cuenta atrás: los tiempos de vuelo se cuentan desde la ignición de los motores sólidos (T 0).';
+      if (estado.eventoNuevo) el.vivo.textContent = `${estado.reloj}: ${estado.eventoNuevo.nombre}.`;
     }
   };
 }

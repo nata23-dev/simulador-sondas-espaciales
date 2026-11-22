@@ -50,3 +50,10 @@ __pycache__/
 /evidence/stage12b.zip
 /evidence/stage12f.zip
 Thumbs.db
+
+# 26: paquetes .zip locales. Los dos primeros eran copias exactas (archivo por archivo) de AUDITORIA_INTEGRAL_SIMULADOR_VOYAGER/
+# y evidence/tercer_avance/, que siguen en Git; el tercero, capturas del lanzamiento 2D retirado en la etapa 19. Siguen en el
+# historial de Git y como archivos locales.
+/AUDITORIA_INTEGRAL_SIMULADOR_VOYAGER.zip
+/Tercer_Avance_Evidencias_Simulador.zip
+/UX_Lanzamiento_Guiado_Voyager.zip

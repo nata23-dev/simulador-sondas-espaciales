@@ -1,0 +1,109 @@
+{
+  "gpu": true,
+  "startedAt": "2026-11-22T02:03:31.040Z",
+  "shots": [
+    "01_crucero_n_cuerpos_A1.png",
+    "02_crucero_n_cuerpos_A1_plataforma.png",
+    "03_movil_crucero_n_cuerpos.png"
+  ],
+  "checks": {
+    "antes": {
+      "disabled": true,
+      "status": "Calcula una misión para comparar su crucero.",
+      "rows": [],
+      "terms": [
+        "nbody"
+      ],
+      "verdict": "Sin cálculo",
+      "phases": []
+    },
+    "calculada": {
+      "disabled": false,
+      "status": "Sin comparar todavía.",
+      "rows": [],
+      "terms": [
+        "nbody"
+      ],
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "phases": [
+        "Inyección interplanetaria",
+        "Crucero heliocéntrico",
+        "Aproximación hiperbólica a Marte",
+        "Captura en Marte (empuje finito)",
+        "Energía eléctrica (solar y RTG)"
+      ]
+    },
+    "comparacionMs": 739,
+    "centro": {
+      "disabled": false,
+      "status": "Comparación calculada en 253 ms. La misión no cambia: sigue siendo la de cónicas parcheadas.",
+      "rows": [
+        "Modelo: Sol + Mercurio, Venus, Marte, Júpiter, Saturno, Urano, Neptuno · DOPRI54 (tolerancia relativa 1e-12) · efemérides de Horizons",
+        "Excluida: Tierra: el crucero empieza en el centro de la Tierra (salida sin «Empezar en la plataforma»)",
+        "Desviación en la llegada (modelo completo): 43,258 km del punto de la cónica · velocidad 25.99 m/s · máxima 43,258 km (2029-10-08)",
+        "Sin Marte: 29,354 km · 3.62 m/s (con: 43,258 km). Mide la gravedad de Marte fuera de su esfera de influencia, que las cónicas parcheadas omiten: un diseño real la incluiría desde el principio, no la corregiría",
+        "Solo los otros planetas: 29,354 km · 3.62 m/s (Mercurio, Venus, Júpiter, Saturno, Urano, Neptuno)",
+        "Corrección de trayectoria (TCM-1): 2028-12-09 (día 10 del crucero) · Δv 0.88 m/s · 1.61 kg con el motor de la sonda (no descontados de la cadena) · residuo 0 m · 2 iteraciones · corrige la perturbación de los otros planetas",
+        "Cálculo: 253 ms · 319 pasos del modelo completo · 5 propagaciones"
+      ],
+      "terms": [
+        "nbody",
+        "nbody",
+        "tcm"
+      ],
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "phases": [
+        "Inyección interplanetaria",
+        "Crucero heliocéntrico",
+        "Aproximación hiperbólica a Marte",
+        "Captura en Marte (empuje finito)",
+        "Energía eléctrica (solar y RTG)"
+      ]
+    },
+    "trasCambio": {
+      "disabled": true,
+      "status": "Calcula una misión para comparar su crucero.",
+      "rows": [],
+      "terms": [
+        "nbody"
+      ],
+      "verdict": "Sin cálculo",
+      "phases": []
+    },
+    "plataforma": {
+      "disabled": false,
+      "status": "Comparación calculada en 460 ms. La misión no cambia: sigue siendo la de cónicas parcheadas.",
+      "rows": [
+        "Modelo: Sol + Mercurio, Venus, Tierra + Luna, Marte, Júpiter, Saturno, Urano, Neptuno · DOPRI54 (tolerancia relativa 1e-12) · efemérides de Horizons",
+        "Desviación en la llegada (modelo completo): 13,195,813 km del punto de la cónica · velocidad 1,506.35 m/s · máxima 13,195,813 km (2029-10-08)",
+        "Sin Marte: 13,202,186 km · 1,506.94 m/s (con: 13,195,813 km). Mide la gravedad de Marte fuera de su esfera de influencia, que las cónicas parcheadas omiten: un diseño real la incluiría desde el principio, no la corregiría",
+        "Sin Tierra + Luna: 45,159 km · 26.06 m/s (con: 13,195,813 km). Mide la gravedad terrestre fuera de su esfera de influencia (empalme de la etapa 21), que las cónicas parcheadas omiten: un diseño real la incluiría desde el principio, no la corregiría",
+        "Solo los otros planetas: 31,187 km · 3.81 m/s (Mercurio, Venus, Júpiter, Saturno, Urano, Neptuno)",
+        "Corrección de trayectoria (TCM-1): 2028-12-12 (día 10 del crucero) · Δv 0.86 m/s · 1.58 kg con el motor de la sonda (no descontados de la cadena) · residuo 0 m · 2 iteraciones · corrige la perturbación de los otros planetas",
+        "Cálculo: 460 ms · 334 pasos del modelo completo · 7 propagaciones"
+      ],
+      "terms": [
+        "nbody",
+        "nbody",
+        "tcm"
+      ],
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "phases": [
+        "Lanzamiento desde Cabo Cañaveral (12E)",
+        "Órbita de aparcamiento",
+        "Inyección interplanetaria (empuje finito, Centaur D-1T)",
+        "Salida de la esfera de influencia terrestre",
+        "Crucero heliocéntrico",
+        "Aproximación hiperbólica a Marte",
+        "Captura en Marte (empuje finito)",
+        "Energía eléctrica (solar y RTG)"
+      ]
+    },
+    "movil": {
+      "pageOverflowPx": 0
+    }
+  },
+  "errors": [],
+  "warnings": [],
+  "finishedAt": "2026-11-22T02:03:47.946Z"
+}

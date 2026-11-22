@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / 'public/textures/moons/io-voyager-usgs.jpg'
+SOURCE = ROOT / 'source-assets/textures/moons/io-voyager-usgs.jpg'
 OUTPUT = ROOT / 'public/textures/moons/io-voyager-usgs-seam-feathered.png'
 AUDIT = ROOT / 'evidence/voyager-stage7b/io-seam-audit.json'
 JOIN_COLUMNS = (348, 502, 768)

@@ -6,4 +6,6 @@ Cada carpeta conserva manifiestos, registros y capturas de una etapa. Son **evid
 - **Adquisición y auditoría de efemérides:** `stage2-2`, `stage2-3`, `stage3`, `stage3-1`, `stage4`, `stage5`, `stage6`.
 - **Laboratorio:** `stage12a`, `stage12a1`, `stage12b`, `stage12c`, `stage12d`, `stage12e` (incluye `audit-scripts/` con rutas relativas). 12F no tiene capturas ni auditoría independiente.
 
+- **Plan de mejora y etapas posteriores:** `stage18` (carga rápida), `stage20`–`stage24` (verificaciones en Chrome con GPU real), `stage25` (lanzamiento 3D, con `auditoria/`) y `stage26` (perfiles de rendimiento antes y después, contador de FPS y `regresion/`). La etapa 19 no tiene carpeta propia.
+
 Los informes están en [docs/README.md](../docs/README.md). Los `.zip` de capturas de 12A–12B (duplican las carpetas) se mantienen solo en local.

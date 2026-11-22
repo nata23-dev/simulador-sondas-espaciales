@@ -61,14 +61,3 @@ export function breakEvenDistanceAu(components, loadW, yearsSinceLaunch = 0) {
   for (let i = 0; i < 80; i++) { const mid = Math.sqrt(lo * hi); if (at(mid) >= 0) lo = mid; else hi = mid; }
   return lo;
 }
-
-/**
- * Balance eléctrico en un punto de la misión. `loads`: { serviceW, engineW }. La batería cubre déficits de duración `deficitHours`.
- * Devuelve el margen y si el punto es sostenible.
- */
-export function powerBalance(components, { distanceAu, yearsSinceLaunch, serviceW, engineW = 0, batteryWh = 0, deficitHours = Infinity }) {
-  const generation = generationAt(components, { distanceAu, yearsSinceLaunch });
-  const loadW = serviceW + engineW, marginW = generation.totalW - loadW;
-  const batteryHours = marginW < 0 && batteryWh > 0 ? batteryWh / -marginW : marginW < 0 ? 0 : Infinity;
-  return { distanceAu, yearsSinceLaunch, ...generation, loadW, marginW, batteryHours, sustainable: marginW >= 0 || batteryHours >= deficitHours };
-}

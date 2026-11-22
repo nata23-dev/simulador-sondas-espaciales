@@ -80,6 +80,7 @@ Componentes de la etapa 15 ([detalle](STAGE15_HERITAGE_HANGAR.md)). Usan los mis
   - tabla de energía `.lab-power-table`;
   - compatibilidades agrupadas por tipo y gravedad.
 - Menú «Vista»: perfiles de calidad `#quality-controls` (`.menu-pill-group--quad`, `.menu-note`).
+- Contador de FPS (26): interruptor `#show-fps` («Mostrar FPS») dentro de `#quality-controls`, apagado por defecto; `?fps=1` lo muestra sin cambiar la preferencia guardada. El contador `.fps-meter` es fijo, abajo a la derecha en escritorio (`z-index:29`, `pointer-events:none`). Muestra los FPS de los últimos 0,5 s y, debajo, el tiempo medio por fotograma y el peor, con color por estado (`data-state`: `bien` ≥ 50 FPS, `aviso` 30–50, `mal` < 30). Hasta 760 px va bajo la cabecera, sin el detalle; en el lanzamiento y en el laboratorio, a media altura del borde derecho, para no tapar el reloj ni los botones.
 - Planificador de misión completa:
   - secciones «Energía eléctrica» (`#im-power`) y «Comparación» (`#im-compare`);
   - nota del escenario (`#im-scenario-note`).
@@ -138,6 +139,28 @@ Cambios de la etapa 17 ([detalle](STAGE17_LAB_REORGANIZATION.md)). Los estilos e
     - cabecera, pestañas y panel de etapas son opacos;
     - el lienzo principal se recorta al borde redondeado de `.mc-stage`;
     - el pie `#mc-foot` declara la escala (32 unidades = 1 AU, radios 1:1, nave ampliada).
+  - **24** ([detalle](STAGE24_USER_EXPERIENCE.md)):
+    - marcas agrupadas `.mc-tick.is-group` (número en `data-count`, identificadores en `data-events`); al pulsarlas, `#mc-track[data-zoom=on]` y el botón dorado `#mc-zoom-exit` «Toda la misión»;
+    - atajos Espacio, ← →, Inicio y Fin cuando el foco no está en un control que use esas teclas; Esc cierra la hoja y después la vista inmersiva;
+    - en «Resultados», `.mc-capture` (SVG `.mc-capture-plot` a escala: cuerpo con `--body`, alcanzada en dorado continuo, objetivo en discontinuo, tabla objetivo/alcanzada) y `.mc-real` (hitos con fecha en `--gold-strong` y fuente);
+    - en «Telemetría», selector `.mc-units` (Auto / km / AU, `aria-pressed`) y fila «TDB − UTC»;
+    - el título del panel es `p#mc-pane-title.lab-panel-title`, no un encabezado (no repite el `h2` del laboratorio);
+    - ≤820 px: vista inmersiva al empezar (una vez por misión); `.mc-sheet-toggle` «Panel» abre `#mc-drawer` como hoja inferior (`#lab-mission-center[data-sheet=open]`, máx. 64 dvh, asa `::before`) con pestañas `.mc-sheet-tabs` y cierre `.mc-sheet-close`;
+    - los rótulos de la escena principal evitan los controles del Centro de Misión (`obstaculos` de `mainSceneFrameZone`): debajo del marcador o, si no caben, ocultos.
+    - el pie de escala `.lab-stage-foot` nunca se recorta: su altura se publica en `--mc-foot-h` y, con 820 px o menos, la barra de reproducción se coloca encima;
+    - los campos de fecha muestran el anillo con `:focus-within`, porque Chrome no aplica `:focus-visible` en la parada del botón del calendario.
+  - **20** ([detalle](STAGE20_AIMED_CAPTURE.md)): casilla `#im-compensate` («Captura apuntada», `label.im-check`) en la configuración avanzada del planificador; fila «Captura apuntada» en «Encuentro»; nota `.mc-capture-aim` (`mission-hint`) bajo la ficha «Órbita final».
+  - **21** ([detalle](STAGE21_LAUNCH_INJECTION.md)):
+    - casilla `#im-launch` («Empezar en la plataforma», `label.im-check`) con la explicación `#im-launch-hint` (`mission-hint`) en la configuración básica; marcarla no cambia el escenario a «Personalizado»;
+    - caja `details.im-tech#im-launch-box` («Salida desde la plataforma»), oculta sin salida calculada;
+    - marco «Tierra» (`data-ctx="earth"`) en el gráfico y botón de contexto «Tierra» en el Centro de Misión;
+    - el formateador numérico del Centro de Misión no muestra «-0» (`signDisplay: 'negative'`).
+  - **23** ([detalle](STAGE23_MAIN_SCENE_MOONS.md)): sin controles nuevos. En la escena principal, el pie (`mainSceneFoot`, ≤ 240 caracteres) menciona los satélites galileanos y su ventana; la descripción de la cámara de destino añade «o del satélite durante su fase»; la baliza de la nave escala su tamaño mínimo con la nave, para no tapar planetas ni satélites.
+  - **22** ([detalle](STAGE22_NBODY_CRUISE.md)): caja `details.im-tech#im-nbody-box` («Crucero de n cuerpos (comparación)») con el botón `#im-nbody` (estilo secundario compartido de `experimental-laboratory.css`, ancho completo), el estado `#im-nbody-status` (`role="status"`) y filas `.lab-metric`.
+  - **26** ([detalle](STAGE26_PERFORMANCE.md)):
+    - en la fila de reproducción, `.mc-tr-time` tiene `min-width:11em`; así su ancho no cambia con los decimales y la barra `.mc-track` no tiembla ni reconstruye sus marcas;
+    - entre 421 y 520 px `.mc-tr-time` se oculta, como por debajo de 420 px: el HUD da el tiempo transcurrido y el panel, el restante;
+    - el Centro de Misión escribe textos y atributos solo si cambian (`setText`, `setAttr`).
 
     Las cámaras disponibles son tres (general, exterior y de destino) y sus descripciones cambian según la escena ([17.1](STAGE17_1_MAIN_SCENE_PLAYBACK.md)).
 - **Glosario:** términos `.lab-term` con subrayado punteado, ayuda `#lab-tooltip` y diálogo `#lab-glossary`.
@@ -199,6 +222,8 @@ Hay además capturas en `evidencias/` y `capturas/` ignoradas por Git. No usarla
 ## Reglas de evolución visual
 
 **Conservar:** escena 3D primaria, jerarquía oscura/dorada, telemetría con unidades y estados, procedencia fotográfica, paneles a demanda, controles de teclado/tacto y distinción entre escala/datos físicos y ayudas visuales. Preferir ajustes de `min-width:0`, envoltura y scroll vertical donde una pantalla se desborda. Revisar tanto imagen como estado de DOM, cámara y datos al verificar cambios.
+
+**`!important` (desde la etapa 24):** solo en tres utilidades: ocultar con `[hidden]`, texto para lectores de pantalla `.sr-only` y `prefers-reduced-motion` (26 declaraciones; una prueba lo vigila). Para ganar a una regla heredada se sube la especificidad del selector (por ejemplo `:hover:not(:disabled)` o `#app #context-inspector …`) y se comprueba con `scripts/css-computed-snapshot.mjs` antes y después: la comparación debe dar 0 diferencias.
 
 **Inconsistencias o límites actuales:** `src/style.css` y `workspace-layout.css` contienen reglas históricas y posteriores para las mismas vistas; comprobar cascada real antes de cambiar. Las tipografías de 9–11px en laboratorio pueden requerir evaluación de legibilidad en 320px. Algunas diferencias de textura, iluminación y foto/3D siguen documentadas en 11/11B; no ocultarlas alterando efemérides. 12C espera auditoría independiente.
 

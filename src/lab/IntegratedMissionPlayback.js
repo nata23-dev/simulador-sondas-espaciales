@@ -12,11 +12,14 @@ import { createLandingExecution, sampleLandingExecution } from './BodyLandingPla
 import { getBodyProfile } from './CelestialBodyMissionRegistry.js';
 import { designSignature } from './MissionPlanStore.js';
 import { generationAt, JULIAN_YEAR_DAYS } from './SpacecraftPower.js';
+import { geodeticFromPosition } from './LaunchEarth.js';
+import { precessionMatrixJ2000ToDate, applyMatrix } from '../science/EarthOrientation.js';
+import { eclipticJ2000ToIcrfEquatorial } from '../science/Frames.js';
 
 export const INTEGRATED_MAX_RATE = 100 * 86400;
 // Frontera gráfica de los contextos planetocéntrico y del satélite: la del Centro de Misión (1 unidad = 10 000 km).
 export const LOCAL_CONTEXT_SCENE_SCALE = 1 / 10000;
-export const CONTEXT_LABELS = Object.freeze({ helio: 'Heliocéntrico (Sol)', planet: 'Planetocéntrico', moon: 'Centrado en el satélite', landing: 'Escena local del descenso' });
+export const CONTEXT_LABELS = Object.freeze({ earth: 'Geocéntrico (salida desde la Tierra)', helio: 'Heliocéntrico (Sol)', planet: 'Planetocéntrico', moon: 'Centrado en el satélite', landing: 'Escena local del descenso' });
 // Ritmo sugerido por tipo de tramo (s de misión por s real) para el modo «automático por fase».
 export const AUTO_RATE = Object.freeze({ cruise: 864000, outbound: 864000, 'planet-approach': 86400, flyby: 21600, 'planet-capture': 60, 'planet-orbit': 21600,
   'moon-transfer': 3600, 'moon-approach': 600, 'moon-capture': 10, 'moon-orbit': 600, 'moon-flyby': 300, landing: 60 });
@@ -35,11 +38,14 @@ export function segmentAtTime(segments, t) {
 }
 export function contextOfSegment(mission, segment) {
   if (segment.kind === 'landing') return 'landing';
+  if (segment.centralBodyId === '399') return 'earth';
   if (segment.centralBodyId === '10') return 'helio';
   if (segment.centralBodyId === mission.destinationId) return 'planet';
   return 'moon';
 }
-const frameIdOf = (mission, context) => context === 'helio' ? '10' : context === 'planet' ? mission.destinationId : mission.moonId;
+const frameIdOf = (mission, context) => context === 'earth' ? '399' : context === 'helio' ? '10' : context === 'planet' ? mission.destinationId : mission.moonId;
+// 21: radio y color de la Tierra en la escena geocéntrica (radio ecuatorial WGS84, el de 12E).
+const EARTH_RADIUS_KM = 6378.137;
 
 function stateIn(mission, data, segment, t, context) {
   const native = sampleSegmentNative(segment, t), jd = mission.departureJdTdb + t / 86400;
@@ -50,7 +56,8 @@ function stateIn(mission, data, segment, t, context) {
 
 function buildContext(mission, data, context, design) {
   const tgt = mission.target, moonKey = MOON_WINDOW_KEYS[mission.moonId];
-  const include = s => context === 'helio' ? true : context === 'planet' ? s.centralBodyId !== '10' : (s.centralBodyId === mission.moonId || s.kind === 'landing');
+  const include = s => context === 'helio' ? true : context === 'earth' ? s.centralBodyId === '399'
+    : context === 'planet' ? s.centralBodyId !== '10' && s.centralBodyId !== '399' : (s.centralBodyId === mission.moonId || s.kind === 'landing');
   const segs = mission.segments.filter(include);
   if (!segs.length) return null;
   const trajectory = [];
@@ -74,6 +81,11 @@ function buildContext(mission, data, context, design) {
   // Encuadre general: en el contexto planetario el arco de aproximación empieza en el borde de la esfera de influencia, decenas
   // de veces más lejos que la órbita; el encuadre usa la parte cercana (órbitas y encendidos) y la aproximación queda visible al alejar.
   let frameRadius = maxAll;
+  // 21: en la escena geocéntrica, la hipérbola de escape llega a la SOI (~ 924 000 km); el encuadre usa ascenso, aparcamiento e inyección.
+  if (context === 'earth') {
+    const core = trajectory.filter(p => segs[segmentAtTime(segs, p.elapsedSeconds)].phase !== 'earth-escape');
+    frameRadius = Math.max(...(core.length ? core : trajectory).map(p => norm(p.positionKm)), 3 * EARTH_RADIUS_KM);
+  }
   if (context === 'planet') {
     const rp = mission.approach?.periapsisAchievedKm ?? tgt.radiusKm;
     let core = trajectory.filter(p => !['planet-approach', 'flyby'].includes(segs[segmentAtTime(segs, p.elapsedSeconds)].phase));
@@ -81,9 +93,9 @@ function buildContext(mission, data, context, design) {
     frameRadius = Math.max(...core.map(p => Math.max(norm(p.positionKm), norm(p.moonPositionKm))), 3 * tgt.radiusKm);
   }
   const scale = context === 'helio' ? HELIOCENTRIC_SCENE_SCALE : LOCAL_CONTEXT_SCENE_SCALE;
-  const body = context === 'helio' ? { id: '10', name: 'Sol', color: '#f2c766', emissive: true } : context === 'planet' ? { id: tgt.id, name: tgt.name, color: tgt.color ?? PLANET_COLOR[tgt.id] }
+  const body = context === 'earth' ? { id: '399', name: 'Tierra', color: PLANET_COLOR['399'] } : context === 'helio' ? { id: '10', name: 'Sol', color: '#f2c766', emissive: true } : context === 'planet' ? { id: tgt.id, name: tgt.name, color: tgt.color ?? PLANET_COLOR[tgt.id] }
     : { id: mission.moonId, name: mission.moonName, color: MOON_COLOR };
-  const bodyRadiusKm = context === 'helio' ? 695700 : context === 'planet' ? tgt.radiusKm : getBodyProfile(mission.moonId).radiusKm.value;
+  const bodyRadiusKm = context === 'earth' ? EARTH_RADIUS_KM : context === 'helio' ? 695700 : context === 'planet' ? tgt.radiusKm : getBodyProfile(mission.moonId).radiusKm.value;
   const overviewRadiusScene = frameRadius * scale * 1.05;
   return {
     kind: 'integrated-context', context, name: `${mission.destinationName} · ${CONTEXT_LABELS[context]}`, design, durationSeconds: mission.durationSeconds,
@@ -91,7 +103,7 @@ function buildContext(mission, data, context, design) {
     transfer: { model: INTEGRATED_MISSION_VERSION, target: 'integrated', heliocentric: true, trajectory, initialPositionKm: trajectory[0].positionKm, arrivalPositionKm: trajectory.at(-1).positionKm,
       moonArrivalPositionKm: trajectory.at(-1).moonPositionKm, originColor: PLANET_COLOR['399'], destinationColor: context === 'helio' ? (tgt.color ?? PLANET_COLOR[tgt.id]) : MOON_COLOR,
       sceneScale: scale, bodyRadiusKm, centralBodyVisualRadius: context === 'helio' ? 0.35 : null, centralBody: body, overviewRadiusScene,
-      cameraFar: Math.max(300, maxAll * scale * 4, overviewRadiusScene * 8), showOrigin: context === 'helio', hideMoon: context === 'moon' || (context === 'planet' && !moonKey),
+      cameraFar: Math.max(300, maxAll * scale * 4, overviewRadiusScene * 8), showOrigin: context === 'helio', hideMoon: context === 'moon' || context === 'earth' || (context === 'planet' && !moonKey),
       // Tamaño ilustrativo de los marcadores ≈ 1/10 del radio encuadrado (en escenas pequeñas, menor que 1: Europa ≈ 0,16 u).
       markerScale: Math.max(context === 'helio' ? 1 : 0.02, overviewRadiusScene / 10), minDistance: Math.min(1.4, overviewRadiusScene * 0.02) }
   };
@@ -104,7 +116,7 @@ export function createIntegratedExecution({ result: mission, data, design = null
   if (!data?.helio?.stateAt) throw Error('Faltan las efemérides cargadas de la misión.');
   if (design && mission.designSignature !== designSignature(design)) throw Error('El cálculo quedó obsoleto tras cambiar la sonda. Recalcula.');
   const contexts = {};
-  for (const c of ['helio', 'planet', 'moon']) { const ctx = buildContext(mission, data, c, design); if (ctx) contexts[c] = ctx; }
+  for (const c of ['earth', 'helio', 'planet', 'moon']) { const ctx = buildContext(mission, data, c, design); if (ctx) contexts[c] = ctx; }
   const landingSegment = mission.segments.find(s => s.kind === 'landing');
   if (landingSegment && design) {
     const exec = createLandingExecution({ result: { kind: 'landing', model: landingSegment.simulation.model, simulation: landingSegment.simulation, designSignature: mission.designSignature }, design, name: landingSegment.label });
@@ -152,7 +164,8 @@ export function sampleIntegratedExecution(execution, elapsedSeconds, context = n
 }
 
 function tankState(mission, t) {
-  const tanks = { probe: mission.vehicle.probe.propellantKg, module: mission.vehicle.module?.propellantKg ?? 0, lander: mission.vehicle.lander?.propellantKg ?? 0 };
+  const tanks = { probe: mission.vehicle.probe.propellantKg, module: mission.vehicle.module?.propellantKg ?? 0, lander: mission.vehicle.lander?.propellantKg ?? 0,
+    upper: mission.launch?.upperStage?.propellantKg ?? 0 };
   let active = null;
   for (const mv of mission.maneuvers) {
     if (t >= mv.endSeconds) tanks[mv.engineKey] -= mv.propellantKg;
@@ -166,9 +179,12 @@ export function deriveIntegratedTelemetry(execution, sample) {
   const m = execution.mission, seg = sample.segment, time = tdbToTimeScales(sample.jdTdb), native = sample.native;
   const centralId = seg.kind === 'landing' ? m.moonId : seg.centralBodyId;
   const centralName = seg.kind === 'landing' ? m.moonName : seg.centralName;
-  const radius = centralId === '10' ? 695700 : centralId === m.destinationId ? m.target.radiusKm : getBodyProfile(centralId).radiusKm.value;
+  const radius = centralId === '10' ? 695700 : centralId === '399' ? EARTH_RADIUS_KM : centralId === m.destinationId ? m.target.radiusKm : getBodyProfile(centralId).radiusKm.value;
   const mu = seg.mu;
   const r = norm(native.positionKm), orbit = orbitDescription(native.positionKm, native.velocityKmS, mu, radius);
+  // 21: cerca de la Tierra, altitud geodésica sobre el elipsoide WGS84 (ecuador de la fecha, misma precesión que el cálculo);
+  // con el radio ecuatorial, la plataforma LC-41 quedaría a −4,9 km.
+  const altitudeKm = centralId === '399' ? geodeticFromPosition(applyMatrix(precessionMatrixJ2000ToDate(time.jdTt), eclipticJ2000ToIcrfEquatorial(native.positionKm))).altitudeKm : r - radius;
   let helio = null, toPlanet = null;
   try { helio = convertState(native, centralId, '10', sample.jdTdb, execution.data, m.target, MOON_WINDOW_KEYS[m.moonId]); } catch { helio = null; }
   try { toPlanet = centralId === '10' ? convertState(native, '10', m.destinationId, sample.jdTdb, execution.data, m.target, MOON_WINDOW_KEYS[m.moonId]) : null; } catch { toPlanet = null; }
@@ -194,10 +210,10 @@ export function deriveIntegratedTelemetry(execution, sample) {
     missionName: execution.name, probeName: m.vehicle.probe.name, destinationName: m.destinationName, moonName: m.moonName,
     segmentLabel: seg.label, segmentKind: seg.kind, phaseLabel: phase?.label ?? seg.label, phaseStatus: phase?.status ?? null, context: sample.context,
     time: Object.freeze({ utc: time.labelUtc, tdb: time.labelTdb, jdTdb: sample.jdTdb, utcPredicted: time.utcPredicted, elapsedDays: sample.elapsedSeconds / 86400, remainingDays: sample.remainingSeconds / 86400 }),
-    frame: Object.freeze({ centralId, centralName, label: centralId === '10' ? 'Heliocéntrico ICRF eclíptico J2000 (centro del Sol)' : centralId === m.destinationId ? `Centrado en ${m.target.centerLabel}, ejes ICRF eclíptico J2000`
+    frame: Object.freeze({ centralId, centralName, label: centralId === '10' ? 'Heliocéntrico ICRF eclíptico J2000 (centro del Sol)' : centralId === '399' ? 'Centrado en la Tierra (centro), ejes ICRF eclíptico J2000 · velocidad inercial (incluye la rotación terrestre) · altitud sobre el elipsoide WGS84' : centralId === m.destinationId ? `Centrado en ${m.target.centerLabel}, ejes ICRF eclíptico J2000`
       : seg.kind === 'landing' ? `Inercial local de ${centralName} (12F) = ejes ICRF eclíptico J2000 centrados en ${centralName}` : `Centrado en ${centralName}, ejes ICRF eclíptico J2000` }),
     state: Object.freeze({ positionKm: native.positionKm, velocityKmS: native.velocityKmS }),
-    derived: Object.freeze({ distanceKm: r, altitudeKm: r - radius, speedKmS: norm(native.velocityKmS), orbit,
+    derived: Object.freeze({ distanceKm: r, altitudeKm, speedKmS: norm(native.velocityKmS), orbit,
       sunDistanceAu: helio ? norm(helio.positionKm) / KM_PER_AU : null, destinationDistanceKm: toPlanet ? norm(toPlanet.positionKm) : centralId === m.destinationId ? r : null,
       destinationRelativeSpeedKmS: toPlanet ? norm(toPlanet.velocityKmS) : null }),
     propulsion: Object.freeze({ engineOn, engineName: active?.engine ?? null, activeManeuver: active?.label ?? null, massKg, tanks: Object.freeze(tanks), separated,

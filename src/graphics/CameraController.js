@@ -1105,8 +1105,15 @@ export function crearControladorCamara({
    * El planeta ocupa buena parte del cuadro a escala 1:1 y la sonda (o la dirección por la que llega) queda a la vista.
    * Solo encuadre: no cambia posiciones ni escalas.
    */
+  // 23: el cuerpo de la cámara de destino puede ser un planeta o un satélite visible (fase de satélite de la misión).
+  function cuerpoMirada(nombre) {
+    if (objetos.has(nombre)) return objetos.get(nombre);
+    const luna = lunasPlanetarias.get(nombre);
+    return luna?.posicion.visible ? luna : null;
+  }
+
   function poseMiradaDestino(nombre) {
-    const objPlaneta = objetos.get(nombre);
+    const objPlaneta = cuerpoMirada(nombre);
     if (!objPlaneta || !sonda?.posicion.visible) return null;
     const centro = objPlaneta.posicion.position;
     const radio = Math.max(radioEncuadre(nombre), 1e-6);
@@ -1133,7 +1140,8 @@ export function crearControladorCamara({
    * hasta que el usuario arrastra o usa la rueda; entonces sigue al planeta y deja el control al usuario.
    */
   function encuadrarDestinoConSonda(nombre) {
-    if (!objetos.has(nombre) || enPrimeraPersonaORecreacion()) return false;
+    if (!cuerpoMirada(nombre) || enPrimeraPersonaORecreacion()) return false;
+    const esLuna = !objetos.has(nombre);
     proveedorCuerposMision = null;
     if (regionSistema === REGION_MISION) regionSistema = REGIONES_SISTEMA.COMPLETO;
     if (!poseMiradaDestino(nombre)) {
@@ -1147,8 +1155,8 @@ export function crearControladorCamara({
     controls.enablePan = false;
     controls.minDistance = distanciaMinima();
     controls.maxDistance = DISTANCIA_MAXIMA;
-    alSeleccionar?.(nombre);
-    alSeleccionarLuna?.(null);
+    alSeleccionar?.(esLuna ? null : nombre);
+    alSeleccionarLuna?.(esLuna ? nombre : null);
     miradaDestino = nombre;
     const pose = poseMiradaDestino(nombre);
     const duracion = THREE.MathUtils.clamp(1.2 + camera.position.distanceTo(pose.posicion) / 1400, 1.2, 3.0);
@@ -1347,7 +1355,9 @@ export function crearControladorCamara({
 
   function alActualizarLuna(centroAnterior) {
     if (!centroAnterior || !(lunasPlanetarias.has(seleccionado) || satelites.get(seleccionado)?.posicion.visible) || enPrimeraPersonaORecreacion()) return;
-    const delta = centroSeleccionado().clone().sub(centroAnterior);
+    const centro = centroSeleccionado();
+    if (!centro) return; // satélite ya oculto
+    const delta = centro.clone().sub(centroAnterior);
     camera.position.add(delta);
     controls.target.add(delta);
     if (transicion) {

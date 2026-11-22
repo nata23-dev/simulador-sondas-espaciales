@@ -13,12 +13,14 @@ src/integration/            frontera de estado físico hacia estado de escena
 src/graphics/               Three.js: escena, cuerpos, sondas, cámara, luz y escala
 src/ui/                     controles DOM, paneles, histórico y laboratorio
 src/lab/                    catálogo, diseño, ingeniería y misión lunar
+src/launch/                 lanzamiento 3D de las Voyager desde LC-41 (etapa 25), cargado bajo demanda
 src/style.css               base, controles y vistas históricas
 src/ui/*.css                marco, cronología y laboratorio
 public/data/               conjuntos locales y catálogos de cobertura
 public/textures/            texturas y notas de procedencia
 public/images/voyager/      fotos NASA y miniaturas
 public/models/voyager/      Voyager.glb
+public/launch/              Blue Marble (NASA GIBS) y ortoimágenes USGS del lanzamiento, con procedencia
 assets/                     imágenes de trabajo de etapas visuales
 tests/                      pruebas Node de ciencia, integración y funciones
 scripts/                    adquisición, auditoría, diagnósticos y capturas históricas
@@ -75,7 +77,25 @@ public/data/historical-ephemerides-catalog-v1.json + historical/*
   → HistoricalModeControls / TimelineLayout / inspector
 ```
 
-`HistoricalTime.js` separa UTC/TDB y tiempo dividido; `VoyagerHistoricalMissions.js` registra identidades; `VoyagerHistoricalEvents.js` alimenta hitos; `HistoricalMissionEngine.js` dirige reproducción, sentido, velocidad y pausas. `HistoricalEphemerisResolver.js` obtiene planetas, lunas y sondas por cobertura; `HistoricalEncounterContext.js` da marcos locales de encuentros. `HistoricalVisualPipeline.js` convierte snapshots y construye tramos visuales, sin insertar marcos locales en el estado global de la sonda. `HistoricalComparatorSession.js` guarda/restaura la sesión del comparador. `VoyagerPhotoCatalog.js` conecta imágenes con procedencia; `HistoricalModeControls.js`, `HistoricalGuidedTour.js`, `HistoricalWelcomeModal.js` y `LaunchCinematicOverlay.js` gestionan UI. `LaunchPadLC41.js`, `TitanCentaurRocket.js`, `LaunchCinematicController.js`, `HeliosphereVisual.js` y `InstrumentFov.js` pertenecen a la representación; lanzamiento y heliosfera incluyen elementos explícitamente conceptuales.
+`HistoricalTime.js` separa UTC/TDB y tiempo dividido; `VoyagerHistoricalMissions.js` registra identidades; `VoyagerHistoricalEvents.js` alimenta hitos; `HistoricalMissionEngine.js` dirige reproducción, sentido, velocidad y pausas. `HistoricalEphemerisResolver.js` obtiene planetas, lunas y sondas por cobertura; `HistoricalEncounterContext.js` da marcos locales de encuentros. `HistoricalVisualPipeline.js` convierte snapshots y construye tramos visuales, sin insertar marcos locales en el estado global de la sonda. `HistoricalComparatorSession.js` guarda/restaura la sesión del comparador. `VoyagerPhotoCatalog.js` conecta imágenes con procedencia; `HistoricalModeControls.js`, `HistoricalGuidedTour.js`, `HistoricalWelcomeModal.js` y `LaunchCinematicOverlay.js` gestionan UI. `HeliosphereVisual.js` e `InstrumentFov.js` pertenecen a la representación; la heliosfera incluye elementos explícitamente conceptuales.
+
+### Lanzamiento 3D de las Voyager (etapa 25)
+
+```text
+«Lanzamiento 3D» (inspector, Explorar)
+  → main.iniciarLanzamientoHistorico
+      ├─ SolarSystem.aproximarATierraParaLanzamiento (acercamiento en la escena principal; meridiano según science.puntoSubsolar)
+      └─ import('./launch/VoyagerLaunchDirector.js') en paralelo
+  → launch/VoyagerLaunchDirector.crearLanzamientoVoyager3D (lienzo y WebGLRenderer propios)
+      ├─ science/VoyagerLaunchProfile (secuencias, vehículo, Sol, tiempo sidéreo, ascenso calibrado, vuelo libre)
+      ├─ launch/LaunchTimeline (tiempo de misión ↔ tiempo de pantalla, fases y planos)
+      ├─ launch/LaunchWorld (Tierra, parches de terreno, cielo, estrellas, Sol, luces, bruma)
+      ├─ launch/LC41Pad1977 · TitanIIIECentaur3D · LaunchEffects (plataforma, vehículo, llamas, humo, estela)
+      └─ graphics/SpaceProbeVisual.cargarPlantillaVoyagerCompartida (Voyager.glb sin modificar, al final)
+  → ui/LaunchCinematicOverlay (reloj, telemetría del modelo, acontecimientos y fuentes, controles)
+```
+
+`science/VoyagerLaunchProfile.js` no depende de DOM ni de Three.js: reúne lo documentado (informe TC-6, dossier de prensa, resumen de sistemas de 1973), calcula el Sol y el tiempo sidéreo, e integra un ascenso **ilustrativo** (RK4, Tierra esférica que gira, sin atmósfera) calibrado para llegar a la órbita de aparcamiento documentada en MECO-1. La escena usa un marco ENU fijo a la Tierra en LC-41 (x = este, y = arriba, z = sur, metros, centro de la Tierra en (0, −R, 0)) y búfer de profundidad logarítmico; es independiente de la escala de 32 unidades/AU de la escena principal. Todo el estado visual se deriva del instante de misión, así que pausar, saltar o repetir es determinista. Al cerrar se libera el contexto WebGL y se separa el modelo de NASA, que comparte geometrías con la escena principal. Detalle: [STAGE25_VOYAGER_LAUNCH.md](STAGE25_VOYAGER_LAUNCH.md).
 
 La continuidad global de Voyager **no se resuelve** fusionando soluciones SPK: el resolver y la polilínea dejan cortes sin estado, y el reloj pausa. Véanse [cierre 08](VOYAGER_STAGE08_VISUAL_CLOSEOUT.md), [diagnóstico 09](VOYAGER_STAGE09_SPK_ROOT_CAUSE.md) y [alternativas 09B](VOYAGER_STAGE09B_ALTERNATIVE_KERNELS.md).
 
@@ -114,11 +134,14 @@ Otros cambios:
 - `ProbeEngineering.calculateEngineering` añade centro de masas, perfil de potencia, propulsión eléctrica, compatibilidad, veredicto y calidad de datos.
 - `lab/HeritageModels.js` construye la geometría procedimental que monta `ProbeAssemblyView.js` (orientación por punto, encuadre, marcadores).
 - `IntegratedMission.js` recibe el modelo eléctrico de la sonda (fase `power`, empuje eléctrico en el destino, `moon.mode: 'flyby'`).
-- `graphics/QualityProfile.js` registra todos los renderizadores WebGL y aplica la relación de píxeles del perfil.
+- `graphics/QualityProfile.js` registra todos los renderizadores WebGL y aplica la relación de píxeles del perfil. Desde la etapa 26 también el del lanzamiento 3D (`registerRenderer` en `launch/LaunchWorld.js`).
+- Etapa 26 ([detalle](STAGE26_PERFORMANCE.md)):
+  - `ui/FpsMeter.js` (`crearMedidorFps`, creado en `main.js`): contador opcional con su propio `requestAnimationFrame`, casilla `#show-fps` en el menú «Capas», preferencia `simulador:mostrar-fps` y `?fps=1`;
+  - `SolarSystem.precompilarEscena()`: compila en paralelo (`compileAsync`, tope de 2 s) los programas nuevos al abrir una misión del laboratorio (`SolarSystemMissionView.take`) y mantiene mientras tanto el fotograma anterior.
 
 **Flota fija con modelos de NASA (15.1):**
 
-- `graphics/NasaProbeModels.js`: registro de procedencia de los GLB (`public/models/nasa/` y `Voyager.glb`), carga con `GLTFLoader` y `DRACOLoader` (decodificador en `public/libs/draco/gltf/`), caché por modelo, `attachNasaModel` y `localBounds`.
+- `graphics/NasaProbeModels.js`: registro de procedencia de los GLB (`public/models/nasa/` y `Voyager.glb`), carga con `GLTFLoader` y `DRACOLoader` (decodificador propio de three vía `DRACO_GLTF_CONFIG`, publicado por Vite en `assets/`; etapa 18), caché por modelo, `attachNasaModel` y `localBounds`.
 - `ProbeAssemblyView.js` (Hangar) y `MissionExecutionView.js` (Centro de Misión) montan primero la geometría procedimental y la sustituyen por el modelo de NASA cuando termina de cargarse; si falla, la conservan.
 - `ui/ExperimentalLaboratory.js`: flota `flota-<id>` construida con `historicalDesign`, sonda activa en `#lab-ctx-probe` (persistida en `simulador:sonda-activa`) y difundida con `setDesign` a todos los planificadores. El motor de piezas y adaptadores sigue en `lab/` y en las pruebas, pero la interfaz no lo expone.
 - Sin módulos auxiliares: `IntegratedMissionPlanner` llama siempre a `computeIntegratedMission` con `propulsionModule: null`, `lander: null` y `landing.enabled: false`. `LandingPlanner.js` ya no se monta (lo inspecciona una prueba de 12F.1) y la sección `landing` desaparece del laboratorio y del navegador de áreas.
@@ -148,6 +171,29 @@ Otros cambios:
   - `getState().executable` y `executionError`: si `createIntegratedExecution` falla (por ejemplo, por efemérides fuera de la ventana cargada), se conserva el resultado y se desactiva la reproducción;
   - `onStateChange` avisa al laboratorio al empezar y terminar un cálculo.
 - `ui/MissionControlCenter`: `MC_PANES`, `setPane`, `getPane`, `setImmersive` y `getStatus()` (incluye `vehicle`). `ui/LabGlossary.js` añade la ayuda contextual y el diálogo del glosario.
+- **24 (experiencia de uso):**
+  - `ui/MissionPlaybackAids.js` reúne funciones puras probadas en Node: `agruparMarcas`, `ventanaZoom`, `accionTeclaCentroMision` y `esquemaOrbita`;
+  - `lab/RealMissionHistory.js` guarda los hitos públicos de Voyager, Cassini, Dawn y Juno con su fuente (`REAL_MISSIONS`, `compararConMisionReal`); son contexto y no alimentan ningún cálculo;
+  - `MissionControlCenter` recibe `onPane` (la hoja inferior sincroniza la pestaña del laboratorio) y `mainSceneFrameZone` devuelve también `obstaculos`, que `SolarSystem` pasa a `PlanetLabels.actualizar` (`posicionEtiquetaLibre`);
+  - las fases `capture` y `moon-capture` de `IntegratedMission` llevan `objective`, `bodyRadiusKm` y `bodyName` para el esquema de «Resultados».
+- **20 (captura apuntada):**
+  - `IntegratedMission.compensateCapturePeriapsis` busca por secante el periapsis de llegada (`aimEncounter` + `simulateInsertion` completos en cada prueba) que deja la órbita final con el periapsis pedido;
+  - la opción del perfil es `planet.periapsisCompensation` (por defecto `true`; casilla `#im-compensate`);
+  - el resumen va en `approach.periapsisCompensation` y en la fase `capture`; `approach.periapsisTargetKm` es el periapsis de llegada y `orbitPeriapsisTargetKm` el de la órbita pedida;
+  - `INTEGRATED_MISSION_VERSION = '20-integrated-mission-2'`.
+- **21 (lanzamiento → inyección):**
+  - `science/EarthOrientation.js` (sin DOM): GMST, precesión IAU 1976 (y la IAU 2006 para contrastarla) y `launchFrameToEclipticJ2000(jd)`, la matriz que lleva el ascenso de 12E (ejes de la Tierra con ángulo inicial 0) a la eclíptica J2000;
+  - `lab/EarthDeparture.designEarthDeparture` encadena `simulateLaunch` (lanzador `DEPARTURE_LAUNCHER`, ×9 del demostrativo), Kepler en la órbita de aparcamiento, `propagateFiniteThrust` con `CENTAUR_D1T` y la hipérbola hasta la SOI. Resuelve por Newton (despegue, espera, inyección) para que la velocidad heliocéntrica en la SOI sea la de `requiredVelocityAt` (el Lambert desde ese punto);
+  - `IntegratedMission` con `profile.launch.enabled`: tramos con `centralBodyId: '399'` (`launch-k`, `parking-coast`, `injection` con `engineKey: 'upper'` y `earth-escape`), fases `launch`, `parking`, `injection` y `earth-escape`, `result.launch` (resumen) y `plannedDepartureJdTdb`. Hace vueltas con `designArrival` hasta que la llegada apuntada cambia < 1 m;
+  - `IntegratedMissionPlayback`: contexto `earth` y telemetría con altitud WGS84 y tanque `upper`; `MissionControlCenter`, botón de contexto «Tierra»; planificador, casilla `#im-launch` y caja `#im-launch-box`;
+  - `INTEGRATED_MISSION_VERSION = '21-integrated-mission-3'`.
+- **22 (crucero de n cuerpos):**
+  - `lab/NBodyCruise.js` (sin DOM): `heliocentricAcceleration` (Sol + planetas, con término indirecto), `propagateNBody` (DOPRI54 sobre las efemérides de Horizons, `NBODY_EPHEMERIS_IDS` = 199–499 y baricentros 5–8), `compareNBodyCruise` (diferencia con la cónica, efectos aislados, «solo otros planetas» y TCM-1 cuasi-Newton) y `compareMissionCruise(mission, stateAt)`;
+  - en paralelo a la misión: no cambia `computeIntegratedMission` ni su versión. El planificador lo calcula bajo demanda (`#im-nbody`) con una ventana de efemérides propia.
+- **23 (satélites en la escena principal):**
+  - `integration/SolarSystemMissionView.js`: `mainSceneSupport` acepta las misiones con satélite galileano si traen la ventana del cálculo centrada en el baricentro 5; `moonSceneStates(execution, jdTdb)` da los desplazamientos de Ío, Europa, Ganímedes y Calisto (solo dentro de la cobertura); `NEAR_MOON_PROBE_SCALE`; la cámara de destino encuadra el satélite en su fase; `moonInfoState(key)` para la ficha. La cobertura del proveedor de la escena se comprueba solo para los planetas que se cargan de él (la Tierra y el destino, con la ventana del cálculo);
+  - `graphics/`: `encuadrarDestinoConSonda` acepta un satélite visible; `actualizarLunas` pasa la cámara al planeta si el satélite seleccionado deja de dibujarse; la baliza de la nave escala su mínimo con el factor de la nave;
+  - `MissionControlCenter.mainSceneFoot(state)`: pie con la ventana de los satélites.
 
 **Misiones integradas (13):** `interplanetary-ephemerides-catalog-v1.json` + `encounter-ephemerides-catalog-v1.json` (baricentros 5–8) y la ventana `interplanetary/galilean-moons-jsb-2031-2032.json` (`science/PlanetocentricWindow`) → `lab/EncounterDesign.aimEncounter` (Lambert a la SOI; `science/PlanetaryEncounter`) → `lab/OrbitalInsertion.simulateInsertion` (DOPRI54, masa variable) → `lab/IntegratedMission.computeIntegratedMission` (tramos `kepler`/`burn`/`landing`, conversión de marcos y continuidad; descenso por `BodyLandingSimulation` de 12F) → `ui/IntegratedMissionPlanner` (modalidad «Misión completa») → `lab/IntegratedMissionPlayback` (contextos heliocéntrico, planeta, satélite y descenso) → Centro de Misión (`kind: 'integrated'`). [13](STAGE13_INTEGRATED_MISSIONS.md).
 

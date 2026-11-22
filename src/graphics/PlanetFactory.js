@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { aplicarMapaColor, cargarTextura } from './TextureLoader.js';
 import { crearAtmosferaTierra, crearAtmosferaUrano } from './Atmosphere.js';
+import { registrarTexturaDiferida, vincularMallaTextura, texturasLigeras } from './DeferredTextures.js';
+
+// 18: clave de la carga diferida de las texturas de un planeta (superficie y, en la Tierra y Venus, capas; 0,08–2,1 MB).
+export const claveTexturaPlaneta = nombre => `planeta:${nombre}`;
 
 // Oblicuidad aproximada en grados, según la ficha de datos planetarios de la NASA.
 // El giro es visual; no modifica las efemérides ni modela la orientación a una fecha dada.
@@ -17,7 +21,7 @@ const ASPECTO = {
 
 const sphereGeometry = new THREE.SphereGeometry(1, 48, 32);
 
-function agregarCapaNubes(grupo, radio, nombre, opacidad) {
+function agregarCapaNubes(grupo, radio, nombre, opacidad, cargas) {
   const material = new THREE.MeshStandardMaterial({
     color: 0xffffff,
     roughness: 1,
@@ -32,7 +36,7 @@ function agregarCapaNubes(grupo, radio, nombre, opacidad) {
   capa.visible = false;
   grupo.add(capa);
 
-  cargarTextura(nombre, texture => {
+  cargas.push(() => cargarTextura(nombre, texture => {
     if (nombre === 'earth_clouds.jpg') {
       // El mapa es blanco y negro: su luminancia controla la cobertura.
       material.alphaMap = texture;
@@ -41,7 +45,7 @@ function agregarCapaNubes(grupo, radio, nombre, opacidad) {
     }
     material.needsUpdate = true;
     capa.visible = true;
-  }, { color: nombre !== 'earth_clouds.jpg' });
+  }, { color: nombre !== 'earth_clouds.jpg' }));
 
   return capa;
 }
@@ -176,27 +180,29 @@ export function crearPlaneta(planeta) {
   // The Mercury map is display-normalized and otherwise becomes nearly white
   // under the stronger sunlight at 0.4 AU. Retain a subdued gray tint after
   // texture loading; this is a visual albedo cue, not calibrated photometry.
-  aplicarMapaColor(material, aspecto.textura,
-    planeta.nombre === 'Mercurio' ? 0xaaaaaa : 0xffffff);
+  // 18: las texturas se piden cuando el disco del planeta ya mide unos píxeles en pantalla (DeferredTextures).
+  const cargas = [() => aplicarMapaColor(material, aspecto.textura,
+    planeta.nombre === 'Mercurio' ? 0xaaaaaa : 0xffffff)];
 
   if (planeta.nombre === 'Tierra') {
-    cargarTextura('earth_normal_map.png', texture => {
+    // 18: perfil ligero (calidad «Baja» guardada o ahorro de datos): sin mapas de relieve ni rugosidad; se decide al arrancar.
+    if (!texturasLigeras()) cargas.push(() => cargarTextura('earth_normal_map.png', texture => {
       material.normalMap = texture;
       material.normalScale.set(0.22, 0.22);
       material.needsUpdate = true;
-    }, { color: false });
-    cargarTextura('earth_roughness.png', texture => {
+    }, { color: false }));
+    if (!texturasLigeras()) cargas.push(() => cargarTextura('earth_roughness.png', texture => {
       material.roughnessMap = texture;
       material.roughness = 1;
       material.needsUpdate = true;
-    }, { color: false });
-    const nubes = agregarCapaNubes(eje, planeta.radio, 'earth_clouds.jpg', 0.7);
+    }, { color: false }));
+    const nubes = agregarCapaNubes(eje, planeta.radio, 'earth_clouds.jpg', 0.7, cargas);
     eje.add(crearAtmosferaTierra(planeta.radio));
     eje.userData.nubes = nubes;
   }
 
   if (planeta.nombre === 'Venus') {
-    agregarCapaNubes(eje, planeta.radio, 'venus_atmosphere.jpg', 0.88);
+    agregarCapaNubes(eje, planeta.radio, 'venus_atmosphere.jpg', 0.88, cargas);
   }
 
   if (planeta.nombre === 'Saturno') {
@@ -234,6 +240,9 @@ export function crearPlaneta(planeta) {
     material.customProgramCacheKey = () => 'urano-crescente-v1';
   }
 
+  registrarTexturaDiferida(claveTexturaPlaneta(planeta.nombre), () => { for (const cargar of cargas) cargar(); });
+  vincularMallaTextura(claveTexturaPlaneta(planeta.nombre), superficie);
+
   // El eje > 90° ya representa el sentido retrógrado de Venus y Urano.
   // Un día terrestre se muestra en unos 140 s; la proporción entre planetas se conserva.
   const velocidad = 2 * Math.PI / 140 * (23.9 / Math.abs(aspecto.horas));
@@ -245,6 +254,21 @@ export function crearPlaneta(planeta) {
       if (eje.userData.nubes) {
         eje.userData.nubes.rotation.y += velocidad * segundos * 1.04;
       }
+    },
+    // 25: el giro de la escena es ilustrativo; antes del lanzamiento 3D se coloca el meridiano `lonDeg` (textura equirectangular,
+    // u = 0 en 180° O) frente a `dirMundo` (proyectada en el ecuador del planeta). Las nubes giran lo mismo. Solo presentación.
+    orientarMeridiano(lonDeg, dirMundo) {
+      const a = THREE.MathUtils.degToRad(lonDeg + 180);
+      const angulo = (x, z) => Math.atan2(-z, x);
+      const destino = dirMundo.clone().applyQuaternion(eje.getWorldQuaternion(new THREE.Quaternion()).invert());
+      const nuevo = angulo(destino.x, destino.z) - angulo(-Math.cos(a), Math.sin(a));
+      if (eje.userData.nubes) eje.userData.nubes.rotation.y += nuevo - superficie.rotation.y;
+      superficie.rotation.y = nuevo;
+    },
+    /** 25: dirección (mundo) del punto de latitud y longitud dadas sobre la superficie del planeta. */
+    direccionGeografica(latDeg, lonDeg, destino = new THREE.Vector3()) {
+      const a = THREE.MathUtils.degToRad(lonDeg + 180), f = THREE.MathUtils.degToRad(latDeg);
+      return destino.set(-Math.cos(a) * Math.cos(f), Math.sin(f), Math.sin(a) * Math.cos(f)).applyQuaternion(superficie.getWorldQuaternion(new THREE.Quaternion()));
     }
   };
 }

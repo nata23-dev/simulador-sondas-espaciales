@@ -12,7 +12,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 FILES = (
     "public/textures/neptune.jpg",
-    "public/textures/moons/io-voyager-usgs.jpg",
+    "source-assets/textures/moons/io-voyager-usgs.jpg",
     "public/textures/moons/io-voyager-usgs-seam-feathered.png",
 )
 

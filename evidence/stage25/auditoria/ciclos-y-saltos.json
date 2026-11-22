@@ -1,0 +1,67 @@
+{
+ "ciclos": [
+  {
+   "m": "voyager-2",
+   "modeloNasa": "cargado",
+   "lienzos": 1,
+   "heapMB": 78
+  },
+  {
+   "m": "voyager-1",
+   "modeloNasa": "cargado",
+   "lienzos": 1,
+   "heapMB": 60
+  },
+  {
+   "m": "voyager-2",
+   "modeloNasa": "cargado",
+   "lienzos": 1,
+   "heapMB": 88
+  },
+  {
+   "m": "voyager-1",
+   "modeloNasa": "cargado",
+   "lienzos": 1,
+   "heapMB": 75
+  },
+  {
+   "m": "voyager-2",
+   "modeloNasa": "cargado",
+   "lienzos": 1,
+   "heapMB": 74
+  },
+  {
+   "m": "voyager-1",
+   "modeloNasa": "cargado",
+   "lienzos": 1,
+   "heapMB": 71
+  }
+ ],
+ "saltos": {
+  "NaN": {
+   "tMision": -23.394900000005865,
+   "progreso": 0.0025486364590123255,
+   "reloj": "T − 00:23",
+   "alt": 0
+  },
+  "-1e9": {
+   "tMision": -23.490799999982038,
+   "progreso": 0.0021447127499379165,
+   "reloj": "T − 00:23",
+   "alt": 0
+  },
+  "1e9": {
+   "tMision": 4424.9,
+   "progreso": 1,
+   "reloj": "T + 1:13:44",
+   "alt": 7727.049942287073
+  },
+  "Infinity": {
+   "tMision": 4424.9,
+   "progreso": 1,
+   "reloj": "T + 1:13:44",
+   "alt": 7727.049942287073
+  }
+ },
+ "avisos": []
+}

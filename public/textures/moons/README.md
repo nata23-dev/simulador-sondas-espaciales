@@ -1,5 +1,7 @@
 # Cartografía visual de las diez lunas — etapa 06.2
 
+**Etapa 19:** los cinco originales que la aplicación no carga (`callisto-`, `enceladus-`, `europa-`, `ganymede-` e `io-voyager-usgs.jpg`), fuentes de los derivados de esta carpeta, se movieron sin modificar a [`source-assets/textures/moons/`](../../../source-assets/textures/moons/README.md) para no publicarlos (3,3 MB). Las referencias de esta tabla a esos nombres se refieren a esa carpeta.
+
 **Actualización 07B:** el render visible de Titán usa un disco atmosférico opaco;
 `titan-cassini-938nm.jpg` se conserva como referencia infrarroja y ya no aparece
 debajo de la bruma. Ío usa el derivado local `io-voyager-usgs-seam-feathered.png`;

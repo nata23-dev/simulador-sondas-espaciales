@@ -180,24 +180,3 @@ export function impulsiveInsertionReference({ mu, vInfKmS, periapsisRadiusKm, bu
   });
   return { steps, totalDeltaVKmS: total, propellantKg: massKg - m, note: 'Impulsos instantáneos ideales en el periapsis (referencia); no es la maniobra ejecutada.' };
 }
-
-/** Muestra un tramo de inserción en un instante relativo (Kepler exacto o Hermite entre nudos DOPRI54; masa lineal). */
-export function sampleInsertionSegment(segment, elapsedSeconds) {
-  const t = Math.min(segment.endSeconds, Math.max(segment.startSeconds, elapsedSeconds));
-  if (segment.kind === 'kepler') {
-    const s = propagateKepler(segment.initial.positionKm, segment.initial.velocityKmS, t - segment.startSeconds, segment.mu);
-    return { positionKm: s.positionKm, velocityKmS: s.velocityKmS, massKg: segment.initial.massKg, dvAccKmS: segment.initial.dvAccKmS, engineOn: false };
-  }
-  const k = segment.knots;
-  let lo = 0, hi = k.length - 1;
-  if (t <= k[0].elapsedSeconds) return { ...k[0], engineOn: true };
-  if (t >= k[hi].elapsedSeconds) return { ...k[hi], engineOn: false };
-  while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (k[mid].elapsedSeconds <= t) lo = mid; else hi = mid; }
-  const a = k[lo], b = k[hi], h = b.elapsedSeconds - a.elapsedSeconds, u = (t - a.elapsedSeconds) / h, u2 = u * u, u3 = u2 * u;
-  const positionKm = [], velocityKmS = [];
-  for (let i = 0; i < 3; i++) {
-    positionKm.push((2 * u3 - 3 * u2 + 1) * a.positionKm[i] + (u3 - 2 * u2 + u) * h * a.velocityKmS[i] + (-2 * u3 + 3 * u2) * b.positionKm[i] + (u3 - u2) * h * b.velocityKmS[i]);
-    velocityKmS.push(((6 * u2 - 6 * u) * a.positionKm[i] + (-6 * u2 + 6 * u) * b.positionKm[i]) / h + (3 * u2 - 4 * u + 1) * a.velocityKmS[i] + (3 * u2 - 2 * u) * b.velocityKmS[i]);
-  }
-  return { positionKm, velocityKmS, massKg: a.massKg + (b.massKg - a.massKg) * u, dvAccKmS: a.dvAccKmS + (b.dvAccKmS - a.dvAccKmS) * u, engineOn: true };
-}

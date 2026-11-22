@@ -208,11 +208,3 @@ export function loadSavedDesigns() {
     return Array.isArray(parsed) ? parsed.slice(0, 30).filter(item => !validateDesign(item).length) : [];
   } catch { return []; }
 }
-export function saveDesign(design) {
-  const issues = validateDesign(design);
-  if (issues.length) throw Error(issues.join(' '));
-  const saved = loadSavedDesigns().filter(item => item.id !== design.id);
-  saved.unshift(design);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved.slice(0, 30)));
-  return saved.slice(0, 30);
-}

@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { UNIDADES_POR_AU } from './SceneScale.js';
 import { KM_PER_AU } from '../science/Units.js';
 import { HISTORICAL_ENCOUNTER_MOONS } from '../science/HistoricalEphemerisResolver.js';
-import { crearMaterialSuperficie, crearNeblinaTitan } from './MoonVisuals.js';
+import { crearMaterialSuperficie, crearNeblinaTitan, claveTexturaLuna } from './MoonVisuals.js';
+import { vincularMallaTextura } from './DeferredTextures.js';
 import { crearPenachoIo } from './IoVolcanism.js';
 
 /**
@@ -170,6 +171,7 @@ export function crearSatelitesEncuentroVisual() {
 
     const malla = new THREE.Mesh(geometriaEsfera, crearMaterialSuperficie(meta.key));
     malla.userData.nombreSatelite = meta.key;
+    vincularMallaTextura(claveTexturaLuna(meta.key), malla);
     nodoPosicion.add(malla);
     if (meta.key === 'Titan') malla.add(crearNeblinaTitan(geometriaEsfera, 1));
     if (meta.key === 'Io') {

@@ -5,6 +5,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { DRACO_GLTF_CONFIG } from 'three/addons/loaders/DRACOLoader.js';
 import * as THREE from 'three';
 import { NASA_PROBE_MODELS, nasaModelForCore, isExportHelper, localBounds } from '../src/graphics/NasaProbeModels.js';
 import { HISTORICAL_PROBES } from '../src/lab/HeritageCatalog.js';
@@ -64,11 +66,14 @@ test('extensiones requeridas soportadas y decodificador Draco idéntico al de th
     assert.equal((json.extensionsRequired ?? []).includes('KHR_draco_mesh_compression'), entry.draco, `${entry.probeId}: marca draco`);
     assert.equal(json.animations?.length ?? 0, 0, 'sin animaciones');
   }
-  for (const file of ['draco_decoder.wasm', 'draco_wasm_wrapper.js', 'draco_decoder.js']) {
-    const served = `public/libs/draco/gltf/${file}`, original = `node_modules/three/examples/jsm/libs/draco/gltf/${file}`;
-    assert.ok(existsSync(served), served);
-    if (existsSync(original)) assert.equal(sha256(readFileSync(served)), sha256(readFileSync(original)), `${file} igual al de three`);
+  // 18: el decodificador es el propio de three (DRACO_GLTF_CONFIG), sin copia en public/: una sola copia publicada.
+  assert.match(readFileSync('src/graphics/NasaProbeModels.js', 'utf8'), /setDecoderPath\(DRACO_GLTF_CONFIG\)/);
+  for (const url of [DRACO_GLTF_CONFIG.js, DRACO_GLTF_CONFIG.wasm]) {
+    const file = fileURLToPath(url);
+    assert.match(file.replace(/\\/g, '/'), /three\/examples\/jsm\/libs\/draco\/gltf\/draco_(wasm_wrapper\.js|decoder\.wasm)$/);
+    assert.ok(existsSync(file), file);
   }
+  assert.equal(existsSync('public/libs/draco'), false, 'sin la copia antigua en public/');
 });
 
 test('las mallas están en metros: coinciden con medidas documentadas del catálogo', () => {

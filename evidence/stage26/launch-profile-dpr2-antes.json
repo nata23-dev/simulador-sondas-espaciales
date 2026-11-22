@@ -1,0 +1,708 @@
+{
+  "gpu": true,
+  "uncapped": false,
+  "dpr": 2,
+  "viewport": [
+    1920,
+    1080
+  ],
+  "speed": 1,
+  "mision": "voyager-2",
+  "startedAt": "2026-11-22T03:09:45.349Z",
+  "errors": [],
+  "escenaPrincipalHistorico": {
+    "fps": 179.2,
+    "fotogramas": 717
+  },
+  "cargaMs": 4945,
+  "duracionReproduccionS": 245.866,
+  "reproduccion": {
+    "total": {
+      "fotogramas": 42883,
+      "fps": 174.4,
+      "p95Ms": 6,
+      "maxMs": 1412.7,
+      "largos50": 8,
+      "cpuMediaMs": 0.92
+    },
+    "porPlano": {
+      "(sin plano: acercamiento o carga)": {
+        "fotogramas": 587,
+        "fps": 175.2,
+        "p95Ms": 7.9,
+        "maxMs": 25.2,
+        "largos50": 0,
+        "cpuMediaMs": 0.66
+      },
+      "aproximacion": {
+        "fotogramas": 2381,
+        "fps": 134.6,
+        "p95Ms": 9.7,
+        "maxMs": 1412.7,
+        "largos50": 8,
+        "cpuMediaMs": 2.51
+      },
+      "plataforma-general": {
+        "fotogramas": 988,
+        "fps": 179.6,
+        "p95Ms": 6.1,
+        "maxMs": 11.2,
+        "largos50": 0,
+        "cpuMediaMs": 1.88
+      },
+      "plataforma-base": {
+        "fotogramas": 784,
+        "fps": 174.1,
+        "p95Ms": 6.6,
+        "maxMs": 19.7,
+        "largos50": 0,
+        "cpuMediaMs": 1.56
+      },
+      "despegue-suelo": {
+        "fotogramas": 1612,
+        "fps": 179.1,
+        "p95Ms": 5.6,
+        "maxMs": 35.3,
+        "largos50": 0,
+        "cpuMediaMs": 0.88
+      },
+      "seguimiento-largo": {
+        "fotogramas": 3376,
+        "fps": 179.9,
+        "p95Ms": 5.6,
+        "maxMs": 6.7,
+        "largos50": 0,
+        "cpuMediaMs": 0.69
+      },
+      "persecucion": {
+        "fotogramas": 1811,
+        "fps": 178.9,
+        "p95Ms": 5.7,
+        "maxMs": 17.8,
+        "largos50": 0,
+        "cpuMediaMs": 0.66
+      },
+      "lateral-separacion": {
+        "fotogramas": 1918,
+        "fps": 180,
+        "p95Ms": 5.6,
+        "maxMs": 5.7,
+        "largos50": 0,
+        "cpuMediaMs": 0.65
+      },
+      "persecucion-alta": {
+        "fotogramas": 2113,
+        "fps": 179.8,
+        "p95Ms": 5.6,
+        "maxMs": 13.1,
+        "largos50": 0,
+        "cpuMediaMs": 0.68
+      },
+      "lateral-etapas": {
+        "fotogramas": 1781,
+        "fps": 179.4,
+        "p95Ms": 5.6,
+        "maxMs": 16.8,
+        "largos50": 0,
+        "cpuMediaMs": 0.62
+      },
+      "persecucion-orbital": {
+        "fotogramas": 8524,
+        "fps": 172.5,
+        "p95Ms": 6.6,
+        "maxMs": 25.2,
+        "largos50": 0,
+        "cpuMediaMs": 0.81
+      },
+      "orbita-aparcamiento": {
+        "fotogramas": 4867,
+        "fps": 179.7,
+        "p95Ms": 5.6,
+        "maxMs": 17.6,
+        "largos50": 0,
+        "cpuMediaMs": 0.54
+      },
+      "lateral-separacion-nave": {
+        "fotogramas": 2900,
+        "fps": 178.8,
+        "p95Ms": 6.6,
+        "maxMs": 12.8,
+        "largos50": 0,
+        "cpuMediaMs": 1.18
+      },
+      "persecucion-pm": {
+        "fotogramas": 3433,
+        "fps": 177.2,
+        "p95Ms": 6.9,
+        "maxMs": 16.6,
+        "largos50": 0,
+        "cpuMediaMs": 1.11
+      },
+      "nave-despliegue": {
+        "fotogramas": 3618,
+        "fps": 179.8,
+        "p95Ms": 5.8,
+        "maxMs": 10.7,
+        "largos50": 0,
+        "cpuMediaMs": 0.84
+      },
+      "nave-final": {
+        "fotogramas": 2190,
+        "fps": 176.6,
+        "p95Ms": 6.6,
+        "maxMs": 12.3,
+        "largos50": 0,
+        "cpuMediaMs": 0.62
+      }
+    },
+    "largos": [
+      {
+        "i": 572,
+        "ms": 434.8,
+        "cpuMs": 0.5,
+        "plano": "aproximacion",
+        "t": -24
+      },
+      {
+        "i": 573,
+        "ms": 195.3,
+        "cpuMs": 2.3,
+        "plano": "aproximacion",
+        "t": -24
+      },
+      {
+        "i": 574,
+        "ms": 827.8,
+        "cpuMs": 1,
+        "plano": "aproximacion",
+        "t": -24
+      },
+      {
+        "i": 576,
+        "ms": 61.2,
+        "cpuMs": 0.6,
+        "plano": "aproximacion",
+        "t": -24
+      },
+      {
+        "i": 603,
+        "ms": 717.5,
+        "cpuMs": 716.3,
+        "plano": "aproximacion",
+        "t": -24
+      },
+      {
+        "i": 1651,
+        "ms": 64.2,
+        "cpuMs": 63.4,
+        "plano": "aproximacion",
+        "t": -17.9
+      },
+      {
+        "i": 1902,
+        "ms": 52.9,
+        "cpuMs": 51.7,
+        "plano": "aproximacion",
+        "t": -16.4
+      },
+      {
+        "i": 2387,
+        "ms": 1412.7,
+        "cpuMs": 1416.3,
+        "plano": "aproximacion",
+        "t": -13.4
+      }
+    ],
+    "loaf": [
+      {
+        "inicio": 12289,
+        "ms": 443,
+        "bloqueo": 388,
+        "render": 438,
+        "scripts": [
+          {
+            "ms": 431,
+            "fuente": ":",
+            "invocador": "FrameRequestCallback"
+          }
+        ]
+      },
+      {
+        "inicio": 12732,
+        "ms": 198,
+        "bloqueo": 131,
+        "render": 4,
+        "scripts": [
+          {
+            "ms": 177,
+            "fuente": "three-DSbCsyV7.js:s",
+            "invocador": "IMG[src=\"/textures/earth_clouds.jpg\"].onload"
+          }
+        ]
+      },
+      {
+        "inicio": 12930,
+        "ms": 824,
+        "bloqueo": 773,
+        "render": 2,
+        "scripts": [
+          {
+            "ms": 822,
+            "fuente": "three-DSbCsyV7.js:s",
+            "invocador": "IMG[src=\"/launch/earth-bmng-8192.jpg\"].onload"
+          }
+        ]
+      },
+      {
+        "inicio": 13805,
+        "ms": 59,
+        "bloqueo": 8,
+        "render": 1,
+        "scripts": [
+          {
+            "ms": 57,
+            "fuente": "index-COTy5T2f.js:",
+            "invocador": "Response.text.then"
+          }
+        ]
+      },
+      {
+        "inicio": 14039,
+        "ms": 724,
+        "bloqueo": 669,
+        "render": 719,
+        "scripts": [
+          {
+            "ms": 716,
+            "fuente": ":",
+            "invocador": "FrameRequestCallback"
+          }
+        ]
+      },
+      {
+        "inicio": 20775,
+        "ms": 70,
+        "bloqueo": 15,
+        "render": 65,
+        "scripts": [
+          {
+            "ms": 63,
+            "fuente": ":",
+            "invocador": "FrameRequestCallback"
+          }
+        ]
+      },
+      {
+        "inicio": 22246,
+        "ms": 58,
+        "bloqueo": 3,
+        "render": 52,
+        "scripts": [
+          {
+            "ms": 52,
+            "fuente": ":",
+            "invocador": "FrameRequestCallback"
+          }
+        ]
+      },
+      {
+        "inicio": 25238,
+        "ms": 1420,
+        "bloqueo": 1368,
+        "render": 1418,
+        "scripts": [
+          {
+            "ms": 1416,
+            "fuente": ":",
+            "invocador": "FrameRequestCallback"
+          }
+        ]
+      },
+      {
+        "inicio": 39991,
+        "ms": 54,
+        "bloqueo": 0,
+        "render": 37,
+        "scripts": [
+          {
+            "ms": 37,
+            "fuente": ":",
+            "invocador": "FrameRequestCallback"
+          }
+        ]
+      }
+    ],
+    "loafNoDisponible": false
+  },
+  "instantes": {
+    "aproximacion": {
+      "t": -20,
+      "plano": "aproximacion",
+      "fps": 179.9,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.64,
+      "cpuP95Ms": 0.8,
+      "gpuMediaMs": 3.53,
+      "gpuP95Ms": 6.11,
+      "gpuMuestras": 288,
+      "llamadas": 94,
+      "triangulos": 152000,
+      "programas": 21,
+      "texturas": 19,
+      "geometrias": 106,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "plataforma-general": {
+      "t": -8,
+      "plano": "plataforma-general",
+      "fps": 177,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.88,
+      "cpuP95Ms": 1.2,
+      "gpuMediaMs": 4.96,
+      "gpuP95Ms": 5.82,
+      "gpuMuestras": 281,
+      "llamadas": 165,
+      "triangulos": 158512,
+      "programas": 32,
+      "texturas": 24,
+      "geometrias": 109,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "base-cuenta-atras": {
+      "t": -2,
+      "plano": "plataforma-base",
+      "fps": 179.9,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.86,
+      "cpuP95Ms": 1.1,
+      "gpuMediaMs": 3.88,
+      "gpuP95Ms": 4.77,
+      "gpuMuestras": 286,
+      "llamadas": 161,
+      "triangulos": 156892,
+      "programas": 32,
+      "texturas": 24,
+      "geometrias": 109,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "despegue-suelo": {
+      "t": 5,
+      "plano": "despegue-suelo",
+      "fps": 179.9,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.98,
+      "cpuP95Ms": 1.3,
+      "gpuMediaMs": 3.67,
+      "gpuP95Ms": 6.66,
+      "gpuMuestras": 288,
+      "llamadas": 159,
+      "triangulos": 98728,
+      "programas": 34,
+      "texturas": 25,
+      "geometrias": 112,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "seguimiento": {
+      "t": 30,
+      "plano": "seguimiento-largo",
+      "fps": 179.9,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.68,
+      "cpuP95Ms": 0.9,
+      "gpuMediaMs": 3.26,
+      "gpuP95Ms": 5.44,
+      "gpuMuestras": 287,
+      "llamadas": 62,
+      "triangulos": 137076,
+      "programas": 34,
+      "texturas": 25,
+      "geometrias": 112,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "persecucion": {
+      "t": 80,
+      "plano": "persecucion",
+      "fps": 179.9,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.68,
+      "cpuP95Ms": 0.9,
+      "gpuMediaMs": 3.46,
+      "gpuP95Ms": 7.07,
+      "gpuMuestras": 286,
+      "llamadas": 63,
+      "triangulos": 152144,
+      "programas": 34,
+      "texturas": 26,
+      "geometrias": 112,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "separacion-srm": {
+      "t": 123.7,
+      "plano": "lateral-separacion",
+      "fps": 177,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.68,
+      "cpuP95Ms": 0.9,
+      "gpuMediaMs": 4.12,
+      "gpuP95Ms": 4.21,
+      "gpuMuestras": 282,
+      "llamadas": 62,
+      "triangulos": 152196,
+      "programas": 34,
+      "texturas": 26,
+      "geometrias": 114,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "cofia": {
+      "t": 272.4,
+      "plano": "lateral-etapas",
+      "fps": 179.9,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.62,
+      "cpuP95Ms": 0.8,
+      "gpuMediaMs": 3.84,
+      "gpuP95Ms": 4.69,
+      "gpuMuestras": 287,
+      "llamadas": 46,
+      "triangulos": 142974,
+      "programas": 34,
+      "texturas": 26,
+      "geometrias": 115,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "centaur-mes1": {
+      "t": 508.2,
+      "plano": "orbita-aparcamiento",
+      "fps": 179.9,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.6,
+      "cpuP95Ms": 0.8,
+      "gpuMediaMs": 3.24,
+      "gpuP95Ms": 6.35,
+      "gpuMuestras": 287,
+      "llamadas": 35,
+      "triangulos": 134928,
+      "programas": 34,
+      "texturas": 26,
+      "geometrias": 117,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "aparcamiento": {
+      "t": 1190.2,
+      "plano": "orbita-aparcamiento",
+      "fps": 179.9,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.53,
+      "cpuP95Ms": 0.7,
+      "gpuMediaMs": 3.33,
+      "gpuP95Ms": 6,
+      "gpuMuestras": 287,
+      "llamadas": 24,
+      "triangulos": 127004,
+      "programas": 34,
+      "texturas": 26,
+      "geometrias": 117,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "separacion-nave": {
+      "t": 3685.2,
+      "plano": "lateral-separacion-nave",
+      "fps": 179.9,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.55,
+      "cpuP95Ms": 0.7,
+      "gpuMediaMs": 1.68,
+      "gpuP95Ms": 1.68,
+      "gpuMuestras": 287,
+      "llamadas": 24,
+      "triangulos": 127004,
+      "programas": 34,
+      "texturas": 26,
+      "geometrias": 117,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    },
+    "mastiles-nasa": {
+      "t": 3805.2,
+      "plano": "nave-despliegue",
+      "fps": 179.9,
+      "fotogramaP95Ms": 5.6,
+      "cpuMediaMs": 0.49,
+      "cpuP95Ms": 0.7,
+      "gpuMediaMs": 1.05,
+      "gpuP95Ms": 1.09,
+      "gpuMuestras": 287,
+      "llamadas": 11,
+      "triangulos": 23750,
+      "programas": 34,
+      "texturas": 29,
+      "geometrias": 122,
+      "pixelRatio": 2,
+      "lienzo": [
+        3840,
+        2160
+      ]
+    }
+  },
+  "desglose": {
+    "despegue-suelo": {
+      "base": {
+        "fps": 177.6,
+        "gpuMediaMs": 3.43,
+        "cpuMediaMs": 0.85,
+        "llamadas": 159
+      },
+      "sinSombras": {
+        "fps": 179.9,
+        "gpuMediaMs": 3.29,
+        "cpuMediaMs": 0.69,
+        "llamadas": 98
+      },
+      "sinHumo": {
+        "fps": 179.9,
+        "gpuMediaMs": 3.48,
+        "cpuMediaMs": 0.87,
+        "llamadas": 158
+      },
+      "sinLlamas": {
+        "fps": 178.9,
+        "gpuMediaMs": 3.6,
+        "cpuMediaMs": 0.86,
+        "llamadas": 159
+      },
+      "sinCielo": {
+        "fps": 179.9,
+        "gpuMediaMs": 3.61,
+        "cpuMediaMs": 0.87,
+        "llamadas": 159
+      },
+      "pixelRatio1": {
+        "fps": 179.9,
+        "gpuMediaMs": 2.88,
+        "cpuMediaMs": 0.91,
+        "llamadas": 159
+      }
+    },
+    "seguimiento": {
+      "base": {
+        "fps": 179.9,
+        "gpuMediaMs": 3.28,
+        "cpuMediaMs": 0.71,
+        "llamadas": 62
+      },
+      "sinSombras": {
+        "fps": 178.9,
+        "gpuMediaMs": 3.36,
+        "cpuMediaMs": 0.71,
+        "llamadas": 62
+      },
+      "sinHumo": {
+        "fps": 177,
+        "gpuMediaMs": 3.35,
+        "cpuMediaMs": 0.71,
+        "llamadas": 61
+      },
+      "sinLlamas": {
+        "fps": 179.9,
+        "gpuMediaMs": 3.1,
+        "cpuMediaMs": 0.72,
+        "llamadas": 62
+      },
+      "sinCielo": {
+        "fps": 179.9,
+        "gpuMediaMs": 3.1,
+        "cpuMediaMs": 0.72,
+        "llamadas": 62
+      },
+      "pixelRatio1": {
+        "fps": 179.9,
+        "gpuMediaMs": 1.44,
+        "cpuMediaMs": 0.67,
+        "llamadas": 62
+      }
+    },
+    "aparcamiento": {
+      "base": {
+        "fps": 179.9,
+        "gpuMediaMs": 3.41,
+        "cpuMediaMs": 0.57,
+        "llamadas": 24
+      },
+      "sinSombras": {
+        "fps": 178.3,
+        "gpuMediaMs": 3.49,
+        "cpuMediaMs": 0.56,
+        "llamadas": 24
+      },
+      "sinHumo": {
+        "fps": 179.9,
+        "gpuMediaMs": 3.47,
+        "cpuMediaMs": 0.54,
+        "llamadas": 23
+      },
+      "sinLlamas": {
+        "fps": 179.9,
+        "gpuMediaMs": 3.49,
+        "cpuMediaMs": 0.57,
+        "llamadas": 24
+      },
+      "sinCielo": {
+        "fps": 168.1,
+        "gpuMediaMs": 3.63,
+        "cpuMediaMs": 0.57,
+        "llamadas": 24
+      },
+      "pixelRatio1": {
+        "fps": 177.6,
+        "gpuMediaMs": 2.07,
+        "cpuMediaMs": 0.55,
+        "llamadas": 24
+      }
+    }
+  },
+  "finishedAt": "2026-11-22T03:15:25.405Z"
+}

@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { crearPlaneta } from './PlanetFactory.js';
 import { registerRenderer, reportFrame } from './QualityProfile.js';
 import { crearLunasPlanetarias, establecerInspeccionVisualIo } from './MoonVisuals.js';
+import { solicitarTexturasVisibles } from './DeferredTextures.js';
 import { crearControladorCamara } from './CameraController.js';
 import { crearSol } from './Sun.js';
 import { crearProteccionTransitosSolares } from './SolarTransitGuard.js';
@@ -19,7 +20,6 @@ import {
 import { crearEtiquetasPlanetas } from '../ui/PlanetLabels.js';
 import { UNIDADES_POR_AU, posicionEscenaProporcional } from './SpatialScale.js';
 import { distanciaHeliocentricaAU, exposicionFotografica, irradianciaSolar } from './SolarIllumination.js';
-import { crearControladorLanzamientoCinematografico } from './LaunchCinematicController.js';
 import {
   HISTORICAL_MISSIONS_CATALOG,
   VOYAGER_1_ID,
@@ -205,6 +205,17 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
 
   // 17.1: quien ocupa la escena con sus propios paneles (Centro de Misión del laboratorio) indica el área libre del lienzo.
   let proveedorZonaEncuadre = null;
+  // 24: controles superpuestos a la escena que los rótulos deben esquivar (lectura del DOM como mucho cada 200 ms).
+  let obstaculosEtiquetas = null, lecturaObstaculos = -Infinity;
+  function obtenerObstaculosEtiquetas() {
+    if (!proveedorZonaEncuadre) return null;
+    const ahora = performance.now();
+    if (ahora - lecturaObstaculos > 200) {
+      lecturaObstaculos = ahora;
+      obstaculosEtiquetas = proveedorZonaEncuadre(renderer.domElement.getBoundingClientRect())?.obstaculos ?? null;
+    }
+    return obstaculosEtiquetas;
+  }
   function obtenerZonaEncuadre() {
     const lienzo = renderer.domElement.getBoundingClientRect();
     // 17.1.1 (D-01): aunque la zona indicada sea demasiado pequeña para encuadrar, su recorte se mantiene: el lienzo no debe
@@ -413,14 +424,76 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   const fondoEstelar = crearFondoEstelar(camera, renderer.getPixelRatio());
   scene.add(fondoEstelar.grupo);
 
-  const controladorLanzamiento = crearControladorLanzamientoCinematografico({
-    scene,
-    camera,
-    controls,
-    tierraMesh: objetos.get('Tierra')?.posicion,
-    alFinalizarLanzamiento: opcionesExtra.alFinalizarLanzamiento ?? null,
-    alCambiarFase: opcionesExtra.alCambiarFaseLanzamiento ?? null
-  });
+  // 25: el lanzamiento 3D tiene su propia escena (src/launch/, carga diferida). Aquí solo se acerca la cámara a la Tierra antes
+  // del fundido y se deja de dibujar mientras el lanzamiento ocupa la pantalla.
+  let aproximacionTierra = null;
+  let renderPausado = false;
+  // 26: precompilación en paralelo (KHR_parallel_shader_compile) de los programas que aún no existen, p. ej. el modelo de la
+  // sonda y las líneas de una misión del laboratorio recién configurada. Mientras dura se conserva el último fotograma en lugar
+  // de bloquear la página (≈ 0,6 s con la GPU de referencia). Con un tope de 2 s por si el navegador no informa del final.
+  let precompilacion = null;
+  function precompilarEscena() {
+    if (precompilacion) return precompilacion;
+    let compilacion;
+    try { compilacion = renderer.compileAsync(scene, camera); } catch { return Promise.resolve(); }
+    const fin = Promise.race([compilacion, new Promise(resolve => setTimeout(resolve, 2000))]).catch(() => {});
+    precompilacion = fin.then(() => { precompilacion = null; });
+    return precompilacion;
+  }
+  const suaveCubica = u => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+  /**
+   * Acerca la cámara a la Tierra hasta que su disco ocupa ≈ 60 % de la altura y se resuelve al llegar. Con `subsolar` (latitud y
+   * longitud del punto subsolar del instante) se orienta antes el meridiano de la Tierra ilustrativa hacia el Sol, y con `sitio`
+   * la cámara termina sobre ese lugar con el norte arriba, como empieza la escena del lanzamiento.
+   */
+  function aproximarATierraParaLanzamiento({ duracionS = 3.2, subsolar = null, sitio = null } = {}) {
+    const tierra = objetos.get('Tierra');
+    if (!tierra) return Promise.resolve(false);
+    aproximacionTierra?.resolver?.(false);
+    controls.enabled = false;
+    const inicioPos = camera.position.clone(), inicioMira = controls.target.clone();
+    const centro = new THREE.Vector3(), dirIni = new THREE.Vector3(), dirFin = new THREE.Vector3(), dir = new THREE.Vector3(), mira = new THREE.Vector3();
+    const arribaMundo = new THREE.Vector3(0, 1, 0), norte = new THREE.Vector3();
+    tierra.posicion.getWorldPosition(centro);
+    if (subsolar && tierra.orientarMeridiano) tierra.orientarMeridiano(subsolar.lonDeg, centro.clone().negate().normalize());
+    return new Promise(resolver => {
+      let transcurrido = 0;
+      aproximacionTierra = {
+        resolver,
+        actualizar(dt) {
+          transcurrido += dt;
+          tierra.posicion.getWorldPosition(centro);
+          const radio = tierra.planeta.radio * tierra.posicion.scale.x;
+          dirIni.copy(inicioPos).sub(centro);
+          const dIni = Math.max(dirIni.length(), radio * 1.5);
+          dirIni.normalize();
+          if (sitio && tierra.direccionGeografica) tierra.direccionGeografica(sitio.latDeg, sitio.lonDeg, dirFin);
+          else {
+            // Sin lugar: hacia el Sol (en el origen de la escena), algo inclinado al norte.
+            dirFin.copy(centro).negate().normalize().multiplyScalar(0.8).addScaledVector(dirIni, 0.2);
+            dirFin.y += 0.25; dirFin.normalize();
+          }
+          const dFin = radio / Math.sin(0.3 * THREE.MathUtils.degToRad(camera.fov));
+          const u = Math.min(1, transcurrido / duracionS), e = suaveCubica(u);
+          const d = Math.exp(Math.log(dIni) + (Math.log(dFin) - Math.log(dIni)) * e);
+          dir.copy(dirIni).lerp(dirFin, e).normalize();
+          camera.position.copy(centro).addScaledVector(dir, d);
+          mira.copy(inicioMira).lerp(centro, Math.min(1, e * 1.6));
+          controls.target.copy(mira);
+          if (sitio && tierra.direccionGeografica) camera.up.copy(arribaMundo).lerp(tierra.direccionGeografica(90, 0, norte), e).normalize();
+          camera.lookAt(mira);
+          if (u >= 1 && this.resolver) { const r = this.resolver; this.resolver = null; r(true); }
+        }
+      };
+    });
+  }
+  function terminarAproximacionTierra() {
+    aproximacionTierra?.resolver?.(false);
+    aproximacionTierra = null;
+    renderPausado = false;
+    camera.up.set(0, 1, 0);
+    controls.enabled = true;
+  }
 
   etiquetas = crearEtiquetasPlanetas(container, camera, objetos, sonda, {
     sondasHistoricas: [
@@ -457,8 +530,9 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     return ok;
   }
 
+  // 23: también un satélite visible (fase de satélite de la misión del laboratorio).
   function encuadrarDestinoConSonda(nombre) {
-    if (!objetos.has(nombre)) return false;
+    if (!objetos.has(nombre) && !lunasPlanetarias.moons.get(nombre)?.posicion.visible) return false;
     return controladorCamara.encuadrarDestinoConSonda(nombre);
   }
 
@@ -468,14 +542,6 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   }
 
   function actualizarPlanosProfundidad() {
-    if (controladorLanzamiento.estaActivo()) {
-      if (camera.near !== 0.05 || camera.far !== 2000) {
-        camera.near = 0.05;
-        camera.far = 2000;
-        camera.updateProjectionMatrix();
-      }
-      return;
-    }
     let menorDistanciaSuperficie = camera.position.length() - sol.radioActualEscena();
     for (const [nombre, objeto] of objetos) {
       const radioEfectivo = objeto.planeta.radio * objeto.posicion.scale.x
@@ -602,10 +668,13 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
 
   function actualizarLunas(states, visible = true) {
     const seleccionado = controladorCamara.nombreSeleccionado();
-    const old = lunasPlanetarias.moons.get(seleccionado)?.posicion.visible
-      ? lunasPlanetarias.moons.get(seleccionado).posicion.position.clone() : null;
+    const luna = lunasPlanetarias.moons.get(seleccionado);
+    const old = luna?.posicion.visible ? luna.posicion.position.clone() : null;
     lunasPlanetarias.actualizar(states, visible);
-    if (old) controladorCamara.alActualizarLuna(old);
+    if (!old) return;
+    // 23: si el satélite seleccionado deja de dibujarse (fuera de su ventana o al soltar la escena), la cámara pasa a su planeta.
+    if (!luna.posicion.visible) { controladorCamara.seleccionar(luna.definition.parent); return; }
+    controladorCamara.alActualizarLuna(old);
   }
 
   function actualizarPosiciones(estados, opciones = {}) {
@@ -850,6 +919,8 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     const delta = Math.max((tiempo - tiempoAnterior) / 1000, 0);
     tiempoAnterior = tiempo;
     reportFrame(delta);
+    if (renderPausado) return; // el lanzamiento 3D ocupa la pantalla
+    if (precompilacion) return; // 26: se mantiene el fotograma anterior mientras se compilan los programas nuevos
     const dtClamped = Math.min(delta, 0.1);
 
     for (const objeto of objetos.values()) objeto.actualizarGiro(dtClamped);
@@ -857,8 +928,8 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     lunasPlanetarias.actualizarEfectos(tiempo / 1000);
     satelitesEncuentro.actualizarEfectos(tiempo / 1000);
 
-    if (controladorLanzamiento.estaActivo()) {
-      controladorLanzamiento.actualizar(dtClamped);
+    if (aproximacionTierra) {
+      aproximacionTierra.actualizar(dtClamped);
     } else {
       controladorCamara.actualizar(delta);
       componerObjetoEnAreaLibre(dtClamped);
@@ -871,6 +942,8 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     }
 
     actualizarExposicion(dtClamped);
+    // 18: texturas de planetas y lunas bajo demanda (solo las que ya se ven con unos píxeles de radio).
+    solicitarTexturasVisibles(camera, container.clientHeight);
     if (!orbitasVisibles) for (const orbita of orbitas) orbita.visible = false;
     transitosSolares.actualizar(dtClamped);
     actualizarPlanosProfundidad();
@@ -894,8 +967,9 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
         idSondaActiva: idHistSel,
         modoPrimeraPersona: controladorCamara.requiereEscalaFisicaUnoAUno(),
         objetivoMirada: estadoCamHist.objetivoMirada,
-        lanzamientoActivo: controladorLanzamiento.estaActivo(),
-        comparadorActivo: Boolean(opcionesExtra.obtenerComparadorActivo?.())
+        lanzamientoActivo: aproximacionTierra !== null,
+        comparadorActivo: Boolean(opcionesExtra.obtenerComparadorActivo?.()),
+        obstaculos: obtenerObstaculosEtiquetas()
       }
     );
     renderer.render(scene, camera);
@@ -911,6 +985,8 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     actualizarPosiciones,
     actualizarLunas,
     seleccionarLuna,
+    // 18: Voyager.glb ya no se descarga al arrancar; el modo histórico lo pide al activarse (una sola descarga compartida).
+    precargarModelosHistoricos: () => { for (const s of sondasHistoricas.values()) s.solicitarModelo(); },
     obtenerEstadoVisualLunas: () => Object.fromEntries([...lunasPlanetarias.moons].map(([key, moon]) => [key, {
       visible: moon.posicion.visible,
       position: moon.posicion.position.toArray(),
@@ -921,6 +997,8 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
         return [(p.x + 1) * rect.width / 2 + rect.left, (1 - p.y) * rect.height / 2 + rect.top];
       })(),
       radiusScene: moon.radioEscena,
+      // 18: true cuando el mosaico ya se descargó y se aplica (las texturas se piden al verse la luna con unos píxeles de radio).
+      texturaCargada: Boolean(moon.mesh.material.map),
       parentRadiusScene: objetos.get(moon.definition.parent).planeta.radio
         * objetos.get(moon.definition.parent).posicion.scale.x
     }])),
@@ -938,7 +1016,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       modoEscala
     }),
     establecerFactorEscalaSonda: sonda.establecerFactorEscala,
-    establecerProveedorZonaEncuadre(fn) { proveedorZonaEncuadre = typeof fn === 'function' ? fn : null; if (!proveedorZonaEncuadre) aplicarRecorte(null); },
+    establecerProveedorZonaEncuadre(fn) { proveedorZonaEncuadre = typeof fn === 'function' ? fn : null; obstaculosEtiquetas = null; lecturaObstaculos = -Infinity; if (!proveedorZonaEncuadre) aplicarRecorte(null); },
     mostrarTrayectoriaSonda: sonda.mostrarTrayectoria,
     trayectoriaSondaVisible: sonda.trayectoriaEsVisible,
     seleccionarSonda: controladorCamara.seleccionarSonda,
@@ -976,14 +1054,11 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       fn(controladorCamara.obtenerEstadoCamaraHistorica());
       return () => observadoresCamaraHistorica.delete(fn);
     },
-    iniciarLanzamientoCinematografico: misionId => controladorLanzamiento.iniciar(misionId),
-    pausarLanzamiento: () => controladorLanzamiento.pausar(),
-    reanudarLanzamiento: () => controladorLanzamiento.reanudar(),
-    saltarLanzamiento: () => controladorLanzamiento.saltar(),
-    cancelarLanzamiento: () => controladorLanzamiento.cancelar(),
-    reiniciarLanzamiento: () => controladorLanzamiento.reiniciar(),
-    estaEnLanzamiento: () => controladorLanzamiento.estaActivo(),
-    obtenerFaseLanzamiento: () => controladorLanzamiento.obtenerFaseActual(),
+    aproximarATierraParaLanzamiento,
+    terminarAproximacionTierra,
+    establecerRenderPausado: valor => { renderPausado = Boolean(valor); },
+    precompilarEscena,
+    obtenerFovCamara: () => camera.fov,
     actualizarLineaDistancia: medidorDistancia.actualizar,
     establecerModoEscala,
     modoEscalaActual: () => modoEscala,

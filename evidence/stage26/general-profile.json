@@ -1,0 +1,295 @@
+{
+ "fecha": "2026-11-22T07:13:04.835Z",
+ "dpr": 1,
+ "lab": "ok",
+ "errores": [],
+ "resumen": {
+  "carga": {
+   "n": 11,
+   "fps": 9.3,
+   "p95": 598.7,
+   "max": 598.7,
+   "largos50": 5
+  },
+  "exploracion-reposo": {
+   "n": 694,
+   "fps": 138.7,
+   "p95": 7.2,
+   "max": 147.2,
+   "largos50": 1
+  },
+  "exploracion-reproducir": {
+   "n": 710,
+   "fps": 141.8,
+   "p95": 7.2,
+   "max": 11,
+   "largos50": 0
+  },
+  "exploracion-arrastre": {
+   "n": 324,
+   "fps": 142.4,
+   "p95": 7.2,
+   "max": 8.1,
+   "largos50": 0
+  },
+  "entrar-historico": {
+   "n": 553,
+   "fps": 133.7,
+   "p95": 7.2,
+   "max": 106.7,
+   "largos50": 2
+  },
+  "historico-reposo": {
+   "n": 571,
+   "fps": 142.2,
+   "p95": 7.2,
+   "max": 10.5,
+   "largos50": 0
+  },
+  "historico-reproducir": {
+   "n": 855,
+   "fps": 142.4,
+   "p95": 7.2,
+   "max": 7.7,
+   "largos50": 0
+  },
+  "volver-exploracion": {
+   "n": 569,
+   "fps": 140.6,
+   "p95": 7.2,
+   "max": 34.4,
+   "largos50": 0
+  },
+  "entrar-laboratorio": {
+   "n": 1001,
+   "fps": 133.2,
+   "p95": 7.2,
+   "max": 212.4,
+   "largos50": 5
+  },
+  "lab-calcular": {
+   "n": 130,
+   "fps": 131.1,
+   "p95": 7.2,
+   "max": 83.9,
+   "largos50": 1
+  },
+  "lab-abrir-reproduccion": {
+   "n": 432,
+   "fps": 127.4,
+   "p95": 7.2,
+   "max": 153.6,
+   "largos50": 3
+  },
+  "lab-reproduccion": {
+   "n": 1142,
+   "fps": 142.7,
+   "p95": 7.2,
+   "max": 14.2,
+   "largos50": 0
+  }
+ },
+ "loaf": [
+  {
+   "fase": "carga",
+   "ms": 669,
+   "bloqueo": 573,
+   "scripts": [
+    {
+     "ms": 395,
+     "f": "Be@index-iufumHZb.js:193129",
+     "inv": "FrameRequestCallback"
+    },
+    {
+     "ms": 186,
+     "f": "@index-iufumHZb.js:0",
+     "inv": "http://localhost:5200/assets/index-iufumHZb.js"
+    }
+   ]
+  },
+  {
+   "fase": "carga",
+   "ms": 313,
+   "bloqueo": 262,
+   "scripts": [
+    {
+     "ms": 311,
+     "f": "Be@index-iufumHZb.js:193129",
+     "inv": "FrameRequestCallback"
+    }
+   ]
+  },
+  {
+   "fase": "carga",
+   "ms": 60,
+   "bloqueo": 0,
+   "scripts": [
+    {
+     "ms": 16,
+     "f": "@index-iufumHZb.js:87960",
+     "inv": "Response.text.then"
+    },
+    {
+     "ms": 15,
+     "f": "Be@index-iufumHZb.js:193129",
+     "inv": "FrameRequestCallback"
+    }
+   ]
+  },
+  {
+   "fase": "carga",
+   "ms": 159,
+   "bloqueo": 55,
+   "scripts": [
+    {
+     "ms": 95,
+     "f": "Be@index-iufumHZb.js:193129",
+     "inv": "FrameRequestCallback"
+    },
+    {
+     "ms": 6,
+     "f": "@index-iufumHZb.js:695440",
+     "inv": "Response.json.then"
+    }
+   ]
+  },
+  {
+   "fase": "exploracion-reposo",
+   "ms": 155,
+   "bloqueo": 100,
+   "scripts": [
+    {
+     "ms": 149,
+     "f": "Be@index-iufumHZb.js:193129",
+     "inv": "FrameRequestCallback"
+    }
+   ]
+  },
+  {
+   "fase": "entrar-historico",
+   "ms": 104,
+   "bloqueo": 0,
+   "scripts": [
+    {
+     "ms": 15,
+     "f": "@index-iufumHZb.js:629878",
+     "inv": "Response.json.then"
+    },
+    {
+     "ms": 11,
+     "f": "@three-CCAGTPhL.js:213515",
+     "inv": "Response.arrayBuffer.then"
+    },
+    {
+     "ms": 5,
+     "f": "@three-CCAGTPhL.js:213105",
+     "inv": "ReadableStreamDefaultReader.read.then"
+    }
+   ]
+  },
+  {
+   "fase": "entrar-historico",
+   "ms": 66,
+   "bloqueo": 0,
+   "scripts": [
+    {
+     "ms": 37,
+     "f": "@index-iufumHZb.js:629878",
+     "inv": "Response.json.then"
+    },
+    {
+     "ms": 25,
+     "f": "@index-iufumHZb.js:629878",
+     "inv": "Response.json.then"
+    }
+   ]
+  },
+  {
+   "fase": "entrar-laboratorio",
+   "ms": 219,
+   "bloqueo": 168,
+   "scripts": [
+    {
+     "ms": 204,
+     "f": "@index-iufumHZb.js:698189",
+     "inv": "import.then"
+    }
+   ]
+  },
+  {
+   "fase": "entrar-laboratorio",
+   "ms": 78,
+   "bloqueo": 17,
+   "scripts": [
+    {
+     "ms": 62,
+     "f": "ce@index-iufumHZb.js:544169",
+     "inv": "FrameRequestCallback"
+    }
+   ]
+  },
+  {
+   "fase": "entrar-laboratorio",
+   "ms": 74,
+   "bloqueo": 0,
+   "scripts": []
+  },
+  {
+   "fase": "entrar-laboratorio",
+   "ms": 56,
+   "bloqueo": 0,
+   "scripts": []
+  },
+  {
+   "fase": "lab-calcular",
+   "ms": 82,
+   "bloqueo": 31,
+   "scripts": [
+    {
+     "ms": 72,
+     "f": "@ExperimentalLaboratory-BE0bnv0R.js:208824",
+     "inv": "Response.json.then"
+    }
+   ]
+  },
+  {
+   "fase": "lab-abrir-reproduccion",
+   "ms": 113,
+   "bloqueo": 61,
+   "scripts": [
+    {
+     "ms": 63,
+     "f": "ke@ExperimentalLaboratory-BE0bnv0R.js:76902",
+     "inv": "FrameRequestCallback"
+    },
+    {
+     "ms": 36,
+     "f": "@ExperimentalLaboratory-BE0bnv0R.js:216812",
+     "inv": "BUTTON#im-execute.onclick"
+    }
+   ]
+  },
+  {
+   "fase": "lab-abrir-reproduccion",
+   "ms": 203,
+   "bloqueo": 97,
+   "scripts": [
+    {
+     "ms": 87,
+     "f": "@index-iufumHZb.js:676178",
+     "inv": "Response.json.then"
+    },
+    {
+     "ms": 41,
+     "f": "Ee@ExperimentalLaboratory-BE0bnv0R.js:129923",
+     "inv": "FrameRequestCallback"
+    },
+    {
+     "ms": 15,
+     "f": "@index-iufumHZb.js:676178",
+     "inv": "Response.json.then"
+    }
+   ]
+  }
+ ]
+}

@@ -18,6 +18,21 @@ const COLORES_MARCADOR = {
 };
 const PRIORIDAD = ['Tierra', 'Jupiter', 'Saturno', 'Marte', 'Neptuno', 'Urano', 'Venus', 'Mercurio'];
 
+/**
+ * 24: posición de un rótulo que no tape los controles superpuestos a la escena (vista inmersiva del Centro de Misión).
+ * El rótulo se dibuja centrado en x con su borde inferior en y (translate(-50%,-100%)). Prueba encima del marcador y, si choca
+ * con un obstáculo (rectángulos en coordenadas del contenedor), debajo. Devuelve la y elegida o null (ocultar el rótulo).
+ */
+export function posicionEtiquetaLibre({ x, yArriba, yAbajo = null, ancho, alto = 18, obstaculos = null }) {
+  if (!obstaculos?.length) return yArriba;
+  const choca = y => obstaculos.some(o => x - ancho / 2 < o.right && x + ancho / 2 > o.left && y - alto < o.bottom && y > o.top);
+  if (!choca(yArriba)) return yArriba;
+  if (Number.isFinite(yAbajo) && !choca(yAbajo)) return yAbajo;
+  return null;
+}
+// Anchura aproximada del rótulo sin medir el DOM en cada fotograma (mayúsculas espaciadas de 11 px).
+const anchoEtiqueta = (texto, porLetra = 9.8) => String(texto).length * porLetra + 12;
+
 function suavizarPaso(borde0, borde1, x) {
   const t = THREE.MathUtils.clamp((x - borde0) / (borde1 - borde0), 0, 1);
   return t * t * (3 - 2 * t);
@@ -183,7 +198,7 @@ export function crearEtiquetasPlanetas(
     sondaSeleccionada = false,
     radioSolActual = 0.15,
     { idSondaActiva = null, modoPrimeraPersona = false, objetivoMirada = null,
-      lanzamientoActivo = false, comparadorActivo = false, modoRecreacionFotografica = false } = {}
+      lanzamientoActivo = false, comparadorActivo = false, modoRecreacionFotografica = false, obstaculos = null } = {}
   ) {
     objetivosPantalla = [];
     if (!visible) return;
@@ -316,8 +331,13 @@ export function crearEtiquetasPlanetas(
     for (const candidato of candidatos) {
       const esPrioritario = candidato.esProtagonista || candidato.nombre === hoverActualId;
       const umbralX = modoPrimeraPersona && esPrioritario ? 46 : 92;
-      const solapa = !esPrioritario && (ocupados.length >= limite || ocupados.some(pos =>
-        Math.abs(pos.x - candidato.x) < umbralX && Math.abs(pos.y - candidato.y) < 20));
+      // 24: si el rótulo cae bajo un control de la escena, se prueba debajo del marcador; si tampoco cabe, se oculta.
+      const yAbajo = candidato.yCentro + Math.min(Math.max(candidato.radioPx, 4), 32) + 24;
+      const yLibre = posicionEtiquetaLibre({ x: candidato.x, yArriba: candidato.y, yAbajo: yAbajo < alto - 6 ? yAbajo : null,
+        ancho: anchoEtiqueta(candidato.elemento.textContent), obstaculos });
+      if (yLibre !== null) candidato.y = yLibre;
+      const solapa = yLibre === null || (!esPrioritario && (ocupados.length >= limite || ocupados.some(pos =>
+        Math.abs(pos.x - candidato.x) < umbralX && Math.abs(pos.y - candidato.y) < 20)));
       candidato.elemento.hidden = solapa;
       if (!solapa) {
         candidato.elemento.classList.toggle('is-selected', candidato.esProtagonista);
@@ -402,8 +422,10 @@ export function crearEtiquetasPlanetas(
       } else {
         regSat.marcador.hidden = true;
       }
-      const yEt = yCentro - Math.min(Math.max(radioPx, 4), 26) - 6;
-      const solapa = !esProt && ocupados.some(p => Math.abs(p.x - xCentro) < 62 && Math.abs(p.y - yEt) < 18);
+      const yEtArriba = yCentro - Math.min(Math.max(radioPx, 4), 26) - 6;
+      const yEt = posicionEtiquetaLibre({ x: xCentro, yArriba: yEtArriba, yAbajo: yCentro + Math.min(Math.max(radioPx, 4), 26) + 22,
+        ancho: anchoEtiqueta(regSat.etiqueta.textContent, 8.6), obstaculos });
+      const solapa = yEt === null || (!esProt && ocupados.some(p => Math.abs(p.x - xCentro) < 62 && Math.abs(p.y - yEt) < 18));
       regSat.etiqueta.hidden = !dentro || solapa || (radioPx > 46 && !modoPrimeraPersona);
       if (!regSat.etiqueta.hidden) {
         regSat.etiqueta.style.left = `${xCentro}px`;
@@ -469,8 +491,9 @@ export function crearEtiquetasPlanetas(
         reg.marcador.hidden = true;
       }
 
-      const yEtiqueta = yCentro - 11;
-      const fuera = cercaDeSonda || xCentro < 42 || xCentro > ancho - 42 || yEtiqueta < 32 || yEtiqueta > alto - 36 || proyectado.z >= 1;
+      const yEtiqueta = posicionEtiquetaLibre({ x: xCentro, yArriba: yCentro - 11, yAbajo: yCentro + 30,
+        ancho: anchoEtiqueta(reg.etiqueta.textContent, 7.2), obstaculos }) ?? Number.NaN;
+      const fuera = !Number.isFinite(yEtiqueta) || cercaDeSonda || xCentro < 42 || xCentro > ancho - 42 || yEtiqueta < 32 || yEtiqueta > alto - 36 || proyectado.z >= 1;
       const solapa = !esSeleccionada && hoverActualId !== reg.id && ocupados.some(pos =>
         Math.abs(pos.x - xCentro) < 88 && Math.abs(pos.y - yEtiqueta) < 20);
       reg.etiqueta.hidden = fuera || solapa;

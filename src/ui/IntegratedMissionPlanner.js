@@ -10,6 +10,7 @@ import { SOI_MODELS } from '../science/PlanetaryEncounter.js';
 import { refineTransferCandidate } from '../lab/InterplanetaryPlan.js';
 import { computeIntegratedMission, ENCOUNTER_TARGETS, MOON_WINDOW_KEYS, PHASE_STATUS, MISSION_LIMITS, moduleDryMassKg, isIntegratedMissionCurrent } from '../lab/IntegratedMission.js';
 import { createIntegratedExecution } from '../lab/IntegratedMissionPlayback.js';
+import { compareMissionCruise, NBODY_EPHEMERIS_IDS } from '../lab/NBodyCruise.js';
 import { getBodyProfile } from '../lab/CelestialBodyMissionRegistry.js';
 import { scenarioOutcome, probesCompleting } from '../lab/FleetGuide.js';
 import { HISTORICAL_PROBES } from '../lab/HeritageCatalog.js';
@@ -46,11 +47,13 @@ const STATUS_TONE = new Map([[PHASE_STATUS.done, 'ok'], [PHASE_STATUS.partial, '
 
 // Etapa 16: entrada de computeIntegratedMission a partir de los valores del formulario. La usan la interfaz y las pruebas
 // (tests/Stage16Coherence.test.mjs), así que lo que se comprueba es exactamente lo que calcula el Planificador.
-export function integratedMissionInput({ destinationId, moonId = null, departureJdTdb, tofDays, soiModel = 'laplace', planetMode, rp, ra, bPlane = { mode: 'auto' }, moonMode = 'capture', mrp, mra, mri = 0 }, design) {
+export function integratedMissionInput({ destinationId, moonId = null, departureJdTdb, tofDays, soiModel = 'laplace', planetMode, rp, ra, bPlane = { mode: 'auto' }, moonMode = 'capture', mrp, mra, mri = 0, compensate = true, launch = false }, design) {
   const moonBurns = moonId ? [...(mri > 0 ? [{ apoapsisAltitudeKm: mri }] : []), { apoapsisAltitudeKm: mra }] : null;
   return { destinationId, moonId: moonId || null, opportunity: { departureJdTdb, arrivalJdTdb: departureJdTdb + tofDays }, design, propulsionModule: null, lander: null,
-    profile: { soiModel, planet: { mode: planetMode, periapsisAltitudeKm: rp, bPlane, captureBurns: [{ apoapsisAltitudeKm: ra }], orbitCoastDays: moonId ? 1 : 2 },
-      moon: moonId ? (moonMode === 'flyby' ? { mode: 'flyby', periapsisAltitudeKm: mrp } : { periapsisAltitudeKm: mrp, captureBurns: moonBurns }) : null, landing: { enabled: false } } };
+    profile: { soiModel, planet: { mode: planetMode, periapsisAltitudeKm: rp, bPlane, captureBurns: [{ apoapsisAltitudeKm: ra }], orbitCoastDays: moonId ? 1 : 2, periapsisCompensation: compensate !== false },
+      moon: moonId ? (moonMode === 'flyby' ? { mode: 'flyby', periapsisAltitudeKm: mrp } : { periapsisAltitudeKm: mrp, captureBurns: moonBurns }) : null, landing: { enabled: false },
+      // 21: salida desde la plataforma de Cabo Cañaveral (lanzamiento 12E, aparcamiento e inyección con la Centaur D-1T).
+      launch: { enabled: launch === true, azimuthDeg: 'auto' } } };
 }
 /** Valores del formulario de un escenario de demostración. */
 export function scenarioFormValues(s) {
@@ -77,6 +80,8 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
             <label class="lab-field">Satélite (opcional)<select id="im-moon"></select></label></div>
           <div class="lab-two-actions"><label class="lab-field">Salida (UTC)<input id="im-departure" type="date"></label><label class="lab-field">Vuelo (días)<input id="im-tof" type="number" min="20" step="0.5"></label></div>
           <label class="lab-field">Tipo de misión en el planeta<select id="im-mode"><option value="capture">Captura en órbita</option><option value="flyby">Sobrevuelo</option></select></label>
+          <label class="im-check"><input id="im-launch" type="checkbox" aria-describedby="im-launch-hint"> Empezar en la plataforma: despegue desde Cabo Cañaveral, órbita de aparcamiento e inyección con una etapa Centaur</label>
+          <p id="im-launch-hint" class="mission-hint">Sin marcar, la misión empieza ya lanzada, con la velocidad de salida aplicada. Marcada, se calcula también el lanzamiento: un cohete ilustrativo y una etapa Centaur D-1T con sus datos de 1973. La hora del despegue se ajusta dentro del día para que la órbita apunte hacia el destino.</p>
         </fieldset>
         <p id="im-design" class="mission-hint">Sonda activa: sin elegir.</p>
         <button id="im-compute" type="button" class="button-primary">Calcular misión</button>
@@ -87,17 +92,18 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
           <fieldset class="im-group"><legend>Encuentro y órbita objetivo en el planeta</legend>
             <label class="lab-field">Esfera de influencia<select id="im-soi">${Object.entries(SOI_MODELS).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('')}</select></label>
             <div class="lab-two-actions"><label class="lab-field">Periapsis (km alt.)<input id="im-rp" type="number" min="0" step="10"></label><label class="lab-field">Apoapsis objetivo (km alt.)<input id="im-ra" type="number" min="0" step="100"></label></div>
+            <label class="im-check"><input id="im-compensate" type="checkbox" checked> Captura apuntada: compensar el desplazamiento del periapsis durante el encendido</label>
             <div class="lab-two-actions"><label class="lab-field">Plano B<select id="im-bmode"><option value="auto">Inclinación mínima</option><option value="fixed">Ángulo θ fijo</option></select></label><label class="lab-field">θ (°)<input id="im-btheta" type="number" step="1" value="0"></label></div>
           </fieldset>
           <fieldset class="im-group" id="im-moon-profile"><legend>Satélite</legend><label class="lab-field">Objetivo en el satélite<select id="im-moon-mode"><option value="capture">Captura en órbita (empuje finito)</option><option value="flyby">Sobrevuelo balístico</option></select></label><div class="lab-two-actions"><label class="lab-field">Periapsis en el satélite (km)<input id="im-mrp" type="number" min="1" step="5"></label><label class="lab-field">Apoapsis final (km)<input id="im-mra" type="number" min="1" step="5"></label></div>
             <label class="lab-field">Apoapsis intermedio (km; 0 = un solo encendido)<input id="im-mri" type="number" min="0" step="100"></label></fieldset>
           <p class="mission-hint">Al cambiar cualquier valor, el escenario pasa a «Personalizado».</p></details>
-        <p class="mission-hint im-integration-note"><strong>Fases conectadas en este cálculo:</strong> salida heliocéntrica → llegada → captura o sobrevuelo → satélite. <strong>No conectadas:</strong> el despegue desde la superficie (herramienta «Lanzamiento terrestre», independiente) y la inyección que da el C3 de salida, que no se modela.</p>
+        <p class="mission-hint im-integration-note"><strong>Fases conectadas en este cálculo:</strong> salida heliocéntrica → llegada → captura o sobrevuelo → satélite. <strong>Con «Empezar en la plataforma»</strong>, también el despegue, la órbita de aparcamiento y la inyección. <strong>No conectadas sin esa opción:</strong> el despegue desde la superficie (herramienta «Lanzamiento terrestre», independiente) y la inyección que da el C3 de salida, que no se modela.</p>
         <p class="mission-hint" id="im-coverage">Cargando catálogos de efemérides…</p>
       </div></div>
     <div class="mission-stage lab-stage"><div class="lab-stage-top"><span class="eyebrow">CADENA DE FASES / TRAYECTORIA CALCULADA</span><span id="im-stage-status">Sin cálculo</span></div>
       <div class="im-stage-body"><ol id="im-chain" class="im-chain" aria-label="Fases de la misión"></ol>
-        <div class="im-context" role="group" aria-label="Marco del gráfico"><button type="button" data-ctx="helio" aria-pressed="true">Heliocéntrico</button><button type="button" data-ctx="planet" aria-pressed="false">Planeta</button><button type="button" data-ctx="moon" aria-pressed="false">Satélite</button></div>
+        <div class="im-context" role="group" aria-label="Marco del gráfico"><button type="button" data-ctx="earth" aria-pressed="false">Tierra</button><button type="button" data-ctx="helio" aria-pressed="true">Heliocéntrico</button><button type="button" data-ctx="planet" aria-pressed="false">Planeta</button><button type="button" data-ctx="moon" aria-pressed="false">Satélite</button></div>
         <canvas id="im-plot" role="img" aria-label="Proyección eclíptica de la trayectoria calculada en el marco elegido"></canvas></div>
       <div class="lab-stage-foot"><span id="im-foot">Proyección sobre la eclíptica J2000 vista desde el norte · dorado: encendidos · azul: tramos balísticos · rojo: fase no viable</span></div>
     </div>
@@ -111,12 +117,18 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
         <details class="im-tech"><summary>Maniobras ejecutadas (integradas)</summary><div id="im-maneuvers" class="ip-table"></div></details>
         <details class="im-tech"><summary>Masa y propelente</summary><div id="im-mass"></div></details>
         <details class="im-tech"><summary>Energía eléctrica</summary><div id="im-power"></div></details>
+        <details class="im-tech" id="im-launch-box" hidden><summary>Salida desde la plataforma</summary><div id="im-launch-tech"></div></details>
+        <details class="im-tech" id="im-nbody-box"><summary>Crucero de n cuerpos (comparación)</summary>
+          <p class="mission-hint">Propaga el crucero con el Sol y los ocho planetas de Horizons (DOPRI54) en paralelo a la cónica, sin cambiar la misión, y calcula la corrección de trayectoria. Tarda entre 0,3 y 1 s.</p>
+          <button id="im-nbody" type="button" disabled>Comparar con n cuerpos</button>
+          <p id="im-nbody-status" class="mission-hint" role="status" aria-live="polite"></p><div id="im-nbody-rows"></div></details>
         <details class="im-tech"><summary>Encuentro</summary><div id="im-approach"></div></details>
         <details class="im-tech"><summary>Continuidad entre tramos</summary><div id="im-continuity"></div></details>
         <details class="im-tech"><summary>Comparar misiones calculadas</summary><div id="im-compare" class="ip-table"></div></details>
         <details class="mission-details"><summary>Modelo, datos y límites</summary><div id="im-provenance"></div>${MISSION_LIMITS.map(item => `<p>${item}</p>`).join('')}</details>
       </div></div>`;
   const $ = selector => host.querySelector(selector);
+  let nbody = null, nbodyBusy = false; // 22: comparación de n cuerpos, bajo demanda (no forma parte de la misión)
   let helioEphemeris = null, loadError = null, moonsData = null, design = null, mission = null, data = null, execution = null, executionError = null, refinement = null, active = false, busy = false, plotContext = 'helio';
   function message(text, error = false) { $('#im-message').textContent = text; $('#im-message').dataset.error = String(error); }
   // 15: comparación de las últimas misiones calculadas en esta sesión (solo resúmenes; no se guardan en el navegador).
@@ -125,8 +137,8 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     const probeBurns = result.maneuvers.filter(m => m.engineKey === 'probe');
     history.unshift({ id: `${Date.now()}-${history.length}`, name: result.vehicle.probe.name, target: `${result.destinationName}${result.moonName ? ` → ${result.moonName}` : ''}`,
       moonMode: result.profile?.moon?.mode ?? (result.moonId ? 'capture' : null), verdict: result.verdict, tone: result.verdict.startsWith('NO VIABLE') ? 'bad' : result.verdict.startsWith('CADENA CALCULADA COMPLETA') ? 'ok' : 'warn',
-      deltaVKmS: result.maneuvers.reduce((n, m) => n + m.propulsiveDeltaVKmS, 0), probeDeltaVKmS: probeBurns.reduce((n, m) => n + m.propulsiveDeltaVKmS, 0),
-      propellantKg: result.maneuvers.reduce((n, m) => n + m.propellantKg, 0), finalMassKg: result.finalMassKg, launchMassKg: result.vehicle.totalKg,
+      deltaVKmS: result.maneuvers.filter(m => m.engineKey !== 'upper').reduce((n, m) => n + m.propulsiveDeltaVKmS, 0), probeDeltaVKmS: probeBurns.reduce((n, m) => n + m.propulsiveDeltaVKmS, 0),
+      propellantKg: result.maneuvers.filter(m => m.engineKey !== 'upper').reduce((n, m) => n + m.propellantKg, 0), finalMassKg: result.finalMassKg, launchMassKg: result.vehicle.totalKg,
       powerMarginW: result.power?.worst?.marginW ?? null, days: result.durationSeconds / 86400, firstFailure: result.phases.find(ph => ph.status === PHASE_STATUS.failed || ph.status === PHASE_STATUS.noData)?.label ?? null });
     history.splice(6);
   }
@@ -153,7 +165,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     $('#im-destination').value = s.destinationId; fillMoons(); $('#im-moon').value = s.moonId; $('#im-moon-profile').hidden = !s.moonId;
     $('#im-departure').value = s.departureUtc; $('#im-tof').value = s.tofDays; $('#im-refine').checked = s.refine;
     $('#im-mode').value = s.planet.mode; $('#im-rp').value = s.planet.periapsisAltitudeKm; $('#im-ra').value = s.planet.apoapsisAltitudeKm;
-    $('#im-soi').value = 'laplace'; $('#im-bmode').value = 'auto'; $('#im-btheta').value = 0;
+    $('#im-soi').value = 'laplace'; $('#im-bmode').value = 'auto'; $('#im-btheta').value = 0; $('#im-compensate').checked = true;
     if (s.moon) { $('#im-mrp').value = s.moon.periapsisAltitudeKm; $('#im-mra').value = s.moon.apoapsisAltitudeKm; $('#im-mri').value = s.moon.intermediateApoapsisKm; }
     else { $('#im-mrp').value = 100; $('#im-mra').value = 100; $('#im-mri').value = 0; }
     $('#im-moon-mode').value = s.moon?.mode ?? 'capture';
@@ -176,6 +188,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     const tip = document.createElement('small');
     tip.textContent = others.length ? `Lo completan: ${others.map(probeName).join(' y ')}.` : 'Ninguna de las cuatro sondas lo completa: sirve para ver en qué fase y por qué falla.';
     box.append(head, why, tip); box.dataset.tone = outcome.ok ? 'ok' : 'warn'; box.hidden = false;
+    if ($('#im-launch').checked) { const l = document.createElement('small'); l.textContent = 'Este resultado supone la misión ya lanzada. Al empezar en la plataforma, además, la Centaur debe dar la velocidad de salida con esta sonda.'; box.append(l); }
   }
   function syncEnabled() {
     $('#im-btheta').disabled = $('#im-bmode').value !== 'fixed';
@@ -198,12 +211,13 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     return { issues, departure, tof, rp, ra, moonId, moonMode, mrp, mra, mri };
   }
   function invalidate(reason) {
-    const had = Boolean(mission); mission = null; execution = null; executionError = null; data = null; refinement = null;
+    const had = Boolean(mission); mission = null; execution = null; executionError = null; data = null; refinement = null; nbody = null;
     $('#im-execute').disabled = true; renderAll();
     if (had) { message(reason); if (active) { active = false; onInvalidated(); } }
   }
   const changed = () => { syncEnabled(); invalidate('Las condiciones cambiaron: el cálculo anterior se invalidó. Vuelve a calcular.'); };
-  for (const el of host.querySelectorAll('.mission-controls input, .mission-controls select')) if (el.id !== 'im-scenario') el.addEventListener('change', () => { $('#im-scenario').value = 'custom'; renderOutcome(); changed(); });
+  for (const el of host.querySelectorAll('.mission-controls input, .mission-controls select')) if (el.id !== 'im-scenario' && el.id !== 'im-launch') el.addEventListener('change', () => { $('#im-scenario').value = 'custom'; renderOutcome(); changed(); });
+  $('#im-launch').addEventListener('change', () => { renderOutcome(); changed(); });
   $('#im-destination').addEventListener('change', fillMoons);
   $('#im-moon').addEventListener('change', () => { $('#im-moon-profile').hidden = !$('#im-moon').value; });
   $('#im-scenario').addEventListener('change', () => { applyScenario($('#im-scenario').value); renderOutcome(); changed(); });
@@ -234,8 +248,9 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
       let moons = null;
       if (v.moonId) { moonsData ??= createPlanetocentricWindow(await fetchJson(MOON_WINDOW_FILE)); moons = moonsData; }
       const input = integratedMissionInput({ destinationId: tgt.id, moonId: v.moonId, departureJdTdb, tofDays, soiModel: $('#im-soi').value, planetMode: $('#im-mode').value, rp: v.rp, ra: v.ra,
-        bPlane: $('#im-bmode').value === 'fixed' ? { mode: 'fixed', angleDeg: Number($('#im-btheta').value) } : { mode: 'auto' }, moonMode: v.moonMode, mrp: v.mrp, mra: v.mra, mri: v.mri }, design);
+        bPlane: $('#im-bmode').value === 'fixed' ? { mode: 'fixed', angleDeg: Number($('#im-btheta').value) } : { mode: 'auto' }, moonMode: v.moonMode, mrp: v.mrp, mra: v.mra, mri: v.mri, compensate: $('#im-compensate').checked, launch: $('#im-launch').checked }, design);
       data = { helio, moons };
+      nbody = null;
       mission = computeIntegratedMission(input, data);
       // 17: si la cadena se calcula pero su reproducción necesitaría efemérides fuera de la ventana cargada, se conserva el
       // resultado y se indica que no hay trayectoria reproducible (no se extrapola ni se recorta en silencio).
@@ -249,6 +264,22 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     finally { busy = false; $('#im-compute').disabled = false; $('#im-compute').removeAttribute('aria-busy'); renderAll(); }
   }
   $('#im-compute').addEventListener('click', compute);
+  // 22: crucero de n cuerpos en paralelo a la cónica. Carga los ocho planetas en la ventana del crucero y no toca la misión.
+  async function compareNBody() {
+    const cruise = mission?.segments.find(s => s.id === 'cruise');
+    if (!cruise || nbodyBusy || !helioEphemeris) return;
+    const target = mission; nbodyBusy = true; nbody = null; renderNBody();
+    $('#im-nbody-status').textContent = 'Calculando el crucero de n cuerpos y la corrección…';
+    await new Promise(resolve => setTimeout(resolve, 30));
+    try {
+      const start = target.departureJdTdb + cruise.startSeconds / 86400, end = target.departureJdTdb + cruise.endSeconds / 86400;
+      const win = await helioEphemeris.loadWindow(NBODY_EPHEMERIS_IDS, start - 1, end + 1);
+      if (mission !== target) return;
+      nbody = compareMissionCruise(target, (id, jd) => { const s = win.stateAt(id, jd); return s?.status === 'available' ? s : null; });
+    } catch (error) { if (mission === target) nbody = { ok: false, status: 'error', reason: error.message }; }
+    finally { nbodyBusy = false; renderNBody(); }
+  }
+  $('#im-nbody').addEventListener('click', compareNBody);
   $('#im-execute').disabled = true;
   $('#im-execute').addEventListener('click', () => {
     if (!mission || !isIntegratedMissionCurrent(mission, design)) { message('Calcula una misión vigente para la sonda actual.', true); return; }
@@ -313,11 +344,27 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     verdict.textContent = mission.verdict;
     verdict.dataset.tone = mission.verdict.startsWith('NO VIABLE') ? 'bad' : mission.verdict.startsWith('CADENA CALCULADA COMPLETA') ? 'ok' : 'warn';
     row(summary, 'Destino', `${mission.destinationName}${mission.moonName ? ` → ${mission.moonName}` : ''} · ${mission.target.centerLabel}`);
-    row(summary, 'Salida (TDB → UTC)', utcLabel(mission.departureJdTdb));
+    const L = mission.launch;
+    row(summary, L?.ok ? 'Despegue (TDB → UTC)' : 'Salida (TDB → UTC)', L?.ok ? `${utcLabel(mission.departureJdTdb)} · LC-41, Cabo Cañaveral` : utcLabel(mission.departureJdTdb));
     row(summary, 'Periapsis de llegada', utcLabel(mission.arrivalJdTdb));
     row(summary, 'Duración de la cadena', `${number(mission.durationSeconds / 86400, 2)} d`);
-    if (mission.departure) row(summary, 'C3 de salida (apuntado al periapsis)', `${number(mission.departure.c3Km2S2, 3)} km²/s² · inyección externa no modelada`);
-    row(summary, 'Masa en la inyección', `${number(mission.vehicle.totalKg, 0)} kg · capacidad del lanzador: no evaluada`);
+    if (mission.departure) row(summary, 'C3 de salida (apuntado al periapsis)', `${number(mission.departure.c3Km2S2, 3)} km²/s² · ${mission.departure.fromPad ? 'inyección de empuje finito calculada' : 'inyección externa no modelada'}`);
+    row(summary, 'Masa en la inyección', L?.ok ? `${number(mission.vehicle.totalKg, 0)} kg de nave + ${L.upperStage.name.split(' (')[0]} (${number(L.upperStage.dryMassKg + L.upperStage.propellantKg, 0)} kg) · al despegue ${number(L.liftoffMassKg / 1000, 0)} t`
+      : `${number(mission.vehicle.totalKg, 0)} kg · capacidad del lanzador: no evaluada`);
+    if (L && !L.ok) row(summary, 'Lanzamiento', `No viable: ${L.reason}`);
+    const lb = $('#im-launch-box'), lt = $('#im-launch-tech'); lt.replaceChildren(); lb.hidden = !L?.ok;
+    if (L?.ok) {
+      const P = L.parking, I = L.injection, h = Math.abs(L.liftoffShiftHours);
+      row(lt, 'Sitio', `${L.site.name} (${number(L.site.latDeg, 4)}°, ${number(L.site.lonDeg, 4)}°)`);
+      row(lt, 'Despegue', `${L.liftoffUtc} · ${number(h, 2)} h ${L.liftoffShiftHours < 0 ? 'antes' : 'después'} de la salida prevista · GMST ${number(L.gmstDeg, 3)}°`);
+      row(lt, 'Acimut', L.azimuthNote);
+      row(lt, 'Lanzador (ilustrativo)', `${L.launcherName} · ${number(L.liftoffMassKg / 1000, 0)} t · empuje/peso ${number(L.liftoffThrustToWeight, 2)}${L.maxQ ? ` · Max-Q ${number(L.maxQ.dynamicPressurePa / 1000, 1)} kPa a ${number(L.maxQ.altitudeKm, 1)} km` : ''}`);
+      row(lt, 'Órbita de aparcamiento', `${number(P.perigeeAltitudeKm, 0)} × ${number(P.apogeeAltitudeKm, 0)} km · i ${number(P.inclinationDeg, 2)}° · periodo ${number(P.periodMinutes, 1)} min · espera ${number(P.coastSeconds / 60, 1)} min`);
+      row(lt, 'Inyección', `${number(I.durationSeconds, 1)} s · Δv ${number(I.propulsiveDeltaVKmS * 1000, 1)} m/s (impulsivo ${number(I.impulsiveDeltaVKmS * 1000, 1)}; pérdidas ${number(I.gravityLossKmS * 1000, 1)}) · ${number(I.propellantKg, 0)} kg (quedan ${number(I.propellantLeftKg, 0)} kg)`);
+      row(lt, 'C3 conseguido', `${number(I.c3Km2S2, 3)} km²/s²`);
+      row(lt, 'Salida de la esfera de influencia', `${utcLabel(L.soiExitJdTdb)} · ${number(L.escapeDays, 2)} d tras la inyección · radio ${number(L.soiRadiusKm, 0)} km`);
+      row(lt, 'Empalme con el crucero', `${number(L.handoffResidualKmS * 1e6, 4)} mm/s de diferencia con el Lambert · ${L.iterations} iteraciones · ${L.rounds} vuelta(s)`);
+    }
     if (refinement) row(summary, 'Oportunidad', Number.isFinite(refinement.score) ? `refinada (C3 ${number(refinement.gridScore, 3)} → ${number(refinement.score, 3)} hacia el centro del destino; ${refinement.evaluations} evaluaciones)${refinement.atRefinementBoundary ? ' · en el borde de la caja' : ''}` : 'refinamiento sin solución: se usa la semilla');
     for (const p of mission.phases) {
       const el = document.createElement('div'); el.className = 'im-phase'; el.dataset.tone = STATUS_TONE.get(p.status) ?? 'idle';
@@ -338,6 +385,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     const v = mission.vehicle, m = $('#im-mass');
     row(m, `Sonda «${v.probe.name}»`, `${number(v.probe.wetKg, 1)} kg (propelente ${number(v.probe.propellantKg, 1)} → ${number(mission.tanks.probe, 1)} kg)`);
     if (v.module) row(m, 'Módulo de propulsión (ilustrativo)', `${number(v.module.wetKg, 0)} kg (seco ${number(v.module.dryKg, 0)}; propelente ${number(v.module.propellantKg, 0)} → ${number(mission.tanks.module, 0)} kg)`);
+    if (mission.launch?.ok) { const U = mission.launch.upperStage; row(m, `Etapa de inyección «${U.name}»`, `${number(U.dryMassKg + U.propellantKg, 0)} kg (seca ${number(U.dryMassKg, 0)}; propelente ${number(U.propellantKg, 0)} → ${number(mission.launch.injection.propellantLeftKg, 0)} kg)`); }
     if (v.lander) row(m, 'Módulo de aterrizaje (12F, ilustrativo)', `${number(v.lander.wetKg, 0)} kg (propelente ${number(v.lander.propellantKg, 0)} → ${number(mission.tanks.lander, 0)} kg)`);
     row(m, 'Motor de captura', v.captureEngine === 'module' ? `${v.module.engine.name} · ${number(v.module.engine.thrustN / 1000, 1)} kN · Isp ${number(v.module.engine.ispS, 0)} s` : v.probe.engine ? `${v.probe.engine.name} · ${number(v.probe.engine.thrustN, 0)} N · Isp ${number(v.probe.engine.ispS, 0)} s` : 'Sin motor');
     for (const s of mission.separations) row(m, 'Separación', `${s.released}; masa ${number(s.massBeforeKg, 0)} → ${number(s.massAfterKg, 0)} kg`);
@@ -358,6 +406,9 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
       row(ap, 'v∞ de llegada', `${number(a.vInfKmS, 4)} km/s`);
       row(ap, 'Plano B: B·T / B·R', `${number(a.BdotT, 0)} / ${number(a.BdotR, 0)} km · θ ${number(a.bAngleDeg, 2)}°`);
       row(ap, 'Periapsis apuntado / logrado', `${number(a.periapsisTargetKm - mission.target.radiusKm, 2)} / ${number(a.periapsisAltitudeKm, 4)} km alt.`);
+      // 20: la llegada apuntada puede diferir del periapsis de la órbita pedida (captura apuntada).
+      const pc = a.periapsisCompensation;
+      if (pc && pc.status !== 'innecesaria') row(ap, 'Captura apuntada', pc.applied ? `Llegada a ${number(pc.aimedPeriapsisAltitudeKm, 1)} km → órbita con ${number(pc.targetPeriapsisAltitudeKm, 1)} km (sin compensar: ${number(pc.uncompensatedPeriapsisAltitudeKm, 1)} km; ${pc.iterations} iteraciones)` : `No aplicada. ${pc.reason}`);
       row(ap, 'Excentricidad · giro', `${number(a.eccentricity, 5)} · ${number(a.turnAngleDeg, 2)}°`);
       row(ap, 'SOI → periapsis', `${number(a.secondsSoiToPeriapsis / 86400, 3)} d`);
       const note = document.createElement('p'); note.className = 'mission-hint'; note.textContent = a.bPlaneNote; ap.append(note);
@@ -404,7 +455,7 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
       box.append(p); return;
     }
     const burns = mission.maneuvers, probeBurns = burns.filter(m => m.engineKey === 'probe');
-    const usedKg = burns.reduce((n, m) => n + m.propellantKg, 0);
+    const usedKg = burns.filter(m => m.engineKey !== 'upper').reduce((n, m) => n + m.propellantKg, 0);
     const failure = mission.phases.find(ph => ph.status === PHASE_STATUS.failed || ph.status === PHASE_STATUS.noData);
     const tone = mission.verdict.startsWith('NO VIABLE') ? 'bad' : mission.verdict.startsWith('CADENA CALCULADA COMPLETA') ? 'ok' : 'warn';
     const planetMode = mission.profile?.planet?.mode ?? $('#im-mode').value;
@@ -417,7 +468,8 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
       ['Maniobras', burns.length ? `${burns.length} encendido${burns.length === 1 ? '' : 's'} · Δv de la sonda ${number(probeBurns.reduce((n, m) => n + m.propulsiveDeltaVKmS, 0) * 1000, 0)} m/s` : 'Sin encendidos (sobrevuelo balístico)'],
       ['Recursos', `Propelente usado ${number(usedKg, 0)} kg · masa final ${number(mission.finalMassKg, 0)} kg${mission.power ? ` · margen eléctrico mínimo ${number(mission.power.worst.marginW, 0)} W` : ''}`],
       ['Viabilidad', tone === 'ok' ? 'Completa según el modelo (no equivale a éxito operativo)' : failure ? `No viable: falla en «${failure.label}»` : 'Calculada, pero no alcanza todos los objetivos'],
-      ['Restricciones', 'Inyección desde la Tierra no modelada (C3) · capacidad del lanzador no evaluada · lanzamiento no encadenado'],
+      ['Restricciones', mission.launch?.ok ? 'Lanzador ilustrativo (×9 del demostrativo de 12E) y Centaur D-1T con datos de 1973 · Tierra puntual sin la Luna · restricciones del campo de tiro no comprobadas'
+        : 'Inyección desde la Tierra no modelada (C3) · capacidad del lanzador no evaluada · lanzamiento no encadenado («Empezar en la plataforma» lo calcula)'],
       ['Reproducción 3D', execution ? 'Disponible: pulsa «Reproducir en el Centro de Misión»' : `No disponible: ${executionError ?? 'sin trayectoria reproducible'} (no se extrapola)`]
     ];
     const list = document.createElement('dl'); list.className = 'im-brief-list'; list.dataset.tone = tone;
@@ -441,7 +493,29 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     }
     onStateChange(); // 17: la barra de resumen del laboratorio refleja «calculando», «calculada» o «invalidada» al instante.
   }
-  function renderAll() { renderChain(); drawPlot(); renderResults(); if (!mission) renderCompare(); renderFlow(); }
+  function renderNBody() {
+    const button = $('#im-nbody'), status = $('#im-nbody-status'), rows = $('#im-nbody-rows');
+    const cruise = mission?.segments.find(s => s.id === 'cruise');
+    button.disabled = !cruise || nbodyBusy; button.setAttribute('aria-busy', String(nbodyBusy)); rows.replaceChildren();
+    if (nbodyBusy) return;
+    if (!mission) { status.textContent = 'Calcula una misión para comparar su crucero.'; return; }
+    if (!cruise) { status.textContent = 'La misión calculada no tiene crucero heliocéntrico.'; return; }
+    if (!nbody) { status.textContent = 'Sin comparar todavía.'; return; }
+    if (!nbody.uncorrected) { status.textContent = `No disponible: ${nbody.reason}`; return; }
+    status.textContent = nbody.ok ? `Comparación calculada en ${number(nbody.computeMs, 0)} ms. La misión no cambia: sigue siendo la de cónicas parcheadas.` : `Comparación parcial: ${nbody.reason}`;
+    const km = x => `${number(x, x < 100 ? 2 : 0)} km`, ms = x => `${number(x * 1000, 2)} m/s`;
+    row(rows, 'Modelo', `Sol + ${nbody.perturbers.map(p => p.name).join(', ')} · DOPRI54 (tolerancia relativa ${nbody.settings.relTol}) · efemérides de Horizons`);
+    for (const e of nbody.excluded) row(rows, 'Excluida', `${NBODY_NAMES[e.id] ?? e.id}: ${e.reason}`);
+    const U = nbody.uncorrected;
+    row(rows, 'Desviación en la llegada (modelo completo)', `${km(U.arrivalPositionErrorKm)} del punto de la cónica · velocidad ${ms(U.arrivalVelocityErrorKmS)} · máxima ${km(U.maxDeviationKm)} (${dateOnly(U.maxDeviationJdTdb)})`);
+    for (const i of nbody.isolated ?? []) row(rows, `Sin ${i.name}`, `${km(i.withoutArrivalPositionErrorKm)} · ${ms(i.withoutArrivalVelocityErrorKmS)} (con: ${km(U.arrivalPositionErrorKm)}). Mide la ${i.reason}, que las cónicas parcheadas omiten: un diseño real la incluiría desde el principio, no la corregiría`);
+    if (nbody.thirdBodies) row(rows, 'Solo los otros planetas', `${km(nbody.thirdBodies.arrivalPositionErrorKm)} · ${ms(nbody.thirdBodies.arrivalVelocityErrorKmS)} (${nbody.thirdBodies.perturbers.join(', ')})`);
+    const T = nbody.tcm;
+    if (T) row(rows, 'Corrección de trayectoria (TCM-1)', `${dateOnly(T.jdTdb)} (día ${number(T.daysAfterStart, 0)} del crucero) · Δv ${number(T.deltaVMS, 2)} m/s${T.propellantKg != null ? ` · ${number(T.propellantKg, 2)} kg con el motor de la sonda (no descontados de la cadena)` : ''} · residuo ${number(T.residualKm * 1000, 0)} m · ${T.iterations} iteraciones · corrige la perturbación de los otros planetas`);
+    row(rows, 'Cálculo', `${number(nbody.computeMs, 0)} ms · ${U.steps} pasos del modelo completo${T ? ` · ${T.propagations} propagaciones` : ''}`);
+  }
+  const NBODY_NAMES = { '399': 'Tierra' };
+  function renderAll() { renderChain(); drawPlot(); renderResults(); renderNBody(); if (!mission) renderCompare(); renderFlow(); }
   const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { if (!host.hidden) drawPlot(); }) : null;
   observer?.observe($('#im-plot'));
   $('#im-bmode').addEventListener('change', syncEnabled); $('#im-mode').addEventListener('change', syncEnabled); $('#im-moon-mode').addEventListener('change', syncEnabled);

@@ -48,13 +48,6 @@ export function jdTdbToElapsedSeconds(epochJdTdb, targetJdTdb) {
 }
 
 /**
- * Convierte segundos relativos a `epochJdTdb` en un JD TDB para la frontera del sistema.
- */
-export function elapsedSecondsToJdTdb(epochJdTdb, elapsedSeconds) {
-  return createSimulationInstant(epochJdTdb, elapsedSeconds).jdTdb;
-}
-
-/**
  * Descompone `(epochJdTdb, elapsedSeconds)` en fecha y hora gregoriana en la
  * escala TDB mediante aritmética entera de Día Juliano, sin utilizar `Date` ni UTC.
  */

@@ -72,9 +72,6 @@ export function datetimeLocalUtcToJdTdb(value) {
   return utcTimestampToTdb(value.replace('T', ' ')).jdTdb;
 }
 
-/** Fecha juliana TDB → `YYYY-MM-DD` del calendario TDB (sin conversión de escala). */
-export function jdTdbToCalendarDate(jdTdb) { return jdToGregorianComponents(requireJdTdb(jdTdb)).dateIso; }
-
 /** Fecha juliana modificada (MJD = JD − 2 400 000,5) en la misma escala. */
 export const jdToMjd = jd => requireFiniteNumber(jd, 'jd') - 2400000.5;
 

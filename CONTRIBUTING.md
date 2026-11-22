@@ -20,7 +20,7 @@ Detalles y problemas frecuentes: [docs/DEVELOPMENT_GUIDE.md](docs/DEVELOPMENT_GU
 
 1. Crea una rama desde la de desarrollo: `git checkout -b etapa/<nombre-corto>`.
 2. Trabaja **una etapa o corrección a la vez**; no mezcles rediseños con ciencia.
-3. Ejecuta `npm test`, `npm run build` y `git diff --check`. Si cambias interfaz, revísala en el navegador (320 px, tablet y escritorio).
+3. Ejecuta `npm run lint`, `npm test`, `npm run build` y `git diff --check`. Si cambias interfaz, revísala en el navegador (320 px, tablet y escritorio).
 4. Documenta la etapa (ver abajo) y presenta los cambios con: archivos, motivo, pruebas y resultado, límites y evidencia externa pendiente.
 5. Una auditoría (Gemini o Claude, véase [CLAUDE.md](CLAUDE.md)) decide si la etapa queda aprobada; no te autoproclames «validado».
 

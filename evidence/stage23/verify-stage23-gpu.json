@@ -1,0 +1,372 @@
+{
+  "gpu": true,
+  "startedAt": "2026-11-22T02:29:58.880Z",
+  "shots": [
+    "01_jupiter_satelites_camara_destino.png",
+    "02_europa_maxima_aproximacion_camara_destino.png",
+    "03_europa_seguimiento_exterior.png",
+    "04_movil_europa.png",
+    "05_regresion_a1_llegada_marte.png"
+  ],
+  "checks": {
+    "exploracionInicial": 10,
+    "planificador": {
+      "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+      "probe": "Cassini"
+    },
+    "crucero": {
+      "scene": "main",
+      "phase": "Crucero heliocéntrico",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · época TDB de cada instante, sin extrapolar · satélites galileanos de Horizons solo en su ventana (2031-08-01 → 2032-06-01 TDB) · nave ampliada, orientada a la Tierra",
+      "valuetext": "500 d transcurridos · 650.272 d restantes · Crucero heliocéntrico",
+      "announcer": "",
+      "mission": {
+        "moon": "Europa",
+        "moonsShown": [],
+        "cameraMode": "overview",
+        "cameraFocus": null,
+        "error": null,
+        "jdTdb": 2462631.638933193
+      },
+      "moonsVisible": [],
+      "lunasVisibles": 0,
+      "probeEuropaKm": null,
+      "cameraEuropaKm": null,
+      "europaJupiterKm": null,
+      "europaScreen": [
+        670.6556065438092,
+        361.5793591295835
+      ],
+      "selected": null,
+      "probeScale": 0.0006000000000000007,
+      "infoPanels": [
+        "#moon-info: oculto",
+        "#info-panel: no existe"
+      ]
+    },
+    "jupiter": {
+      "scene": "main",
+      "phase": "Órbita de captura en Júpiter",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · época TDB de cada instante, sin extrapolar · satélites galileanos de Horizons solo en su ventana (2031-08-01 → 2032-06-01 TDB) · nave ampliada, orientada a la Tierra",
+      "valuetext": "1,110 d transcurridos · 40.272 d restantes · Órbita de captura en Júpiter",
+      "announcer": "Fase: Órbita de captura en Júpiter",
+      "mission": {
+        "moon": "Europa",
+        "moonsShown": [
+          "Io",
+          "Europa",
+          "Ganymede",
+          "Callisto"
+        ],
+        "cameraMode": "destination",
+        "cameraFocus": "Jupiter",
+        "error": null,
+        "jdTdb": 2463241.638933193
+      },
+      "moonsVisible": [
+        "Io",
+        "Europa",
+        "Ganymede",
+        "Callisto"
+      ],
+      "lunasVisibles": 4,
+      "probeEuropaKm": 7535821.039476475,
+      "cameraEuropaKm": 429907.0906874529,
+      "europaJupiterKm": 672495.0773223923,
+      "europaScreen": [
+        1916.8628323153607,
+        39.95478320525045
+      ],
+      "selected": "Jupiter",
+      "probeScale": 0.00006000000000000004,
+      "infoPanels": [
+        "#moon-info: oculto",
+        "#info-panel: no existe"
+      ]
+    },
+    "jupiterGeneral": {
+      "scene": "main",
+      "phase": "Órbita de captura en Júpiter",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · época TDB de cada instante, sin extrapolar · satélites galileanos de Horizons solo en su ventana (2031-08-01 → 2032-06-01 TDB) · nave ampliada, orientada a la Tierra",
+      "valuetext": "1,110 d transcurridos · 40.272 d restantes · Órbita de captura en Júpiter",
+      "announcer": "Fase: Órbita de captura en Júpiter",
+      "mission": {
+        "moon": "Europa",
+        "moonsShown": [
+          "Io",
+          "Europa",
+          "Ganymede",
+          "Callisto"
+        ],
+        "cameraMode": "overview",
+        "cameraFocus": null,
+        "error": null,
+        "jdTdb": 2463241.638933193
+      },
+      "moonsVisible": [
+        "Io",
+        "Europa",
+        "Ganymede",
+        "Callisto"
+      ],
+      "lunasVisibles": 4,
+      "probeEuropaKm": 7535821.039476475,
+      "cameraEuropaKm": 3175202824.170254,
+      "europaJupiterKm": 672495.0773223923,
+      "europaScreen": [
+        931.0469947466805,
+        627.560376868222
+      ],
+      "selected": null,
+      "probeScale": 0.00006,
+      "infoPanels": [
+        "#moon-info: oculto",
+        "#info-panel: no existe"
+      ]
+    },
+    "eventoPeriapsis": "Máxima aproximación a Europa: 100.0 km de altitud2032-02-17 · 09:42:04 UTC · periapsis",
+    "europaDestino": {
+      "scene": "main",
+      "phase": "Sobrevuelo de Europa",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · época TDB de cada instante, sin extrapolar · satélites galileanos de Horizons solo en su ventana (2031-08-01 → 2032-06-01 TDB) · nave ampliada, orientada a la Tierra",
+      "valuetext": "1,148.266 d transcurridos · 2.006 d restantes · Sobrevuelo de Europa",
+      "announcer": "Fase: Sobrevuelo de Europa",
+      "mission": {
+        "moon": "Europa",
+        "moonsShown": [
+          "Io",
+          "Europa",
+          "Ganymede",
+          "Callisto"
+        ],
+        "cameraMode": "destination",
+        "cameraFocus": "Europa",
+        "error": null,
+        "jdTdb": 2463279.905033193
+      },
+      "moonsVisible": [
+        "Io",
+        "Europa",
+        "Ganymede",
+        "Callisto"
+      ],
+      "lunasVisibles": 4,
+      "probeEuropaKm": 1661.2334134311343,
+      "cameraEuropaKm": 6572.397638589096,
+      "europaJupiterKm": 676630.0681449933,
+      "europaScreen": [
+        836.4999999738459,
+        497.5625000021795
+      ],
+      "selected": "Europa",
+      "probeScale": 0.000018000000000000028,
+      "infoPanels": [
+        "#moon-info: visible",
+        "#info-panel: no existe"
+      ]
+    },
+    "europaExterior": {
+      "scene": "main",
+      "phase": "Sobrevuelo de Europa",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · época TDB de cada instante, sin extrapolar · satélites galileanos de Horizons solo en su ventana (2031-08-01 → 2032-06-01 TDB) · nave ampliada, orientada a la Tierra",
+      "valuetext": "1,148.266 d transcurridos · 2.006 d restantes · Sobrevuelo de Europa",
+      "announcer": "Fase: Sobrevuelo de Europa",
+      "mission": {
+        "moon": "Europa",
+        "moonsShown": [
+          "Io",
+          "Europa",
+          "Ganymede",
+          "Callisto"
+        ],
+        "cameraMode": "exterior",
+        "cameraFocus": null,
+        "error": null,
+        "jdTdb": 2463279.905033193
+      },
+      "moonsVisible": [
+        "Io",
+        "Europa",
+        "Ganymede",
+        "Callisto"
+      ],
+      "lunasVisibles": 4,
+      "probeEuropaKm": 1661.2334134311343,
+      "cameraEuropaKm": 1855.984999819431,
+      "europaJupiterKm": 676630.0681449933,
+      "europaScreen": [
+        -832.8154612359848,
+        583.800836784625
+      ],
+      "selected": null,
+      "probeScale": 0.00007499999999999993,
+      "infoPanels": [
+        "#moon-info: oculto",
+        "#info-panel: no existe"
+      ]
+    },
+    "trasSobrevuelo": {
+      "scene": "main",
+      "phase": "Arco planetocéntrico tras el sobrevuelo de Europa",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · época TDB de cada instante, sin extrapolar · satélites galileanos de Horizons solo en su ventana (2031-08-01 → 2032-06-01 TDB) · nave ampliada, orientada a la Tierra",
+      "valuetext": "1,149.5 d transcurridos · 0.772 d restantes · Arco planetocéntrico tras el sobrevuelo de Europa",
+      "announcer": "Fase: Arco planetocéntrico tras el sobrevuelo de Europa",
+      "mission": {
+        "moon": "Europa",
+        "moonsShown": [
+          "Io",
+          "Europa",
+          "Ganymede",
+          "Callisto"
+        ],
+        "cameraMode": "destination",
+        "cameraFocus": "Jupiter",
+        "error": null,
+        "jdTdb": 2463281.138933193
+      },
+      "moonsVisible": [
+        "Io",
+        "Europa",
+        "Ganymede",
+        "Callisto"
+      ],
+      "lunasVisibles": 4,
+      "probeEuropaKm": 2015068.4316065805,
+      "cameraEuropaKm": 525336.3295881606,
+      "europaJupiterKm": 665678.9928049232,
+      "europaScreen": [
+        -376.97161383002,
+        19.333003747839797
+      ],
+      "selected": "Jupiter",
+      "probeScale": 0.000059999999999999934,
+      "infoPanels": [
+        "#moon-info: oculto",
+        "#info-panel: no existe"
+      ]
+    },
+    "antesDelSalto": {
+      "moon": "Europa",
+      "moonsShown": [
+        "Io",
+        "Europa",
+        "Ganymede",
+        "Callisto"
+      ],
+      "cameraMode": "destination",
+      "cameraFocus": "Europa",
+      "error": null,
+      "jdTdb": 2463279.905033193
+    },
+    "saltoFueraVentana": {
+      "scene": "main",
+      "phase": "Crucero heliocéntrico",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · época TDB de cada instante, sin extrapolar · satélites galileanos de Horizons solo en su ventana (2031-08-01 → 2032-06-01 TDB) · nave ampliada, orientada a la Tierra",
+      "valuetext": "500 d transcurridos · 650.272 d restantes · Crucero heliocéntrico",
+      "announcer": "Fase: Crucero heliocéntrico",
+      "mission": {
+        "moon": "Europa",
+        "moonsShown": [],
+        "cameraMode": "destination",
+        "cameraFocus": "Jupiter",
+        "error": null,
+        "jdTdb": 2462631.638933193
+      },
+      "moonsVisible": [],
+      "lunasVisibles": 0,
+      "probeEuropaKm": null,
+      "cameraEuropaKm": null,
+      "europaJupiterKm": null,
+      "europaScreen": [
+        860.4135124246119,
+        330.5413627831735
+      ],
+      "selected": "Jupiter",
+      "probeScale": 0.000599999999999999,
+      "infoPanels": [
+        "#moon-info: oculto",
+        "#info-panel: no existe"
+      ]
+    },
+    "movil": {
+      "scene": "main",
+      "phase": "Sobrevuelo de Europa",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · época TDB de cada instante, sin extrapolar · satélites galileanos de Horizons solo en su ventana (2031-08-01 → 2032-06-01 TDB) · nave ampliada, orientada a la Tierra",
+      "valuetext": "1,148.266 d transcurridos · 2.006 d restantes · Sobrevuelo de Europa",
+      "announcer": "Fase: Sobrevuelo de Europa",
+      "mission": {
+        "moon": "Europa",
+        "moonsShown": [
+          "Io",
+          "Europa",
+          "Ganymede",
+          "Callisto"
+        ],
+        "cameraMode": "destination",
+        "cameraFocus": "Europa",
+        "error": null,
+        "jdTdb": 2463279.905033193
+      },
+      "moonsVisible": [
+        "Io",
+        "Europa",
+        "Ganymede",
+        "Callisto"
+      ],
+      "lunasVisibles": 4,
+      "probeEuropaKm": 1661.2334134311343,
+      "cameraEuropaKm": 13444.099148296342,
+      "europaJupiterKm": 676630.0681449933,
+      "europaScreen": [
+        195.00000001551285,
+        730.281249983101
+      ],
+      "selected": "Europa",
+      "probeScale": 0.00001800000000000002,
+      "infoPanels": [
+        "#moon-info: visible",
+        "#info-panel: no existe"
+      ],
+      "pageOverflowPx": 0
+    },
+    "a1Llegada": {
+      "scene": "main",
+      "phase": "Captura en Marte (empuje finito)",
+      "foot": "Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · nave ampliada (menor cerca del destino), orientada a la Tierra · sin satélites",
+      "valuetext": "316.368 d transcurridos · 0.5 d restantes · Captura en Marte (empuje finito)",
+      "announcer": "Fase: Captura en Marte (empuje finito)",
+      "mission": {
+        "moon": null,
+        "moonsShown": [],
+        "cameraMode": "destination",
+        "cameraFocus": "Marte",
+        "error": null,
+        "jdTdb": 2462421.5694435323
+      },
+      "moonsVisible": [],
+      "lunasVisibles": 0,
+      "probeEuropaKm": null,
+      "cameraEuropaKm": null,
+      "europaJupiterKm": null,
+      "europaScreen": [
+        241.0063545251813,
+        354.5305803759335
+      ],
+      "selected": "Marte",
+      "probeScale": 0.00006000000000000029,
+      "infoPanels": [
+        "#moon-info: oculto",
+        "#info-panel: no existe"
+      ]
+    },
+    "exploracionRestaurada": {
+      "modo": "exploracion",
+      "lunasVisibles": 10,
+      "mision": false
+    }
+  },
+  "errors": [],
+  "warnings": [],
+  "finishedAt": "2026-11-22T02:31:15.669Z",
+  "europaRadiusKm": 1560.8
+}

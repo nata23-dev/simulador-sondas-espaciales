@@ -2071,8 +2071,11 @@ details[open] > :not(summary) {
 .launch-card-honesty {
   padding-top:5px;
   border-top:1px solid var(--line);
-  color:#d8c49c!important;
-  font-size:9.5px!important;
+}
+/* 24: sin !important. Gana a `.historical-launch-card p` y, dentro del inspector, a `#app #context-inspector :is(p,li)`. */
+.historical-launch-card .launch-card-honesty, #app #context-inspector .launch-card-honesty {
+  color:#d8c49c;
+  font-size:9.5px;
 }
 .launch-card-actions {
   display:flex;

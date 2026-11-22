@@ -20,7 +20,8 @@ export const METADATOS_MODELO_VOYAGER = Object.freeze({
 // Caché compartida en memoria para evitar descargar o subir texturas de Voyager.glb más de una vez
 const cachePlantillaVoyagerGlb = new Map();
 
-function cargarPlantillaVoyagerCompartida(urlGlb) {
+// 25: también la usa el lanzamiento 3D, que muestra el mismo modelo oficial al desplegarse la nave (sin descargarlo dos veces).
+export function cargarPlantillaVoyagerCompartida(urlGlb) {
   if (cachePlantillaVoyagerGlb.has(urlGlb)) {
     return cachePlantillaVoyagerGlb.get(urlGlb);
   }
@@ -400,6 +401,7 @@ export function crearSondaVisual({
   let modoEscala = MODOS_ESCALA_VISUAL.CIENTIFICA;
   let aparienciaPreferida = MODELOS_VISUALES_SONDA.VOYAGER;
   let voyagerCargado = false;
+  let cargaSolicitada = false;
   let errorCargaVoyager = null;
   let diagnosticoGeometriaVoyager = null;
   let radioBaseObservacion = 0.88;
@@ -436,13 +438,18 @@ export function crearSondaVisual({
       modeloExterno: modeloExterno?.name ?? null,
       factorEscala,
       voyagerCargado,
+      cargaSolicitada,
       errorCargaVoyager,
       metadatosVoyager: METADATOS_MODELO_VOYAGER,
       diagnosticoGeometriaVoyager
     });
   }
 
-  if (cargarModeloGlb && typeof fetch === 'function') {
+  // 18: Voyager.glb (3 MB) se descarga la primera vez que la sonda se muestra con su apariencia Voyager (o si se pide con
+  // solicitarModelo), no al crear la escena: el modo de exploración no lo necesita.
+  function solicitarModelo() {
+    if (cargaSolicitada || !cargarModeloGlb || typeof fetch !== 'function') return;
+    cargaSolicitada = true;
     const prefijo = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
     const urlGlb = `${prefijo}${METADATOS_MODELO_VOYAGER.archivoRelativo}`;
     cargarPlantillaVoyagerCompartida(urlGlb)
@@ -665,6 +672,7 @@ export function crearSondaVisual({
 
   function actualizarEscalaVisual(segundos, camera, enfocada) {
     if (!posicion.visible) return;
+    if (!modeloExterno && aparienciaPreferida === MODELOS_VISUALES_SONDA.VOYAGER) solicitarModelo();
     if (ocultaPorPrimeraPersona) {
       visual.visible = false;
       baliza.visible = false;
@@ -692,7 +700,8 @@ export function crearSondaVisual({
     materialBaliza.opacity = (modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA ? 0.45 : 0.62) * visibilidadBaliza;
     baliza.visible = materialBaliza.opacity > 0.01;
     if (baliza.visible) {
-      const tamanoBaliza = THREE.MathUtils.clamp(distancia * 0.011, 0.004, 24);
+      // 23: el mínimo sigue al factor de escala de la nave (menor cerca de un planeta o satélite), para no tapar el cuerpo.
+      const tamanoBaliza = THREE.MathUtils.clamp(distancia * 0.011, 0.004 * factorEscala, 24);
       baliza.scale.setScalar(tamanoBaliza);
     }
   }
@@ -704,6 +713,7 @@ export function crearSondaVisual({
     idSonda,
     posicion,
     visual,
+    solicitarModelo,
     trayectoriaGrupo,
     mallasSeleccionables,
     establecerTrayectoria,

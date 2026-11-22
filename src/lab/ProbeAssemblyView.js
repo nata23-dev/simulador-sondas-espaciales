@@ -364,6 +364,7 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
       if (!controlsConnected) { controls.connect(renderer.domElement); controlsConnected = true; }
       setTouchInteraction(false);
       resize(); render();
+      startPendingNasa();
     } else {
       setTouchInteraction(false);
       if (controlsConnected) { controls.disconnect(); controlsConnected = false; }
@@ -371,7 +372,8 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
   }
   // 15.1: los buses con modelo oficial de NASA se montan primero con la geometría procedimental (respaldo inmediato y sin red)
   // y, cuando llega el GLB, este la sustituye. Mientras la sonda no cambie no se vuelve a montar.
-  let mountToken = 0, mountedKey = null;
+  let mountToken = 0, mountedKey = null, pendingNasa = null;
+  function startPendingNasa() { const start = pendingNasa; pendingNasa = null; start?.(); }
   const modelState = { source: 'procedural', entry: null, error: null };
   const designKey = design => JSON.stringify([design.coreId, design.parts.map(p => [p.socketId, p.componentId, p.fuelKg ?? null, p.adapter ?? false])]);
   function setDesign(design, selected = selectedId, options = {}) {
@@ -390,7 +392,9 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
     Object.assign(modelState, { source: entry ? 'cargando' : procedural ? 'esquema' : 'procedural', entry, error: null });
     if (entry) {
       const token = ++mountToken;
-      attachNasaModel(assembly, design.coreId, { isCurrent: () => !disposed && token === mountToken }).then(result => {
+      // 18: el GLB oficial (1–9 MB) solo se descarga cuando la vista 3D está visible; mientras tanto queda la geometría
+      // procedimental. setVisible(true) lanza la carga pendiente.
+      pendingNasa = () => attachNasaModel(assembly, design.coreId, { isCurrent: () => !disposed && token === mountToken }).then(result => {
         if (disposed || token !== mountToken) return;
         if (result.status !== 'nasa') { Object.assign(modelState, { source: 'procedural', error: result.error?.message ?? null }); onModelState?.({ ...modelState }); return; }
         for (const child of [...assembly.children]) if (child.name !== 'nasa-model') { assembly.remove(child); child.traverse(node => { if (node.userData.sharedNasaResource) return; node.geometry?.dispose(); if (node.userData.selectionHelper) node.material?.dispose(); }); }
@@ -398,7 +402,8 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
         applyFrame(frameFor(design), moved);
         Object.assign(modelState, { source: 'nasa' }); onModelState?.({ ...modelState });
       });
-    } else mountToken++;
+      if (visible) startPendingNasa();
+    } else { mountToken++; pendingNasa = null; }
     onModelState?.({ ...modelState });
     for (const [id, node] of nodes) {
       if (id === selected) {

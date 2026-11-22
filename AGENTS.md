@@ -27,7 +27,7 @@ Una etapa autorizada a la vez. Inspecciona `git status` y el código vigente (la
 ## Validación
 
 ```bash
-npm ci && npm test && npm run build && git diff --check
+npm ci && npm run lint && npm test && npm run build && git diff --check
 ```
 
 Línea base actual: ver [roadmap](docs/DEVELOPMENT_ROADMAP.md). Evita reejecutar scripts que reescriben `evidence/` salvo que sea necesario y registra el cambio.

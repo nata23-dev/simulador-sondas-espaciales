@@ -4,6 +4,10 @@ import { UNIDADES_ESCENA_POR_KM } from './ScaleModeConfig.js';
 import { cargarTextura } from './TextureLoader.js';
 import { MOON_TEXTURES } from './MoonTextureCatalog.js';
 import { crearPenachoIo } from './IoVolcanism.js';
+import { registrarTexturaDiferida, vincularMallaTextura } from './DeferredTextures.js';
+
+// 18: clave de la carga diferida de las texturas de una luna (mosaico, ilustración y máscara; 0,3–1,3 MB por luna).
+export const claveTexturaLuna = key => `luna:${key}`;
 
 const surfaceMaterials = new Map();
 // Ayuda opcional de lectura del mosaico de Ío; 0 conserva exactamente la luz solar.
@@ -59,24 +63,27 @@ export function crearMaterialSuperficie(key) {
        diffuseColor.rgb *= ${key === 'Io' ? 'mix(solarLight, 0.24 + 0.08 * incidence, ioInspection)' : 'solarLight'};
        ${key === 'Titan' ? 'diffuseColor.rgb *= 0.94 + 0.06 * smoothstep(-0.7, 0.7, -vMoonWorldNormal.y);' : ''}`);
   };
-  if (key !== 'Titan') cargarTextura(`moons/${map.file}`, texture => {
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.ClampToEdgeWrapping;
-    documented = texture;
-    activate();
-  });
-  if (key !== 'Titan' && map.illustration && map.observedMask) {
-    cargarTextura(`moons/${map.illustration}`, texture => {
+  // 18: los archivos se piden cuando la luna ya se ve con unos píxeles de radio (DeferredTextures), no al crear el material.
+  if (key !== 'Titan') registrarTexturaDiferida(claveTexturaLuna(key), () => {
+    cargarTextura(`moons/${map.file}`, texture => {
       texture.wrapS = THREE.RepeatWrapping;
-      illustration = texture;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      documented = texture;
       activate();
     });
-    cargarTextura(`moons/${map.observedMask}`, texture => {
-      texture.wrapS = THREE.RepeatWrapping;
-      observedMask = texture;
-      activate();
-    }, { color: false });
-  }
+    if (map.illustration && map.observedMask) {
+      cargarTextura(`moons/${map.illustration}`, texture => {
+        texture.wrapS = THREE.RepeatWrapping;
+        illustration = texture;
+        activate();
+      });
+      cargarTextura(`moons/${map.observedMask}`, texture => {
+        texture.wrapS = THREE.RepeatWrapping;
+        observedMask = texture;
+        activate();
+      }, { color: false });
+    }
+  });
   return material;
 }
 
@@ -118,6 +125,7 @@ export function crearLunasPlanetarias(scene, objetos) {
     const mesh = new THREE.Mesh(geometry, crearMaterialSuperficie(key));
     mesh.scale.setScalar(radioEscena);
     mesh.userData.nombreLuna = key;
+    vincularMallaTextura(claveTexturaLuna(key), mesh);
     group.add(mesh);
     if (key === 'Io') {
       penachoIo = crearPenachoIo();

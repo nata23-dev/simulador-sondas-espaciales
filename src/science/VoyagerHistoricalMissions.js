@@ -95,10 +95,6 @@ export function getHistoricalMissionById(missionId) {
   return HISTORICAL_MISSIONS_CATALOG[missionId] ?? null;
 }
 
-export function getHistoricalMissionByNaifId(naifId) {
-  return VOYAGER_MISSION_LIST.find(m => m.naifId === String(naifId)) ?? null;
-}
-
 /**
  * Clasifica la fase histórica de misión de cada sonda en función del instante JD TDB.
  */

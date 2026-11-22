@@ -76,13 +76,18 @@ export function createAppNavigator() {
   }
   const crumbObserver = new MutationObserver(updateCrumb);
   crumbObserver.observe(app, { attributes: true, attributeFilter: ['data-app-mode'] });
-  for (const selector of ['#context-title', '#lab-tool-title']) {
-    const node = document.querySelector(selector);
-    if (node) crumbObserver.observe(node, { childList: true, characterData: true, subtree: true });
+  // 18: el laboratorio se carga bajo demanda; attachLab() vincula la ruta a sus nodos cuando ya existen.
+  const observed = new Set();
+  function attachLab() {
+    for (const selector of ['#context-title', '#lab-tool-title']) {
+      const node = document.querySelector(selector);
+      if (node && !observed.has(node)) { observed.add(node); crumbObserver.observe(node, { childList: true, characterData: true, subtree: true }); }
+    }
+    const lab = document.querySelector('#experimental-lab');
+    if (lab && !observed.has(lab)) { observed.add(lab); crumbObserver.observe(lab, { attributes: true, attributeFilter: ['hidden'] }); }
+    updateCrumb();
   }
-  const lab = document.querySelector('#experimental-lab');
-  if (lab) crumbObserver.observe(lab, { attributes: true, attributeFilter: ['hidden'] });
-  updateCrumb();
+  attachLab();
 
   function setOpen(open) {
     if (open) panel.style.setProperty('--app-nav-top', `${Math.ceil(header.getBoundingClientRect().bottom + 6)}px`);
@@ -127,7 +132,7 @@ export function createAppNavigator() {
   document.addEventListener('keydown', onKey);
   document.addEventListener('pointerdown', onPointer);
   return {
-    areas: AREAS, go, currentArea, waitForMode,
+    areas: AREAS, go, currentArea, waitForMode, attachLab,
     dispose() { document.removeEventListener('keydown', onKey); document.removeEventListener('pointerdown', onPointer); crumbObserver.disconnect(); wrap.remove(); panel.remove(); crumb.remove(); }
   };
 }
