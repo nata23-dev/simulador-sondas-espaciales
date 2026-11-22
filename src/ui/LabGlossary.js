@@ -21,7 +21,7 @@ export const GLOSSARY = Object.freeze([
   { id: 'azimuth', term: 'Acimut de lanzamiento', match: /^Acimut/,
     text: 'Dirección del despegue medida desde el norte: 90° es hacia el este, que es lo que más aprovecha la rotación de la Tierra. Lanzar más al norte inclina más la órbita; hace falta cuando la dirección de salida hacia el destino se aleja mucho del ecuador.' },
   { id: 'handoff', term: 'Empalme con el crucero', match: /^Empalme con el crucero/,
-    text: 'Diferencia entre la velocidad con la que la nave sale de la esfera de influencia de la Tierra y la que pide la transferencia hacia el destino (problema de Lambert) en ese punto. El despegue, la espera y la inyección se ajustan hasta que es prácticamente cero.' },
+    text: 'Unión entre la salida de la Tierra y el viaje hacia el destino. Se usa la dirección y la velocidad con las que la nave se alejaría de la Tierra (la asíntota de su hipérbola de escape), corregidas con la atracción terrestre que sigue actuando fuera de su esfera de influencia, para que la nave llegue al destino. Por eso, al cruzar la frontera, la nave va algo más rápida que el viaje calculado: no es un encendido, es lo que la Tierra le quitará al alejarse. El despegue, la espera y la inyección se ajustan hasta que la diferencia con lo pedido es prácticamente cero.' },
   { id: 'nbody', term: 'Crucero de n cuerpos', match: /^(Crucero de n cuerpos|Solo los otros planetas)/,
     text: 'Propagación del crucero con la gravedad del Sol y de los planetas a la vez, integrada paso a paso. Las cónicas parcheadas solo usan el Sol en el crucero; la diferencia mide su error.' },
   { id: 'tcm', term: 'Corrección de trayectoria (TCM)', match: /^Corrección de trayectoria/,

@@ -22,7 +22,7 @@ const norm = a => Math.hypot(a[0], a[1], a[2]);
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 
 // Réplica de IntegratedMissionPlanner.compute() y de compareNBody() (misma ventana de efemérides).
-async function run(id, probeId, launch = false) {
+async function run(id, probeId, launch = false, patch = null) {
   const v = scenarioFormValues(INTEGRATED_SCENARIOS.find(s => s.id === id)), target = ENCOUNTER_TARGETS[v.destinationId];
   let departureJdTdb = datetimeLocalUtcToJdTdb(v.departureUtc), tofDays = v.tofDays;
   const covE = ephemeris.coverage('399'), covT = ephemeris.coverage(target.ephemerisId), margin = Math.max(30, 0.02 * tofDays) + 140;
@@ -32,7 +32,9 @@ async function run(id, probeId, launch = false) {
     if (Number.isFinite(r.score)) { departureJdTdb = r.departureJdTdb; tofDays = r.tofDays; }
   }
   const design = { ...historicalDesign(probeId), id: `flota-${probeId}` };
-  const mission = computeIntegratedMission(integratedMissionInput({ ...v, destinationId: target.id, departureJdTdb, tofDays, launch }, design), { helio, moons: null });
+  const input = integratedMissionInput({ ...v, destinationId: target.id, departureJdTdb, tofDays, launch }, design);
+  if (patch) input.profile.launch.patch = patch; // 28: 'velocity' = empalme de la etapa 21
+  const mission = computeIntegratedMission(input, { helio, moons: null });
   const cruise = mission.segments.find(s => s.id === 'cruise');
   const start = mission.departureJdTdb + cruise.startSeconds / 86400, end = mission.departureJdTdb + cruise.endSeconds / 86400;
   const win = await ephemeris.loadWindow(NBODY_EPHEMERIS_IDS, start - 1, end + 1);
@@ -41,6 +43,7 @@ async function run(id, probeId, launch = false) {
 }
 const a1 = run('A1', 'cassini');
 const a1Pad = run('A1', 'cassini', true);
+const a1Pad21 = run('A1', 'cassini', true, 'velocity');
 
 const sun0 = r => r.map(x => -MU_SUN_NBODY * x / norm(r) ** 3);
 test('22 · aceleración heliocéntrica: término directo e indirecto calculados aparte', () => {
@@ -124,8 +127,10 @@ test('22 · A1 sin plataforma: diferencia con la cónica, efecto de Marte fuera 
   assert.ok(r.samples.length > 10 && r.samples.length <= 121);
 });
 
-test('22 · A1 desde la plataforma: la gravedad terrestre fuera de la SOI explica casi toda la diferencia (empalme de la etapa 21)', async () => {
-  const { mission, stateAt } = await a1Pad;
+test('22 · A1 desde la plataforma con el empalme de la etapa 21: la gravedad terrestre fuera de la SOI explica casi toda la diferencia', async () => {
+  // 28: el empalme de la etapa 21 (velocidad continua en la frontera) sigue disponible para compararlo; ya no es el de por defecto.
+  const { mission, stateAt } = await a1Pad21;
+  assert.equal(mission.launch.patch, 'velocity');
   const r = compareMissionCruise(mission, stateAt);
   assert.equal(r.status, NBODY_STATUS.computed, r.reason ?? '');
   assert.equal(r.excluded.length, 0);
@@ -134,6 +139,24 @@ test('22 · A1 desde la plataforma: la gravedad terrestre fuera de la SOI explic
   assert.ok(earth.withoutArrivalPositionErrorKm < 1e5, 'sin la Tierra, la diferencia vuelve a decenas de miles de km');
   assert.deepEqual(r.thirdBodies.without.sort(), ['399', '499']);
   assert.ok(r.tcm.deltaVMS < 5 && r.tcm.residualKm < 0.1);
+});
+
+test('28 · A1 desde la plataforma (empalme por la asíntota con la Tierra fuera de la SOI): el crucero de n cuerpos llega como sin la plataforma', async () => {
+  const [{ mission, stateAt }, sin] = await Promise.all([a1Pad, a1]);
+  assert.equal(mission.launch.patch, 'asymptote');
+  assert.equal(mission.launch.earthBeyondSoi.applied, true);
+  const r = compareMissionCruise(mission, stateAt), r0 = compareMissionCruise(sin.mission, sin.stateAt);
+  assert.equal(r.status, NBODY_STATUS.computed, r.reason ?? '');
+  // La nave parte de su velocidad REAL en la frontera (la de la hipérbola), no de la del crucero.
+  assert.ok(Math.abs(r.boundaryState.velocityDifferenceKmS - mission.launch.soiVelocityJumpKmS) < 1e-12 && r.boundaryState.positionDifferenceKm === 0);
+  // De 13,2 millones de km (etapa 21) a decenas de miles, como el crucero que empieza en el centro de la Tierra.
+  assert.ok(r.uncorrected.arrivalPositionErrorKm < 1e5, `${r.uncorrected.arrivalPositionErrorKm} km`);
+  assert.ok(Math.abs(r.uncorrected.arrivalPositionErrorKm - r0.uncorrected.arrivalPositionErrorKm) < 0.15 * r0.uncorrected.arrivalPositionErrorKm,
+    `${r.uncorrected.arrivalPositionErrorKm} frente a ${r0.uncorrected.arrivalPositionErrorKm} km`);
+  // La Tierra ya no se aísla (está en el diseño de la salida); la TCM-1 corrige con ella.
+  assert.deepEqual(r.isolated.map(i => i.id), ['499']);
+  assert.ok(r.thirdBodies.perturbers.includes('Tierra + Luna'));
+  assert.ok(r.tcm.deltaVMS < 5 && r.tcm.residualKm < 0.1, JSON.stringify(r.tcm));
 });
 
 test('22 · sin efemérides en parte del crucero: no se extrapola', async () => {

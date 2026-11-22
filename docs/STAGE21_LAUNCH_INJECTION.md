@@ -171,6 +171,8 @@ Chrome sin interfaz con la GPU real (AMD, Direct3D 11), [`scripts/verify-stage21
   En Δv impulsivo son ≈ 39 m/s menos en A1 y ≈ 32 m/s menos en C1. El modelo convencional de radio de SOI nulo iguala la asíntota y pide el C3 mayor, pero introduciría un salto de velocidad en la frontera.
 
   **Medido en la etapa 22** ([crucero de n cuerpos](STAGE22_NBODY_CRUISE.md)): con la Tierra actuando también fuera de su SOI, la llegada de A1 se aparta 13,2 millones de km del punto de la cónica (45 159 km sin la Tierra). **Con la plataforma, el C3 de esta etapa es demasiado bajo para el sistema solar real.** Corregirlo exige apuntar la salida con la Tierra fuera de la SOI; es una decisión de modelo pendiente de la revisión independiente.
+
+  **Actualización (etapa 28, 22-11-2026):** resuelto en la [etapa 28](STAGE28_DEPARTURE_PATCH.md). El empalme por defecto es ahora el convencional por la asíntota, con la gravedad terrestre fuera de la SOI incluida en el apuntado. A1 vuelve a C3 = 8,932 y la nave real llega a 45 029 km en n cuerpos (43 258 km desde el centro de la Tierra). El empalme de esta etapa sigue disponible como `patch: 'velocity'` para comparar. Pendiente de la revisión independiente de la física.
 - **Tierra puntual dentro de la SOI**, sin J2, sin la Luna, sin el Sol y sin resistencia en la órbita de aparcamiento.
 - **Orientación terrestre sin nutación** (≲ 0,5 km en la superficie), sin movimiento del polo (≲ 15 m) y sin UT1 − UTC (≲ 0,4 km en Cabo Cañaveral). Son valores del orden indicado, no medidos aquí.
 - **Restricciones no comprobadas:** los límites de acimut del campo de tiro, la luz, el tiempo meteorológico y las ventanas reales. El despegue se elige dentro del día de la salida prevista, sin optimizarlo.

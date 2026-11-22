@@ -7,8 +7,16 @@
 // modelo es equivalente a recalcularlo con otro ángulo inicial salvo el error de integración (0,23 m en la posición final y 5·10⁻⁵ s en el corte de la circularización, medidos
 // en tests/Stage21LaunchInjection.test.mjs). Después todo se integra en ejes eclípticos J2000.
 //
-// Apuntado: incógnitas x = (instante del despegue, duración del aparcamiento, duración de la inyección); condición: en la salida de
-// la SOI, la velocidad heliocéntrica = la que pide el Lambert del crucero desde ESE punto y en ESE instante (`requiredVelocityAt`).
+// Apuntado: incógnitas x = (instante del despegue, duración del aparcamiento, duración de la inyección); condición en la salida de
+// la SOI, frente a la velocidad que pide el Lambert del crucero desde ESE punto y en ESE instante (`requiredVelocityAt`):
+//   · empalme 'asymptote' (por defecto desde la etapa 28, el convencional de las cónicas parcheadas): velocidad de la Tierra + v∞ de la
+//     asíntota de salida de la hipérbola = velocidad pedida. El C3 es el del centro de la Tierra. En la frontera la velocidad de la
+//     hipérbola es algo mayor que la del crucero (≈ μ⊕/(R_SOI·v∞), unos 0,14 km/s con v∞ = 3 km/s): es lo que la gravedad terrestre
+//     fuera de la SOI le quita hasta el infinito y que las cónicas, que la ignoran allí, aplican de golpe en la frontera. Es el único
+//     salto de velocidad de la cadena; se declara (no es un encendido).
+//   · empalme 'velocity' (el de la etapa 21, conservado para compararlo): velocidad de la hipérbola en la frontera = velocidad pedida.
+//     Trayectoria continua, pero el C3 baja en ≈ 2μ⊕/R_SOI (0,86 km²/s²): con la Tierra actuando también fuera de la SOI la nave llega
+//     millones de km lejos (medido en la etapa 22).
 // Newton amortiguado con jacobiano por diferencias finitas. El despegue gira el plano de la órbita de aparcamiento alrededor del
 // eje terrestre (ascensión recta de la asíntota), el aparcamiento coloca la asíntota en el plano (declinación) y la inyección fija
 // su módulo (C3). La declinación alcanzable no supera la inclinación de la órbita de aparcamiento: si el acimut es «auto», se busca
@@ -23,8 +31,15 @@ import { TITAN_IIIE_CENTAUR, LC41 } from '../science/VoyagerLaunchProfile.js';
 import { launchFrameToEclipticJ2000, applyMatrix, transposeMatrix, precessionMatrixJ2000ToDate, greenwichMeanSiderealDeg } from '../science/EarthOrientation.js';
 import { eclipticJ2000ToIcrfEquatorial } from '../science/Frames.js';
 import { tdbToTimeScales } from '../science/AstrodynamicsTime.js';
+import { propagateNBody, NBODY_PERTURBERS, NBodyDataError } from './NBodyCruise.js';
+import { IntegrationError } from '../science/NumericalIntegrator.js';
 
-export const EARTH_DEPARTURE_VERSION = '21-earth-departure-1';
+export const EARTH_DEPARTURE_VERSION = '28-earth-departure-2';
+/** 28: modelos de empalme en la frontera de la SOI terrestre (véase el comentario de cabecera). */
+export const DEPARTURE_PATCH_MODELS = Object.freeze({
+  asymptote: Object.freeze({ id: 'asymptote', label: 'Asíntota (cónicas parcheadas convencionales)' }),
+  velocity: Object.freeze({ id: 'velocity', label: 'Velocidad en la frontera (etapa 21)' })
+});
 const DEG = Math.PI / 180;
 const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
@@ -33,6 +48,20 @@ const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 const norm = a => Math.hypot(a[0], a[1], a[2]);
 const unit = a => scale(a, 1 / norm(a));
+
+/**
+ * 28: velocidad de exceso hiperbólico (km/s, vector de la asíntota de SALIDA) de un estado (r, v) respecto a un cuerpo de parámetro μ.
+ * |v∞|² = v² − 2μ/r (C3) y su dirección es la del radio en la anomalía verdadera límite ν∞ = acos(−1/e):
+ * ŝ = (−ê + √(e² − 1)·(ĥ × ê)) / e. null si la órbita no es hiperbólica (o es rectilínea).
+ */
+export function hyperbolicExcessVelocity(r, v, mu) {
+  const rn = norm(r), c3 = dot(v, v) - 2 * mu / rn, h = cross(r, v), hn = norm(h);
+  if (!(c3 > 0) || !(hn > 0)) return null;
+  const ev = sub(scale(cross(v, h), 1 / mu), scale(r, 1 / rn)), e = norm(ev);
+  if (!(e > 1)) return null;
+  const eh = scale(ev, 1 / e), side = cross(scale(h, 1 / hn), eh), k = Math.sqrt(e * e - 1);
+  return scale(add(scale(eh, -1), scale(side, k)), Math.sqrt(c3) / e);
+}
 
 // Etapa de inyección: Centaur D-1T, la que inyectó a las Voyager (también a Viking y Helios). Empuje, Isp y masas del resumen de
 // sistemas de 1973 (los mismos de la etapa 25). Simplificaciones declaradas: aquí no se enciende durante el ascenso (en vuelo,
@@ -85,17 +114,59 @@ export function hyperbolicTimeToRadius(r, v, mu, rTarget) {
 }
 
 /**
+ * 28: gravedad terrestre FUERA de la SOI en el apuntado de la salida. La asíntota corrige la energía (el C3), pero la Tierra sigue
+ * tirando de la nave más allá de la frontera: frente a una cónica que sale de la SOI con la velocidad de la asíntota, la nave real va
+ * por delante una distancia que crece como (μ⊕/v∞²)·ln(r/R_SOI) y que el Sol amplifica a lo largo del crucero (≈ 0,5 millones de km
+ * en la llegada de A1). Aquí se mide esa diferencia con el estado REAL de la nave en la frontera, propagado con el Sol y la Tierra
+ * (DOPRI54, como el crucero de n cuerpos de la etapa 22, con el GM de la Luna sumado en el centro de la Tierra), hasta la llegada
+ * del crucero cónico. Devuelve la corrección de la velocidad pedida que la anula a primer orden: Δ = −(∂r_llegada/∂v)⁻¹ · fallo,
+ * con la sensibilidad de la cónica (diferencias finitas sobre Kepler). IntegratedMission la suma a la velocidad pedida y vuelve a
+ * apuntar la salida hasta que el fallo baja de `EARTH_BEYOND_SOI.toleranceKm`.
+ * `input` = { stateAt(ephemerisId, jd) → { positionKm } | null, exit: { jdTdb, helioPositionKm, helioVelocityActualKmS },
+ *   cruiseVelocityKmS (la del Lambert desde la frontera), arrivalJdTdb, muSun }.
+ */
+export const EARTH_BEYOND_SOI = Object.freeze({ toleranceKm: 1, maxRounds: 8, jacobianStepKmS: 1e-5,
+  perturbers: Object.freeze(NBODY_PERTURBERS.filter(p => p.id === '399')) });
+export function earthBeyondSoiCorrection({ stateAt, exit, cruiseVelocityKmS, arrivalJdTdb, muSun }) {
+  const X = exit.helioPositionKm, dt = (arrivalJdTdb - exit.jdTdb) * 86400;
+  if (!(dt > 0)) return { ok: false, reason: 'la llegada no es posterior a la salida de la SOI' };
+  const conicEnd = v => propagateKepler(X, v, dt, muSun).positionKm, target = conicEnd(cruiseVelocityKmS);
+  let real;
+  try {
+    real = propagateNBody({ stateAt, positionKm: X, velocityKmS: exit.helioVelocityActualKmS, startJdTdb: exit.jdTdb, endJdTdb: arrivalJdTdb, perturbers: EARTH_BEYOND_SOI.perturbers });
+  } catch (error) {
+    if (error instanceof NBodyDataError || error instanceof IntegrationError) return { ok: false, reason: error.message };
+    throw error;
+  }
+  const miss = sub(real.positionKm, target), h = EARTH_BEYOND_SOI.jacobianStepKmS, J = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (let k = 0; k < 3; k++) {
+    const v = cruiseVelocityKmS.slice(); v[k] += h; const r = conicEnd(v);
+    for (let i = 0; i < 3; i++) J[i][k] = (r[i] - target[i]) / h;
+  }
+  const correction = solveLinear3(J, scale(miss, -1));
+  if (!correction) return { ok: false, reason: 'sensibilidad de la cónica singular' };
+  return { ok: true, missKm: norm(miss), missVector: miss, correctionKmS: correction, steps: real.steps, arrivalVelocityKmS: real.velocityKmS };
+}
+function solveLinear3(J, b) {
+  const det = m => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+  const D = det(J); if (!(Math.abs(D) > 0)) return null;
+  return [0, 1, 2].map(k => det(J.map((row, i) => row.map((val, j) => (j === k ? b[i] : val)))) / D);
+}
+
+/**
  * `input`: { payloadMassKg, liftoffGuessJdTdb, earthStateAt(jd) → { positionKm, velocityKmS } | null, requiredVelocityAt(posKm, jd)
  *   → velocidad heliocéntrica | null, soiRadiusKm, azimuthDeg ('auto' | número), launcher?, upperStage?, previous? (solución
  *   anterior, para recalcular con otra llegada) }.
  */
 export function designEarthDeparture(input) {
   const { payloadMassKg, liftoffGuessJdTdb: tg, earthStateAt, requiredVelocityAt, soiRadiusKm } = input;
+  const patch = input.patch ?? DEPARTURE_PATCH_MODELS.asymptote.id;
+  if (!DEPARTURE_PATCH_MODELS[patch]) throw new RangeError(`Empalme desconocido: ${patch}`);
   const launcher = input.launcher ?? DEPARTURE_LAUNCHER, upper = input.upperStage ?? CENTAUR_D1T, mu = EARTH_GM_KM3_S2;
   const cfg = { ...DEPARTURE_TARGETING, ...(input.targeting ?? {}) };
   const stackKg = payloadMassKg + upper.dryMassKg + upper.propellantKg, dryKg = payloadMassKg + upper.dryMassKg;
   const engine = { thrustN: upper.thrustN, ispS: upper.ispS }, flow = massFlowKgS(upper.thrustN, upper.ispS), fullBurnS = upper.propellantKg / flow;
-  const base = { model: EARTH_DEPARTURE_VERSION, launcherName: launcher.name, upperStage: upper, site: DEPARTURE_SITE, payloadMassKg, stackMassKg: stackKg, soiRadiusKm };
+  const base = { model: EARTH_DEPARTURE_VERSION, patch, launcherName: launcher.name, upperStage: upper, site: DEPARTURE_SITE, payloadMassKg, stackMassKg: stackKg, soiRadiusKm };
   const fail = (status, reason, extra = {}) => Object.freeze({ ...base, ...extra, status, ok: false, reason });
 
   // Asíntota pedida si se saliera del centro de la Tierra en la fecha prevista (solo para el valor inicial y el acimut).
@@ -186,10 +257,14 @@ export function designEarthDeparture(input) {
     const ex = propagateKepler(bo.positionKm, bo.velocityKmS, dt, mu);
     const tExit = tAsc + x[1] + x[2] + dt, jdExit = jdL + tExit / 86400, earth = earthStateAt(jdExit);
     if (!earth) return { error: 'aim', reason: 'Efemérides de la Tierra no disponibles en la salida de la SOI.' };
-    const X = add(earth.positionKm, ex.positionKm), achieved = add(ex.velocityKmS, earth.velocityKmS), req = requiredVelocityAt(X, jdExit);
+    // 28: `actual` es la velocidad de la nave en la frontera; `achieved`, la que se compara con la pedida según el empalme.
+    const X = add(earth.positionKm, ex.positionKm), actual = add(ex.velocityKmS, earth.velocityKmS), req = requiredVelocityAt(X, jdExit);
     if (!req) return { error: 'aim', reason: 'El crucero no puede apuntarse desde la salida de la SOI.' };
+    const vInf = hyperbolicExcessVelocity(bo.positionKm, bo.velocityKmS, mu);
+    if (!vInf) return { error: 'bound', c3: dot(bo.velocityKmS, bo.velocityKmS) - 2 * mu / norm(bo.positionKm) };
+    const achieved = patch === 'velocity' ? actual : add(vInf, earth.velocityKmS);
     const F = sub(achieved, req);
-    return detail ? { F, jdL, frame, parking: { positionKm: r, velocityKmS: v }, coastEnd: pc, burn, burnout: bo, escapeSeconds: dt, exit: ex, tExit, jdExit, earth, X, achieved, req }
+    return detail ? { F, jdL, frame, parking: { positionKm: r, velocityKmS: v }, coastEnd: pc, burn, burnout: bo, escapeSeconds: dt, exit: ex, tExit, jdExit, earth, X, achieved, actual, vInf, req }
       : { F, burnout: bo };
   }
   const solve3 = (J, b) => {
@@ -260,7 +335,10 @@ export function designEarthDeparture(input) {
       gravityLossKmS: b.propulsiveDeltaVMS / 1000 - impulsiveDvKmS, massAfterKg: bo.massKg, c3Km2S2: c3, vInfKmS: Math.sqrt(c3), burnoutAltitudeKm: rBo - 6378.137 },
     upperSeparation: { elapsedSeconds: tBurnEnd, jettisonedKg: bo.massKg - payloadMassKg },
     escape: { startSeconds: tBurnEnd, endSeconds: d.tExit, durationSeconds: d.escapeSeconds, initial: { positionKm: bo.positionKm, velocityKmS: bo.velocityKmS } },
+    // 28: helioVelocityAchievedKmS es la magnitud apuntada (asíntota + Tierra, o la de la frontera con el empalme 'velocity');
+    // helioVelocityActualKmS, la velocidad de la nave en la frontera; soiVelocityJumpKmS, su diferencia con la del crucero.
     exit: { elapsedSeconds: d.tExit, jdTdb: d.jdExit, geocentric: { positionKm: d.exit.positionKm, velocityKmS: d.exit.velocityKmS }, helioPositionKm: d.X,
-      helioVelocityAchievedKmS: d.achieved, helioVelocityRequiredKmS: d.req, earthState: d.earth }
+      helioVelocityAchievedKmS: d.achieved, helioVelocityActualKmS: d.actual, helioVelocityRequiredKmS: d.req, earthState: d.earth,
+      vInfVectorKmS: d.vInf, soiVelocityJumpKmS: sub(d.actual, d.req) }
   });
 }

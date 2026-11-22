@@ -25,12 +25,12 @@ import { landerStructuralMassKg, validateLander } from './BodyLandingVehicle.js'
 import { tsiolkovskyDeltaVMS } from './FiniteThrustDynamics.js';
 import { getComponent } from './ComponentCatalog.js';
 import { AU_KM, JULIAN_YEAR_DAYS, generationAt, electricThrust } from './SpacecraftPower.js';
-import { designEarthDeparture, EARTH_DEPARTURE_VERSION } from './EarthDeparture.js';
+import { designEarthDeparture, EARTH_DEPARTURE_VERSION, earthBeyondSoiCorrection, EARTH_BEYOND_SOI } from './EarthDeparture.js';
 import { EARTH_GM_KM3_S2 } from './LaunchEarth.js';
 
 // 20: la captura planetaria se apunta para compensar el desplazamiento del periapsis (resultados distintos de 13–17.1).
 // 21: salida opcional desde la plataforma (lanzamiento 12E, aparcamiento e inyección de empuje finito); sin ella, como en 20.
-export const INTEGRATED_MISSION_VERSION = '21-integrated-mission-3';
+export const INTEGRATED_MISSION_VERSION = '28-integrated-mission-4';
 export const PHASE_STATUS = Object.freeze({ done: 'COMPLETADA SEGÚN EL MODELO', failed: 'NO VIABLE PARA EL ESCENARIO CONFIGURADO', partial: 'COMPLETADA CON OBJETIVO NO ALCANZADO',
   skipped: 'NO EVALUADA', pending: 'PENDIENTE (sin modelo en esta etapa)', noData: 'DATOS NO DISPONIBLES', initial: 'CONDICIÓN INICIAL (no simulada)' });
 export const LEVEL = Object.freeze({ operational: 'OPERATIVO', experimental: 'EXPERIMENTAL', pending: 'PENDIENTE', notViable: 'NO VIABLE para el escenario configurado' });
@@ -62,7 +62,9 @@ export const DEFAULT_PROFILE = Object.freeze({
   planet: Object.freeze({ mode: 'capture', periapsisAltitudeKm: 400, bPlane: Object.freeze({ mode: 'auto' }), captureBurns: Object.freeze([Object.freeze({ apoapsisAltitudeKm: 33000 })]), orbitCoastDays: 2, periapsisCompensation: true }),
   moon: null, landing: Object.freeze({ enabled: false }), flybyOutboundDays: 120,
   // 21: con `enabled`, la misión empieza en la plataforma de Cabo Cañaveral (EarthDeparture.js); si no, en la v∞ apuntada.
-  launch: Object.freeze({ enabled: false, azimuthDeg: 'auto' })
+  // 28: `patch` = empalme en la SOI terrestre ('asymptote', el convencional, o 'velocity', el de la etapa 21); con la asíntota,
+  // `earthBeyondSoi` apunta además con la gravedad terrestre fuera de la SOI (Sol + Tierra integrados hasta la llegada).
+  launch: Object.freeze({ enabled: false, azimuthDeg: 'auto', patch: 'asymptote', earthBeyondSoi: true })
 });
 
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
@@ -200,7 +202,7 @@ export function computeIntegratedMission(input, data) {
   // Época de la misión (t = 0): la salida prevista o, con lanzamiento (21), el despegue. Todos los tiempos se cuentan desde ella.
   let departureJdTdb = plannedDepartureJdTdb;
 
-  const segments = [], events = [], phases = [], maneuvers = [], warnings = [], separations = [];
+  const segments = [], events = [], phases = [], maneuvers = [], warnings = [], separations = [], patches = [];
   const tanks = { probe: vehicle.probe.propellantKg, module: vehicle.module?.propellantKg ?? 0, lander: vehicle.lander?.propellantKg ?? 0 };
   let mass = vehicle.totalKg;
   // Se rellena al apuntar la llegada; si el apuntado falla, finish() devuelve la misión sin aproximación (antes: ReferenceError).
@@ -251,22 +253,44 @@ export function computeIntegratedMission(input, data) {
     }
     return { aim: a, compensation: comp, rpAimKm: comp?.applied ? comp.aimedRadiusKm : rpPlanet };
   };
-  let arrival = designArrival(aimFrom(earth.positionKm, departureJdTdb)), launch = null, launchRounds = 0;
+  let arrival = designArrival(aimFrom(earth.positionKm, departureJdTdb)), launch = null, launchRounds = 0, earthBeyondSoi = null;
   // 21: salida desde la plataforma. El crucero empieza en la salida de la SOI terrestre, así que la llegada (y su compensación) se
   // rediseña desde ese punto; se repite hasta que el periapsis de llegada apuntado cambia menos de 1 m (2–3 vueltas).
   if (profile.launch.enabled) {
     const earthOrbit = osculatingOrbitOfBody(earth.positionKm, earth.velocityKmS, MU_SUN + EARTH_GM_KM3_S2);
     const earthSoiKm = sphereOfInfluenceRadiusKm({ model: profile.soiModel, semiMajorAxisKm: earthOrbit.semiMajorAxisKm, eccentricity: earthOrbit.eccentricity, muBody: EARTH_GM_KM3_S2, muPrimary: MU_SUN });
-    for (launchRounds = 1; launchRounds <= 4; launchRounds++) {
-      const rp = arrival.rpAimKm;
+    // 28: con la gravedad terrestre fuera de la SOI, cada vuelta mide además el fallo en la llegada de la nave real (Sol + Tierra) y
+    // corrige la velocidad pedida en la frontera; se para cuando el periapsis cambia < 1 m y el fallo es < 1 km.
+    const refineEarth = profile.launch.patch === 'asymptote' && profile.launch.earthBeyondSoi !== false;
+    const maxRounds = refineEarth ? EARTH_BEYOND_SOI.maxRounds : 4;
+    const ephemerisAt = (id, jd) => { const s = data.helio.stateAt(id, jd); return s?.status === 'available' ? s : null; };
+    let correction = [0, 0, 0], beyond = null;
+    for (launchRounds = 1; launchRounds <= maxRounds; launchRounds++) {
+      const rp = arrival.rpAimKm, c = correction;
       launch = designEarthDeparture({ payloadMassKg: mass, liftoffGuessJdTdb: plannedDepartureJdTdb, earthStateAt: jd => helioState('399', jd), soiRadiusKm: earthSoiKm,
-        requiredVelocityAt: (pos, jd) => { const a = aimFrom(pos, jd)(rp); return a.status === AIM_STATUS.aimed ? a.departure.velocityKmS : null; },
-        azimuthDeg: profile.launch.azimuthDeg, previous: launch?.ok ? launch : null });
+        requiredVelocityAt: (pos, jd) => { const a = aimFrom(pos, jd)(rp); return a.status === AIM_STATUS.aimed ? add(a.departure.velocityKmS, c) : null; },
+        azimuthDeg: profile.launch.azimuthDeg, patch: profile.launch.patch, previous: launch?.ok ? launch : null });
       if (!launch.ok) break;
       arrival = designArrival(aimFrom(launch.exit.helioPositionKm, launch.exit.jdTdb));
-      if (Math.abs(arrival.rpAimKm - rp) <= 1e-3) break;
+      let moved = false;
+      if (refineEarth && arrival.aim.status === AIM_STATUS.aimed) {
+        beyond = earthBeyondSoiCorrection({ stateAt: ephemerisAt, exit: launch.exit, cruiseVelocityKmS: arrival.aim.departure.velocityKmS, arrivalJdTdb: arrival.aim.soi.jdTdb, muSun: MU_SUN });
+        if (!beyond.ok) break;
+        beyond = { ...beyond, correctionAppliedKmS: correction, rounds: launchRounds };
+        if (beyond.missKm > EARTH_BEYOND_SOI.toleranceKm) { correction = add(correction, beyond.correctionKmS); moved = true; }
+      }
+      if (Math.abs(arrival.rpAimKm - rp) <= 1e-3 && !moved) break;
     }
-    launchRounds = Math.min(launchRounds, 4);
+    launchRounds = Math.min(launchRounds, maxRounds);
+    if (launch?.ok && refineEarth) {
+      earthBeyondSoi = beyond?.ok
+        ? { applied: true, converged: beyond.missKm <= EARTH_BEYOND_SOI.toleranceKm, missKm: beyond.missKm, correctionKmS: [...beyond.correctionAppliedKmS], correctionMS: norm(beyond.correctionAppliedKmS) * 1000,
+          rounds: launchRounds, steps: beyond.steps, perturbers: EARTH_BEYOND_SOI.perturbers.map(p => p.name), toleranceKm: EARTH_BEYOND_SOI.toleranceKm }
+        // Auditoría 28 (O-1): si falla en una vuelta posterior, la salida ya lleva la corrección acumulada; se declara.
+        : { applied: false, converged: false, reason: beyond?.reason ?? 'sin llegada apuntada', partialCorrectionMS: norm(correction) * 1000 };
+      if (!earthBeyondSoi.applied) warnings.push(`Gravedad terrestre fuera de la SOI no incluida en el apuntado de la salida: ${earthBeyondSoi.reason}${earthBeyondSoi.partialCorrectionMS > 0 ? ` (la salida lleva una corrección parcial de ${earthBeyondSoi.partialCorrectionMS.toFixed(1)} m/s sin comprobar)` : ''}. La nave real se apartaría de la llegada cónica (cientos de miles de km en una transferencia a Marte).`);
+      else if (!earthBeyondSoi.converged) warnings.push(`El apuntado con la gravedad terrestre fuera de la SOI no bajó de ${EARTH_BEYOND_SOI.toleranceKm} km en ${maxRounds} vueltas (fallo ${earthBeyondSoi.missKm.toFixed(1)} km en la llegada).`);
+    }
   }
   const aim = arrival.aim;
   const compensation = arrival.compensation, periapsisCompensation = compensationSummary(compensation, R);
@@ -277,7 +301,7 @@ export function computeIntegratedMission(input, data) {
   }
   if (launch) {
     departureJdTdb = launch.liftoffJdTdb;
-    departureVInf = launch.exit.geocentric.velocityKmS;
+    departureVInf = launch.exit.vInfVectorKmS; // 28: v∞ de la asíntota (|v∞|² = C3), no la velocidad en la frontera de la SOI
     if (aim.status === AIM_STATUS.aimed) appendLaunch();
   } else {
     departureVInf = aim.departure ? sub(aim.departure.velocityKmS, earth.velocityKmS) : null;
@@ -383,7 +407,18 @@ export function computeIntegratedMission(input, data) {
     pushSegment({ id: 'earth-escape', phase: 'earth-escape', kind: 'kepler', label: 'Hipérbola de escape terrestre', ...earthBody, startSeconds: L.escape.startSeconds, endSeconds: L.escape.endSeconds,
       initial: { positionKm: [...L.escape.initial.positionKm], velocityKmS: [...L.escape.initial.velocityKmS], massKg: mass }, massKg: mass });
     event('earth-soi-exit', 'soi', `Salida de la esfera de influencia terrestre (${(L.soiRadiusKm / 1e6).toFixed(3)} millones de km)`, L.exit.elapsedSeconds, { centralBodyId: '10' });
-    const residualMmS = norm(sub(L.exit.helioVelocityAchievedKmS, aim.departure.velocityKmS)) * 1e6;
+    // 28: residuo del apuntado frente a la velocidad que se pidió (la del Lambert más la corrección por la Tierra fuera de la SOI).
+    const residualMmS = norm(sub(L.exit.helioVelocityAchievedKmS, L.exit.helioVelocityRequiredKmS)) * 1e6;
+    // 28: salto de velocidad declarado en la frontera (empalme por la asíntota). Con el empalme de la etapa 21 es nulo.
+    const jumpKmS = norm(sub(L.exit.helioVelocityActualKmS, aim.departure.velocityKmS));
+    if (L.patch === 'asymptote') patches.push({ elapsedSeconds: L.exit.elapsedSeconds, from: 'earth-escape', to: 'cruise', velocityJumpKmS: jumpKmS,
+      reason: earthBeyondSoi?.applied ? 'cónicas parcheadas: lo que la gravedad terrestre quita fuera de la SOI (calculado con el Sol y la Tierra hasta la llegada) se aplica en la frontera'
+        : 'cónicas parcheadas: la gravedad terrestre fuera de la SOI se aplica en la frontera (asíntota de salida = velocidad del crucero)' });
+    const patchText = L.patch === 'asymptote'
+      ? (earthBeyondSoi?.applied
+        ? `Empalme con el crucero (asíntota con la gravedad terrestre fuera de la SOI): la nave real, propagada con el Sol y la Tierra desde la frontera, llega a ${earthBeyondSoi.missKm.toFixed(2)} km del punto de llegada del crucero cónico (corrección de ${earthBeyondSoi.correctionMS.toFixed(1)} m/s sobre la asíntota; ${residualMmS.toExponential(1)} mm/s de residuo del apuntado). En la frontera la nave va ${(jumpKmS * 1000).toFixed(1)} m/s más rápida que el crucero: es lo que la Tierra le quita fuera de la SOI y que las cónicas aplican de golpe en la frontera (no es un encendido).`
+        : `Empalme con el crucero (cónicas parcheadas convencionales): velocidad de la Tierra + v∞ de la asíntota = velocidad del Lambert, con ${residualMmS.toExponential(1)} mm/s de diferencia. En la frontera la nave va ${(jumpKmS * 1000).toFixed(1)} m/s más rápida que el crucero: es lo que la gravedad terrestre fuera de la SOI le quita hasta alejarse, aplicado de golpe en la frontera (no es un encendido).`)
+      : `Empalme con el crucero: la velocidad heliocéntrica difiere de la del Lambert en ${residualMmS.toExponential(1)} mm/s.`;
     phase('launch', 'Lanzamiento desde Cabo Cañaveral (12E)', PHASE_STATUS.done, LEVEL.experimental, { startSeconds: 0, endSeconds: tAsc,
       detail: `${L.launcherName} (ilustrativo) con ${(stackKg / 1000).toFixed(1)} t de carga (sonda y ${upper.name} llena). Despegue ${L.liftoffUtc}, ${Math.abs(L.liftoffShiftHours).toFixed(2)} h ${L.liftoffShiftHours < 0 ? 'antes' : 'después'} de la salida prevista (ventana del día para la asíntota). ${L.azimuthNote} Órbita de aparcamiento ${km(P.perigeeAltitudeKm)} × ${km(P.apogeeAltitudeKm)} km, ${P.inclinationDeg.toFixed(2)}°.` });
     phase('parking', 'Órbita de aparcamiento', PHASE_STATUS.done, LEVEL.operational, { startSeconds: tAsc, endSeconds: P.endSeconds,
@@ -391,7 +426,7 @@ export function computeIntegratedMission(input, data) {
     phase('injection', `Inyección interplanetaria (empuje finito, ${upper.name.split(' (')[0]})`, PHASE_STATUS.done, LEVEL.experimental, { startSeconds: I.startSeconds, endSeconds: I.endSeconds,
       detail: `Encendido progrado de ${I.durationSeconds.toFixed(1)} s: ${I.propellantKg.toFixed(0)} kg de propelente (quedan ${I.propellantLeftKg.toFixed(0)} kg), Δv ${(I.propulsiveDeltaVKmS * 1000).toFixed(1)} m/s (impulsivo equivalente ${(I.impulsiveDeltaVKmS * 1000).toFixed(1)} m/s; pérdidas por gravedad ${(I.gravityLossKmS * 1000).toFixed(1)} m/s). C3 = ${I.c3Km2S2.toFixed(3)} km²/s².` });
     phase('earth-escape', 'Salida de la esfera de influencia terrestre', PHASE_STATUS.done, LEVEL.operational, { startSeconds: L.escape.startSeconds, endSeconds: L.exit.elapsedSeconds,
-      detail: `Hipérbola de escape de ${(L.escape.durationSeconds / 86400).toFixed(2)} d hasta ${km(L.soiRadiusKm)} km. Empalme con el crucero: la velocidad heliocéntrica difiere de la del Lambert en ${residualMmS.toExponential(1)} mm/s (${L.iterations} iteraciones de Newton; ${launchRounds} vuelta(s) con la llegada).` });
+      detail: `Hipérbola de escape de ${(L.escape.durationSeconds / 86400).toFixed(2)} d hasta ${km(L.soiRadiusKm)} km. ${patchText} (${L.iterations} iteraciones de Newton; ${launchRounds} vuelta(s) con la llegada).` });
   }
   function appendInsertion(result, offset, body, context) {
     for (const s of result.segments) {
@@ -621,7 +656,7 @@ export function computeIntegratedMission(input, data) {
     events.sort((a, b) => a.elapsedSeconds - b.elapsedSeconds);
     const durationSeconds = segments.length ? segments.at(-1).endSeconds : 0;
     const power = evaluateMissionPower(durationSeconds);
-    const continuity = checkContinuity(segments, separations, data, tgt, moonKey, departureJdTdb);
+    const continuity = checkContinuity(segments, separations, data, tgt, moonKey, departureJdTdb, patches);
     const failed = phases.filter(p => p.status === PHASE_STATUS.failed || p.status === PHASE_STATUS.noData);
     const verdict = failed.length ? `NO VIABLE para el escenario configurado: ${failed[0].label} — ${failed[0].status.toLowerCase()}.`
       : phases.some(p => p.status === PHASE_STATUS.partial) ? 'CADENA CALCULADA CON OBJETIVOS NO ALCANZADOS.'
@@ -631,14 +666,14 @@ export function computeIntegratedMission(input, data) {
       approach: approachInfo, segments, events, phases, maneuvers, separations, tanks: { ...tanks }, finalMassKg: mass, durationSeconds, continuity, warnings, verdict, power,
       departure: launch?.ok ? { c3Km2S2: launch.injection.c3Km2S2, vInfKmS: launch.injection.vInfKmS, vInfVectorKmS: departureVInf, launchMassKg: vehicle.totalKg, fromPad: true }
         : departureVInf ? { c3Km2S2: norm(departureVInf) ** 2, vInfKmS: norm(departureVInf), vInfVectorKmS: departureVInf, launchMassKg: vehicle.totalKg, fromPad: false } : null,
-      launch: launch ? launchSummary(launch, launchRounds, aim) : null, plannedDepartureJdTdb,
+      launch: launch ? launchSummary(launch, launchRounds, aim, earthBeyondSoi) : null, plannedDepartureJdTdb,
       computeMs: (typeof performance !== 'undefined' ? performance.now() : 0) - t0,
       limits: MISSION_LIMITS });
   }
 }
 
 /** 21: resumen del lanzamiento para el resultado (sin los nudos ni la simulación de 12E completa). */
-function launchSummary(L, rounds, aim) {
+function launchSummary(L, rounds, aim, earthBeyondSoi = null) {
   const base = { model: L.model, status: L.status, ok: L.ok, reason: L.reason, launcherName: L.launcherName, site: L.site, upperStage: L.upperStage, stackMassKg: L.stackMassKg,
     azimuthDeg: L.azimuthDeg ?? null, declinationDeg: L.declinationDeg ?? null };
   if (!L.ok) return Object.freeze(base);
@@ -649,7 +684,10 @@ function launchSummary(L, rounds, aim) {
     injection: { durationSeconds: L.injection.durationSeconds, propellantKg: L.injection.propellantKg, propellantLeftKg: L.injection.propellantLeftKg, propulsiveDeltaVKmS: L.injection.propulsiveDeltaVKmS,
       impulsiveDeltaVKmS: L.injection.impulsiveDeltaVKmS, gravityLossKmS: L.injection.gravityLossKmS, c3Km2S2: L.injection.c3Km2S2, burnoutAltitudeKm: L.injection.burnoutAltitudeKm, startSeconds: L.injection.startSeconds },
     soiRadiusKm: L.soiRadiusKm, soiExitSeconds: L.exit.elapsedSeconds, soiExitJdTdb: L.exit.jdTdb, escapeDays: L.escape.durationSeconds / 86400,
-    handoffResidualKmS: aim?.departure ? norm(sub(L.exit.helioVelocityAchievedKmS, aim.departure.velocityKmS)) : null, iterations: L.iterations, rounds });
+    handoffResidualKmS: norm(sub(L.exit.helioVelocityAchievedKmS, L.exit.helioVelocityRequiredKmS)), iterations: L.iterations, rounds,
+    // 28: empalme, salto de velocidad en la frontera y estado real de la nave allí (para el crucero de n cuerpos).
+    patch: L.patch, soiVelocityJumpKmS: aim?.departure ? norm(sub(L.exit.helioVelocityActualKmS, aim.departure.velocityKmS)) : null,
+    soiExitHelioState: { positionKm: [...L.exit.helioPositionKm], velocityKmS: [...L.exit.helioVelocityActualKmS] }, vInfVectorKmS: [...L.exit.vInfVectorKmS], earthBeyondSoi });
 }
 
 export const MISSION_LIMITS = Object.freeze([
@@ -719,8 +757,12 @@ export function convertState(state, fromCentral, toFrame, jdTdb, data, tgt, moon
   throw new RangeError('Conversión de marco no soportada.');
 }
 
-/** Continuidad en cada frontera: tiempo, posición y velocidad en el marco común de ambos tramos, y masa (salvo separaciones declaradas). */
-export function checkContinuity(segments, separations, data, tgt, moonKey, departureJdTdb) {
+/**
+ * Continuidad en cada frontera: tiempo, posición y velocidad en el marco común de ambos tramos, y masa (salvo separaciones declaradas).
+ * 28: `patches` declara los saltos de velocidad propios del modelo (empalme por la asíntota en la SOI terrestre). Esas fronteras no
+ * cuentan en `maxVelocityErrorKmS`; su salto medido se devuelve aparte (`declaredPatches`) junto con el declarado.
+ */
+export function checkContinuity(segments, separations, data, tgt, moonKey, departureJdTdb, patches = []) {
   const boundaries = [];
   for (let i = 1; i < segments.length; i++) {
     const a = segments[i - 1], b = segments[i], t = b.startSeconds, jd = departureJdTdb + t / 86400;
@@ -730,12 +772,15 @@ export function checkContinuity(segments, separations, data, tgt, moonKey, depar
     try { ea = convertState(end, a.centralBodyId, common, jd, data, tgt, moonKey); eb = convertState(start, b.centralBodyId, common, jd, data, tgt, moonKey); }
     catch (error) { boundaries.push({ from: a.id, to: b.id, error: error.message }); continue; }
     const separation = separations.find(s => Math.abs(s.elapsedSeconds - t) < 1e-6);
+    const patch = patches.find(p => p.from === a.id && p.to === b.id && Math.abs(p.elapsedSeconds - t) < 1e-6);
     boundaries.push({ from: a.id, to: b.id, elapsedSeconds: t, commonFrame: common === '10' ? 'heliocéntrico' : `centrado en ${common === tgt.id ? tgt.name : common}`,
       timeGapSeconds: b.startSeconds - a.endSeconds, positionErrorKm: norm(sub(ea.positionKm, eb.positionKm)), velocityErrorKmS: norm(sub(ea.velocityKmS, eb.velocityKmS)),
-      massChangeKg: (start.massKg ?? b.massKg) - (end.massKg ?? a.massKg), separation: Boolean(separation), frameChange: a.centralBodyId !== b.centralBodyId });
+      massChangeKg: (start.massKg ?? b.massKg) - (end.massKg ?? a.massKg), separation: Boolean(separation), frameChange: a.centralBodyId !== b.centralBodyId,
+      ...(patch ? { patch: true, declaredVelocityJumpKmS: patch.velocityJumpKmS, patchReason: patch.reason } : {}) });
   }
-  const valid = boundaries.filter(b => !b.error);
-  return { boundaries, maxPositionErrorKm: Math.max(0, ...valid.map(b => b.positionErrorKm)), maxVelocityErrorKmS: Math.max(0, ...valid.map(b => b.velocityErrorKmS)),
+  const valid = boundaries.filter(b => !b.error), smooth = valid.filter(b => !b.patch);
+  return { boundaries, maxPositionErrorKm: Math.max(0, ...valid.map(b => b.positionErrorKm)), maxVelocityErrorKmS: Math.max(0, ...smooth.map(b => b.velocityErrorKmS)),
+    declaredPatches: valid.filter(b => b.patch).map(b => ({ from: b.from, to: b.to, elapsedSeconds: b.elapsedSeconds, velocityJumpKmS: b.velocityErrorKmS, declaredVelocityJumpKmS: b.declaredVelocityJumpKmS, reason: b.patchReason })),
     maxTimeGapSeconds: Math.max(0, ...valid.map(b => Math.abs(b.timeGapSeconds))), undeclaredMassJumps: valid.filter(b => !b.separation && Math.abs(b.massChangeKg) > 1e-6).length };
 }
 

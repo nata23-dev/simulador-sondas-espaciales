@@ -16,7 +16,7 @@ import { integrateDopri54, IntegrationError } from '../science/NumericalIntegrat
 import { SOLAR_SYSTEM_GM_CATALOG } from '../science/GravitationalParameters.js';
 import { propagateKepler } from '../science/KeplerPropagator.js';
 
-export const NBODY_CRUISE_VERSION = '22-nbody-cruise-1';
+export const NBODY_CRUISE_VERSION = '28-nbody-cruise-2';
 const gm = id => SOLAR_SYSTEM_GM_CATALOG.getMu(id);
 export const MU_SUN_NBODY = gm('10');
 const perturber = (id, ephemerisId, name, mu, note) => Object.freeze({ id, ephemerisId, name, muKm3S2: mu, note });
@@ -84,7 +84,10 @@ function solve3(J, b) {
 /**
  * Compara el crucero cónico con el de n cuerpos y diseña una corrección de trayectoria (TCM-1).
  * input = { stateAt, initial: { positionKm, velocityKmS }, startJdTdb, arrivalJdTdb, muSun, exclude: [{ id, reason }],
- *   isolate: [{ id, reason }], massKg (en la TCM), ispS (motor de la sonda) }
+ *   isolate: [{ id, reason }], massKg (en la TCM), ispS (motor de la sonda), boundaryState? }
+ * 28: `boundaryState` = { bodyId, positionKm, velocityKmS }: estado REAL de la nave en la frontera de la SOI de `bodyId` cuando el
+ *   empalme no es continuo (asíntota, etapa 28). Las propagaciones en las que ese cuerpo actúa parten de él; las demás, de `initial`
+ *   (el de la cónica, que ya contiene lo que ese cuerpo quita fuera de su SOI).
  * La cónica de referencia es Kepler con μ☉ desde el mismo estado inicial; la llegada es su punto en `arrivalJdTdb` (entrada en la SOI).
  *
  * Tres resultados:
@@ -96,13 +99,15 @@ function solve3(J, b) {
  *    `tcmJdTdb` para llegar al punto de la cónica en el mismo instante. Newton con el jacobiano de la cónica (∂r_llegada/∂v por
  *    diferencias finitas sobre Kepler, barato) y el residuo de n cuerpos (cuasi-Newton: vale mientras la perturbación sea pequeña).
  */
-export function compareNBodyCruise({ stateAt, initial, startJdTdb, arrivalJdTdb, muSun = MU_SUN_NBODY, exclude = [], isolate = [], massKg, ispS, settings = NBODY_SETTINGS }) {
+export function compareNBodyCruise({ stateAt, initial, startJdTdb, arrivalJdTdb, muSun = MU_SUN_NBODY, exclude = [], isolate = [], massKg, ispS, boundaryState = null, settings = NBODY_SETTINGS }) {
   const t0 = typeof performance !== 'undefined' ? performance.now() : 0;
   const excludedIds = new Set(exclude.map(e => e.id));
   const perturbers = NBODY_PERTURBERS.filter(p => !excludedIds.has(p.id));
   const active = isolate.filter(iso => !excludedIds.has(iso.id) && perturbers.some(p => p.id === iso.id));
   const activeIds = active.map(i => i.id), thirdPerturbers = perturbers.filter(p => !activeIds.includes(p.id));
   const base = { model: NBODY_CRUISE_VERSION, startJdTdb, arrivalJdTdb, perturbers: perturbers.map(p => ({ id: p.id, name: p.name, muKm3S2: p.muKm3S2, note: p.note })),
+    boundaryState: boundaryState ? { bodyId: boundaryState.bodyId, velocityDifferenceKmS: norm(sub(boundaryState.velocityKmS, initial.velocityKmS)),
+      positionDifferenceKm: norm(sub(boundaryState.positionKm, initial.positionKm)) } : null,
     excluded: exclude.map(e => ({ ...e })), settings: { absTol: settings.absTol, relTol: settings.relTol, tcmToleranceKm: settings.tcmToleranceKm, tcmDaysAfterStart: settings.tcmDaysAfterStart } };
   const done = extra => Object.freeze({ ...base, ...extra, computeMs: (typeof performance !== 'undefined' ? performance.now() : 0) - t0 });
   const fail = (error, extra = {}) => {
@@ -116,10 +121,12 @@ export function compareNBodyCruise({ stateAt, initial, startJdTdb, arrivalJdTdb,
   const errorsAt = s => ({ arrivalPositionErrorKm: norm(sub(s.positionKm, conicArrival.positionKm)), arrivalVelocityErrorKmS: norm(sub(s.velocityKmS, conicArrival.velocityKmS)) });
   const tcmJdTdb = startJdTdb + Math.min(settings.tcmDaysAfterStart, settings.tcmMaxFraction * cruiseSeconds / 86400);
   const run = (set, from, jd0, jd1, record = false) => propagateNBody({ stateAt, positionKm: from.positionKm, velocityKmS: from.velocityKmS, startJdTdb: jd0, endJdTdb: jd1, perturbers: set, record, settings });
+  // Estado de partida de una propagación desde el principio del crucero según qué cuerpos actúan en ella.
+  const startFor = set => (boundaryState && set.some(p => p.id === boundaryState.bodyId) ? boundaryState : initial);
 
   // 1. Modelo completo, con la desviación frente a la cónica en los nudos del integrador.
   let full;
-  try { full = run(perturbers, initial, startJdTdb, arrivalJdTdb, true); } catch (error) { return fail(error); }
+  try { full = run(perturbers, startFor(perturbers), startJdTdb, arrivalJdTdb, true); } catch (error) { return fail(error); }
   let maxDev = 0, maxJd = startJdTdb;
   const { times, states } = full.knots;
   const deviations = Array.from(times, (t, i) => {
@@ -135,11 +142,12 @@ export function compareNBodyCruise({ stateAt, initial, startJdTdb, arrivalJdTdb,
   const isolated = [];
   let third, atTcm;
   try {
-    const toTcm = run(thirdPerturbers, initial, startJdTdb, tcmJdTdb);
+    const toTcm = run(thirdPerturbers, startFor(thirdPerturbers), startJdTdb, tcmJdTdb);
     atTcm = { positionKm: toTcm.positionKm, velocityKmS: toTcm.velocityKmS };
     third = run(thirdPerturbers, atTcm, tcmJdTdb, arrivalJdTdb);
     for (const iso of active) {
-      const e = active.length === 1 ? errorsAt(third) : errorsAt(run(perturbers.filter(p => p.id !== iso.id), initial, startJdTdb, arrivalJdTdb));
+      const without = perturbers.filter(p => p.id !== iso.id);
+      const e = active.length === 1 && startFor(thirdPerturbers) === initial ? errorsAt(third) : errorsAt(run(without, startFor(without), startJdTdb, arrivalJdTdb));
       isolated.push({ id: iso.id, reason: iso.reason, name: NBODY_PERTURBERS.find(p => p.id === iso.id)?.name ?? iso.id,
         withoutArrivalPositionErrorKm: e.arrivalPositionErrorKm, withoutArrivalVelocityErrorKmS: e.arrivalVelocityErrorKmS });
     }
@@ -176,16 +184,21 @@ export function compareNBodyCruise({ stateAt, initial, startJdTdb, arrivalJdTdb,
 /**
  * Prepara la comparación para una misión integrada calculada (13–21): tramo `cruise`, salida con o sin plataforma y destino.
  * Sin la plataforma, el crucero empieza en el centro de la Tierra y la Tierra se excluye. Se aíslan el destino fuera de su SOI y,
- * con la plataforma, la Tierra fuera de la suya (el empalme de la etapa 21 iguala la velocidad en la SOI).
+ * con la plataforma, la Tierra fuera de la suya. 28: con el empalme por la asíntota, las propagaciones con la Tierra parten de la
+ * velocidad real de la nave en la frontera (la de la hipérbola), no de la del crucero.
  */
 export function compareMissionCruise(mission, stateAt, settings = NBODY_SETTINGS) {
   const cruise = mission?.segments?.find(s => s.id === 'cruise');
   if (!cruise) return Object.freeze({ model: NBODY_CRUISE_VERSION, status: 'sin crucero', ok: false, reason: 'La misión calculada no tiene tramo de crucero heliocéntrico.' });
   const fromPad = Boolean(mission.launch?.ok), dest = NBODY_PERTURBERS.find(p => p.id === mission.destinationId);
+  // 28: si la salida ya se apuntó con la gravedad terrestre fuera de la SOI, la Tierra no se aísla: es parte del diseño y la TCM-1
+  // corrige también lo que quede de ella (con el Sol, la Tierra y los otros planetas).
+  const earthDesigned = fromPad && mission.launch.earthBeyondSoi?.applied === true;
   const exclude = fromPad ? [] : [{ id: '399', reason: 'el crucero empieza en el centro de la Tierra (salida sin «Empezar en la plataforma»)' }];
   const isolate = [...(dest ? [{ id: dest.id, reason: `gravedad de ${dest.name} fuera de su esfera de influencia` }] : []),
-    ...(fromPad ? [{ id: '399', reason: 'gravedad terrestre fuera de su esfera de influencia (empalme de la etapa 21)' }] : [])];
-  const engine = mission.vehicle?.probe?.engine;
+    ...(fromPad && !earthDesigned ? [{ id: '399', reason: 'gravedad terrestre fuera de su esfera de influencia' }] : [])];
+  const engine = mission.vehicle?.probe?.engine, exitState = fromPad ? mission.launch.soiExitHelioState : null;
   return compareNBodyCruise({ stateAt, initial: cruise.initial, startJdTdb: mission.departureJdTdb + cruise.startSeconds / 86400, arrivalJdTdb: mission.departureJdTdb + cruise.endSeconds / 86400,
-    exclude, isolate, massKg: cruise.initial.massKg, ispS: engine?.ispS, settings });
+    exclude, isolate, massKg: cruise.initial.massKg, ispS: engine?.ispS, settings,
+    boundaryState: exitState ? { bodyId: '399', positionKm: exitState.positionKm, velocityKmS: exitState.velocityKmS } : null });
 }

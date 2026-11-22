@@ -363,7 +363,10 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
       row(lt, 'Inyección', `${number(I.durationSeconds, 1)} s · Δv ${number(I.propulsiveDeltaVKmS * 1000, 1)} m/s (impulsivo ${number(I.impulsiveDeltaVKmS * 1000, 1)}; pérdidas ${number(I.gravityLossKmS * 1000, 1)}) · ${number(I.propellantKg, 0)} kg (quedan ${number(I.propellantLeftKg, 0)} kg)`);
       row(lt, 'C3 conseguido', `${number(I.c3Km2S2, 3)} km²/s²`);
       row(lt, 'Salida de la esfera de influencia', `${utcLabel(L.soiExitJdTdb)} · ${number(L.escapeDays, 2)} d tras la inyección · radio ${number(L.soiRadiusKm, 0)} km`);
-      row(lt, 'Empalme con el crucero', `${number(L.handoffResidualKmS * 1e6, 4)} mm/s de diferencia con el Lambert · ${L.iterations} iteraciones · ${L.rounds} vuelta(s)`);
+      row(lt, 'Empalme con el crucero', L.patch === 'asymptote'
+        ? `por la asíntota${L.earthBeyondSoi?.applied ? `, con la Tierra fuera de la SOI (corrección ${number(L.earthBeyondSoi.correctionMS, 1)} m/s; la nave real llega a ${number(L.earthBeyondSoi.missKm, 2)} km de la llegada cónica)` : ''} · residuo ${number(L.handoffResidualKmS * 1e6, 4)} mm/s · ${L.iterations} iteraciones · ${L.rounds} vuelta(s)`
+        : `${number(L.handoffResidualKmS * 1e6, 4)} mm/s de diferencia con el Lambert · ${L.iterations} iteraciones · ${L.rounds} vuelta(s)`);
+      if (L.patch === 'asymptote') row(lt, 'Salto de velocidad en la frontera', `${number(L.soiVelocityJumpKmS * 1000, 1)} m/s (declarado: lo que la Tierra quita fuera de la SOI; no es un encendido)`);
     }
     if (refinement) row(summary, 'Oportunidad', Number.isFinite(refinement.score) ? `refinada (C3 ${number(refinement.gridScore, 3)} → ${number(refinement.score, 3)} hacia el centro del destino; ${refinement.evaluations} evaluaciones)${refinement.atRefinementBoundary ? ' · en el borde de la caja' : ''}` : 'refinamiento sin solución: se usa la semilla');
     for (const p of mission.phases) {
@@ -418,7 +421,8 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     const c = mission.continuity, ct = $('#im-continuity');
     row(ct, 'Fronteras comprobadas', `${c.boundaries.length} (${c.boundaries.filter(b => b.frameChange).length} con cambio de marco)`);
     row(ct, 'Máx. salto de posición', `${c.maxPositionErrorKm.toExponential(2)} km`);
-    row(ct, 'Máx. salto de velocidad', `${c.maxVelocityErrorKmS.toExponential(2)} km/s`);
+    row(ct, 'Máx. salto de velocidad', `${c.maxVelocityErrorKmS.toExponential(2)} km/s${c.declaredPatches?.length ? ' (sin el empalme declarado)' : ''}`);
+    for (const p of c.declaredPatches ?? []) row(ct, 'Empalme declarado', `${number(p.velocityJumpKmS * 1000, 1)} m/s en la salida de la SOI terrestre: ${p.reason}`);
     row(ct, 'Huecos de tiempo · masa no declarada', `${c.maxTimeGapSeconds} s · ${c.undeclaredMassJumps}`);
     for (const wtext of mission.warnings) { const el = document.createElement('p'); el.className = 'lab-message'; el.dataset.error = 'true'; el.textContent = wtext; $('#im-warnings').append(el); }
     const pv = $('#im-provenance');
