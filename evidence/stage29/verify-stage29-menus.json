@@ -1,0 +1,928 @@
+{
+  "gpu": true,
+  "startedAt": "2026-11-22T17:09:17.629Z",
+  "checks": {
+    "ancho_1600": {
+      "cabecera": {
+        "ancho": 1600,
+        "desbordePx": 0,
+        "menusAntiguos": 0,
+        "menu": "Menú",
+        "buscar": true,
+        "acciones": [
+          {
+            "id": null,
+            "texto": "Sistema SolarSistema",
+            "caja": [
+              1013,
+              13,
+              109,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "Misiones históricasVoyager 77–26",
+            "caja": [
+              1124,
+              13,
+              144,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "LaboratorioLab.",
+            "caja": [
+              1270,
+              13,
+              95,
+              38
+            ]
+          },
+          {
+            "id": "header-search",
+            "texto": "Buscar destino",
+            "caja": [
+              1383,
+              13,
+              93,
+              38
+            ]
+          },
+          {
+            "id": "app-nav-toggle",
+            "texto": "Menú: áreas del simulador, herramientas y ayuda",
+            "caja": [
+              1495,
+              13,
+              85,
+              38
+            ]
+          }
+        ],
+        "fuera": [],
+        "solapes": []
+      },
+      "panel": {
+        "abierto": true,
+        "caja": [
+          804,
+          70,
+          780,
+          814
+        ],
+        "cabe": true,
+        "desplazable": true,
+        "eyebrow": "Menú del simulador",
+        "areas": [
+          "solar",
+          "voyager",
+          "guide",
+          "hangar",
+          "docs",
+          "integrated",
+          "interplanetary",
+          "lunar",
+          "finite",
+          "launch",
+          "center"
+        ],
+        "herramientasDentro": true,
+        "grupos": [
+          "Herramientas",
+          "Medición 3D · km / AU",
+          "Ayuda y datos",
+          "Navegación",
+          "Fuente y escala"
+        ],
+        "distancias": true,
+        "ayuda": true,
+        "fuentes": true,
+        "expandido": "true"
+      },
+      "cerradoConEscape": true
+    },
+    "ancho_1366": {
+      "cabecera": {
+        "ancho": 1366,
+        "desbordePx": 0,
+        "menusAntiguos": 0,
+        "menu": "Menú",
+        "buscar": true,
+        "acciones": [
+          {
+            "id": null,
+            "texto": "Sistema SolarSistema",
+            "caja": [
+              779,
+              13,
+              109,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "Misiones históricasVoyager 77–26",
+            "caja": [
+              890,
+              13,
+              144,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "LaboratorioLab.",
+            "caja": [
+              1036,
+              13,
+              95,
+              38
+            ]
+          },
+          {
+            "id": "header-search",
+            "texto": "Buscar destino",
+            "caja": [
+              1149,
+              13,
+              93,
+              38
+            ]
+          },
+          {
+            "id": "app-nav-toggle",
+            "texto": "Menú: áreas del simulador, herramientas y ayuda",
+            "caja": [
+              1261,
+              13,
+              85,
+              38
+            ]
+          }
+        ],
+        "fuera": [],
+        "solapes": []
+      },
+      "panel": {
+        "abierto": true,
+        "caja": [
+          570,
+          70,
+          780,
+          682
+        ],
+        "cabe": true,
+        "desplazable": true,
+        "eyebrow": "Menú del simulador",
+        "areas": [
+          "solar",
+          "voyager",
+          "guide",
+          "hangar",
+          "docs",
+          "integrated",
+          "interplanetary",
+          "lunar",
+          "finite",
+          "launch",
+          "center"
+        ],
+        "herramientasDentro": true,
+        "grupos": [
+          "Herramientas",
+          "Medición 3D · km / AU",
+          "Ayuda y datos",
+          "Navegación",
+          "Fuente y escala"
+        ],
+        "distancias": true,
+        "ayuda": true,
+        "fuentes": true,
+        "expandido": "true"
+      },
+      "cerradoConEscape": true
+    },
+    "ancho_1024": {
+      "cabecera": {
+        "ancho": 1024,
+        "desbordePx": 0,
+        "menusAntiguos": 0,
+        "menu": "Menú",
+        "buscar": true,
+        "acciones": [
+          {
+            "id": null,
+            "texto": "Sistema SolarSistema",
+            "caja": [
+              536,
+              13,
+              109,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "Misiones históricasVoyager 77–26",
+            "caja": [
+              647,
+              13,
+              144,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "LaboratorioLab.",
+            "caja": [
+              793,
+              13,
+              95,
+              38
+            ]
+          },
+          {
+            "id": "header-search",
+            "texto": "Buscar destino",
+            "caja": [
+              906,
+              13,
+              40,
+              38
+            ]
+          },
+          {
+            "id": "app-nav-toggle",
+            "texto": "Menú: áreas del simulador, herramientas y ayuda",
+            "caja": [
+              964,
+              13,
+              40,
+              38
+            ]
+          }
+        ],
+        "fuera": [],
+        "solapes": []
+      },
+      "panel": {
+        "abierto": true,
+        "caja": [
+          228,
+          70,
+          780,
+          682
+        ],
+        "cabe": true,
+        "desplazable": true,
+        "eyebrow": "Menú del simulador",
+        "areas": [
+          "solar",
+          "voyager",
+          "guide",
+          "hangar",
+          "docs",
+          "integrated",
+          "interplanetary",
+          "lunar",
+          "finite",
+          "launch",
+          "center"
+        ],
+        "herramientasDentro": true,
+        "grupos": [
+          "Herramientas",
+          "Medición 3D · km / AU",
+          "Ayuda y datos",
+          "Navegación",
+          "Fuente y escala"
+        ],
+        "distancias": true,
+        "ayuda": true,
+        "fuentes": true,
+        "expandido": "true"
+      },
+      "cerradoConEscape": true
+    },
+    "ancho_760": {
+      "cabecera": {
+        "ancho": 760,
+        "desbordePx": 0,
+        "menusAntiguos": 0,
+        "menu": "Menú",
+        "buscar": true,
+        "acciones": [
+          {
+            "id": null,
+            "texto": "Sistema SolarSistema",
+            "caja": [
+              10,
+              66,
+              245,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "Misiones históricasVoyager 77–26",
+            "caja": [
+              257,
+              66,
+              245,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "LaboratorioLab.",
+            "caja": [
+              505,
+              66,
+              245,
+              38
+            ]
+          },
+          {
+            "id": "header-search",
+            "texto": "Buscar destino",
+            "caja": [
+              656,
+              7,
+              38,
+              36
+            ]
+          },
+          {
+            "id": "app-nav-toggle",
+            "texto": "Menú: áreas del simulador, herramientas y ayuda",
+            "caja": [
+              712,
+              7,
+              38,
+              36
+            ]
+          }
+        ],
+        "fuera": [],
+        "solapes": []
+      },
+      "panel": {
+        "abierto": true,
+        "caja": [
+          8,
+          102,
+          744,
+          782
+        ],
+        "cabe": true,
+        "desplazable": true,
+        "eyebrow": "Menú del simulador",
+        "areas": [
+          "solar",
+          "voyager",
+          "guide",
+          "hangar",
+          "docs",
+          "integrated",
+          "interplanetary",
+          "lunar",
+          "finite",
+          "launch",
+          "center"
+        ],
+        "herramientasDentro": true,
+        "grupos": [
+          "Herramientas",
+          "Medición 3D · km / AU",
+          "Ayuda y datos",
+          "Navegación",
+          "Fuente y escala"
+        ],
+        "distancias": true,
+        "ayuda": true,
+        "fuentes": true,
+        "expandido": "true"
+      },
+      "cerradoConEscape": true
+    },
+    "ancho_390": {
+      "cabecera": {
+        "ancho": 390,
+        "desbordePx": 0,
+        "menusAntiguos": 0,
+        "menu": "Menú",
+        "buscar": true,
+        "acciones": [
+          {
+            "id": null,
+            "texto": "Sistema SolarSistema",
+            "caja": [
+              10,
+              66,
+              122,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "Misiones históricasVoyager 77–26",
+            "caja": [
+              134,
+              66,
+              122,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "LaboratorioLab.",
+            "caja": [
+              258,
+              66,
+              122,
+              38
+            ]
+          },
+          {
+            "id": "header-search",
+            "texto": "Buscar destino",
+            "caja": [
+              294,
+              7,
+              40,
+              36
+            ]
+          },
+          {
+            "id": "app-nav-toggle",
+            "texto": "Menú: áreas del simulador, herramientas y ayuda",
+            "caja": [
+              342,
+              7,
+              38,
+              36
+            ]
+          }
+        ],
+        "fuera": [],
+        "solapes": []
+      },
+      "panel": {
+        "abierto": true,
+        "caja": [
+          8,
+          102,
+          374,
+          726
+        ],
+        "cabe": true,
+        "desplazable": true,
+        "eyebrow": "Menú del simulador",
+        "areas": [
+          "solar",
+          "voyager",
+          "guide",
+          "hangar",
+          "docs",
+          "integrated",
+          "interplanetary",
+          "lunar",
+          "finite",
+          "launch",
+          "center"
+        ],
+        "herramientasDentro": true,
+        "grupos": [
+          "Herramientas",
+          "Medición 3D · km / AU",
+          "Ayuda y datos",
+          "Navegación",
+          "Fuente y escala"
+        ],
+        "distancias": true,
+        "ayuda": true,
+        "fuentes": true,
+        "expandido": "true"
+      },
+      "cerradoConEscape": true
+    },
+    "ancho_320": {
+      "cabecera": {
+        "ancho": 320,
+        "desbordePx": 0,
+        "menusAntiguos": 0,
+        "menu": "Menú",
+        "buscar": true,
+        "acciones": [
+          {
+            "id": null,
+            "texto": "Sistema SolarSistema",
+            "caja": [
+              10,
+              66,
+              99,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "Misiones históricasVoyager 77–26",
+            "caja": [
+              111,
+              66,
+              99,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "LaboratorioLab.",
+            "caja": [
+              211,
+              66,
+              99,
+              38
+            ]
+          },
+          {
+            "id": "header-search",
+            "texto": "Buscar destino",
+            "caja": [
+              224,
+              7,
+              40,
+              36
+            ]
+          },
+          {
+            "id": "app-nav-toggle",
+            "texto": "Menú: áreas del simulador, herramientas y ayuda",
+            "caja": [
+              272,
+              7,
+              38,
+              36
+            ]
+          }
+        ],
+        "fuera": [],
+        "solapes": []
+      },
+      "panel": {
+        "abierto": true,
+        "caja": [
+          8,
+          102,
+          304,
+          522
+        ],
+        "cabe": true,
+        "desplazable": true,
+        "eyebrow": "Menú del simulador",
+        "areas": [
+          "solar",
+          "voyager",
+          "guide",
+          "hangar",
+          "docs",
+          "integrated",
+          "interplanetary",
+          "lunar",
+          "finite",
+          "launch",
+          "center"
+        ],
+        "herramientasDentro": true,
+        "grupos": [
+          "Herramientas",
+          "Medición 3D · km / AU",
+          "Ayuda y datos",
+          "Navegación",
+          "Fuente y escala"
+        ],
+        "distancias": true,
+        "ayuda": true,
+        "fuentes": true,
+        "expandido": "true"
+      },
+      "cerradoConEscape": true
+    },
+    "distancias": {
+      "abierta": true,
+      "menuSigueAbierto": true
+    },
+    "clicFuera": {
+      "menuCerrado": true
+    },
+    "exclusion": {
+      "capasCerradaAlAbrirMenu": true,
+      "menuCerradoAlAbrirCapas": true
+    },
+    "capas": {
+      "escalaRepetida": false,
+      "escalaEnDock": "Escala 1:1",
+      "encabezados": [
+        "Capas de visualización",
+        "Encuadre",
+        "Calidad gráfica",
+        "Procesador gráfico"
+      ],
+      "perfiles": [
+        "auto:true",
+        "alto:false",
+        "medio:false",
+        "bajo:false",
+        "minimo:false"
+      ],
+      "gpu": [
+        "rendimiento:true",
+        "ahorro:false"
+      ],
+      "estadoGpu": "Dibujando con AMD Radeon RX 6650 XT (GPU dedicada).",
+      "avisoRecarga": false,
+      "encuadre": [
+        "Sistema interior",
+        "Vista general"
+      ],
+      "minima": {
+        "estado": "Resolución ×0,6",
+        "pulsado": "true"
+      },
+      "ahorro": {
+        "avisoRecarga": true
+      },
+      "restaurado": {
+        "calidad": "auto",
+        "gpu": "rendimiento",
+        "avisoRecarga": false
+      }
+    },
+    "buscarVacio": {
+      "abierta": true,
+      "grupos": [
+        "Cuerpos y sondas"
+      ],
+      "resultados": [
+        "MercurioPlaneta",
+        "VenusPlaneta",
+        "TierraPlaneta",
+        "Luna · 301Luna",
+        "MartePlaneta",
+        "JúpiterPlaneta",
+        "Ío · 501Luna",
+        "Europa · 502Luna",
+        "Ganímedes · 503Luna",
+        "Calisto · 504Luna"
+      ],
+      "vacio": null
+    },
+    "buscarLanz": {
+      "abierta": true,
+      "grupos": [
+        "Áreas del simulador"
+      ],
+      "resultados": [
+        "Lanzamiento terrestreLaboratorio · 2 Pla"
+      ],
+      "vacio": null
+    },
+    "buscarDistancia": {
+      "abierta": true,
+      "grupos": [
+        "Vista y herramientas"
+      ],
+      "resultados": [
+        "Medir distancias 3DSeparación entre dos "
+      ],
+      "vacio": null
+    },
+    "accionDistancias": {
+      "paletaCerrada": true,
+      "menuAbierto": true,
+      "distanciasAbierta": true
+    },
+    "filtroLista": "Filtrar la lista de destinos",
+    "historico": {
+      "modo": "historico",
+      "cabecera": {
+        "ancho": 1600,
+        "desbordePx": 0,
+        "menusAntiguos": 0,
+        "menu": "Menú",
+        "buscar": true,
+        "acciones": [
+          {
+            "id": null,
+            "texto": "Sistema SolarSistema",
+            "caja": [
+              1013,
+              13,
+              109,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "Misiones históricasVoyager 77–26",
+            "caja": [
+              1124,
+              13,
+              144,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "LaboratorioLab.",
+            "caja": [
+              1270,
+              13,
+              95,
+              38
+            ]
+          },
+          {
+            "id": "header-search",
+            "texto": "Buscar destino",
+            "caja": [
+              1383,
+              13,
+              93,
+              38
+            ]
+          },
+          {
+            "id": "app-nav-toggle",
+            "texto": "Menú: áreas del simulador, herramientas y ayuda",
+            "caja": [
+              1495,
+              13,
+              85,
+              38
+            ]
+          }
+        ],
+        "fuera": [],
+        "solapes": []
+      },
+      "panel": {
+        "abierto": true,
+        "caja": [
+          804,
+          70,
+          780,
+          814
+        ],
+        "cabe": true,
+        "desplazable": true,
+        "eyebrow": "Menú del simulador",
+        "areas": [
+          "solar",
+          "voyager",
+          "guide",
+          "hangar",
+          "docs",
+          "integrated",
+          "interplanetary",
+          "lunar",
+          "finite",
+          "launch",
+          "center"
+        ],
+        "herramientasDentro": true,
+        "grupos": [
+          "Herramientas",
+          "Medición 3D · km / AU",
+          "Ayuda y datos",
+          "Navegación",
+          "Fuente y escala"
+        ],
+        "distancias": true,
+        "ayuda": true,
+        "fuentes": true,
+        "expandido": "true"
+      }
+    },
+    "laboratorio": {
+      "area": "hangar",
+      "modo": "experimental",
+      "cabecera": {
+        "ancho": 1600,
+        "desbordePx": 0,
+        "menusAntiguos": 0,
+        "menu": "Menú",
+        "buscar": true,
+        "acciones": [
+          {
+            "id": null,
+            "texto": "Sistema SolarSistema",
+            "caja": [
+              1013,
+              13,
+              109,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "Misiones históricasVoyager 77–26",
+            "caja": [
+              1124,
+              13,
+              144,
+              38
+            ]
+          },
+          {
+            "id": null,
+            "texto": "LaboratorioLab.",
+            "caja": [
+              1270,
+              13,
+              95,
+              38
+            ]
+          },
+          {
+            "id": "header-search",
+            "texto": "Buscar destino",
+            "caja": [
+              1383,
+              13,
+              93,
+              38
+            ]
+          },
+          {
+            "id": "app-nav-toggle",
+            "texto": "Menú: áreas del simulador, herramientas y ayuda",
+            "caja": [
+              1495,
+              13,
+              85,
+              38
+            ]
+          }
+        ],
+        "fuera": [],
+        "solapes": []
+      },
+      "panel": {
+        "abierto": true,
+        "caja": [
+          804,
+          70,
+          780,
+          814
+        ],
+        "cabe": true,
+        "desplazable": true,
+        "eyebrow": "Menú del simulador",
+        "areas": [
+          "solar",
+          "voyager",
+          "guide",
+          "hangar",
+          "docs",
+          "integrated",
+          "interplanetary",
+          "lunar",
+          "finite",
+          "launch",
+          "center"
+        ],
+        "herramientasDentro": true,
+        "grupos": [
+          "Herramientas",
+          "Medición 3D · km / AU",
+          "Ayuda y datos",
+          "Navegación",
+          "Fuente y escala"
+        ],
+        "distancias": true,
+        "ayuda": true,
+        "fuentes": true,
+        "expandido": "true"
+      }
+    }
+  },
+  "shots": [
+    "menu-1600.png",
+    "menu-1366.png",
+    "menu-1024.png",
+    "menu-760.png",
+    "menu-390.png",
+    "menu-320.png",
+    "menu-distancias.png",
+    "capas-calidad.png",
+    "capas-minima-ahorro.png",
+    "buscar-vacio.png",
+    "buscar-distancia.png",
+    "accion-distancias.png",
+    "menu-historico.png",
+    "menu-laboratorio.png"
+  ],
+  "errors": [],
+  "finishedAt": "2026-11-22T17:09:54.379Z"
+}

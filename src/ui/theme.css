@@ -151,30 +151,24 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
 #app.workspace-ready .mode-switcher button { min-height:38px; padding:6px 12px; border:0; border-radius:8px; background:transparent; color:var(--text-2); font-size:13px; font-weight:500; letter-spacing:0; box-shadow:none; }
 #app.workspace-ready .mode-switcher button:hover:not(:disabled) { background:rgba(255,255,255,.07); color:var(--text-1); }
 #app.workspace-ready .mode-switcher button[aria-pressed="true"] { background:transparent; color:var(--text-1); box-shadow:inset 0 -2px 0 var(--text-1); border-radius:8px 8px 2px 2px; }
-#app .header-action, #app #header-search, #app .main-menu > summary, #app .app-nav-toggle {
+#app .header-action, #app #header-search, #app .app-nav-toggle {
   display:inline-flex; align-items:center; gap:8px; min-height:38px; padding:6px 12px; border:0; border-radius:8px;
   background:transparent; color:var(--text-1); font-size:13px; font-weight:500; letter-spacing:0; box-shadow:none; list-style:none;
 }
-#app .main-menu > summary::-webkit-details-marker { display:none; }
-#app .header-action:hover, #app #header-search:hover, #app .main-menu > summary:hover, #app .app-nav-toggle:hover,
-#app .app-nav-toggle[aria-expanded="true"], #app .main-menu[open] > summary, #app #header-search[aria-expanded="true"] { background:rgba(255,255,255,.09); color:#fff; border:0; }
-#app :is(.header-action, #header-search, .app-nav-toggle, .main-menu > summary) .icon { width:18px; height:18px; stroke-width:1.7; }
-#app .main-menu .tools-content { border:1px solid var(--line-strong); border-radius:var(--r-md); background:var(--panel-solid); box-shadow:var(--shadow-2); animation:ui-pop var(--dur) var(--ease) both; }
-#app .main-menu .menu-heading { color:var(--text-3); font-size:10px; }
-#app #tools-menu .tools-content { gap:18px; padding:18px; }
-#app #tools-menu .main-menu-group { grid-template-columns:minmax(0,1fr); grid-auto-flow:row; gap:8px; justify-items:stretch; align-content:start; }
-#app #tools-menu :is(#main-tool-links,#main-help-links) { grid-column:1; grid-row:auto; width:100%; justify-self:stretch; justify-items:stretch; }
-#app #tools-menu .main-menu-group .menu-heading { margin:0 0 2px 10px; color:var(--text-3); font-size:10.5px; letter-spacing:.18em; }
-#app #tools-menu :is(#main-tool-links,#main-help-links) { gap:2px; }
-#app #tools-menu :is(#main-tool-links,#main-help-links) > :is(button,details) { width:100%; margin:0; border:0; background:transparent; }
-#app #tools-menu :is(#main-tool-links,#main-help-links) > button, #app #tools-menu :is(#main-tool-links,#main-help-links) > details > summary {
+#app .header-action:hover, #app #header-search:hover, #app .app-nav-toggle:hover,
+#app .app-nav-toggle[aria-expanded="true"], #app #header-search[aria-expanded="true"] { background:rgba(255,255,255,.09); color:#fff; border:0; }
+#app :is(.header-action, #header-search, .app-nav-toggle) .icon { width:18px; height:18px; stroke-width:1.7; }
+#app #main-tools :is(#main-tool-links,#main-help-links) { grid-column:1; grid-row:auto; width:100%; justify-self:stretch; justify-items:stretch; }
+#app #main-tools :is(#main-tool-links,#main-help-links) { gap:2px; }
+#app #main-tools :is(#main-tool-links,#main-help-links) > :is(button,details) { width:100%; margin:0; border:0; background:transparent; }
+#app #main-tools :is(#main-tool-links,#main-help-links) > button, #app #main-tools :is(#main-tool-links,#main-help-links) > details > summary {
   display:flex; align-items:center; justify-content:flex-start; gap:12px; width:100%; min-height:42px; padding:8px 10px; border:0; border-radius:8px;
   background:transparent; color:var(--text-1); font-size:13.5px; font-weight:400; letter-spacing:0; text-transform:none; text-align:left; box-shadow:none;
 }
-#app #tools-menu :is(#main-tool-links,#main-help-links) > button:hover, #app #tools-menu :is(#main-tool-links,#main-help-links) > details > summary:hover, #app #tools-menu :is(#main-tool-links,#main-help-links) > details[open] > summary { background:rgba(255,255,255,.07); color:#fff; }
-#app #tools-menu :is(#main-tool-links,#main-help-links) svg.icon { flex:none; width:18px; height:18px; padding:0; border:0; background:transparent; }
+#app #main-tools :is(#main-tool-links,#main-help-links) > button:hover, #app #main-tools :is(#main-tool-links,#main-help-links) > details > summary:hover, #app #main-tools :is(#main-tool-links,#main-help-links) > details[open] > summary { background:rgba(255,255,255,.07); color:#fff; }
+#app #main-tools :is(#main-tool-links,#main-help-links) svg.icon { flex:none; width:18px; height:18px; padding:0; border:0; background:transparent; }
 
-/* ---------- Mapa de áreas ---------- */
+/* ---------- Menú (mapa de áreas, herramientas y ayuda; 29) ---------- */
 .app-navigator { position:relative; flex:none; }
 .app-nav-panel { position:fixed; z-index:200; top:var(--app-nav-top,70px); right:16px; width:min(780px,calc(100vw - 32px)); max-height:calc(100dvh - var(--app-nav-top,70px) - 16px); overflow:auto; padding:20px; border:1px solid var(--line-strong); border-radius:var(--r-lg); background:rgba(16,16,18,.98); box-shadow:var(--shadow-2); transform-origin:top right; animation:ui-pop var(--dur) var(--ease) both; }
 .app-nav-head { display:flex; flex-direction:column; gap:4px; margin:0 2px 16px; }
@@ -190,6 +184,14 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
 .app-nav-group button[aria-current="page"] .icon { border-color:var(--gold-line); stroke:var(--gold-strong); }
 .app-nav-group strong { display:block; font-size:14px; font-weight:500; }
 .app-nav-group small { display:block; margin-top:2px; color:var(--text-3); font-size:12px; line-height:1.4; }
+/* 29: herramientas y ayuda dentro del «Menú», debajo de las áreas y con su misma gramática (encabezado en mayúsculas, filas). */
+#app #main-tools { margin:18px 0 0; padding-top:16px; border-top:1px solid var(--line-soft); }
+#app #main-tools .tools-content { position:static; inset:auto; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; width:auto; max-width:none; max-height:none;
+  overflow:visible; margin:0; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; animation:none; }
+#app #main-tools .main-menu-group { display:flex; flex-direction:column; gap:4px; min-width:0; }
+#app #main-tools .main-menu-group .menu-heading { margin:0 0 4px; color:var(--text-3); font-size:10.5px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; }
+#app #main-tools :is(.distance-menu-body,.help-body,.source-body) { position:static; inset:auto; width:100%; max-width:100%; max-height:none; margin:0; padding:10px 6px; overflow:visible; border:0; box-shadow:none; background:transparent; }
+#app #main-tools select { max-width:100%; }
 .app-nav-foot { margin:16px 2px 0; padding-top:12px; border-top:1px solid var(--line-soft); color:var(--text-3); font-size:12px; line-height:1.5; }
 
 /* ---------- Paleta de búsqueda ---------- */
@@ -572,8 +574,8 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
   .app-crumb .app-crumb-leaf { display:none; }
 }
 @media (max-width:1180px) {
-  #app :is(.app-nav-toggle, #header-search, .main-menu > summary) span { display:none; }
-  #app :is(.app-nav-toggle, #header-search, .main-menu > summary) { width:40px; padding:0; justify-content:center; }
+  #app :is(.app-nav-toggle, #header-search) span { display:none; }
+  #app :is(.app-nav-toggle, #header-search) { width:40px; padding:0; justify-content:center; }
 }
 @media (max-width:1100px) {
   #experimental-lab .lab-header { grid-template-columns:minmax(0,1fr) auto; }
@@ -593,6 +595,7 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
   #experimental-lab .lab-title p { font-size:12px; }
   #experimental-lab .lab-sections { flex-wrap:wrap; padding:8px; }
   .app-nav-groups { grid-template-columns:1fr; }
+  #app #main-tools .tools-content { grid-template-columns:1fr; }
   .mc-hud { top:84px; }
   .mc-hud-metrics { display:none; }
   .mc-layout-toggles { display:none; }
@@ -601,15 +604,15 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
   #lab-mission-center[data-console="hidden"] .mc-console, #lab-mission-center[data-telemetry="hidden"] .mc-telemetry { display:flex; }
 }
 @media (max-width:760px) {
-  #app.workspace-ready .app-header { height:96px; grid-template-columns:minmax(0,1fr) auto auto auto; padding:4px 10px; background:#000; border-bottom:1px solid var(--line-soft); }
+  #app.workspace-ready .app-header { height:96px; grid-template-columns:minmax(0,1fr) auto auto; padding:4px 10px; background:#000; border-bottom:1px solid var(--line-soft); }
   #app.workspace-ready .brand { gap:8px; }
   /* 17: el nombre completo en dos líneas en lugar de cortarlo con puntos suspensivos; si aun así no cabe, se recorta la segunda. */
   #app.workspace-ready .brand h1 { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; font-size:11px; letter-spacing:.1em; line-height:1.25; white-space:normal; overflow:hidden; text-overflow:ellipsis; }
   #app .brand-mark { width:28px; height:28px; }
-  #app .app-navigator { grid-column:2; grid-row:1; align-self:center; }
-  #app #header-search { grid-column:3; }
-  #app .main-menu { grid-column:4; }
-  #app :is(.app-nav-toggle, #header-search, .main-menu > summary) { width:38px; min-height:36px; height:36px; }
+  /* 29: «Buscar» y, en el extremo, «Menú» (antes «Áreas», «Buscar» y «Menú»). */
+  #app #header-search { grid-column:2; grid-row:1; }
+  #app .app-navigator { grid-column:3; grid-row:1; align-self:center; }
+  #app :is(.app-nav-toggle, #header-search) { width:38px; min-height:36px; height:36px; }
   #app.workspace-ready #header-search::before { content:none; }
   #app #header-search { font-size:inherit; min-width:38px; }
   #app.workspace-ready .mode-switcher button { min-height:38px; font-size:12px; }

@@ -40,9 +40,11 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
       title.textContent = selectedName && selectedName !== 'Planeta' ? selectedName : 'Información';
     } else title.textContent = ({ history: 'Historia Voyager', photos: 'Fotografías NASA', navigation: 'Cámaras' })[active];
   }
+  // 29: el «Menú» lo gestiona AppNavigator; aquí solo se le pide que se cierre.
+  function cerrarMenu() { document.dispatchEvent(new CustomEvent('app:close-menu')); }
   function state(value) {
     if (value !== 'closed') {
-      document.querySelector('#tools-menu').open = false;
+      cerrarMenu();
       document.querySelector('#view-menu').open = false;
       for (const menu of document.querySelectorAll('.temporal-advanced')) menu.open = false;
     }
@@ -107,7 +109,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   }
   const searchArea = document.createElement('section');
   searchArea.className = 'context-search';
-  searchArea.innerHTML = '<label for="context-search-input">Buscar planetas y sondas</label><input id="context-search-input" type="search" placeholder="Nombre del destino" autocomplete="off" /><div id="context-search-results" role="group" aria-label="Destinos disponibles"></div><p id="context-search-status" role="status">Selecciona un destino para enfocarlo.</p>';
+  searchArea.innerHTML = '<label for="context-search-input">Filtrar la lista de destinos</label><input id="context-search-input" type="search" placeholder="Nombre del destino" autocomplete="off" /><div id="context-search-results" role="group" aria-label="Destinos disponibles"></div><p id="context-search-status" role="status">Selecciona un destino para enfocarlo.</p>';
   panes.get('explore').prepend(searchArea);
   const searchInput = searchArea.querySelector('input');
   const results = searchArea.querySelector('#context-search-results');
@@ -264,13 +266,15 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   // 14.1: si la paleta de búsqueda está presente atiende la petición; si no, se usa el buscador del panel Explorar.
   search.addEventListener('click', () => { if (document.dispatchEvent(new CustomEvent('app:open-search', { cancelable: true }))) { select('explore'); searchInput.focus(); } });
   document.querySelector('.app-header').append(search);
-  const toolsMenu = document.createElement('details');
-  toolsMenu.id = 'tools-menu'; toolsMenu.className = 'main-menu hud-secondary';
-  toolsMenu.innerHTML = `<summary aria-label="Abrir menú principal" class="header-action"><svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg><span>Menú</span></summary><div class="tools-content"><section class="main-menu-group"><span class="menu-heading">Herramientas</span><div id="main-tool-links"></div></section><section class="main-menu-group"><span class="menu-heading">Ayuda y datos</span><div id="main-help-links"></div></section></div>`;
-  document.querySelector('.app-header').append(toolsMenu);
-  const toolLinks = toolsMenu.querySelector('#main-tool-links');
+  // 29: herramientas y ayuda forman parte del único «Menú» de la cabecera (el panel de AppNavigator, que adopta esta sección).
+  // Antes había dos menús: «Áreas» (navegación) y «Menú» (herramientas y ayuda).
+  const tools = document.createElement('section');
+  tools.id = 'main-tools'; tools.className = 'main-tools'; tools.hidden = true;
+  tools.innerHTML = '<div class="tools-content"><section class="main-menu-group"><span class="menu-heading">Herramientas</span><div id="main-tool-links"></div></section><section class="main-menu-group"><span class="menu-heading">Ayuda y datos</span><div id="main-help-links"></div></section></div>';
+  document.querySelector('.app-header').append(tools);
+  const toolLinks = tools.querySelector('#main-tool-links');
   toolLinks.append(document.querySelector('#distance-menu'));
-  toolsMenu.querySelector('#main-help-links').append(document.querySelector('#camera-help'), document.querySelector('#source-menu'));
+  tools.querySelector('#main-help-links').append(document.querySelector('#camera-help'), document.querySelector('#source-menu'));
   document.querySelector('#camera-help > summary').append(' Ayuda de navegación');
   const missionDock = document.querySelector('#hist-mission-dock');
   if (missionDock) {
@@ -338,30 +342,27 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   }
   document.querySelector('#inspector-toggle').addEventListener('click', () => {
     previousFocus = document.activeElement;
-    document.querySelector('#tools-menu').open = false;
+    cerrarMenu();
     if (inspector.dataset.state === 'closed') { select(active); inspector.querySelector('[aria-selected=true]').focus(); }
     else close();
   });
   function close() { state('closed'); (previousFocus?.isConnected ? previousFocus : document.querySelector('#inspector-toggle')).focus({preventScroll:true}); }
   document.querySelector('#inspector-close').addEventListener('click', close);
   document.querySelector('#inspector-expand').addEventListener('click', () => state(inspector.dataset.state === 'expanded' ? 'half' : 'expanded'));
-  toolsMenu.addEventListener('toggle', () => {
-    if (toolsMenu.open) {
-      state('closed');
-      document.querySelector('#view-menu').open = false;
-      for (const menu of document.querySelectorAll('.temporal-advanced')) menu.open = false;
-    }
+  // 29: al abrirse el «Menú» se cierran el inspector, «Capas» y los ajustes temporales (como antes con el menú de herramientas).
+  document.addEventListener('app:menu-open', () => {
+    state('closed');
+    document.querySelector('#view-menu').open = false;
+    for (const menu of document.querySelectorAll('.temporal-advanced')) menu.open = false;
   });
   document.querySelector('#view-menu').addEventListener('toggle', event => {
     if (event.currentTarget.open) {
-      state('closed'); toolsMenu.open = false;
+      state('closed'); cerrarMenu();
       for (const menu of document.querySelectorAll('.temporal-advanced')) menu.open = false;
     }
   });
-  document.addEventListener('pointerdown', e => { if (!toolsMenu.contains(e.target)) toolsMenu.open = false; });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
-    toolsMenu.open = false;
     if (document.querySelector('#photo-lightbox-modal').hidden && document.querySelector('#photo-comparator-panel').hidden && inspector.dataset.state !== 'closed') close();
   });
   for (const id of ['historical-events-panel', 'historical-photos-panel']) {
@@ -385,7 +386,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
       comparatorFocus = document.activeElement;
       comparatorTab = active;
       comparatorPanelState = inspector.dataset.state;
-      state('closed'); toolsMenu.open = false;
+      state('closed'); cerrarMenu();
       document.querySelector('#comp-close-btn').focus({preventScroll:true});
     } else {
       select(comparatorTab, comparatorPanelState !== 'closed');
@@ -443,7 +444,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   crearLayoutTemporal();
   for (const menu of document.querySelectorAll('.temporal-advanced')) {
     menu.addEventListener('toggle', () => {
-      if (menu.open) { state('closed'); toolsMenu.open = false; }
+      if (menu.open) { state('closed'); cerrarMenu(); }
     });
   }
   modeChanged();

@@ -33,18 +33,25 @@ export function createAppNavigator() {
   if (!app || !header || !switcher) return { dispose() {}, go() {}, areas: AREAS };
   const wrap = document.createElement('div');
   wrap.className = 'app-navigator hud-secondary';
-  wrap.innerHTML = `<button type="button" id="app-nav-toggle" class="app-nav-toggle header-action" aria-expanded="false" aria-controls="app-nav-panel" title="Mapa de áreas del simulador">
-      <svg class="icon" aria-hidden="true"><use href="#icon-grid"></use></svg><span>Áreas</span></button>
-    <div id="app-nav-panel" class="app-nav-panel" role="dialog" aria-label="Mapa de áreas del simulador" hidden>
-      <div class="app-nav-head"><span class="eyebrow">Mapa del simulador</span><strong>¿A dónde quieres ir?</strong></div>
+  // 29: un solo «Menú» en la cabecera: áreas del simulador, herramientas y ayuda (antes «Áreas» y «Menú» por separado).
+  wrap.innerHTML = `<button type="button" id="app-nav-toggle" class="app-nav-toggle header-action" aria-expanded="false" aria-controls="app-nav-panel" aria-label="Menú: áreas del simulador, herramientas y ayuda" title="Menú: áreas del simulador, herramientas y ayuda">
+      <svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg><span>Menú</span></button>
+    <div id="app-nav-panel" class="app-nav-panel" role="dialog" aria-label="Menú del simulador" hidden>
+      <div class="app-nav-head"><span class="eyebrow">Menú del simulador</span><strong>¿A dónde quieres ir?</strong></div>
       <div class="app-nav-groups"></div>
       <p class="app-nav-foot">Las áreas del laboratorio comparten la sonda activa y la misión preparada para el Centro de Misión.</p>
     </div>`;
-  switcher.after(wrap);
+  header.append(wrap); // a la derecha de «Buscar», en el extremo de la cabecera
   const toggle = wrap.querySelector('#app-nav-toggle'), panel = wrap.querySelector('#app-nav-panel');
   // El panel vive en #app (no en la cabecera) para quedar por encima del laboratorio y de la escena en cualquier modo.
   app.append(panel);
   const groups = panel.querySelector('.app-nav-groups');
+  // 29: herramientas y ayuda (creadas por WorkspaceLayout) van en el mismo panel, debajo de las áreas.
+  const tools = document.querySelector('#main-tools');
+  if (tools) { tools.hidden = false; groups.after(tools); }
+  // Al desplegar una herramienta o una ayuda (con un clic o desde «Buscar»), se lleva a la vista dentro del panel desplazable.
+  // «toggle» no burbujea: se escucha en la fase de captura.
+  tools?.addEventListener('toggle', e => { if (e.target.open && !panel.hidden) e.target.scrollIntoView?.({ block: 'start', behavior: 'smooth' }); }, true);
   for (const { group, items } of AREAS) {
     const section = document.createElement('section'); section.className = 'app-nav-group';
     const title = document.createElement('h3'); title.textContent = group; section.append(title);
@@ -92,6 +99,7 @@ export function createAppNavigator() {
   function setOpen(open) {
     if (open) panel.style.setProperty('--app-nav-top', `${Math.ceil(header.getBoundingClientRect().bottom + 6)}px`);
     panel.hidden = !open; toggle.setAttribute('aria-expanded', String(open));
+    if (open) document.dispatchEvent(new CustomEvent('app:menu-open'));
     if (open) { markCurrent(); panel.querySelector('[aria-current="page"], button')?.focus({ preventScroll: true }); }
   }
   function currentArea() {
@@ -129,10 +137,12 @@ export function createAppNavigator() {
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   const onKey = event => { if (event.key === 'Escape' && !panel.hidden) { setOpen(false); toggle.focus(); } };
   const onPointer = event => { if (!panel.hidden && !wrap.contains(event.target) && !panel.contains(event.target)) setOpen(false); };
+  const onCloseRequest = () => { if (!panel.hidden) setOpen(false); };
   document.addEventListener('keydown', onKey);
   document.addEventListener('pointerdown', onPointer);
+  document.addEventListener('app:close-menu', onCloseRequest);
   return {
-    areas: AREAS, go, currentArea, waitForMode, attachLab,
-    dispose() { document.removeEventListener('keydown', onKey); document.removeEventListener('pointerdown', onPointer); crumbObserver.disconnect(); wrap.remove(); panel.remove(); crumb.remove(); }
+    areas: AREAS, go, currentArea, waitForMode, attachLab, open: () => setOpen(true),
+    dispose() { document.removeEventListener('keydown', onKey); document.removeEventListener('pointerdown', onPointer); document.removeEventListener('app:close-menu', onCloseRequest); crumbObserver.disconnect(); wrap.remove(); panel.remove(); crumb.remove(); }
   };
 }

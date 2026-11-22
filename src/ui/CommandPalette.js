@@ -60,7 +60,7 @@ export function createCommandPalette({ navigator } = {}) {
     const out = [];
     for (const [label, group] of groups) {
       const ranked = group.map(item => [score(item), item]).filter(([s]) => s > 0).sort((a, b) => b[0] - a[0]).map(([, item]) => item);
-      const limited = q ? ranked : ranked.slice(0, label === 'Cuerpos y sondas' ? 10 : 12);
+      const limited = q ? ranked : label === 'Cuerpos y sondas' ? ranked.slice(0, 10) : [];
       if (limited.length) out.push({ label, items: limited });
     }
     return out;
@@ -71,7 +71,7 @@ export function createCommandPalette({ navigator } = {}) {
     active = Math.min(active, Math.max(0, items.length - 1));
     list.replaceChildren();
     if (!items.length) {
-      const empty = document.createElement('p'); empty.className = 'cp-empty'; empty.textContent = 'Sin resultados. Prueba con «Júpiter», «Voyager», «lanzamiento» o «escala».';
+      const empty = document.createElement('p'); empty.className = 'cp-empty'; empty.textContent = input.value.trim() ? 'Sin resultados. Prueba con «Júpiter», «Voyager», «lanzamiento» o «escala».' : 'Escribe el nombre de un cuerpo, una sonda, un área o una herramienta.';
       list.append(empty); input.removeAttribute('aria-activedescendant'); return;
     }
     let index = 0;
@@ -107,7 +107,7 @@ export function createCommandPalette({ navigator } = {}) {
     if (item.type === 'action') {
       const el = document.querySelector(item.selector);
       if (!el) return;
-      if (item.open) { const menu = document.querySelector('#tools-menu'); if (menu) menu.open = true; el.open = true; el.querySelector('summary')?.focus(); }
+      if (item.open) { navigator?.open?.(); el.open = true; el.querySelector('summary')?.focus(); } // 29: la herramienta vive en el «Menú»
       else el.click();
       return;
     }
