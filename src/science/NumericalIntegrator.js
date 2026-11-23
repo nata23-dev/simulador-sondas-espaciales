@@ -1,12 +1,16 @@
+// Aquí implemento los integradores numéricos de ecuaciones diferenciales ordinarias (RK4 de paso fijo y
+// Dormand-Prince 5(4) adaptativo con propiedad FSAL) y la interpolación quíntica de Hermite para estados mecánicos 6D.
+// Unidades: tiempo en segundos y vectores de estado en las unidades consistentes que entregue `derivative`
+// (típicamente km y km/s en un marco inercial); la interpolación 6D espera `[x, y, z, vx, vy, vz]`.
 export const INTEGRATOR_METHODS = Object.freeze({
   RK4: 'rk4',
   DOPRI54: 'dopri54'
 });
 
 /**
- * Coeficientes racionales exactos de Dormand & Prince (1980),
+ * Aquí defino el tablero de coeficientes racionales exactos de Dormand & Prince (1980),
  * "A family of embedded Runge-Kutta formulae", J. Comput. Appl. Math. 6(1), 19-26.
- * Propaga la solución de orden 5 (b) con estimador embebido de orden 4 (bStar) y FSAL.
+ * Propago la solución de orden 5 (pesos b) y estimo el error local con el par embebido de orden 4 (b*) y FSAL.
  */
 export const DORMAND_PRINCE_54_TABLEAU = Object.freeze({
   c2: 1 / 5,
@@ -36,7 +40,7 @@ export const DORMAND_PRINCE_54_TABLEAU = Object.freeze({
   a64: 49 / 176,
   a65: -5103 / 18656,
 
-  // Pesos de orden 5 (solución propagada y fila 7 FSAL)
+  // Uso estos pesos de orden 5 tanto para la solución propagada como para la fila 7 FSAL.
   b1: 35 / 384,
   b2: 0,
   b3: 500 / 1113,
@@ -45,7 +49,7 @@ export const DORMAND_PRINCE_54_TABLEAU = Object.freeze({
   b6: 11 / 84,
   b7: 0,
 
-  // Diferencias de error e_i = b_i - b*_i
+  // Calculo el error embebido con las diferencias e_i = b_i - b*_i.
   e1: 71 / 57600,
   e2: 0,
   e3: -71 / 16695,
@@ -55,6 +59,7 @@ export const DORMAND_PRINCE_54_TABLEAU = Object.freeze({
   e7: -1 / 40
 });
 
+/** Represento fallos controlados de configuración, convergencia o estabilidad durante la integración. */
 export class IntegrationError extends Error {
   constructor(code, message, details = {}) {
     super(message);
@@ -64,6 +69,7 @@ export class IntegrationError extends Error {
   }
 }
 
+/** Valido el vector de estado inicial y lo copio a un `Float64Array` para trabajar sin mutar la entrada. */
 function validateInitialVector(initialState) {
   if (!Array.isArray(initialState) && !(initialState instanceof Float64Array)) {
     throw new IntegrationError(
@@ -90,6 +96,7 @@ function validateInitialVector(initialState) {
   return copy;
 }
 
+/** Compruebo que todas las componentes de un vector intermedio o final sigan siendo finitas. */
 function assertAllFinite(array, label, t) {
   for (let i = 0; i < array.length; i++) {
     if (!Number.isFinite(array[i])) {
@@ -102,6 +109,7 @@ function assertAllFinite(array, label, t) {
   }
 }
 
+/** Normalizo una tolerancia escalar o vectorial a un `Float64Array` de longitud `dim` con valores positivos. */
 function normalizeToleranceArray(tol, dim, name) {
   const out = new Float64Array(dim);
   if (typeof tol === 'number') {
@@ -137,9 +145,8 @@ function normalizeToleranceArray(tol, dim, name) {
 }
 
 /**
- * Integrador de referencia Runge-Kutta clásico de cuarto orden (RK4) con paso fijo
- * configurable (recorta exactamente el último subpaso a `targetSeconds`).
- * Permite propagación hacia adelante y hacia atrás.
+ * Aquí integro un sistema de EDO con el método clásico Runge-Kutta de cuarto orden (RK4) de paso fijo.
+ * Recorto exactamente el último subpaso para aterrizar en `targetSeconds` y admito integración hacia adelante y hacia atrás.
  */
 export function integrateRk4({
   derivative,
@@ -318,6 +325,10 @@ export function integrateRk4({
   });
 }
 
+/**
+ * Aquí estimo un paso inicial conservador para DOPRI54 a partir de las normas RMS
+ * ponderadas del estado inicial `y` y su derivada `k1`, acotado entre `minStepSeconds` y `maxStepSeconds`.
+ */
 function estimateInitialStep({
   y,
   k1,
@@ -345,13 +356,12 @@ function estimateInitialStep({
 }
 
 /**
- * Integrador principal de paso adaptativo Dormand-Prince 5(4) (RK45 con FSAL).
+ * Aquí integro el sistema con el método adaptativo Dormand-Prince 5(4) (RK45 con propiedad FSAL).
  *
- * - Controla el error local mediante norma RMS ponderada por `absTol` y `relTol`.
- * - Soporta propagación hacia adelante y hacia atrás.
- * - Rechaza pasos con error > 1 o etapas intermedias no válidas y ajusta el paso.
- * - Detiene la integración si se supera `maxIterations`, si el paso cae bajo
- *   `minStepSeconds`, o de manera segura si `shouldAbort` lo solicita.
+ * - Controlo el error local mediante una norma RMS ponderada por `absTol` y `relTol`.
+ * - Admito propagación tanto hacia adelante como hacia atrás en el tiempo.
+ * - Rechazo cualquier paso cuyo error normalizado supere 1 o cuyas etapas intermedias fallen, reduciendo el paso.
+ * - Detengo la integración si supero `maxIterations`, si el paso cae bajo `minStepSeconds` o si `shouldAbort` lo solicita.
  */
 export function integrateDopri54({
   derivative,
@@ -500,7 +510,7 @@ export function integrateDopri54({
       stepAbs = absRem;
       hittingTarget = true;
     } else if (absRem - stepAbs < minStepSeconds) {
-      // Evita dejar un residuo final artificialmente menor que minStepSeconds.
+      // Divido el tramo restante a la mitad para evitar un residuo final artificialmente menor que minStepSeconds.
       stepAbs = 0.5 * absRem;
     }
 
@@ -524,6 +534,7 @@ export function integrateDopri54({
 
     let stageFailed = false;
     try {
+      // Evalúo las seis etapas intermedias de Dormand-Prince y la séptima etapa FSAL en `nextT`.
       for (let i = 0; i < dim; i++) stageState[i] = y[i] + h * T.a21 * k1[i];
       derivative(t + T.c2 * h, stageState, k2);
       functionEvaluations += 1;
@@ -556,9 +567,9 @@ export function integrateDopri54({
       derivative(nextT, yNext, k7);
       functionEvaluations += 1;
     } catch (error) {
-      // Si un paso tentativo enorme cruza artificialmente una zona de aproximación
-      // cercana, permitimos reducir el paso hasta minStepSeconds; si en minStepSeconds
-      // persiste (colisión real o singularidad) o es fuera de cobertura, relanzamos.
+      // Si un paso tentativo demasiado grande cruza artificialmente una zona de aproximación cercana,
+      // permito reducir el paso hasta minStepSeconds; si persiste en minStepSeconds (colisión real o singularidad)
+      // o el fallo es por falta de cobertura, relanzo el error sin ocultarlo.
       if ((error?.code === 'CLOSE_APPROACH_LIMIT' || error?.code === 'SINGULARITY')
         && stepAbs > minStepSeconds * (1 + 1e-12)) {
         stageFailed = true;
@@ -567,6 +578,7 @@ export function integrateDopri54({
       }
     }
 
+    // Calculo la norma RMS ponderada del error local embebido entre las soluciones de orden 5 y 4.
     let errNorm = Infinity;
     if (!stageFailed) {
       let errSqSum = 0;
@@ -605,7 +617,7 @@ export function integrateDopri54({
       continue;
     }
 
-    // Paso aceptado: avanzar estado y reutilizar k7 como k1 (FSAL).
+    // Acepto el paso, avanzo el estado y reutilizo k7 como la nueva k1 gracias a la propiedad FSAL.
     t = nextT;
     y.set(yNext);
     k1.set(k7);
@@ -651,11 +663,9 @@ export function integrateDopri54({
 }
 
 /**
- * Interpolación de Hermite quíntica (orden 5, C^2 en posición y C^1 en velocidad)
- * entre dos nodos aceptados `(t0, state0, deriv0)` y `(t1, state1, deriv1)` de
- * un sistema mecánico de 6 componentes `[x, y, z, vx, vy, vz]`.
- *
- * No extrapola jamás fuera del intervalo `[min(t0, t1), max(t0, t1)]`.
+ * Aquí interpolo un estado mecánico 6D `[x, y, z, vx, vy, vz]` entre dos nodos aceptados
+ * `(t0, state0, deriv0)` y `(t1, state1, deriv1)` mediante Hermite quíntica (orden 5, C^2 en posición y C^1 en velocidad).
+ * Nunca extrapolo fuera del intervalo `[min(t0, t1), max(t0, t1)]`.
  */
 export function interpolateQuinticMechanicalState6(
   t0,
@@ -696,14 +706,14 @@ export function interpolateQuinticMechanicalState6(
   const oneMinusU2 = oneMinusU * oneMinusU;
   const oneMinusU3 = oneMinusU2 * oneMinusU;
 
-  // Polinomios base de posición H_ij(u)
+  // Evalúo los polinomios base quínticos de posición H_ij(u) en el parámetro adimensional u ∈ [0, 1].
   const h01 = u3 * (10 - 15 * u + 6 * u2);
   const h10 = u * (1 - 6 * u2 + 8 * u3 - 3 * u2 * u2);
   const h11 = u3 * (-4 + 7 * u - 3 * u2);
   const h20 = 0.5 * u2 * oneMinusU3;
   const h21 = 0.5 * u3 * oneMinusU2;
 
-  // Derivadas respecto a u: dH_ij/du para calcular v(t) = (1/h) * dp/du
+  // Evalúo las derivadas dH_ij/du para obtener la velocidad exacta v(t) = (1/h) * dp/du.
   const dh01 = 30 * u2 * oneMinusU2;
   const dh10 = oneMinusU2 * (1 + 2 * u - 15 * u2);
   const dh11 = u2 * (-12 + 28 * u - 15 * u2);

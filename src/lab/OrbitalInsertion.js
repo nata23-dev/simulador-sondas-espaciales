@@ -1,14 +1,10 @@
-// Etapa 13 — captura e inserción orbital alrededor de un cuerpo cualquiera (planeta o satélite) con empuje FINITO integrado.
-// Generaliza los componentes de 12D (dirección de empuje, flujo másico, Isp/g0, DOPRI54) a cualquier μ central.
-//
-// Estado integrado (8 componentes, como 12D/12F): [x, y, z, vx, vy, vz, m, Δv_acum] en el marco centrado en el cuerpo
-// (ejes ICRF eclíptico J2000, origen el centro/baricentro declarado), km, km/s, s, kg.
+// Aquí simulo la captura e inserción orbital con empuje finito alrededor de cualquier cuerpo central (planeta o satélite).
+// Integro un estado de 8 componentes [x, y, z, vx, vy, vz, m, Δv_acum] en el marco centrado en el cuerpo (ejes eclípticos
+// ICRF J2000; km, km/s, s, kg) usando DOPRI54 con dirección de empuje retrógrada reevaluada en cada paso:
 //   dr/dt = v      dv/dt = −μ r/|r|³ + (F/m)·û/1000      dm/dt = −F/(Isp·g0)      dΔv/dt = F/(m·1000)
-// û = retrógrado respecto a la velocidad relativa al cuerpo (se reevalúa en cada evaluación de la derivada).
-// Cada encendido se centra en el periapsis con una duración ESTIMADA por Tsiolkovsky a partir del Δv impulsivo; el apagado
-// real lo decide un evento de la integración: apoapsis ≤ objetivo (o propelente agotado, o contacto con la superficie). El
-// resultado (órbita final, consumo, pérdidas por gravedad) es el de la integración: no se fuerza ninguna órbita.
-// Las fases sin empuje se propagan con Kepler (dos cuerpos, exacto) para que la reproducción sea determinista y barata.
+// Centro cada encendido en el periapsis a partir de la duración estimada por Tsiolkovski, pero dejo que el corte real
+// lo determine la integración (apoapsis objetivo alcanzado, agotamiento de propelente o impacto) sin forzar la órbita.
+// Para los tramos sin empuje propago analíticamente con Kepler de dos cuerpos.
 import { integrateDopri54 } from '../science/NumericalIntegrator.js';
 import { propagateKepler, conicSummary } from '../science/KeplerPropagator.js';
 import { timeToNextPeriapsis } from '../science/PlanetaryEncounter.js';
@@ -19,9 +15,9 @@ export const INSERTION_STATUS = Object.freeze({
   target: 'ÓRBITA OBJETIVO ALCANZADA SEGÚN EL MODELO', partial: 'CAPTURADA · ÓRBITA OBJETIVO NO ALCANZADA', flyby: 'SIN CAPTURA · SOBREVUELO HIPERBÓLICO',
   impact: 'IMPACTO CON EL CUERPO', failed: 'INTEGRACIÓN NO VERIFICABLE'
 });
+// Fijo las tolerancias del integrador DOPRI54 y el acotamiento temporal (s) para refinar eventos por bisección.
 export const INSERTION_ABS_TOL = Object.freeze([1e-6, 1e-6, 1e-6, 1e-9, 1e-9, 1e-9, 1e-6, 1e-12]);
 export const INSERTION_REL_TOL = 1e-11;
-// Intervalo temporal final de la bisección de eventos (apagado, agotamiento, contacto).
 export const EVENT_BRACKET_SECONDS = 1e-4;
 
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -31,7 +27,7 @@ export class InsertionError extends Error {
   constructor(code, message, details = {}) { super(message); this.name = 'InsertionError'; this.code = code; this.details = details; }
 }
 
-/** Elementos osculantes con altitudes respecto a un radio de referencia. */
+/** Calculo los elementos orbitales osculadores y altitudes (km) respecto al radio de referencia del cuerpo central. */
 export function orbitDescription(positionKm, velocityKmS, mu, radiusKm) {
   const c = conicSummary(positionKm, velocityKmS, mu), bound = c.specificEnergyKm2S2 < 0 && c.eccentricity < 1;
   return { bound, eccentricity: c.eccentricity, semiMajorAxisKm: c.semiMajorAxisKm, specificEnergyKm2S2: c.specificEnergyKm2S2,
@@ -41,6 +37,7 @@ export function orbitDescription(positionKm, velocityKmS, mu, radiusKm) {
     angularMomentumVector: c.angularMomentumVector, eccentricityVector: c.eccentricityVector };
 }
 
+// Construyo la derivada dy/dt con gravedad central y empuje continuo estrictamente retrógrado.
 function burnDerivative(mu, thrustN, flowKgS) {
   const u = new Float64Array(3);
   return (t, s, out) => {
@@ -54,7 +51,7 @@ function burnDerivative(mu, thrustN, flowKgS) {
   };
 }
 
-// Integra hasta t1 o hasta el primer evento del predicado; refina el instante del evento por bisección (≤ EVENT_BRACKET_SECONDS).
+// Integro hasta t1 o hasta que el predicado detecta un evento (apagado, agotamiento o contacto) y refino el instante por bisección.
 export function integrateUntilEvent({ derivative, state, t0, t1, predicate, maxStepSeconds = 30 }) {
   const run = (y, a, b, record, abort) => integrateDopri54({ derivative, initialState: y, startSeconds: a, targetSeconds: b, initialStepSeconds: Math.min(1, b - a),
     minStepSeconds: 1e-9, maxStepSeconds: Math.min(maxStepSeconds, Math.max(b - a, 1e-9)), absTol: INSERTION_ABS_TOL, relTol: INSERTION_REL_TOL, recordSteps: record, shouldAbort: abort });
@@ -77,10 +74,10 @@ export function integrateUntilEvent({ derivative, state, t0, t1, predicate, maxS
 }
 
 /**
- * Secuencia de encendidos de captura, cada uno centrado en el siguiente periapsis.
- * `vehicle`: { massKg, engine: { name, thrustN, ispS }, propellantKg } — el propelente disponible para ESTE motor.
- * `burns`: [{ id, targetApoapsisRadiusKm, label }] — apoapsis objetivo (radio); igual al periapsis ⇒ circularización.
- * Devuelve tramos (kepler | burn) en tiempo relativo al estado inicial, eventos, resultado y diagnóstico.
+ * Simulo una secuencia de encendidos de captura/inserción centrados en cada periapsis sucesivo.
+ * Recibo el vehículo (`massKg`, `engine: { name, thrustN, ispS }`, `propellantKg`) y la lista de objetivos
+ * `burns: [{ id, targetApoapsisRadiusKm, label }]` (si el apoapsis iguala al periapsis, circularizo la órbita).
+ * Devuelvo los tramos (kepler o burn), los eventos, las pérdidas gravitatorias y el veredicto final.
  */
 export function simulateInsertion({ mu, bodyRadiusKm, bodyName = 'cuerpo', positionKm, velocityKmS, vehicle, burns, coastAfterSeconds = 0, startOffsetFraction = 0.5 }) {
   if (!(mu > 0) || !(bodyRadiusKm > 0)) throw new InsertionError('INVALID_BODY', 'μ y radio del cuerpo deben ser positivos.');
@@ -94,7 +91,7 @@ export function simulateInsertion({ mu, bodyRadiusKm, bodyName = 'cuerpo', posit
   const describe = () => orbitDescription(r, v, mu, bodyRadiusKm);
   const coast = (duration, id, label) => {
     if (!(duration > 0)) return;
-    // Impacto durante el vuelo balístico: si la cónica corta la superficie antes de `duration`, se detiene en el contacto.
+    // Si la cónica balística corta la superficie del cuerpo antes de `duration`, localizo el impacto por bisección y me detengo ahí.
     const o = describe(); let end = duration, hit = false;
     if (o.periapsisRadiusKm < bodyRadiusKm && dot(r, v) < 0) {
       const f = x => norm(propagateKepler(r, v, x, mu).positionKm) - bodyRadiusKm;
@@ -168,7 +165,7 @@ export function simulateInsertion({ mu, bodyRadiusKm, bodyName = 'cuerpo', posit
     tolerances: { absTol: INSERTION_ABS_TOL, relTol: INSERTION_REL_TOL, eventBracketSeconds: EVENT_BRACKET_SECONDS } });
 }
 
-/** Referencia impulsiva ideal de la misma secuencia: Δv y propelente por Tsiolkovsky, sin propagar. */
+/** Calculo la referencia impulsiva ideal (Δv en km/s y propelente en kg por Tsiolkovski en el periapsis) para comparar pérdidas gravitatorias. */
 export function impulsiveInsertionReference({ mu, vInfKmS, periapsisRadiusKm, burns, massKg, ispS }) {
   const ve = exhaustVelocityMS(ispS) / 1000;
   let vp = Math.sqrt(vInfKmS * vInfKmS + 2 * mu / periapsisRadiusKm), m = massKg, total = 0;

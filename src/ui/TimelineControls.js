@@ -1,3 +1,5 @@
+// En este módulo gestiono los controles temporales de la vista del Sistema Solar: selección de fecha, avance diario,
+// velocidad de reproducción y validación del rango de efemérides diarias.
 import { obtenerEstados, PLANETAS } from '../astronomy/Ephemerides.js';
 
 const MILISEGUNDOS_DIA = 86400000;
@@ -5,6 +7,7 @@ const fechaLegible = new Intl.DateTimeFormat('es-MX', {
   day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'
 });
 
+// Conecto los controles de fecha, barra temporal y reproducción con el callback que actualiza la escena astronómica.
 export function crearControlesTemporales(alCambiarFecha) {
   const fechaInput = document.querySelector('#date-input');
   const anterior = document.querySelector('#previous-button');
@@ -22,6 +25,7 @@ export function crearControlesTemporales(alCambiarFecha) {
   let temporizador = null;
   let observadorVelocidad = null;
 
+  // Sincronizo el estado habilitado, los textos y los atributos accesibles de todos los controles temporales.
   function actualizar() {
     const disponible = fechas.length > 0;
     fechaInput.disabled = !disponible;
@@ -40,12 +44,14 @@ export function crearControlesTemporales(alCambiarFecha) {
     fechaTexto.textContent = `${fechaLegible.format(new Date(`${fechas[indice]}T00:00:00Z`))} · 00:00 TDB`;
   }
 
+  // Detengo la reproducción automática si está activa y actualizo el estado visual de los botones.
   function detener() {
     if (temporizador !== null) clearInterval(temporizador);
     temporizador = null;
     actualizar();
   }
 
+  // Cambio a una fecha válida del conjunto disponible, notifico a la escena y detengo el avance al llegar al extremo final.
   function establecerFecha(fecha) {
     const nuevoIndice = fechas.indexOf(fecha);
     if (nuevoIndice < 0) {
@@ -59,6 +65,7 @@ export function crearControlesTemporales(alCambiarFecha) {
     return true;
   }
 
+  // Actualizo el indicador de fecha sin disparar el callback principal, útil cuando otra reproducción sincroniza el reloj.
   function sincronizarFechaSilenciosa(fecha, textoEstado = null, etiquetaHoraTdb = null) {
     const nuevoIndice = fechas.indexOf(fecha);
     if (nuevoIndice >= 0) indice = nuevoIndice;
@@ -71,8 +78,8 @@ export function crearControlesTemporales(alCambiarFecha) {
     }
   }
 
+  // Inicio el temporizador de reproducción avanzando una muestra diaria por pulso y deteniéndolo si ocurre algún error de datos.
   function iniciarTemporizador() {
-    // Cada pulso avanza una muestra diaria; la velocidad cambia el intervalo entre pulsos.
     if (temporizador !== null) clearInterval(temporizador);
     temporizador = setInterval(() => {
       if (indice + 1 >= fechas.length) {
@@ -89,6 +96,7 @@ export function crearControlesTemporales(alCambiarFecha) {
     actualizar();
   }
 
+  // Conecto los eventos de navegación paso a paso, entrada manual de fecha, barra deslizante, reproducción y velocidad.
   anterior.addEventListener('click', () => { detener(); establecerFecha(fechas[indice - 1]); });
   siguiente.addEventListener('click', () => { detener(); establecerFecha(fechas[indice + 1]); });
   fechaInput.addEventListener('change', () => {
@@ -111,6 +119,7 @@ export function crearControlesTemporales(alCambiarFecha) {
     observadorVelocidad?.(Number(velocidad.value) || 1);
   });
 
+  // Valido la cobertura completa de fechas diarias en las efemérides y configuro los límites de la barra y del selector.
   function configurar(datos, fechaInicial) {
     const inicio = Date.parse(`${datos.metadatos.inicio}T00:00:00Z`);
     const fin = Date.parse(`${datos.metadatos.fin}T00:00:00Z`);
@@ -118,7 +127,7 @@ export function crearControlesTemporales(alCambiarFecha) {
       throw new Error('El intervalo de fechas de Horizons no es válido.');
     }
 
-    // El control de fecha enumera días civiles; las muestras siguen etiquetadas en TDB.
+    // Recorro los días civiles del intervalo verificando cada muestra etiquetada en TDB.
     const disponibles = [];
     for (let dia = inicio; dia <= fin; dia += MILISEGUNDOS_DIA) {
       const fecha = new Date(dia).toISOString().slice(0, 10);

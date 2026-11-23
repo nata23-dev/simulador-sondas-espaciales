@@ -1,13 +1,13 @@
-// Etapa 12E — dinámica traslacional de masa puntual para el ascenso desde la superficie terrestre.
-// Estado integrado (8 componentes, marco inercial ECI-L, km, km/s, kg):  [x, y, z, vx, vy, vz, m, Δv_acum]
+// Aquí modelo la dinámica traslacional de masa puntual para el ascenso desde la superficie terrestre.
+// Integro un estado de 8 componentes en el marco inercial ECI-L (km, km/s, kg, s): [x, y, z, vx, vy, vz, m, Δv_acum]
 //   dr/dt = v
 //   dv/dt = a_grav + a_empuje + a_arrastre
-//   a_grav    = −GM·r/|r|³
-//   a_empuje  = F(p)·û/m           [F en N, m en kg → m/s²; ÷1000 → km/s²]
-//   a_arrastre= −(q·Cd·A/m)·v̂_rel  [q = ½ρ v_rel² en Pa, A en m²; ÷1000 → km/s²]
-//   v_rel     = v − ω×r  (velocidad respecto a la atmósfera corrotante)
-//   dm/dt     = −F_vac/(Isp_vac·g0) en un encendido, 0 en caso contrario;  dΔv/dt = |a_empuje| (km/s)
-// Se reutiliza integrateDopri54 y los errores de FiniteThrustDynamics.
+//   a_grav     = −GM·r/|r|³
+//   a_empuje   = F(p)·û/m            [F en N, m en kg → m/s²; divido por 1000 → km/s²]
+//   a_arrastre = −(q·Cd·A/m)·v̂_rel   [q = ½ρ v_rel² en Pa, A en m²; divido por 1000 → km/s²]
+//   v_rel      = v − ω×r  (velocidad relativa a la atmósfera corrotante)
+//   dm/dt      = −F_vac/(Isp_vac·g0) con motor encendido (0 si está apagado); dΔv/dt = |a_empuje| (km/s)
+// Reutilizo el integrador DOPRI54 y la clase de error de FiniteThrustDynamics.
 import { integrateDopri54 } from '../science/NumericalIntegrator.js';
 import { FiniteThrustError } from './FiniteThrustDynamics.js';
 import { EARTH_GM_KM3_S2, EARTH_ROTATION_RATE_RAD_S, corotatingVelocityKmS, geodeticFromPosition, horizontalDirection, localFrame, norm3, dot3, unit3 } from './LaunchEarth.js';
@@ -15,14 +15,16 @@ import { atmosphereAt } from './LaunchAtmosphere.js';
 import { massFlowKgS, thrustAt } from './LaunchVehicle.js';
 
 const DEG = Math.PI / 180;
+// Tolerancias del integrador DOPRI54 sobre posición (km), velocidad (km/s), masa (kg) y Δv acumulado (km/s).
 export const LAUNCH_ABS_TOL = [1e-6, 1e-6, 1e-6, 1e-9, 1e-9, 1e-9, 1e-6, 1e-12];
 export const LAUNCH_REL_TOL = 1e-10;
 
+// Construyo un entorno físico inmutable para el ascenso (con o sin atmósfera y rotación terrestre).
 export function createEnvironment({ atmosphere = true, rotation = true, mu = EARTH_GM_KM3_S2, omega = EARTH_ROTATION_RATE_RAD_S } = {}) {
   return Object.freeze({ atmosphere, rotation, mu, omega: rotation ? omega : 0 });
 }
 
-// ---- Programa de orientación del empuje (ley de guiado idealizada, sin dinámica de actitud) -----------------
+// Calculo la dirección unitaria de empuje según la ley de guiado idealizada (sin dinámica de actitud del cuerpo rígido).
 export function guidanceDirection(spec, t, position, velocity, env) {
   const frame = localFrame(position);
   const horizontal = az => horizontalDirection(frame, az);
@@ -48,13 +50,14 @@ export function guidanceDirection(spec, t, position, velocity, env) {
     default: throw new FiniteThrustError('INVALID_DIRECTION', 'Modo de guiado desconocido.');
   }
 }
+// Resto la velocidad de corrotación terrestre para obtener la velocidad del vehículo respecto al aire (km/s).
 export function relativeVelocityKmS(position, velocity, env) {
   const w = corotatingVelocityKmS(position, env.omega);
   return [velocity[0] - w[0], velocity[1] - w[1], velocity[2] - w[2]];
 }
 
-// ---- Fuerzas (una sola implementación para la integración y la telemetría) ------------------------------
-// cfg = { stage|null (motor encendido), guidance: spec|null, aero: { areaM2, cd } }
+// Evalúo gravedad, arrastre aerodinámico y empuje en una única implementación compartida por integración y telemetría.
+// Recibo cfg = { stage|null (motor encendido), guidance: spec|null, aero: { areaM2, cd } }.
 export function evaluateForces(env, cfg, t, state) {
   const r = [state[0], state[1], state[2]], v = [state[3], state[4], state[5]], m = state[6];
   if (!(m > 0) || !Number.isFinite(m)) throw new FiniteThrustError('INVALID_MASS', 'Masa no positiva o no finita.');
@@ -64,10 +67,10 @@ export function evaluateForces(env, cfg, t, state) {
   const altitudeKm = geodeticFromPosition(r).altitudeKm;
   const atm = env.atmosphere ? atmosphereAt(altitudeKm) : { densityKgM3: 0, pressurePa: 0 };
   const rel = relativeVelocityKmS(r, v, env), relSpeedKmS = norm3(rel);
-  const q = 0.5 * atm.densityKgM3 * (relSpeedKmS * 1000) ** 2; // Pa
+  const q = 0.5 * atm.densityKgM3 * (relSpeedKmS * 1000) ** 2; // Presión dinámica en Pa.
   let drag = [0, 0, 0];
   if (q > 0 && relSpeedKmS > 0 && cfg.aero) {
-    const dragN = q * cfg.aero.cd * cfg.aero.areaM2; // N, opuesto a v_rel
+    const dragN = q * cfg.aero.cd * cfg.aero.areaM2; // Fuerza de arrastre en N, opuesta a v_rel.
     drag = rel.map(x => -dragN / m / 1000 * x / relSpeedKmS);
   }
   let thrust = [0, 0, 0], thrustN = 0, flow = 0, direction = null;
@@ -81,6 +84,7 @@ export function evaluateForces(env, cfg, t, state) {
     dynamicPressurePa: q, relativeVelocityKmS: rel, relativeSpeedKmS: relSpeedKmS, massKg: m };
 }
 
+// Construyo la función derivada dy/dt de 8 componentes que alimenta al integrador DOPRI54.
 export function makeDerivative(env, cfg) {
   return (t, s, out) => {
     const f = evaluateForces(env, cfg, t, s);
@@ -91,12 +95,13 @@ export function makeDerivative(env, cfg) {
   };
 }
 
-// ---- Integración de un tramo con detección de eventos --------------------------------------------------
-// stopWhen(state, t) → true detiene el tramo en el primer estado que lo cumple y se refina por bisección.
+// Envuelvo integrateDopri54 con las tolerancias y límites de paso del ascenso.
 const integrate = (derivative, state, t0, t1, maxStepSeconds, record, shouldAbort = null) => integrateDopri54({
   derivative, initialState: state, startSeconds: t0, targetSeconds: t1, initialStepSeconds: Math.min(1, t1 - t0), minStepSeconds: 1e-9,
   maxStepSeconds: Math.min(maxStepSeconds, Math.max(t1 - t0, 1e-9)), absTol: LAUNCH_ABS_TOL, relTol: LAUNCH_REL_TOL, recordSteps: record, shouldAbort });
 
+// Integro un tramo del lanzamiento entre t0 y t1 vigilando impacto con la superficie o un evento stopWhen(state, t),
+// y cuando salta un evento refino su instante exacto por bisección.
 export function runSegment({ env, cfg, state, t0, t1, maxStepSeconds = 2, stopWhen = null, stopImpact = true }) {
   if (!(t1 >= t0)) throw new FiniteThrustError('INVALID_CONFIGURATION', 'Tramo con tiempo final anterior al inicial.');
   const derivative = makeDerivative(env, cfg);
@@ -115,8 +120,8 @@ export function runSegment({ env, cfg, state, t0, t1, maxStepSeconds = 2, stopWh
   }
   const reason = result.abortReason;
   const last = knots.at(-1);
-  if (knots.length === 1) return { knots, state: new Float64Array(last.state), time: last.elapsedSeconds, stop: reason, stats }; // evento ya cumplido al inicio
-  // Refinamiento: lo = último estado sin evento, hi = primer estado con evento.
+  if (knots.length === 1) return { knots, state: new Float64Array(last.state), time: last.elapsedSeconds, stop: reason, stats }; // Si el evento ya se cumple al inicio, detengo de inmediato.
+  // Refino el instante del evento por bisección entre el último nudo previo (lo) y el primer nudo disparado (hi).
   let lo = knots.at(-2), hi = { elapsedSeconds: last.elapsedSeconds, state: new Float64Array(last.state) };
   for (let i = 0; i < 80 && hi.elapsedSeconds - lo.elapsedSeconds > 1e-7; i++) {
     const mid = (lo.elapsedSeconds + hi.elapsedSeconds) / 2;
@@ -129,4 +134,5 @@ export function runSegment({ env, cfg, state, t0, t1, maxStepSeconds = 2, stopWh
   else refined[refined.length - 1] = { elapsedSeconds: hi.elapsedSeconds, state: hi.state };
   return { knots: refined, state: new Float64Array(hi.state), time: hi.elapsedSeconds, stop: reason, stats };
 }
+// Devuelvo estadísticas nulas para tramos de duración cero.
 const zeroStats = () => ({ acceptedSteps: 0, rejectedSteps: 0, functionEvaluations: 0, minStepSeconds: 0, maxStepSeconds: 0 });

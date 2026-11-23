@@ -1,46 +1,44 @@
-// 17.1 — Reproducción de la misión planificada en el Sistema Solar principal.
-//
-// Adaptador entre el Centro de Misión del laboratorio (reloj, paneles, eventos y telemetría) y la escena principal
-// (SolarSystem.js). No calcula física ni inventa estados:
-//   · la sonda toma, en cada instante, el estado heliocéntrico que ya calculó la misión (Kepler exacto en tramos balísticos,
-//     nudos DOPRI54 con Hermite en encendidos), convertido al marco del Sol con las mismas efemérides y la misma época TDB;
-//   · los ocho planetas se colocan con las efemérides interplanetarias (ICRF eclíptico J2000, centro del Sol, TDB) en esa
-//     misma época. La Tierra y el destino usan exactamente la ventana del cálculo; en los planetas exteriores el destino es el
-//     baricentro del sistema, igual que en el cálculo, para que la órbita de llegada quede centrada en el cuerpo dibujado;
-//   · si algún planeta no tiene cobertura en todo el intervalo de la misión, la escena principal no se usa (no se extrapola);
-//   · 23: en las misiones con un satélite galileano (C1/C2), Ío, Europa, Ganímedes y Calisto se dibujan con la misma ventana de
-//     Horizons que usó el cálculo (centro: baricentro del sistema de Júpiter, el mismo punto en el que se dibuja Júpiter), solo
-//     dentro de su cobertura: fuera de ella no se dibujan.
-// Ejes y escala: los de la escena principal, (x,y,z) → (x,z,-y) y 32 unidades por AU (physicalPositionKmToScene).
+/**
+ * En este módulo adapto la reproducción de una misión planificada en el
+ * laboratorio para dibujarla directamente dentro de la escena principal del
+ * Sistema Solar (`SolarSystem.js`).
+ * No recalculo física ni extrapolo datos:
+ *   · Tomo el estado heliocéntrico ya calculado para la sonda (Kepler en tramos
+ *     balísticos, nudos DOPRI54 con Hermite en encendidos) en el marco del Sol.
+ *   · Sitúo los ocho planetas con las efemérides interplanetarias en el marco
+ *     eclíptico J2000/ICRF centrado en el Sol (época TDB). Para la Tierra y el
+ *     destino reutilizo exactamente la ventana del cálculo (usando el baricentro
+ *     del sistema en los planetas exteriores para alinear la órbita de llegada).
+ *   · En misiones con satélites galileanos, coloco Ío, Europa, Ganímedes y Calisto
+ *     con la misma ventana de Horizons centrada en el baricentro de Júpiter,
+ *     ocultándolos fuera de su cobertura verificada.
+ * Ejes y escala: convención de la escena principal `(x, y, z) -> (x, z, -y)` a
+ * 32 unidades por AU mediante `physicalPositionKmToScene`.
+ */
 import { physicalPositionKmToScene } from './ProbeVisualAdapter.js';
 import { sampleIntegratedExecution, autoContextAt } from '../lab/IntegratedMissionPlayback.js';
 import { MOON_WINDOW_KEYS } from '../lab/IntegratedMission.js';
 import { sampleInterplanetaryExecution } from '../lab/InterplanetaryPlayback.js';
 
 export const MAIN_SCENE_CAMERA_MODES = Object.freeze(['overview', 'exterior', 'destination']);
-// Cuerpos de la escena principal y su identificador de efemérides (centro del planeta).
+// Relaciono cada planeta de la escena principal con su identificador NAIF de efemérides (centro del cuerpo).
 export const MAIN_SCENE_PLANETS = Object.freeze([['Mercurio', '199'], ['Venus', '299'], ['Tierra', '399'], ['Marte', '499'],
   ['Jupiter', '599'], ['Saturno', '699'], ['Urano', '799'], ['Neptuno', '899']]);
 const PLANET_OF_BARYCENTER = Object.freeze({ '5': '599', '6': '699', '7': '799', '8': '899' });
-// Vista general: radios de los discos que deben quedar en el cuadro (unidades de escena; 32 = 1 AU). Solo encuadre.
-// Los planetas siguen moviéndose durante la reproducción: la Tierra y el destino entran con su recorrido en toda la misión.
+// Defino radios de encuadre (en unidades de escena, 32 = 1 AU) para que la vista general abarque trayectoria, Tierra y destino.
 const OVERVIEW_TRAJECTORY_RADIUS = 0.05, OVERVIEW_BODY_RADIUS = 0.35, OVERVIEW_MAX_TRAJECTORY_POINTS = 96, OVERVIEW_BODY_EPOCHS = 24;
-// Cerca del destino (tramos planetocéntricos) la nave ampliada se reduce para no tapar el planeta, que está a escala 1:1.
+// Reduzco el factor visual de la nave en tramos planetocéntricos para que no tape el planeta a escala 1:1.
 export const NEAR_BODY_PROBE_SCALE = 0.1;
-// 23: cerca del satélite (radio de Europa ≈ 1 561 km, sobrevuelo a ≈ 100 km) la nave se reduce más: sin enfocar mide unas decenas
-// de km y no atraviesa la superficie dibujada; enfocada sigue por encima del plano cercano de la cámara (4·10⁻⁵ unidades).
+// Reduzco aún más la nave cerca de un satélite galileano (radio de Europa ≈ 1 561 km) para evitar que atraviese su superficie sin desaparecer bajo el plano cercano.
 export const NEAR_MOON_PROBE_SCALE = 0.03;
-// Satélites de la ventana galileana: clave de la ventana = clave de la escena (MoonVisuals). Centro de la ventana: baricentro 5.
+// Claves de los satélites galileanos compartidas con `MoonVisuals`, referidas al baricentro de Júpiter ('5').
 export const MAIN_SCENE_MOONS = Object.freeze(Object.values(MOON_WINDOW_KEYS));
 const MOON_PARENT_BARYCENTER = '5';
 const SCIENTIFIC_SCALE = 'cientifica';
-// Las efemérides y los tramos dan [x, y, z] en km; la conversión de ejes de la escena espera { x, y, z }.
+// Acepto tanto tuplas `[x, y, z]` como objetos `{ x, y, z }` en km y los paso a coordenadas de escena.
 export const kmToScene = p => physicalPositionKmToScene(Array.isArray(p) ? { x: p[0], y: p[1], z: p[2] } : p);
 
-/**
- * ¿Puede reproducirse esta ejecución en el Sistema Solar principal? Las geocéntricas y los descensos no. Las de un satélite
- * galileano sí (23), si traen la ventana de satélites del cálculo centrada en el baricentro de Júpiter.
- */
+// Compruebo si una ejecución del laboratorio puede representarse en el Sistema Solar principal o debe quedarse en la vista local del Centro de Misión.
 export function mainSceneSupport(execution) {
   if (!execution) return { ok: false, reason: 'Sin misión en reproducción.' };
   if (execution.kind === 'interplanetary') return { ok: true };
@@ -60,12 +58,7 @@ export function mainSceneSupport(execution) {
   return { ok: true };
 }
 
-/**
- * 23: estados de los satélites galileanos para la escena principal en el instante `jdTdb` (TDB), con la ventana de la misión.
- * Devuelve { Clave: { positionSceneOffset, positionKm, jdTdb, bodyId, centerId } } solo con los disponibles: fuera de la
- * cobertura de la ventana un satélite no aparece (no se extrapola). `positionSceneOffset` va en los ejes eclípticos y la escala de
- * la escena (la conversión de ejes la hace MoonVisuals al sumarlo al cuerpo padre, como en exploración).
- */
+// Evalúo los desplazamientos de los satélites galileanos respecto al baricentro de Júpiter en `jdTdb`, omitiendo los que quedan fuera de cobertura.
 export function moonSceneStates(execution, jdTdb) {
   const moons = execution?.kind === 'integrated' && execution.mission.moonId ? execution.data?.moons : null;
   if (!moons || moons.centerId !== MOON_PARENT_BARYCENTER) return {};
@@ -75,12 +68,13 @@ export function moonSceneStates(execution, jdTdb) {
     const state = moons.stateAt(key, jdTdb);
     if (state?.status !== 'available') continue;
     const s = kmToScene(state.positionKm);
+    // Devuelvo el desplazamiento en ejes eclípticos ya escalados porque `MoonVisuals` aplica la rotación de ejes al sumarlo al planeta padre.
     states[key] = Object.freeze({ positionSceneOffset: [s.x, -s.z, s.y], positionKm: state.positionKm, jdTdb, bodyId: state.id, centerId: moons.centerId });
   }
   return states;
 }
 
-/** Identificadores de efemérides que usa la ejecución para la Tierra/origen y el destino (los demás se cargan aparte). */
+// Identifico qué cuerpos ya vienen resueltos en la ventana propia de la ejecución (origen y destino) para no duplicarlos con el proveedor externo.
 export function missionBodies(execution) {
   if (execution.kind === 'integrated') {
     const tgt = execution.mission.target;
@@ -95,14 +89,14 @@ export function missionBodies(execution) {
 export const missionStartJd = execution => execution.kind === 'integrated' ? execution.mission.departureJdTdb : execution.result.departureJdTdb;
 export const missionTrajectory = execution => execution.kind === 'integrated' ? execution.contexts.helio.transfer.trajectory : execution.transfer.trajectory;
 
-/** Posición heliocéntrica (km) de la sonda en el instante de misión, siempre en el marco del Sol. */
+// Obtengo la posición heliocéntrica en km de la sonda para el segundo de misión indicado.
 export function heliocentricProbePositionKm(execution, elapsedSeconds) {
   return execution.kind === 'integrated'
     ? sampleIntegratedExecution(execution, elapsedSeconds, 'helio').positionKm
     : sampleInterplanetaryExecution(execution, elapsedSeconds).positionKm;
 }
 
-/** Vértices (Float32, escena principal) y tiempos (Float64, s de misión) de la trayectoria calculada. */
+// Convierto la trayectoria calculada en búferes tipados (`Float32Array` de vértices de escena y `Float64Array` de tiempos en segundos).
 export function trajectoryToScene(execution) {
   const points = missionTrajectory(execution);
   const vertices = new Float32Array(points.length * 3), times = new Float64Array(points.length);
@@ -114,15 +108,13 @@ export function trajectoryToScene(execution) {
   return { vertices, times };
 }
 
-/**
- * `scene`: API de createSolarSystem. `loadEphemeris()`: proveedor de efemérides interplanetarias (createInterplanetaryEphemeris).
- * `createModel(design)`: modelo 3D de la sonda ({ object, ready, dispose }). `onRelease()`: la aplicación restaura su escena.
- */
+// Creo el controlador que toma posesión temporal de la escena principal para reproducir una misión del laboratorio y la restaura al salir.
 export function createSolarSystemMissionView({ scene, loadEphemeris, createModel = null, onRelease = () => {}, onModel = () => {} }) {
   let execution = null, prepared = null, token = 0, visible = false, controlling = false;
   let cameraMode = 'overview', elapsed = 0, previousScale = null, zoneProvider = null, lastError = null, modelStatus = null;
   let moonsShown = [], framedFocus = null;
 
+  // Evalúo la posición de los ocho planetas en `jdTdb`, lanzando un error si falta cobertura para impedir extrapolaciones.
   function planetStates(jdTdb) {
     const states = {};
     for (const [name, planetId] of MAIN_SCENE_PLANETS) {
@@ -134,13 +126,14 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
     return states;
   }
 
-  /** Cuerpo que encuadra la cámara de destino: el satélite durante su fase (23) o el planeta de destino. */
+  // Determino si la cámara de destino debe encuadrar el satélite objetivo durante su fase o el planeta principal.
   function destinationFocus() {
     if (!prepared) return null;
     const ctx = execution.kind === 'integrated' ? autoContextAt(execution, elapsed) : 'helio';
     return prepared.moonKey && ctx === 'moon' && moonsShown.includes(prepared.moonKey) ? prepared.moonKey : prepared.destinationScene;
   }
 
+  // Sincronizo planetas, satélites galileanos, posición y escala visual de la sonda, y el foco de cámara para el instante `elapsed`.
   function apply() {
     if (!controlling || !prepared) return;
     const jdTdb = prepared.startJd + elapsed / 86400;
@@ -154,17 +147,14 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
       scene.actualizarEstadoSonda(kmToScene(heliocentricProbePositionKm(execution, elapsed)), elapsed);
       const ctx = execution.kind === 'integrated' ? autoContextAt(execution, elapsed) : 'helio';
       scene.establecerFactorEscalaSonda(ctx === 'moon' ? NEAR_MOON_PROBE_SCALE : ctx !== 'helio' ? NEAR_BODY_PROBE_SCALE : 1);
-      // La cámara de destino pasa del planeta al satélite (y vuelve) al cambiar de fase.
+      // Reencuadro automáticamente cuando la cámara de destino cambia entre la fase planetaria y la fase lunar.
       const focus = destinationFocus();
       if (cameraMode === 'destination' && focus !== framedFocus) { framedFocus = focus; if (focus) scene.encuadrarDestinoConSonda(focus); }
       lastError = null;
     } catch (error) { lastError = error.message; }
   }
 
-  /**
-   * Discos fijos de la vista general (unidades de escena): la trayectoria calculada (muestreada) y el recorrido de la Tierra y
-   * del destino durante la misión, con los mismos estados que la reproducción. Así el encuadre sigue valiendo mientras avanza.
-   */
+  // Precalculo los discos de referencia estáticos (muestreo de trayectoria + recorrido orbital de origen y destino) para estabilizar la vista general.
   function overviewStaticBodies(trajectory, bodies, startJd, endJd) {
     const v = trajectory.vertices, n = v.length / 3, step = Math.max(1, Math.ceil(n / OVERVIEW_MAX_TRAJECTORY_POINTS)), list = [];
     for (let i = 0; i < n; i += step) list.push({ x: v[i * 3], y: v[i * 3 + 1], z: v[i * 3 + 2], radio: OVERVIEW_TRAJECTORY_RADIUS });
@@ -178,13 +168,14 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
     return list;
   }
 
-  /** Discos de la vista general: los fijos de la misión y la sonda en su posición actual. */
+  // Añado la posición instantánea de la sonda a los discos fijos de la vista general para el cálculo del encuadre.
   function overviewBodies() {
     if (!prepared) return [];
     const probe = kmToScene(heliocentricProbePositionKm(execution, elapsed));
     return [...prepared.overview, { x: probe.x, y: probe.y, z: probe.z, radio: OVERVIEW_BODY_RADIUS }];
   }
 
+  // Cambio entre vista general, seguimiento exterior de la sonda y encuadre del destino.
   function setCameraMode(mode) {
     if (!MAIN_SCENE_CAMERA_MODES.includes(mode)) return false;
     cameraMode = mode;
@@ -195,13 +186,14 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
     return true;
   }
 
+  // Tomo el control de la escena principal: fuerzo escala 1:1, oculto las lunas de 2026, configuro sonda/trayectoria y precompilo shaders.
   function take() {
     if (controlling || !prepared) return;
     controlling = true;
     previousScale = scene.modoEscalaActual();
-    // Escala 1:1 de radios: con planetas ampliados la órbita de llegada quedaría dentro de la esfera del destino.
+    // Uso radios científicos 1:1 para que la órbita de llegada no quede sepultada dentro de una esfera planetaria ampliada.
     if (previousScale !== SCIENTIFIC_SCALE) scene.establecerModoEscala(SCIENTIFIC_SCALE);
-    // Las lunas de exploración (2026) no valen para la época de la misión: se ocultan; las galileanas de la misión las pone apply().
+    // Limpio las lunas de exploración (2026) antes de dibujar las galileanas en la época de la misión.
     moonsShown = [];
     scene.actualizarLunas({}, false);
     scene.configurarSondaMision({ nombre: prepared.name, modelo: prepared.model?.object ?? null });
@@ -210,15 +202,17 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
     apply();
     scene.mostrarTrayectoriaSonda(true);
     setCameraMode(cameraMode);
-    // 26: el modelo de la sonda y las líneas de la misión se compilan en paralelo antes de dibujarse (sin bloquear la página).
+    // Solicito compilación asíncrona de los shaders del modelo y las líneas para evitar bloqueos en el primer fotograma.
     scene.precompilarEscena?.();
   }
 
+  // Libero el control de la escena principal, devuelvo escala y cámara a su estado previo y aviso a la aplicación para restaurar sus efemérides.
   function release() {
     if (!controlling) return;
     controlling = false;
     moonsShown = []; framedFocus = null;
-    scene.actualizarLunas({}, false); // la aplicación restaura las suyas (onRelease)
+    // Dejo las lunas vacías aquí; `onRelease` restaura las de exploración si corresponde.
+    scene.actualizarLunas({}, false);
     scene.establecerProveedorZonaEncuadre(null);
     scene.establecerFactorEscalaSonda(1);
     scene.ocultarSonda();
@@ -229,6 +223,7 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
     onRelease();
   }
 
+  // Descarto la misión cargada y libero los recursos WebGL del modelo 3D de la sonda.
   function discard() {
     release();
     prepared?.model?.dispose();
@@ -238,7 +233,7 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
   return {
     cameraModes: MAIN_SCENE_CAMERA_MODES,
     supports: mainSceneSupport,
-    /** Carga la ventana de efemérides de los ocho planetas y el modelo. Devuelve { ok, reason }. */
+    // Preparo la misión cargando la ventana de efemérides de los planetas restantes, verificando extremos y creando el modelo 3D de la sonda.
     async prepare(next, { name } = {}) {
       discard();
       const current = ++token;
@@ -250,9 +245,7 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
         const others = MAIN_SCENE_PLANETS.map(([, id]) => id).filter(id => !bodies.byPlanet[id]);
         const ephemeris = await loadEphemeris();
         if (current !== token) return { ok: false, reason: 'superseded' };
-        // 23: solo los planetas que se cargan de este proveedor. La Tierra y el destino vienen de la ventana del cálculo (en los
-        // planetas exteriores, el baricentro del sistema, que este proveedor no tiene); su cobertura en todo el intervalo la
-        // comprueba planetStates() en los dos extremos, con esa misma ventana continua.
+        // Compruebo la cobertura únicamente de los planetas pedidos al proveedor externo; origen y destino se validan en ambos extremos con la ventana propia de la misión.
         for (const id of others) {
           const cov = ephemeris.coverage(id);
           if (!cov || cov.startJdTdb > startJd || cov.endJdTdb < endJd) {
@@ -271,7 +264,8 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
         prepared = { startJd, endJd, bodies, window, destinationScene, trajectory, model, name: name ?? design?.name ?? 'Sonda',
           overview: overviewStaticBodies(trajectory, bodies, startJd, endJd), moonKey,
           moonCoverage: moonKey ? next.data.moons.coverage(moonKey) : null };
-        planetStates(startJd); planetStates(endJd); // comprobación de extremos antes de ocupar la escena
+        // Verifico ambos extremos temporales antes de ocupar la escena para asegurar continuidad completa.
+        planetStates(startJd); planetStates(endJd);
         modelStatus = model ? 'cargando' : design ? 'procedural' : 'sin-sonda';
         onModel(modelStatus);
         model?.ready.then(status => { if (prepared?.model === model) { modelStatus = status; onModel(status); } });
@@ -284,7 +278,7 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
       }
     },
     setTime(elapsedSeconds) { elapsed = elapsedSeconds; apply(); },
-    /** 23: estado de un satélite para la ficha de la escena, en la época de la misión (null si no se dibuja). */
+    // Devuelvo los datos del satélite galileano para el panel informativo en la época activa de la misión.
     moonInfoState(key) {
       if (!controlling || !prepared?.moonKey) return null;
       const jdTdb = prepared.startJd + elapsed / 86400, state = moonSceneStates(execution, jdTdb)[key];
@@ -292,7 +286,7 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
     },
     setVisible(value) { visible = Boolean(value); if (visible) take(); else release(); },
     setCameraMode,
-    /** La ventana de la escena cambió de tamaño (vista inmersiva, panel oculto, ventana): la vista general se recalcula. */
+    // Recalculo el encuadre de vista general cuando cambia el área libre del lienzo.
     reframe() { if (controlling && prepared && cameraMode === 'overview') scene.encuadrarConjuntoMision(overviewBodies); },
     getCameraMode: () => cameraMode,
     setFrameZoneProvider(fn) { zoneProvider = typeof fn === 'function' ? fn : null; if (controlling) scene.establecerProveedorZonaEncuadre(zoneProvider); },

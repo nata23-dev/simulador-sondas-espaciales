@@ -1,8 +1,12 @@
+// Aquí reúno y ordeno cronológicamente el catálogo de hitos históricos de Voyager 1 y Voyager 2
+// documentados por NASA/JPL, NSSDCA, Photojournal y el PDS Ring-Moon Systems Node.
+// Unidades y escala temporal: parto de marcas oficiales en UTC y las convierto a JD TDB (con desfases
+// TAI−UTC de IERS y TDB−UTC en segundos) para consultar y comparar sobre la línea temporal TDB del simulador.
 import { utcTimestampToTdb } from './HistoricalTime.js';
 import { VOYAGER_1_ID, VOYAGER_2_ID } from './VoyagerHistoricalMissions.js';
 
 /**
- * Clasificación explícita de acontecimientos para distinguir con rigor:
+ * Aquí clasifico explícitamente cada acontecimiento para distinguir con rigor:
  * - `launch`: instante oficial de despegue desde Cabo Cañaveral (UTC).
  * - `closest_approach`: instante exacto de máximo acercamiento planetario/satelital (periapsis).
  * - `trajectory_deflection`: cambio de plano orbital inducido por asistencia gravitacional.
@@ -25,6 +29,7 @@ export const EVENT_KIND_LABELS = Object.freeze({
   [EVENT_KINDS.RETROSPECTIVE_BOUNDARY_CROSSING]: 'Cruce de frontera confirmado retrospectivamente'
 });
 
+/** Construyo un registro homogéneo de observación fotográfica lunar en el catálogo de eventos. */
 function lunarObservation({ id, missionId, title, dateUtc, displayDateUtc, target, planet,
   description, officialUrl, photoIds = [], encounterWindowUtc = null }) {
   return {
@@ -379,6 +384,7 @@ const RAW_EVENTS = [
   }
 ];
 
+// Convierto cada fecha UTC documentada a JD TDB y congelo el catálogo ordenado cronológicamente.
 export const VOYAGER_HISTORICAL_EVENTS = Object.freeze(
   RAW_EVENTS.map(item => {
     const tdb = utcTimestampToTdb(item.dateUtc);
@@ -394,6 +400,7 @@ export const VOYAGER_HISTORICAL_EVENTS = Object.freeze(
   }).sort((a, b) => a.jdTdb - b.jdTdb)
 );
 
+/** Aquí listo los eventos históricos filtrados por misión (`voyager-1`, `voyager-2` o `both`). */
 export function listHistoricalEvents({ missionFilter = 'both' } = {}) {
   if (missionFilter === VOYAGER_1_ID || missionFilter === VOYAGER_2_ID) {
     return VOYAGER_HISTORICAL_EVENTS.filter(ev => ev.missionId === missionFilter);
@@ -401,10 +408,12 @@ export function listHistoricalEvents({ missionFilter = 'both' } = {}) {
   return VOYAGER_HISTORICAL_EVENTS;
 }
 
+/** Aquí busco un evento histórico por su identificador único y devuelvo `null` si no existe. */
 export function getHistoricalEventById(eventId) {
   return VOYAGER_HISTORICAL_EVENTS.find(ev => ev.id === eventId) ?? null;
 }
 
+/** Aquí localizo los eventos anterior, activo (dentro de la tolerancia) y siguiente respecto a `jdTdb`. */
 export function findPreviousAndNextEvents(jdTdb, { missionFilter = 'both', toleranceSeconds = 2 } = {}) {
   const list = listHistoricalEvents({ missionFilter });
   const tolDays = toleranceSeconds / 86400;

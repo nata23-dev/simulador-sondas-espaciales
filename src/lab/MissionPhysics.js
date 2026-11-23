@@ -1,3 +1,6 @@
+// Aquí calculo transferencias Tierra–Luna en el problema restringido de tres cuerpos con efeméride lunar real.
+// Uso el integrador DOPRI54 en marco geocéntrico (km, km/s, km³/s², s, JD TDB) incluyendo el término gravitatorio
+// indirecto lunar, y resuelvo el apuntado a la Luna futura mediante corrección de tiro desde una semilla de Hohmann.
 import { SOLAR_SYSTEM_GM_CATALOG } from '../science/GravitationalParameters.js';
 import { integrateDopri54 } from '../science/NumericalIntegrator.js';
 import { queryMoon } from '../science/PlanetaryMoons.js';
@@ -15,11 +18,13 @@ const unit = v => v.map(x => x / length(v));
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 const dot = (a, b) => a.reduce((sum, x, i) => sum + x * b[i], 0);
 
+// Compruebo si el intervalo [departureJd, arrivalJd] cae por completo dentro de la tabla local de efemérides lunares.
 export function hasLunarCoverage(dataset, departureJd, arrivalJd) {
   const rows = dataset?.moons?.Luna?.rows;
   return Boolean(rows?.length && departureJd >= rows[0][0] && arrivalJd <= rows.at(-1)[0]);
 }
 
+// Resuelvo el sistema lineal 3×3 del método de tiro (Jacobiano numérico) mediante eliminación gaussiana con pivoteo parcial.
 function solve3(matrix, vector) {
   const rows = matrix.map((row, i) => [...row, vector[i]]);
   for (let column = 0; column < 3; column++) {
@@ -37,6 +42,7 @@ function solve3(matrix, vector) {
   return rows.map(row => row[3]);
 }
 
+// Construyo la derivada geocéntrica Tierra–Luna (atracción terrestre, lunar directa y término indirecto lunar).
 export function restrictedDerivative(dataset, departureJd) {
   return (seconds, state, out) => {
     const moon = queryMoon(dataset, 'Luna', advanceJdTdb(departureJd, seconds));
@@ -55,6 +61,7 @@ export function restrictedDerivative(dataset, departureJd) {
   };
 }
 
+// Propago un estado cartesiano de 6 componentes [r, v] con DOPRI54 entre startSeconds y targetSeconds.
 function propagate(derivative, initialState, startSeconds, targetSeconds, recordSteps = false, maxStepSeconds = 3600) {
   const result = integrateDopri54({ derivative, initialState, startSeconds, targetSeconds,
     initialStepSeconds: 300, maxStepSeconds,
@@ -63,11 +70,9 @@ function propagate(derivative, initialState, startSeconds, targetSeconds, record
   return result;
 }
 
-// La elipse de Hohmann es la semilla de una corrección de tiro numérica.
-// El resultado final se propaga con gravedad terrestre y lunar (incluido el
-// término indirecto del marco geocéntrico) y se apunta a la Luna futura.
-// Se elige la fase y el plano de la órbita de estacionamiento; no se modela
-// una órbita de estacionamiento cuya fase inicial haya sido observada.
+// Uso la elipse de Hohmann como semilla inicial para la corrección de tiro numérica:
+// propago la solución final con gravedad terrestre y lunar (término indirecto incluido) apuntando a la Luna futura,
+// eligiendo la fase y el plano óptimos de la órbita de estacionamiento (no una fase observada de antemano).
 export function calculateLunarTransfer({ dataset, departureJd, altitudeKm, target = 'approach', targetDistanceKm = target === 'flyby' ? 20000 : 50000 }) {
   if (!Number.isFinite(departureJd) || !Number.isFinite(altitudeKm) || altitudeKm < 200 || altitudeKm > 150000) {
     throw Error('Fecha TDB o altitud fuera del intervalo de planificación (200–150 000 km).');
@@ -79,8 +84,7 @@ export function calculateLunarTransfer({ dataset, departureJd, altitudeKm, targe
   }
   if (!queryMoon(dataset, 'Luna', departureJd)) throw Error('La salida no está cubierta por las efemérides lunares locales.');
   const parkingRadiusKm = EARTH_RADIUS_KM + altitudeKm;
-  // Distancia lunar nominal de llegada: condición de apuntado geométrica.
-  // La propagación posterior sí incluye la gravedad lunar.
+  // Uso `standoffKm` como distancia geométrica de apuntado; la propagación posterior incluye la atracción lunar real.
   const standoffKm = targetDistanceKm;
   let arrivalJd = advanceJdTdb(departureJd, 4.5 * 86400);
   let moon, apogeeKm, semiMajorKm, flightSeconds;
@@ -117,6 +121,7 @@ export function calculateLunarTransfer({ dataset, departureJd, altitudeKm, targe
   };
   let aimedVelocity = [...initialVelocity];
   let residual = arrivalError(aimedVelocity);
+  // Itero por Newton–Raphson amortiguado sobre la velocidad inicial hasta reducir el error de llegada a menos de 2 km.
   for (let iteration = 0; iteration < 12 && length(residual) > 2; iteration++) {
     const epsilon = 1e-5;
     const columns = [];
@@ -134,7 +139,7 @@ export function calculateLunarTransfer({ dataset, departureJd, altitudeKm, targe
         if (length(candidateResidual) < length(residual)) {
           aimedVelocity = candidate; residual = candidateResidual; improved = true; break;
         }
-      } catch { /* Otra longitud de paso puede evitar una intercepción. */ }
+      } catch { /* Pruebo un factor menor por si este paso interceptó un cuerpo. */ }
     }
     if (!improved) throw Error('No converge el apuntado hacia la Luna con este modelo.');
   }
@@ -161,6 +166,7 @@ export function calculateLunarTransfer({ dataset, departureJd, altitudeKm, targe
   }
   let flybyResolved = false;
   if (target === 'flyby') {
+    // Extiendo la propagación un día adicional tras la llegada para resolver el paso mínimo y la salida del sobrevuelo.
     const postEnd = advanceJdTdb(arrivalJd, 86400);
     if (!hasLunarCoverage(dataset, departureJd, postEnd)) throw Error('El sobrevuelo requiere un día adicional de efemérides tras la llegada.');
     const post = propagate(derivative, arrivalState, flightSeconds, flightSeconds + 86400, true, 300);

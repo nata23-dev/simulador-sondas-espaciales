@@ -1,7 +1,6 @@
-// Etapa 12D — reproducción y telemetría de una trayectoria de empuje finito ya
-// calculada. La reproducción es una función pura del instante: no integra, no
-// consume combustible y muestrea los estados integrados (Hermite para posición
-// y velocidad; masa lineal, exacta dentro de cada tramo de flujo constante).
+// En este módulo reproduzco y genero la telemetría instantánea de una trayectoria de empuje finito ya calculada.
+// Evalúo cada instante como función pura: no vuelvo a integrar ni modifico el consumo de combustible, sino que muestreo
+// los nudos DOPRI54 con interpolación de Hermite en posición/velocidad e interpolación lineal exacta en masa por tramo.
 import { advanceJdTdb } from '../science/Time.js';
 import { queryMoon } from '../science/PlanetaryMoons.js';
 import { calculateEngineering } from './ProbeEngineering.js';
@@ -13,6 +12,7 @@ import { accelerationKmS2, kmS2ToMS2, tsiolkovskyDeltaVMS } from './FiniteThrust
 const norm = v => Math.hypot(...v);
 const subtract = (a, b) => a.map((x, i) => x - b[i]);
 
+// Valido el resultado, su vigencia y la cobertura lunar para construir un paquete inmutable de reproducción.
 export function createFiniteThrustExecution({ result, design, dataset, name = 'Maniobra de empuje finito' }) {
   if (result?.kind !== 'finite-thrust') throw Error('El resultado no corresponde a una maniobra de empuje finito.');
   if (!design || !dataset?.moons?.Luna) throw Error('Falta la sonda y la efeméride lunar validada.');
@@ -49,7 +49,7 @@ export function createFiniteThrustExecution({ result, design, dataset, name = 'M
   return Object.freeze({
     kind: 'finite-thrust', name, design: structuredClone(design), dataset, options, durationSeconds, events,
     result: structuredClone(result), propagation: structuredClone(propagation),
-    // Forma compatible con MissionExecutionView: solo geometría de presentación.
+    // Adapto el resumen geométrico al contrato que espera MissionExecutionView sin introducir cálculos extra.
     transfer: { model: result.model, target: 'finite-thrust', departureJd: result.departureJd, flightSeconds: durationSeconds, trajectory,
       initialPositionKm: knots[0].positionKm, circularVelocityKmS: knots[0].velocityKmS,
       arrivalPositionKm: knots.at(-1).positionKm, moonArrivalPositionKm: finalMoon.positionKm },
@@ -57,6 +57,7 @@ export function createFiniteThrustExecution({ result, design, dataset, name = 'M
   });
 }
 
+// Muestreo el estado orbital, la masa, el empuje activo y la posición lunar en el instante solicitado.
 export function sampleFiniteThrustExecution(execution, elapsedSeconds) {
   if (execution?.kind !== 'finite-thrust' || !Number.isFinite(elapsedSeconds) || elapsedSeconds < 0 || elapsedSeconds > execution.durationSeconds) {
     throw Error('Instante fuera de la trayectoria calculada.');
@@ -73,7 +74,7 @@ export function sampleFiniteThrustExecution(execution, elapsedSeconds) {
   if (!moon) throw Error('No hay estado lunar para este instante; reproducción interrumpida.');
   const system = execution.result.system, engine = system.engine;
   const initialMassKg = execution.propagation.initialMassKg, dryMassKg = execution.propagation.dryMassKg;
-  // Encendido activo: inicio inclusivo, fin exclusivo.
+  // Considero activo un encendido en el intervalo semiabierto [inicio, fin) para evitar ambigüedades en la frontera de apagado.
   const burn = execution.propagation.burns.find(item => item.status !== 'skipped' && elapsedSeconds >= item.effectiveStartSeconds && elapsedSeconds < item.effectiveEndSeconds) ?? null;
   const thrustN = burn ? burn.thrustN : 0;
   const accelerationMS2 = burn ? kmS2ToMS2(accelerationKmS2(thrustN, massKg)) : 0;
@@ -96,6 +97,7 @@ export function sampleFiniteThrustExecution(execution, elapsedSeconds) {
   };
 }
 
+// Convierto la muestra instantánea en el bloque de telemetría (estados, altitudes, propulsión y balance eléctrico nominal).
 export function deriveFiniteThrustTelemetry(execution, sample) {
   if (!execution || !sample) throw Error('Falta un estado de misión reproducible.');
   const engineering = execution.evaluation.engineering;

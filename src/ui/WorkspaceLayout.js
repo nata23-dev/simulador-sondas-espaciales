@@ -1,7 +1,9 @@
+// En este módulo organizo el espacio de trabajo principal: monto el inspector contextual con pestañas, la barra flotante
+// de cámara, el buscador de destinos, el manejo de foco en modales y la coordinación entre modos de la aplicación.
 import './workspace-layout.css';
 import { crearLayoutTemporal } from './TimelineLayout.js';
 
-// Adaptador de presentación: reutiliza los nodos y sus controladores científicos.
+// Adapto la presentación reutilizando los nodos existentes del DOM junto con sus controladores científicos.
 export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   const app = document.querySelector('#app');
   app.classList.add('workspace-ready');
@@ -25,6 +27,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   const visited = new Set();
   let previousFocus;
   const title = inspector.querySelector('#context-title');
+  // Actualizo el encabezado del inspector según la pestaña activa, el modo de la aplicación y el cuerpo o recorrido visible.
   function updateTitle() {
     const tour = document.querySelector('#guided-tour-dock');
     if (active === 'history' && tour && !tour.hidden) title.textContent = tour.querySelector('#tour-title').textContent;
@@ -40,8 +43,9 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
       title.textContent = selectedName && selectedName !== 'Planeta' ? selectedName : 'Información';
     } else title.textContent = ({ history: 'Historia Voyager', photos: 'Fotografías NASA', navigation: 'Cámaras' })[active];
   }
-  // 29: el «Menú» lo gestiona AppNavigator; aquí solo se le pide que se cierre.
+  // Pido a AppNavigator que cierre el menú principal de la cabecera mediante un evento personalizado.
   function cerrarMenu() { document.dispatchEvent(new CustomEvent('app:close-menu')); }
+  // Cambio el estado del inspector (cerrado, medio o ampliado), sincronizo atributos ARIA y notifico el redimensionado.
   function state(value) {
     if (value !== 'closed') {
       cerrarMenu();
@@ -67,11 +71,12 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
     resizeButton.setAttribute('aria-expanded', String(value === 'expanded'));
     resizeButton.querySelector('use').setAttribute('href', value === 'expanded' ? '#icon-chevron' : '#icon-expand');
     document.querySelector('#inspector-toggle').setAttribute('aria-expanded', String(value !== 'closed'));
-    // UX-01: si «Buscar» abre la paleta (aria-controls="command-palette"), su estado lo lleva la paleta, no este panel.
+    // Solo reflejo aria-expanded en el botón «Buscar» cuando controla este inspector; si controla la paleta de comandos, ella lleva ese estado.
     const search = document.querySelector('#header-search');
     if (search?.getAttribute('aria-controls') === 'context-inspector') search.setAttribute('aria-expanded', String(value !== 'closed' && active === 'explore'));
     window.dispatchEvent(new Event('resize'));
   }
+  // Activo una pestaña del inspector, sincronizo los paneles visibles y el foco por teclado, y abro el panel si corresponde.
   function select(id, open = true) {
     const changing = active !== id;
     active = id;
@@ -131,7 +136,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
     button.type = 'button'; button.dataset.destination = destination.id;
     button.dataset.destinationMode = destination.mode;
     button.textContent = destination.label;
-    // 14.1: color identificativo del cuerpo (solo presentación; los tokens --body-* están en theme.css).
+    // Asigno a cada botón de destino el color identificativo del cuerpo definido en los tokens --body-* del tema.
     button.style.setProperty('--dot', `var(--body-${destination.id}, var(--text-3, #8e8e96))`);
     button.setAttribute('aria-pressed', 'false');
     button.addEventListener('click', () => {
@@ -145,6 +150,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
     });
     results.append(button);
   }
+  // Filtro los botones de destinos según el texto escrito y el modo activo de la aplicación.
   function refreshDestinations() {
     const query = normalize(searchInput.value.trim());
     let count = 0;
@@ -165,6 +171,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   searchInput.addEventListener('input', refreshDestinations);
   const intro = document.createElement('p'); intro.className = 'context-intro';
   panes.get('telemetry').prepend(intro);
+  // Actualizo el resumen contextual de la pestaña de datos a partir del estado visible de planetas, lunas o misiones Voyager.
   function updateIntro() {
     if (app.dataset.appMode === 'historico') {
       const guided = document.querySelector('#guided-tour-dock');
@@ -265,11 +272,10 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   search.setAttribute('aria-label', 'Buscar destino');
   search.setAttribute('aria-controls', 'context-inspector');
   search.setAttribute('aria-expanded', 'false');
-  // 14.1: si la paleta de búsqueda está presente atiende la petición; si no, se usa el buscador del panel Explorar.
+  // Intento abrir primero la paleta global de búsqueda; si nadie cancela el evento, abro la pestaña Explorar y enfoco su buscador.
   search.addEventListener('click', () => { if (document.dispatchEvent(new CustomEvent('app:open-search', { cancelable: true }))) { select('explore'); searchInput.focus(); } });
   document.querySelector('.app-header').append(search);
-  // 29: herramientas y ayuda forman parte del único «Menú» de la cabecera (el panel de AppNavigator, que adopta esta sección).
-  // Antes había dos menús: «Áreas» (navegación) y «Menú» (herramientas y ayuda).
+  // Agrupo las herramientas y la ayuda en una sección que el menú unificado de la cabecera adopta como contenido.
   const tools = document.createElement('section');
   tools.id = 'main-tools'; tools.className = 'main-tools'; tools.hidden = true;
   tools.innerHTML = '<div class="tools-content"><section class="main-menu-group"><span class="menu-heading">Herramientas</span><div id="main-tool-links"></div></section><section class="main-menu-group"><span class="menu-heading">Ayuda y datos</span><div id="main-help-links"></div></section></div>';
@@ -351,7 +357,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
   function close() { state('closed'); (previousFocus?.isConnected ? previousFocus : document.querySelector('#inspector-toggle')).focus({preventScroll:true}); }
   document.querySelector('#inspector-close').addEventListener('click', close);
   document.querySelector('#inspector-expand').addEventListener('click', () => state(inspector.dataset.state === 'expanded' ? 'half' : 'expanded'));
-  // 29: al abrirse el «Menú» se cierran el inspector, «Capas» y los ajustes temporales (como antes con el menú de herramientas).
+  // Al abrirse el menú principal de la cabecera cierro el inspector, el menú de capas y los desplegables temporales.
   document.addEventListener('app:menu-open', () => {
     state('closed');
     document.querySelector('#view-menu').open = false;
@@ -397,6 +403,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
       comparatorFocus?.focus({preventScroll:true});
     }
   }).observe(comparator, {attributes:true, attributeFilter:['hidden']});
+  // Reconfiguro las pestañas visibles, los encabezados y el estado inicial del inspector cada vez que cambia el modo de la app.
   function modeChanged() {
     const historical = app.dataset.appMode === 'historico';
     document.querySelector('#brand-eyebrow').textContent = historical ? 'MISIONES HISTÓRICAS' : app.dataset.appMode === 'experimental' ? 'SIMULACIÓN EXPERIMENTAL' : 'SISTEMA SOLAR';
@@ -430,7 +437,7 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
     if (app.dataset.appMode === 'historico') return;
     select(historicalPlanet ? 'explore' : 'telemetry');
   });
-  // Modal: foco contenido y retorno al control que lo abrió.
+  // Mantengo el foco contenido dentro del visor modal de fotografías y lo devuelvo al control que lo abrió al cerrarlo.
   const modal = document.querySelector('#photo-lightbox-modal');
   let modalFocus;
   new MutationObserver(() => {

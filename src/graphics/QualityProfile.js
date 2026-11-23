@@ -1,16 +1,12 @@
-// Etapa 15 — perfiles de calidad gráfica para equipos de escritorio y móviles. Solo presentación: limitan la resolución interna
-// de render (relación de píxeles) y el nivel de detalle de las vistas WebGL; no modifican cálculos, escalas físicas ni datos.
-//
-// Etapa 27 — rendimiento adaptativo, con el objetivo de 50–60 FPS en cualquier equipo:
-//   · Detección del procesador gráfico que usa el navegador (GPU dedicada, integrada, de móvil o dibujo por software en la CPU,
-//     cuando la aceleración por hardware está desactivada o no disponible).
-//   · «Automática» parte de un perfil según ese equipo y aplica resolución dinámica: baja la resolución interna en proporción a
-//     la caída de FPS y la recupera poco a poco cuando sobra margen, con histéresis para no oscilar. Si con la resolución mínima
-//     sigue sin llegar, baja el nivel de detalle (sombras, entorno, capas, partículas).
-//   · Preferencia de GPU (alto rendimiento o ahorro de energía) para los equipos con dos procesadores gráficos.
-// Los perfiles fijos (Alta, Media, Baja, Mínima) no cambian solos: son una elección explícita.
+// En este módulo gestiono los perfiles de calidad gráfica y el rendimiento adaptativo de las vistas WebGL
+// (escritorio, móvil y renderizado por software), con el objetivo de sostener 50–60 FPS sin alterar
+// nunca cálculos físicos, escalas ni datos científicos:
+// - Detecto y clasifico el procesador gráfico activo (GPU dedicada, integrada, móvil o dibujo por software).
+// - En modo «Automática» ajusto dinámicamente la relación de píxeles por escena (con histéresis y detección
+//   de cuello de botella de CPU) y reduzco el nivel de detalle cuando ya no queda margen de resolución.
+// - Persisto el perfil elegido y la preferencia de GPU (alto rendimiento o ahorro de energía).
 
-/** Niveles de detalle, de más a menos costoso. Cada vista decide qué significa cada uno (p. ej., `ajustesLanzamiento`). */
+/** Defino los niveles de detalle ordenados de mayor a menor coste gráfico para que cada vista los interprete. */
 export const NIVELES_DETALLE = Object.freeze(['alto', 'medio', 'bajo', 'minimo']);
 
 export const QUALITY_PROFILES = Object.freeze({
@@ -28,29 +24,28 @@ export const PREFERENCIAS_GPU = Object.freeze({
 });
 const WINDOW_SECONDS = 2, SLOW_FPS = 30, SLOW_WINDOWS = 2;
 
-/** Relación de píxeles efectiva: el menor entre la del dispositivo y el tope del perfil (función pura, probada). */
+/** Calculo la relación de píxeles efectiva tomando el mínimo entre el dispositivo y el tope del perfil. */
 export function effectivePixelRatio(devicePixelRatio, cap) {
   const dpr = Number.isFinite(devicePixelRatio) && devicePixelRatio > 0 ? devicePixelRatio : 1;
   return Math.min(dpr, Number.isFinite(cap) && cap > 0 ? cap : 2);
 }
 
-/** Tope inicial del modo automático según el equipo (pantalla táctil, memoria y núcleos declarados por el navegador). */
+/** Calculo el tope inicial de relación de píxeles en modo automático según pantalla táctil, memoria y núcleos. */
 export function autoInitialCap({ coarsePointer = false, deviceMemoryGb = null, cores = null } = {}) {
   const constrained = coarsePointer || (Number.isFinite(deviceMemoryGb) && deviceMemoryGb <= 4) || (Number.isFinite(cores) && cores <= 4);
   return constrained ? 1.5 : 2;
 }
 
 /**
- * 27: clase de procesador gráfico a partir del nombre que da WebGL (WEBGL_debug_renderer_info). Función pura (probada).
- * 'software': el navegador dibuja con la CPU (SwiftShader, llvmpipe, «Microsoft Basic Render Driver»); 'movil': GPU de teléfono
- * o tableta; 'integrada': GPU del procesador (Intel, Radeon de los APU, Apple); 'dedicada': tarjeta gráfica; 'desconocida'.
+ * Clasifico el procesador gráfico reportado por WebGL (`WEBGL_debug_renderer_info`) en:
+ * 'software' (dibujo por CPU como SwiftShader o llvmpipe), 'movil', 'integrada', 'dedicada' o 'desconocida'.
  */
 export function clasificarRenderizador(nombre) {
   const t = String(nombre ?? '');
   if (!t.trim()) return 'desconocida';
   if (/swiftshader|llvmpipe|softpipe|software ?(rasterizer|renderer)|basic render|microsoft basic|mesa offscreen/i.test(t)) return 'software';
   if (/adreno|mali|powervr|videocore|apple a\d|immortalis|xclipse/i.test(t)) return 'movil';
-  // GPU de los procesadores AMD (APU): «Radeon(TM) Graphics», «Radeon 780M Graphics», «Radeon Vega 8 Graphics».
+  // Identifico las GPU integradas en procesadores AMD (APU), como «Radeon(TM) Graphics» o «Radeon 780M Graphics».
   if (/radeon(\(tm\))? (\d{3}m |vega \d+ |rx vega \d+ )?graphics|vega \d+ graphics/i.test(t)) return 'integrada';
   if (/nvidia|geforce|quadro|rtx|gtx|radeon(\(tm\))? (rx|pro|r9|r7|hd)|\barc\b|firepro/i.test(t)) return 'dedicada';
   if (/intel|uhd|iris|hd graphics|apple/i.test(t)) return 'integrada';
@@ -58,8 +53,8 @@ export function clasificarRenderizador(nombre) {
 }
 
 /**
- * 27: punto de partida del modo automático según el equipo. Función pura (probada). Devuelve el tope y el valor inicial de la
- * relación de píxeles, el mínimo al que puede bajar la resolución dinámica y el nivel de detalle inicial.
+ * Calculo el punto de partida del modo automático para el equipo detectado: tope y valor inicial de
+ * relación de píxeles, suelo mínimo para la resolución dinámica y nivel de detalle inicial.
  */
 export function perfilInicialAuto({ tipoGpu = 'desconocida', coarsePointer = false, deviceMemoryGb = null, cores = null, devicePixelRatio = 1 } = {}) {
   const dpr = Number.isFinite(devicePixelRatio) && devicePixelRatio > 0 ? devicePixelRatio : 1;
@@ -70,24 +65,24 @@ export function perfilInicialAuto({ tipoGpu = 'desconocida', coarsePointer = fal
     tope = autoInitialCap({ coarsePointer, deviceMemoryGb, cores });
     inicial = tope; detalle = tope === 2 ? 'alto' : 'medio';
   }
-  // En un móvil o un equipo modesto, la GPU dedicada o integrada no cambia que la pantalla sea pequeña y la memoria escasa.
+  // En dispositivos táctiles o modestos evito partir de detalle alto incluso con GPU dedicada o integrada.
   if (coarsePointer && detalle === 'alto') detalle = 'medio';
   const maximo = Math.min(dpr, tope);
   return Object.freeze({ tope: maximo, inicial: Math.min(maximo, inicial), minimo: Math.min(maximo, tipoGpu === 'software' ? 0.3 : 0.35), detalle });
 }
 
-/** Un nivel de detalle menos, o el mismo si ya es el mínimo (función pura, probada). */
+/** Devuelvo el siguiente nivel de detalle más económico, o el mismo si ya estoy en el mínimo. */
 export function detalleInferior(detalle) {
   const i = NIVELES_DETALLE.indexOf(detalle);
   return NIVELES_DETALLE[Math.min(NIVELES_DETALLE.length - 1, Math.max(0, i) + 1)];
 }
 
-/** Seguimiento de FPS por ventanas: devuelve true cuando conviene bajar un escalón (lógica pura, probada). */
+/** Monitorizo FPS por ventanas temporales para señalar cuándo conviene bajar un escalón de calidad. */
 export function createFrameMonitor({ windowSeconds = WINDOW_SECONDS, slowFps = SLOW_FPS, slowWindows = SLOW_WINDOWS } = {}) {
   let elapsed = 0, frames = 0, slowRun = 0;
   return {
     report(deltaSeconds) {
-      // Pestañas ocultas o pausas largas no cuentan como lentitud.
+      // Descarto pausas largas o pestañas en segundo plano para no confundirlas con lentitud sostenida.
       if (!Number.isFinite(deltaSeconds) || deltaSeconds <= 0 || deltaSeconds > 0.5) return false;
       elapsed += deltaSeconds; frames++;
       if (elapsed < windowSeconds) return false;
@@ -100,23 +95,15 @@ export function createFrameMonitor({ windowSeconds = WINDOW_SECONDS, slowFps = S
   };
 }
 
-const redondear = x => Math.round(x * 20) / 20; // pasos de 0,05: sin cambios diminutos que obliguen a redimensionar el lienzo
+// Cuantizo la relación de píxeles en pasos de 0,05 para evitar redimensionamientos diminutos del lienzo.
+const redondear = x => Math.round(x * 20) / 20;
 
 /**
- * 27: resolución dinámica (lógica pura, probada). Se le informa del intervalo de cada fotograma, de su tiempo de CPU (opcional) y
- * de los límites; por ventanas de 1 s decide la nueva relación de píxeles:
- *   · bajar: dos ventanas seguidas por debajo de `fpsMinimo` (o una muy lenta, < 60 % de él). El coste de dibujar es casi
- *     proporcional al número de píxeles, es decir, al cuadrado de la relación, así que se multiplica por √(fps / objetivo)
- *     (entre 0,55 y 0,9). La relación que falló queda como techo durante un enfriamiento que se duplica si vuelve a fallar.
- *   · subir: `ventanasSubida` ventanas seguidas por encima de `fpsSubida`, un 15 % cada vez, sin pasar del techo vigente.
- *   · límite por CPU: si la mediana del tiempo de CPU del fotograma (JavaScript y envío de órdenes) ocupa al menos
- *     `fraccionCpu` del intervalo, lo que frena no es dibujar píxeles: bajar la resolución no ayudaría. No se baja y, tras tres
- *     ventanas lentas, se pide menos detalle (`sinMargen` con `limitadoPorCpu`). Es una medida directa, no un ensayo: no se
- *     confunde con un cambio de plano que encarece la escena justo después de bajar.
- *   · `sinMargen`: ya está en el mínimo y sigue lento (tres ventanas): conviene bajar el nivel de detalle.
- * Los FPS de cada ventana salen de la mediana de sus intervalos: un tirón aislado (una carga, una compilación) no se confunde
- * con lentitud sostenida, y a 1–2 FPS (dibujo por software) los fotogramas de 0,5–1 s sí cuentan. Ignora pausas (> 1 s, pestaña
- * oculta) y las dos primeras ventanas tras `reset`.
+ * Construyo el controlador de resolución dinámica por ventanas de 1 s a partir de la mediana de intervalos:
+ * - Reduzco la relación en proporción a √(fps / objetivo) con enfriamiento exponencial del techo al caer FPS.
+ * - Subo gradualmente (+15 %) cuando se sostienen ventanas rápidas por debajo del techo vigente.
+ * - Si el cuello de botella está en CPU (`cpuMediana >= fraccionCpu * intervalo`) o ya alcancé el mínimo de
+ *   resolución durante tres ventanas lentas, solicito bajar el nivel de detalle geométrico/visual (`sinMargen`).
  */
 export function createResolutionController({ objetivo = 55, fpsMinimo = 48, fpsSubida = 57, ventana = 1, ventanasSubida = 2,
   enfriamiento = 15, calentamiento = 2, fraccionCpu = 0.75 } = {}) {
@@ -172,8 +159,8 @@ function readGpu() {
 
 let equipo = null;
 /**
- * 27: procesador gráfico que usa el navegador. Crea un contexto WebGL pequeño una sola vez: con `failIfMajorPerformanceCaveat`
- * el navegador se niega a dárselo si dibujaría por software; el nombre sale de WEBGL_debug_renderer_info cuando está disponible.
+ * Detecto una única vez el procesador gráfico que expone el navegador creando un contexto WebGL auxiliar;
+ * uso `failIfMajorPerformanceCaveat` para identificar dibujo por software y libero enseguida ese contexto.
  */
 export function detectarEquipo() {
   if (equipo) return equipo;
@@ -197,7 +184,8 @@ export function detectarEquipo() {
   equipo = Object.freeze({ nombre: nombreLegible(nombre), nombreCompleto: nombre, tipo, software: tipo === 'software', webgl: disponible });
   return equipo;
 }
-/** «ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)» → «AMD Radeon RX 6650 XT». */
+
+/** Limpio la cadena ANGLE/OpenGL/Direct3D del renderizador para mostrar un nombre legible en la interfaz. */
 export function nombreLegible(nombre) {
   const t = String(nombre ?? '').trim();
   const angle = /^ANGLE \(([^,]+),\s*(.+?)(?:\s*\(0x[0-9a-f]+\))?(?:\s+Direct3D.*|\s+OpenGL.*|\s+Vulkan.*|,\s*[^,]*)?\)$/i.exec(t);
@@ -208,9 +196,10 @@ export function nombreLegible(nombre) {
 
 let profileId = readStored();
 let gpuId = readGpu();
-let auto = null; // { tope, inicial, minimo, detalle } del equipo
-// 27: cada escena (contexto) aprende su propia resolución y su propio detalle en modo automático: la escena principal es barata
-// y el lanzamiento 3D caro; con un único estado, al volver de uno a otro se partía de una resolución que no le corresponde.
+// Guardo en caché el perfil inicial automático `{ tope, inicial, minimo, detalle }` calculado para este equipo.
+let auto = null;
+// Mantengo una resolución y un nivel de detalle aprendidos de forma independiente por cada escena (contexto)
+// para que al alternar entre la escena principal y el lanzamiento 3D cada una conserve su propio ajuste.
 export const CONTEXTO_PRINCIPAL = 'principal';
 const contextos = new Map();
 let contextoActivo = CONTEXTO_PRINCIPAL;
@@ -230,8 +219,7 @@ function perfilAuto() {
   return auto;
 }
 
-/** 26: ¿equipo de escritorio? (mismo criterio que el tope inicial del modo automático). Decide, por ejemplo, la textura del globo
- * del lanzamiento 3D en calidad automática. 27: además, que su GPU no sea de móvil ni dibuje por software. */
+/** Determino si el dispositivo corresponde a un equipo de escritorio con aceleración GPU dedicada o integrada. */
 export function equipoEscritorio() {
   return autoInitialCap(deviceInfo()) === 2 && !['software', 'movil'].includes(detectarEquipo().tipo);
 }
@@ -248,17 +236,19 @@ function currentDetalle(id) {
   c.detalle ??= perfilAuto().detalle;
   return c.detalle;
 }
-/** Aplica la relación de cada contexto a sus renderizadores y avisa con el estado de `ids` (todos si se omite). */
+
+/** Aplico la relación de píxeles vigente a cada renderizador registrado y notifico a los suscriptores. */
 function applyAll(ids = null) {
   for (const [renderer, id] of renderers) {
     const ratio = effectivePixelRatio(globalThis.devicePixelRatio, currentCap(id));
-    if (Math.abs((renderer.getPixelRatio?.() ?? -1) - ratio) > 1e-9) renderer.setPixelRatio(ratio); // vuelve a dimensionar con el tamaño vigente
+    // Solo actualizo `setPixelRatio` cuando hay un cambio real para no redimensionar el lienzo innecesariamente.
+    if (Math.abs((renderer.getPixelRatio?.() ?? -1) - ratio) > 1e-9) renderer.setPixelRatio(ratio);
   }
   const avisar = ids ?? [...new Set([contextoActivo, ...contextos.keys()])];
   for (const id of avisar) { const state = getQualityState(id); for (const listener of listeners) listener(state); }
 }
 
-/** Estado de la calidad de un contexto (por defecto, el que está dibujando ahora). */
+/** Devuelvo una instantánea inmutable del estado de calidad del contexto indicado (por defecto, el activo). */
 export function getQualityState(id = contextoActivo) {
   const a = profileId === 'auto' ? perfilAuto() : null;
   const gpu = detectarEquipo();
@@ -270,6 +260,8 @@ export function getQualityState(id = contextoActivo) {
     preferenciaGpu: gpuId
   });
 }
+
+/** Cambio y persisto el perfil de calidad gráfica, reiniciando la adaptación dinámica de los contextos. */
 export function setQualityProfile(id) {
   if (!QUALITY_PROFILES[id]) return getQualityState();
   profileId = id; store(id);
@@ -277,7 +269,8 @@ export function setQualityProfile(id) {
   applyAll();
   return getQualityState();
 }
-/** 27: preferencia de GPU para los contextos WebGL que se creen a partir de ahora (la escena principal la toma al recargar). */
+
+/** Guardo la preferencia de GPU (`powerPreference`) para los contextos WebGL que se creen a partir de ahora. */
 export function setGpuPreference(id) {
   if (!PREFERENCIAS_GPU[id]) return getQualityState();
   gpuId = id;
@@ -286,18 +279,17 @@ export function setGpuPreference(id) {
   for (const listener of listeners) listener(state);
   return state;
 }
+
 /**
- * 27: opciones de creación de un WebGLRenderer según la preferencia de GPU y el nivel de detalle: sin suavizado de bordes (MSAA)
- * con detalle bajo o mínimo, donde multiplica el trabajo por píxel. `extra` se respeta (p. ej. `canvas`, `logarithmicDepthBuffer`).
+ * Construyo las opciones de inicialización de `WebGLRenderer` combinando la preferencia de GPU con el nivel
+ * de detalle vigente: desactivo MSAA en detalle bajo o mínimo respetando las opciones adicionales de `extra`.
  */
 export function opcionesRenderizador(extra = {}, contextoId = CONTEXTO_PRINCIPAL) {
   const detalle = currentDetalle(contextoId);
   return { ...extra, antialias: (extra.antialias ?? true) && (detalle === 'alto' || detalle === 'medio'), powerPreference: PREFERENCIAS_GPU[gpuId].powerPreference };
 }
-/**
- * Registra un renderizador WebGL: recibe la relación de píxeles del perfil ahora y en cada cambio. Devuelve la baja.
- * 27: `contexto` es la escena a la que pertenece (las vistas del laboratorio dibujan dentro de la cadencia de la principal).
- */
+
+/** Registro un renderizador WebGL asociado a un contexto de escena y devuelvo su función de baja. */
 export function registerRenderer(renderer, contextoId = CONTEXTO_PRINCIPAL) {
   if (!renderer?.setPixelRatio) return () => {};
   renderers.set(renderer, contextoId);
@@ -306,19 +298,19 @@ export function registerRenderer(renderer, contextoId = CONTEXTO_PRINCIPAL) {
 }
 export function onQualityChange(listener) { listeners.add(listener); return () => listeners.delete(listener); }
 let suspensiones = 0;
+
 /**
- * 27: no adapta nada mientras `promesa` está pendiente (cargas, compilaciones, preparación del lanzamiento): sus fotogramas
- * largos no reflejan lo que cuesta dibujar. Al terminar se vuelve a medir desde cero.
+ * Suspendo la adaptación automática mientras `promesa` está en curso (cargas, compilaciones o cambios pesados)
+ * para que los fotogramas largos transitorios no distorsionen la medición; al finalizar reinicio los contadores.
  */
 export function suspenderAdaptacion(promesa) {
   suspensiones++;
   Promise.resolve(promesa).catch(() => {}).finally(() => { suspensiones = Math.max(0, suspensiones - 1); if (!suspensiones) for (const c of contextos.values()) c.controlador.reset(); });
 }
+
 /**
- * Llamado por el bucle de la escena que está dibujando, en cada fotograma que dibuja, con el intervalo entre fotogramas (s) y, si
- * lo mide, su tiempo de CPU (s). Solo actúa en modo automático: resolución dinámica y, sin margen, menos detalle.
- * 27: `contexto` identifica la escena (`principal` o, p. ej., `lanzamiento`); al cambiar de escena se vuelve a medir desde cero
- * con lo que esa escena aprendió la última vez.
+ * Recibo la duración y el tiempo de CPU de cada fotograma dibujado por un contexto y, en modo automático,
+ * ajusto dinámicamente la relación de píxeles o bajo un escalón de detalle cuando no queda margen.
  */
 export function reportFrame(deltaSeconds, { contexto: contextoId = CONTEXTO_PRINCIPAL, cpu = null } = {}) {
   if (profileId !== 'auto') return;
@@ -338,20 +330,21 @@ export function reportFrame(deltaSeconds, { contexto: contextoId = CONTEXTO_PRIN
 }
 
 const coma = x => String(Math.round(x * 100) / 100).replace('.', ',');
-/** Texto de estado de la calidad (función pura sobre el estado; probada). */
+/** Formateo el texto descriptivo de la resolución y adaptación activas para la interfaz. */
 export function textoEstadoCalidad(state) {
   const partes = [`Resolución ×${coma(state.pixelRatio)}`];
   if (state.dinamica) partes.push(state.adapted ? 'ajustada para mantener la fluidez' : 'dinámica');
   return partes.join(' · ');
 }
-/** Texto del procesador gráfico (función pura sobre el estado; probada). */
+
+/** Formateo el resumen del procesador gráfico detectado y el aviso de aceleración por hardware si dibuja en CPU. */
 export function textoEstadoGpu(state) {
   if (state.gpu.software) return 'Dibujando con la CPU: el navegador no usa la aceleración por hardware. Actívala en su configuración (Sistema → «Usar aceleración de gráficos cuando esté disponible») y reinícialo para ganar fluidez.';
   const clase = { dedicada: 'GPU dedicada', integrada: 'GPU integrada', movil: 'GPU de móvil' }[state.gpu.tipo];
   return `Dibujando con ${state.gpu.nombre}${clase ? ` (${clase})` : ''}.`;
 }
 
-/** Conecta los botones `[data-quality]`, `[data-gpu]` y los textos de estado del menú. */
+/** Conecto los controles del menú (`[data-quality]` y `[data-gpu]`) y mantengo sincronizados sus textos de estado. */
 export function bindQualityControls(root) {
   const buttons = [...(root?.querySelectorAll('[data-quality]') ?? [])];
   const gpuButtons = [...(root?.querySelectorAll('[data-gpu]') ?? [])];
@@ -360,7 +353,8 @@ export function bindQualityControls(root) {
   const gpuNote = root?.querySelector('[data-gpu-note]');
   const gpuInicial = gpuId;
   const sync = state => {
-    if (state.activo === false) return; // 27: el menú describe la escena que se está dibujando
+    // Reflejo en el menú únicamente el estado del contexto que se está dibujando en este momento.
+    if (state.activo === false) return;
     for (const button of buttons) button.setAttribute('aria-pressed', String(button.dataset.quality === state.profile));
     for (const button of gpuButtons) button.setAttribute('aria-pressed', String(button.dataset.gpu === state.preferenciaGpu));
     if (status) status.textContent = textoEstadoCalidad(state);

@@ -1,3 +1,6 @@
+// En este módulo construyo los materiales y las mallas de las lunas planetarias con
+// iluminación solar inversa al cuadrado (escala 32 unidades/AU), caché de materiales,
+// carga diferida de texturas, máscara de zonas observadas frente a relleno ilustrativo y LOD geométrico.
 import * as THREE from 'three';
 import { MOON_CATALOG as MOONS } from '../science/MoonCatalog.js';
 import { UNIDADES_ESCENA_POR_KM } from './ScaleModeConfig.js';
@@ -7,19 +10,27 @@ import { crearPenachoIo } from './IoVolcanism.js';
 import { registrarTexturaDiferida, vincularMallaTextura } from './DeferredTextures.js';
 import { GEOMETRIAS_ESFERA_LOD, resolverNivelLodEsfera } from './PlanetFactory.js';
 
-// 18: clave de la carga diferida de las texturas de una luna (mosaico, ilustración y máscara; 0,3–1,3 MB por luna).
+// Genero la clave única de carga diferida para las texturas de cada luna (mosaico, ilustración y máscara).
 export const claveTexturaLuna = key => `luna:${key}`;
 
+// Reutilizo una caché en memoria de materiales superficiales para no duplicar programas ni texturas por luna.
 const surfaceMaterials = new Map();
-// Ayuda opcional de lectura del mosaico de Ío; 0 conserva exactamente la luz solar.
+// Mantengo esta ayuda opcional de lectura del mosaico de Ío; en 0 conservo intacta la iluminación solar.
 const ioInspection = { value: 0 };
+
+/** Activo o desactivo el modo auxiliar de inspección visual para el mosaico superficial de Ío. */
 export function establecerInspeccionVisualIo(activa) {
   ioInspection.value = activa ? 1 : 0;
 }
+
+/**
+ * Creo o devuelvo desde caché el material superficial de una luna, configurando su iluminación solar,
+ * la mezcla entre cartografía observada y relleno ilustrativo y el registro de descarga diferida.
+ */
 export function crearMaterialSuperficie(key) {
   if (surfaceMaterials.has(key)) return surfaceMaterials.get(key);
   const map = MOON_TEXTURES[key];
-  // Titan's Cassini 938 nm map is retained locally but is not a visible-light surface.
+  // Conservo el mapa Cassini de 938 nm de Titán como referencia documental, pero aquí muestro un disco ámbar en luz visible.
   const material = new THREE.MeshBasicMaterial({
     color: key === 'Titan' ? 0xc78e54 : 0xb9b7ad,
     toneMapped: true
@@ -45,8 +56,8 @@ export function crearMaterialSuperficie(key) {
       shader.uniforms.moonIllustration = { value: illustration };
       shader.uniforms.moonObservedMask = { value: observedMask };
       shader.fragmentShader = `uniform sampler2D moonIllustration; uniform sampler2D moonObservedMask;\n${shader.fragmentShader}`;
-      // The independent mask keeps photographed pixels from the original JPEG.
-      // Its narrow transition feather blends only the edge of the mapped area.
+      // Uso la máscara independiente para conservar intactos los píxeles fotografiados del mosaico original
+      // y suavizar únicamente la transición en el borde del área cartografiada.
       shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', `
         #ifdef USE_MAP
           vec4 documentedColor = texture2D(map, vMapUv);
@@ -64,7 +75,7 @@ export function crearMaterialSuperficie(key) {
        diffuseColor.rgb *= ${key === 'Io' ? 'mix(solarLight, 0.24 + 0.08 * incidence, ioInspection)' : 'solarLight'};
        ${key === 'Titan' ? 'diffuseColor.rgb *= 0.94 + 0.06 * smoothstep(-0.7, 0.7, -vMoonWorldNormal.y);' : ''}`);
   };
-  // 18: los archivos se piden cuando la luna ya se ve con unos píxeles de radio (DeferredTextures), no al crear el material.
+  // Registro la descarga bajo demanda para pedir los archivos únicamente cuando la luna alcance un tamaño apreciable en pantalla.
   if (key !== 'Titan') registrarTexturaDiferida(claveTexturaLuna(key), () => {
     cargarTextura(`moons/${map.file}`, texture => {
       texture.wrapS = THREE.RepeatWrapping;
@@ -88,8 +99,9 @@ export function crearMaterialSuperficie(key) {
   return material;
 }
 
+/** Construyo la capa de neblina atmosférica ilustrativa de Titán sobre su disco opaco en luz visible. */
 export function crearNeblinaTitan(geometry, radioEscena) {
-  // Optically opaque visible-light disk plus a thin illustrative limb haze.
+  // Simulo un halo anaranjado fino en el limbo iluminado; es una aproximación visual, no un modelo óptico calibrado.
   const material = new THREE.MeshBasicMaterial({
     color: 0xe0a768, transparent: true, opacity: 0.36,
     depthWrite: false, toneMapped: true
@@ -114,9 +126,10 @@ export function crearNeblinaTitan(geometry, radioEscena) {
   return haze;
 }
 
+/** Instancio en la escena todas las lunas planetarias del catálogo con su radio físico 1:1 y gestión de LOD. */
 export function crearLunasPlanetarias(scene, objetos) {
   const moons = new Map();
-  // One shared mesh keeps the limb and polar UV sampling smooth in close views.
+  // Comparto inicialmente la esfera de mayor detalle para mantener suaves el limbo y el muestreo UV polar en vistas cercanas.
   const geometry = GEOMETRIAS_ESFERA_LOD.alto;
   let penachoIo = null;
   for (const [key, definition] of Object.entries(MOONS)) {
@@ -142,6 +155,7 @@ export function crearLunasPlanetarias(scene, objetos) {
     moons.set(key, { definition, posicion: group, mesh, neblina, radioEscena, nivelDetalle: 'alto' });
   }
 
+  // Ubico cada luna respecto a su planeta anfitrión aplicando la conversión de ejes eclípticos a escena: (x, y, z) → (x, z, -y).
   function actualizar(states, visible) {
     for (const [key, moon] of moons) {
       const state = states?.[key];
@@ -152,6 +166,8 @@ export function crearLunasPlanetarias(scene, objetos) {
       moon.posicion.position.copy(parent.posicion.position).add(new THREE.Vector3(x, z, -y));
     }
   }
+
+  // Actualizo el nivel de detalle geométrico (LOD) y la visibilidad de la neblina de Titán en cada luna visible.
   function actualizarNivelDetalle( resolverOpciones ) {
     for (const [key, moon] of moons) {
       if (!moon.posicion.visible) continue;

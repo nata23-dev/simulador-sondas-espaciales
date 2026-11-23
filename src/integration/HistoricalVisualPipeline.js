@@ -1,3 +1,10 @@
+/**
+ * En este módulo conecto las efemérides históricas de Voyager 1 y Voyager 2
+ * (1977–2026) con la escena 3D del simulador. Transformo posiciones físicas en
+ * kilómetros (marco heliocéntrico eclíptico J2000/ICRF, época en JD TDB) a
+ * unidades de escena Three.js y mantengo separados los marcos locales de
+ * encuentro planetario/lunar de la trayectoria global.
+ */
 import { createStaticJsonReader } from '../science/EphemerisFileReader.js';
 import { createHistoricalEphemerisResolver } from '../science/HistoricalEphemerisResolver.js';
 import { createHistoricalEncounterContextResolver } from '../science/HistoricalEncounterContext.js';
@@ -12,6 +19,7 @@ import { scientificStateToVisual } from './ScientificVisualPipeline.js';
 
 const KM_TO_SCENE = UNIDADES_POR_AU / KM_PER_AU;
 
+// Convierto una posición física en km (ejes eclípticos) a coordenadas inmutables de la escena 3D.
 export function physicalKmToScenePosition(positionKm) {
   const rotated = eclipticToSceneAxes(positionKm);
   return Object.freeze({
@@ -21,6 +29,7 @@ export function physicalKmToScenePosition(positionKm) {
   });
 }
 
+// Creo el pipeline visual histórico con lector estático, resolutor de efemérides, contextos locales de encuentro y caché de trayectorias.
 export function createHistoricalVisualPipeline({
   baseUrl = import.meta.env?.BASE_URL ?? '/',
   fetchImpl = globalThis.fetch
@@ -30,6 +39,7 @@ export function createHistoricalVisualPipeline({
   const encounterResolver = createHistoricalEncounterContextResolver({ loadJson });
   const visualBackboneCache = new Map();
 
+  // Consulto en paralelo la instantánea global y los contextos locales de encuentro en JD TDB, adaptando cada cuerpo a formato visual.
   async function queryVisualHistoricalSnapshot(jdTdb) {
     const [snapshot, planetContexts, moonContexts] = await Promise.all([
       resolver.queryHistoricalSnapshot(jdTdb),
@@ -61,8 +71,8 @@ export function createHistoricalVisualPipeline({
       });
     }
 
-    // A local view has its own target-anchored observer. These coordinates are
-    // never inserted into the global probe state or its trajectory backbone.
+    // Construyo aquí los marcos locales anclados al planeta o luna objetivo para las vistas de encuentro.
+    // Nunca mezclo estas coordenadas relativas dentro del estado global de la sonda ni en su trayectoria base.
     const localFrames = {};
     for(const result of Object.values(planetContexts)) {
       const state=result.state;
@@ -109,6 +119,7 @@ export function createHistoricalVisualPipeline({
     });
   }
 
+  // Cargo y memorizo la polilínea base de una misión histórica ya convertida a coordenadas de escena.
   async function loadVisualTrajectoryBackbone(missionId) {
     if (visualBackboneCache.has(missionId)) return visualBackboneCache.get(missionId);
     const promise = (async () => {
@@ -133,15 +144,12 @@ export function createHistoricalVisualPipeline({
     return promise;
   }
 
-  /**
-   * Divide la polilínea histórica en tramo recorrido `<= jdTdb` y tramo futuro `>= jdTdb`,
-   * insertando exactamente la posición actual interpolada en la frontera.
-   */
+  // Divido la polilínea histórica en tramo recorrido (<= jdTdb) y tramo futuro (>= jdTdb), insertando la posición actual en el corte.
   function sliceTrajectoryAtEpoch(sceneKnots, jdTdb, currentScenePos) {
     if (!sceneKnots || sceneKnots.length === 0 || !currentScenePos) {
       return { past: [], future: [] };
     }
-    // Búsqueda binaria del primer nudo estrictamente posterior a jdTdb
+    // Localizo con búsqueda binaria el primer nudo estrictamente posterior a jdTdb.
     let lo = 0;
     let hi = sceneKnots.length;
     while (lo < hi) {

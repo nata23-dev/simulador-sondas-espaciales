@@ -1,5 +1,6 @@
-// Etapa 12E — orquestación del lanzamiento: secuencia de eventos, separación de etapas, detección de eventos
-// y evaluación orbital. El movimiento sale únicamente de la integración numérica (LaunchDynamics.js).
+// Aquí orquesto la simulación completa de un lanzamiento terrestre: secuencia de encendidos, separación
+// de etapas, detección de eventos clave (Max-Q, apogeo, impacto) y evaluación orbital final.
+// Toda la trayectoria proviene exclusivamente de la integración numérica de LaunchDynamics.js.
 import { FiniteThrustError } from './FiniteThrustDynamics.js';
 import { DEFAULT_TARGET_ORBIT, classifyOrbit, orbitalElements, osculatingPerigeeAltitudeKm, ORBIT_CLASSES } from './LaunchOrbit.js';
 import { EARTH_GM_KM3_S2, STANDARD_GRAVITY_M_S2, geodeticFromPosition, dot3, launchSiteState, norm3, localFrame } from './LaunchEarth.js';
@@ -7,16 +8,18 @@ import { createEnvironment, evaluateForces, runSegment } from './LaunchDynamics.
 import { liftoffThrustToWeight, massFlowKgS, stackMassKg, validateLauncher } from './LaunchVehicle.js';
 import { sampleIntegratedState } from './MissionPlayback.js';
 
-// Margen sobre el perigeo mínimo para detener la circularización (evita terminar exactamente en el umbral).
+// Añado un margen de seguridad sobre el perigeo mínimo para cortar la circularización sin quedar justo en el umbral.
 export const PERIGEE_MARGIN_KM = 10;
 export const LAUNCH_MODEL_VERSION = 'earth-launch-point-mass-v1';
 const DEG = 180 / Math.PI;
 
+// Defino los valores por defecto del programa de guiado y de la secuencia temporal de encendidos.
 export const DEFAULT_GUIDANCE = Object.freeze({ verticalRiseSeconds: 10, kickDeg: 2, kickSeconds: 4,
   stage2: Object.freeze({ startElevationDeg: 'auto', endElevationDeg: 0, rampSeconds: 100 }) });
 export const DEFAULT_SCHEDULE = Object.freeze({ ascentBurnSeconds: 190, postCoastSeconds: 1200,
   circularization: Object.freeze({ enabled: true, elevationDeg: 0, maxCoastToApogeeSeconds: 7200, cutoff: 'target-perigee', maxBurnSeconds: null }) });
 
+// Valido las coordenadas de la rampa, acimut, programa de guiado, secuencia de encendidos y criterios orbitales.
 export function validateLaunchOptions(options) {
   const issues = [];
   const site = options?.site;
@@ -39,6 +42,7 @@ export function validateLaunchOptions(options) {
   if (!t || !Number.isFinite(t.minPerigeeAltitudeKm) || t.minPerigeeAltitudeKm < 0 || !Number.isFinite(t.targetAltitudeKm) || t.targetAltitudeKm <= 0) issues.push('Órbita objetivo inválida.');
   return issues;
 }
+// Normalizo y completo con valores predeterminados el objeto de opciones antes de iniciar la simulación.
 export const normalizeLaunchOptions = options => ({
   site: { latDeg: options.site.latDeg, lonDeg: options.site.lonDeg, altitudeM: options.site.altitudeM },
   launchDateUtc: options.launchDateUtc, earthRotationAngleDeg: options.earthRotationAngleDeg, azimuthDeg: options.azimuthDeg,
@@ -51,6 +55,7 @@ export const normalizeLaunchOptions = options => ({
     inclinationDeg: options.target.inclinationDeg ?? null, inclinationToleranceDeg: options.target.inclinationToleranceDeg ?? 1, targetAltitudeKm: options.target.targetAltitudeKm }
 });
 
+// Resumo la pila completa del lanzador con la carga útil: masa inicial, relación empuje/peso, duración y Δv ideal por etapa.
 export function describeStack(launcher, payloadMassKg) {
   const radius = 6378.137;
   const stages = launcher.stages.map((stage, i) => {
@@ -62,12 +67,13 @@ export function describeStack(launcher, payloadMassKg) {
     stages, idealDeltaVMS: stages.reduce((n, s) => n + s.idealDeltaVMS, 0) };
 }
 
+// Calculo el ángulo de elevación (°) del vector velocidad respecto al horizonte local geocéntrico.
 const elevationOfVelocityDeg = (position, velocity) => {
   const n = norm3(velocity); if (!(n > 1e-9)) return 90;
   const up = localFrame(position).up; return Math.asin(Math.max(-1, Math.min(1, dot3(velocity, up) / n))) * DEG;
 };
 
-// ---- Simulación completa -------------------------------------------------------------------------------------
+// Ejecuto la simulación completa del ascenso encadenando etapas, costas, circularización y evaluación orbital.
 export function simulateLaunch({ launcher, payloadMassKg, options, environment = {} }) {
   const launcherIssues = validateLauncher(launcher);
   if (launcherIssues.length) throw new FiniteThrustError('INVALID_LAUNCHER', launcherIssues.join(' '), { issues: launcherIssues });
@@ -87,11 +93,11 @@ export function simulateLaunch({ launcher, payloadMassKg, options, environment =
   const base = { launcherStages: launcher.stages, launcherId: launcher.id, launcherName: launcher.name, payloadMassKg, options: opts, environment: { atmosphere: env.atmosphere, rotation: env.rotation },
     stack, site: { ...site }, mu: env.mu, model: LAUNCH_MODEL_VERSION };
 
-  // 1-2. Vehículo en plataforma y verificación de condiciones.
+  // Coloco el vehículo en la plataforma y verifico si la relación empuje/peso permite despegar.
   const initialState = Float64Array.from([...site.positionKm, ...site.velocityKmS, m0, 0]);
   const thrustToWeight = stack.liftoffThrustToWeight;
   if (!(thrustToWeight >= 1)) {
-    // Sin condición de despegue: el vehículo permanece sobre la plataforma, corrotando con la Tierra (sin encendido).
+    // Si el empuje inicial no supera el peso, mantengo el vehículo en rampa corrotando con la Tierra sin encender motores.
     const frame = [0, 30, 60].map(t => { const c = Math.cos(env.omega * t), s = Math.sin(env.omega * t); const p = site.positionKm;
       const pos = [p[0] * c - p[1] * s, p[0] * s + p[1] * c, p[2]]; return { elapsedSeconds: t, positionKm: pos, velocityKmS: [-env.omega * pos[1], env.omega * pos[0], 0], massKg: m0, dvAccKmS: 0 }; });
     return { ...base, status: 'NO DESPEGA', knots: frame, segments: [{ id: 'hold', kind: 'hold', stageIndex: null, label: 'En plataforma', startSeconds: 0, endSeconds: 60, massStartKg: m0, massEndKg: m0, massFlowKgS: 0, guidance: null, aero: null, stageId: null }],
@@ -110,7 +116,7 @@ export function simulateLaunch({ launcher, payloadMassKg, options, environment =
     stats.acceptedSteps += run.stats.acceptedSteps; stats.rejectedSteps += run.stats.rejectedSteps; stats.functionEvaluations += run.stats.functionEvaluations;
     if (run.stats.maxStepSeconds) { stats.minStepSeconds = Math.min(stats.minStepSeconds, run.stats.minStepSeconds); stats.maxStepSeconds = Math.max(stats.maxStepSeconds, run.stats.maxStepSeconds); }
   };
-  // Ejecuta un tramo; devuelve el motivo de parada (impacto / evento) y actualiza estado y tiempo.
+  // Integro un tramo consecutivo, registro su segmento y actualizo el estado y el tiempo global.
   function leg({ kind, stageIndex, label, guidance = null, duration, maxStepSeconds, stopWhen = null }) {
     const t0 = t, t1 = t + duration;
     const cfg = stageCfg(stageIndex, guidance);
@@ -126,7 +132,7 @@ export function simulateLaunch({ launcher, payloadMassKg, options, environment =
   const event = (id, kind, title, extra = {}) => events.push({ id, kind, title, elapsedSeconds: t, ...extra });
 
   try {
-    // 3-5. Encendido de la etapa 1, despegue y ascenso inicial.
+    // Enciendo la etapa 1 y ejecuto ascenso vertical, inclinación inicial y giro gravitatorio hasta agotar su propelente.
     event('ignition-1', 'ignition', 'Encendido de la etapa 1'); event('liftoff', 'liftoff', 'Despegue: empuje/peso ' + thrustToWeight.toFixed(2));
     stageLog[0].ignitionSeconds = 0;
     const flow1 = massFlowKgS(s1), burn1 = s1.propellantMassKg / flow1, g = opts.guidance;
@@ -140,13 +146,13 @@ export function simulateLaunch({ launcher, payloadMassKg, options, environment =
       if (stop) break;
     }
     if (!stop) {
-      // 6-8. Agotamiento de la etapa 1 (MECO). El propelente se consume exactamente; la masa integrada se verifica y se fija.
+      // Verifico la coherencia de masa al agotarse la etapa 1 (MECO) y preparo la costa previa a la separación.
       const expected = m0 - s1.propellantMassKg;
       if (Math.abs(state[6] - expected) > 1e-3) throw new FiniteThrustError('MASS_INCONSISTENT', 'La masa integrada no coincide con el consumo de la etapa 1.');
       state[6] = expected; knots.at(-1).massKg = expected;
       Object.assign(stageLog[0], { cutoffSeconds: t, burnSeconds: t, propellantConsumedKg: s1.propellantMassKg, propellantRemainingKg: 0, cutoffReason: 'propelente agotado' });
       event('meco', 'depletion', 'Etapa 1: propelente agotado (MECO)');
-      // 9. Separación (evento discreto): se descartan la estructura y el propelente residual de la etapa 1.
+      // Descarto de forma discreta la estructura y cualquier propelente residual de la etapa 1 tras la costa inicial.
       if (launcher.separation.coastAfterCutoffSeconds > 0) stop = leg({ kind: 'coast', stageIndex: 0, label: 'Balístico previo a la separación', duration: launcher.separation.coastAfterCutoffSeconds, maxStepSeconds: 5 });
     }
     if (!stop) {
@@ -159,7 +165,7 @@ export function simulateLaunch({ launcher, payloadMassKg, options, environment =
     }
 
     if (!stop) {
-      // 10-12. Encendido de la etapa 2 con programa de cabeceo respecto al horizonte local.
+      // Enciendo la etapa 2 con su rampa de cabeceo respecto al horizonte local.
       const flow2 = massFlowKgS(s2), full2 = s2.propellantMassKg / flow2;
       const ascent = Math.min(full2, opts.schedule.ascentBurnSeconds ?? Infinity);
       event('ignition-2', 'ignition', 'Inicio de la etapa 2 (encendido)'); stageLog[1].ignitionSeconds = t;
@@ -173,7 +179,7 @@ export function simulateLaunch({ launcher, payloadMassKg, options, environment =
         Object.assign(stageLog[1], { cutoffSeconds: t, burnSeconds: used, propellantConsumedKg: used * flow2, propellantRemainingKg: Math.max(0, s2.propellantMassKg - used * flow2), cutoffReason: depleted ? 'propelente agotado' : 'apagado programado' });
         event(depleted ? 'depletion-2' : 'seco-1', depleted ? 'depletion' : 'cutoff', depleted ? 'Etapa 2: propelente agotado' : 'Apagado programado de la etapa 2 (SECO)');
         burn2End = t;
-        // Circularización opcional con el mismo motor y consumo real de propelente.
+        // Si está activada la circularización y queda propelente, espero al apogeo y reenciendo la etapa 2.
         const circ = opts.schedule.circularization;
         if (circ.enabled && !depleted) {
           stop = leg({ kind: 'coast', stageIndex: 1, label: 'Balístico hacia el apogeo', duration: circ.maxCoastToApogeeSeconds, maxStepSeconds: 20,
@@ -198,11 +204,11 @@ export function simulateLaunch({ launcher, payloadMassKg, options, environment =
         }
       }
     }
-    // 13. Tramo balístico final para comprobar que la órbita no intersecta la Tierra durante la propagación.
+    // Propago un tramo balístico final para verificar que la trayectoria no intersecta la Tierra en la ventana configurada.
     if (!stop && !failure && opts.schedule.postCoastSeconds > 0) {
       stop = leg({ kind: 'coast', stageIndex: 1, label: 'Balístico final', duration: opts.schedule.postCoastSeconds, maxStepSeconds: 20 });
     }
-    // 12E.1: si la ventana termina bajo 150 km, descendiendo y sin impacto, se continúa la costa hasta localizar el contacto (sin empuje).
+    // Si la ventana termina por debajo de 150 km en descenso y sin impacto aún, prolongo la costa balística para localizar el contacto.
     if (!stop && !failure) {
       const lastK = knots.at(-1), altEnd = geodeticFromPosition(lastK.positionKm).altitudeKm;
       if (altEnd < 150 && dot3(lastK.positionKm, lastK.velocityKmS) < 0) {
@@ -218,7 +224,7 @@ export function simulateLaunch({ launcher, payloadMassKg, options, environment =
   event('end', 'end', 'Fin de la integración');
   stats.minStepSeconds = Number.isFinite(stats.minStepSeconds) ? stats.minStepSeconds : 0;
 
-  // ---- Eventos derivados de la trayectoria integrada (Max-Q, altitud objetivo, apogeo) ------------------------------
+  // Extraigo eventos derivados directamente de la trayectoria integrada: Max-Q, cruce de altitud objetivo y apogeo.
   const sample = time => sampleIntegratedState(knots, time);
   const altitudeAt = time => geodeticFromPosition(sample(time).positionKm).altitudeKm;
   const qAt = time => { const s = sample(time); return evaluateForces(env, { stage: null, aero: null }, time, [...s.positionKm, ...s.velocityKmS, 1, 0]).dynamicPressurePa; };
@@ -252,7 +258,7 @@ export function simulateLaunch({ launcher, payloadMassKg, options, environment =
   }
   events.sort((a, b) => a.elapsedSeconds - b.elapsedSeconds);
 
-  // ---- Resultado y evaluación orbital -------------------------------------------------------------------------------------
+  // Clasifico la órbita alcanzada al término de la propagación y al apagado principal.
   const last = knots.at(-1);
   const finalState = { elapsedSeconds: last.elapsedSeconds, positionKm: last.positionKm, velocityKmS: last.velocityKmS, massKg: segments.at(-1)?.massEndKg ?? last.massKg, dvAccKmS: last.dvAccKmS };
   const burnoutKnot = burn2End != null ? knots.find(k => Math.abs(k.elapsedSeconds - burn2End) < 1e-6) : null;
@@ -260,7 +266,7 @@ export function simulateLaunch({ launcher, payloadMassKg, options, environment =
   let orbit;
   if (failure && !impact) orbit = { classification: ORBIT_CLASSES.unverifiable, reasons: [failure], elements: null, minimumAltitudeKm: null, altitudeKm: null };
   else orbit = classifyOrbit(last.positionKm, last.velocityKmS, target, { impact: Boolean(impact) });
-  if (impact) { try { orbit.elements = orbitalElements(burnoutKnot?.positionKm ?? last.positionKm, burnoutKnot?.velocityKmS ?? last.velocityKmS); } catch { /* sin elementos */ } }
+  if (impact) { try { orbit.elements = orbitalElements(burnoutKnot?.positionKm ?? last.positionKm, burnoutKnot?.velocityKmS ?? last.velocityKmS); } catch { /* Si no puedo derivar elementos osculadores tras el impacto, los dejo nulos. */ } }
   const burnout = burnoutKnot ? { elapsedSeconds: burnoutKnot.elapsedSeconds, ...classifyOrbit(burnoutKnot.positionKm, burnoutKnot.velocityKmS, target) } : null;
   const consumed = stageLog.reduce((n, s) => n + s.propellantConsumedKg, 0);
   return { ...base, status: impact ? 'IMPACTO' : failure ? 'FALLO DE INTEGRACIÓN' : 'LANZAMIENTO COMPLETADO', knots, segments, events, stages: stageLog,

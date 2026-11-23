@@ -1,3 +1,6 @@
+// En este módulo controlo toda la navegación de cámara de la escena principal: órbita exterior,
+// transiciones suaves con desvío de obstáculos, encuadres de misión y destino, cámara en primera
+// persona desde sondas históricas, recreaciones fotográficas con FOV instrumental y selección por puntero.
 import * as THREE from 'three';
 import { calcularEncuadreVista } from './OverviewFraming.js';
 import { horizontalFovFromVertical, verticalFovForSquareFootprint } from './InstrumentFov.js';
@@ -30,6 +33,7 @@ function suavizar(t) {
   return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
+/** Creo el controlador de cámara que coordina selección, transiciones, modos históricos y eventos del lienzo. */
 export function crearControladorCamara({
   camera,
   controls,
@@ -79,7 +83,8 @@ export function crearControladorCamara({
   let idSondaHistoricaEnfocada = null;
   let modoCamaraHistorica = MODOS_CAMARA_HISTORICA.EXTERIOR;
   let idSondaPrimeraPersona = null;
-  let objetivoMirada = 'Tierra'; // 'Tierra' | 'Sol' | planeta | satelite | otra sonda | null (orientación libre)
+  // Guardo el blanco de mirada en primera persona ('Tierra', 'Sol', planeta, satélite, otra sonda o null si es libre).
+  let objetivoMirada = 'Tierra';
   let yawPrimeraPersona = 0;
   let pitchPrimeraPersona = 0;
   let fovPrimeraPersona = 45;
@@ -95,10 +100,10 @@ export function crearControladorCamara({
   let ultimoClic = null;
   let modoVista = 'cientifica';
   let regionSistema = REGIONES_SISTEMA.COMPLETO;
-  // 17.1: vista general de una misión del laboratorio en la escena principal (trayectoria, origen, destino y sonda).
+  // Identifico con esta región la vista general de una misión del laboratorio (trayectoria, origen, destino y sonda).
   const REGION_MISION = 'mision';
   let proveedorCuerposMision = null;
-  // 17.1: nombre del planeta de destino mientras la cámara de destino de la misión se recalcula en cada fotograma.
+  // Mantengo el nombre del cuerpo destino mientras recalculo en cada fotograma la cámara de seguimiento de misión.
   let miradaDestino = null;
   let posicionesListas = false;
 
@@ -123,7 +128,7 @@ export function crearControladorCamara({
       ? contextoLocal(idSondaPrimeraPersona,objetivoMirada) : null;
     contextosLocales=nuevos ?? Object.freeze({});
     if(anterior&&!contextoLocal(idSondaPrimeraPersona,objetivoMirada)) {
-      // La ventana local terminó: cambia explícitamente a la vista global.
+      // Al terminar la ventana de encuentro local devuelvo la cámara explícitamente al modo exterior global.
       salirDePrimeraPersonaHaciaExterior();
     }
   }
@@ -270,8 +275,9 @@ export function crearControladorCamara({
     if (regionSistema === REGION_MISION && proveedorCuerposMision) {
       const cuerpos = proveedorCuerposMision();
       if (!cuerpos?.length) return calcularEncuadreVista(camera, objetos, obtenerZonaEncuadre(), null);
-      // Con la zona de la misión la proyección ya se centra en ella en cada fotograma (SolarSystem), así que el encuadre se
-      // calcula para una zona del mismo tamaño centrada en el lienzo: sigue valiendo si la página se desplaza.
+      // Como la proyección de la escena ya se centra sobre la zona de la misión en cada fotograma,
+      // calculo aquí el encuadre sobre un rectángulo equivalente centrado en el lienzo para que siga
+      // siendo válido incluso cuando la página se desplaza.
       const zona = obtenerZonaEncuadre(), ancho = zona.right - zona.left, alto = zona.bottom - zona.top;
       const centrada = { width: zona.width, height: zona.height, left: (zona.width - ancho) / 2, right: (zona.width + ancho) / 2,
         top: (zona.height - alto) / 2, bottom: (zona.height + alto) / 2 };
@@ -294,12 +300,13 @@ export function crearControladorCamara({
     controls.update();
   }
 
+  // Calculo la distancia de observación adecuada para encuadrar el cuerpo o sonda seleccionada,
+  // incluyendo la proyección de los anillos de Saturno según la dirección de vista.
   function distanciaObservacion(direccion) {
     if ((sondaEnfocada || idSondaHistoricaEnfocada) && !seleccionado) {
       return radioObservacionSondaActiva() * 3.15;
     }
-    // La compensación del inspector se aplica a la proyección, sin alterar
-    // esta distancia física de observación ni compensar dos veces el zoom.
+    // Dejo la compensación del inspector en el desplazamiento de proyección sin alterar esta distancia física.
     const mitadVertical = THREE.MathUtils.degToRad(camera.fov) / 2;
     const mitadHorizontal = Math.atan(Math.tan(mitadVertical) * camera.aspect);
     const radioPlanetaModo = radioBaseModoPlaneta(seleccionado);
@@ -331,6 +338,7 @@ export function crearControladorCamara({
     return Math.max(encuadre, distanciaMinima() * 1.08);
   }
 
+  // Evalúo la holgura mínima respecto al Sol y a todos los planetas a lo largo de una ruta recta o Bézier cuadrática.
   function despejeRuta(inicio, fin, control) {
     const punto = new THREE.Vector3();
     const anterior = inicio.clone();
@@ -553,8 +561,8 @@ export function crearControladorCamara({
   }
 
   /**
-   * Enfoca en cámara exterior cualquiera de las sondas históricas (`voyager-1` o `voyager-2`),
-   * siguiendo dinámicamente su desplazamiento histórico.
+   * Enfoco en cámara exterior cualquiera de las sondas históricas (`voyager-1` o `voyager-2`),
+   * siguiendo dinámicamente su desplazamiento sobre la trayectoria histórica.
    */
   function enfocarSondaHistorica(idSondaHist, { inmediato = false } = {}) {
     const sHist = sondasHistoricas.get(idSondaHist);
@@ -607,7 +615,7 @@ export function crearControladorCamara({
     return true;
   }
 
-  /** Compone el planeta del encuentro y, si está cerca, la sonda en el área libre. */
+  /** Compongo en el área libre el cuerpo del encuentro histórico y, cuando está próxima, también la sonda. */
   function encuadrarEncuentroHistorico(idSondaHist, nombrePlaneta, { inmediato = false } = {}) {
     const sHist = sondasHistoricas.get(idSondaHist);
     if (!sHist || !sHist.posicion.visible) return false;
@@ -680,9 +688,7 @@ export function crearControladorCamara({
     return true;
   }
 
-  /**
-   * Encuadra simultáneamente Voyager 1, Voyager 2 y el Sol sin modificar sus distancias reales.
-   */
+  /** Encuadro simultáneamente Voyager 1, Voyager 2 y el Sol sin alterar sus distancias reales. */
   function encuadrarComparativaHistorica() {
     salirDePrimeraPersonaHaciaExterior();
     limpiarSeleccionSondas();
@@ -722,9 +728,7 @@ export function crearControladorCamara({
     return true;
   }
 
-  /**
-   * Presentación cinematográfica discreta de salida desde la Tierra en 1977.
-   */
+  /** Presento la salida desde la Tierra en 1977 con un acercamiento exterior discreto. */
   function encuadrarSalidaTierra1977() {
     salirDePrimeraPersonaHaciaExterior();
     seleccionar('Tierra');
@@ -750,9 +754,7 @@ export function crearControladorCamara({
     yawPrimeraPersona = Math.atan2(dirUnit.x, dirUnit.z);
   }
 
-  /**
-   * Activa la Cámara en Primera Persona en la posición histórica exacta de `idSondaHist`.
-   */
+  /** Activo la cámara en primera persona situándola en la posición histórica exacta de `idSondaHist`. */
   function activarPrimeraPersona(idSondaHist, {
     objetivo = objetivoMirada ?? 'Tierra',
     fovGrados = 45
@@ -799,9 +801,7 @@ export function crearControladorCamara({
     return true;
   }
 
-  /**
-   * Activa la Cámara Fotográfica Histórica para recrear en 3D la geometría de una fotografía auténtica.
-   */
+  /** Activo la cámara fotográfica histórica para recrear en 3D la geometría y el FOV de una fotografía auténtica. */
   function activarRecreacionFotografica(foto, { usarFovContexto = false } = {}) {
     if (!foto) return false;
     const sHist = sondasHistoricas.get(foto.missionId);
@@ -892,6 +892,7 @@ export function crearControladorCamara({
       : 45;
   }
 
+  // Calculo el diámetro aparente del objetivo y el FOV vertical necesario para encuadrarlo (con anillos si es Saturno).
   function geometriaEncuadreContextual(idSonda, objetivo) {
     const sonda = sondasHistoricas.get(idSonda);
     const centro = resolverPosicionObjetivoMirada(objetivo);
@@ -931,8 +932,7 @@ export function crearControladorCamara({
           halfTangentY = Math.max(halfTangentY, ring.vertical);
           incluyeAnillos = true;
         } else {
-          // Desde dentro de la extensión proyectada del anillo no existe
-          // un encuadre completo mediante una proyección frontal finita.
+          // Si el observador cae dentro de la extensión proyectada del anillo, no existe un encuadre frontal finito.
           return null;
         }
       }
@@ -1086,9 +1086,8 @@ export function crearControladorCamara({
   }
 
   /**
-   * 17.1: vista general de una misión del laboratorio. `proveedor()` devuelve los discos que deben verse
-   * ([{ posicion: Vector3, radio }], unidades de escena); el Sol se añade siempre. Se recalcula durante la transición
-   * porque los planetas siguen moviéndose si la reproducción está en curso. No cambia posiciones ni escala.
+   * Encuadro la vista general de una misión del laboratorio usando los discos que devuelve `proveedor()`
+   * junto con el Sol; recalculo el objetivo durante la transición porque los planetas continúan en movimiento.
    */
   function encuadrarConjuntoMision(proveedor) {
     if (typeof proveedor !== 'function') return false;
@@ -1099,19 +1098,17 @@ export function crearControladorCamara({
     return true;
   }
 
-  /**
-   * 17.1: pose de la cámara de destino de una misión del laboratorio, igual que en la escena local del Centro de Misión:
-   * cerca del planeta de destino (a unos 4 radios, por detrás de su «hombro» y del lado del Sol) mirando hacia la sonda.
-   * El planeta ocupa buena parte del cuadro a escala 1:1 y la sonda (o la dirección por la que llega) queda a la vista.
-   * Solo encuadre: no cambia posiciones ni escalas.
-   */
-  // 23: el cuerpo de la cámara de destino puede ser un planeta o un satélite visible (fase de satélite de la misión).
+  // Resuelvo el cuerpo de destino para la cámara de misión (planeta o satélite visible en fase lunar).
   function cuerpoMirada(nombre) {
     if (objetos.has(nombre)) return objetos.get(nombre);
     const luna = lunasPlanetarias.get(nombre);
     return luna?.posicion.visible ? luna : null;
   }
 
+  /**
+   * Calculo la pose de la cámara de destino de una misión del laboratorio: sitúo la cámara cerca del cuerpo
+   * (por detrás de su costado iluminado) mirando hacia la sonda para mostrar ambos a escala 1:1.
+   */
   function poseMiradaDestino(nombre) {
     const objPlaneta = cuerpoMirada(nombre);
     if (!objPlaneta || !sonda?.posicion.visible) return null;
@@ -1124,7 +1121,7 @@ export function crearControladorCamara({
     const haciaSol = centro.clone().negate();
     if (haciaSol.lengthSq() < 1e-12) haciaSol.set(0, 0, 1);
     haciaSol.normalize();
-    // `lateral`: componente de la dirección al Sol perpendicular a la línea planeta–sonda (o una horizontal si son paralelas).
+    // Proyecto la dirección hacia el Sol perpendicularmente a la línea planeta–sonda para situar el encuadre del lado iluminado.
     const lateral = haciaSol.addScaledVector(haciaSonda, -haciaSol.dot(haciaSonda));
     if (lateral.lengthSq() < 0.04) lateral.set(-haciaSonda.z, 0, haciaSonda.x);
     if (lateral.lengthSq() < 1e-9) lateral.set(1, 0, 0);
@@ -1136,8 +1133,8 @@ export function crearControladorCamara({
   }
 
   /**
-   * 17.1: cámara de destino de la misión del laboratorio. Se recalcula en cada fotograma (el planeta y la sonda se mueven)
-   * hasta que el usuario arrastra o usa la rueda; entonces sigue al planeta y deja el control al usuario.
+   * Activo la cámara de seguimiento desde el cuerpo de destino mirando a la sonda; la recalculo en cada
+   * fotograma hasta que el usuario interviene manualmente con arrastre o rueda.
    */
   function encuadrarDestinoConSonda(nombre) {
     if (!cuerpoMirada(nombre) || enPrimeraPersonaORecreacion()) return false;
@@ -1164,7 +1161,7 @@ export function crearControladorCamara({
     return true;
   }
 
-  /** La cámara de destino sigue activa mientras el planeta siga seleccionado y no haya otra cámara en uso. */
+  /** Verifico si la cámara de destino sigue vigente mientras no se haya cambiado de blanco ni de modo. */
   function miradaDestinoVigente() {
     if (!miradaDestino) return false;
     if (seleccionado !== miradaDestino || sondaEnfocada || idSondaHistoricaEnfocada || enPrimeraPersonaORecreacion()) {
@@ -1273,7 +1270,7 @@ export function crearControladorCamara({
     let destinoPosicion;
     const poseMirada = transicion.tipo === 'mirada' && miradaDestinoVigente() ? poseMiradaDestino(miradaDestino) : null;
     if (transicion.tipo === 'mirada' && !poseMirada) {
-      // La cámara de destino dejó de aplicar (otra cámara, sonda oculta): se termina la transición donde esté.
+      // Si la cámara de destino deja de aplicar (sonda oculta o cambio de cámara), finalizo la transición donde esté.
       transicion = null;
       controls.enabled = true;
       controls.update();
@@ -1356,7 +1353,8 @@ export function crearControladorCamara({
   function alActualizarLuna(centroAnterior) {
     if (!centroAnterior || !(lunasPlanetarias.has(seleccionado) || satelites.get(seleccionado)?.posicion.visible) || enPrimeraPersonaORecreacion()) return;
     const centro = centroSeleccionado();
-    if (!centro) return; // satélite ya oculto
+    // Si el satélite acaba de ocultarse, omito el arrastre de cámara en este fotograma.
+    if (!centro) return;
     const delta = centro.clone().sub(centroAnterior);
     camera.position.add(delta);
     controls.target.add(delta);

@@ -1,9 +1,23 @@
+/**
+ * En este módulo valido y adapto archivos diarios de efemérides planetarias
+ * descargados de NASA/JPL Horizons (`horizons-daily-v1`) al formato interno de
+ * estado científico del simulador.
+ *
+ * - Unidades: los archivos fuente traen posiciones en AU y velocidades en AU/día
+ *   con paso de 1 día en JD TDB; al adaptar cada muestra las convierto a km y km/s
+ *   sin mutar el JSON original.
+ * - Marco de referencia: exijo `SUN_CENTER` (`Sol (500@10)`), `ICRF`, plano
+ *   `Ecliptica J2000`, escala `TDB` y vectores geométricos (`VEC_CORR=NONE`).
+ * - Límites: valido las ocho series planetarias y separo advertencias heurísticas
+ *   de errores estructurales, sin rechazar datos legítimos por plausibilidad ni
+ *   depender de Three.js.
+ */
 import { auToKm, auPerDayToKmPerSecond, requireFiniteNumber } from './Units.js';
 import { requireVector3, HORIZONS_FRAME } from './Frames.js';
 import { gregorianLabelToJulianMidnight } from './Time.js';
 import { createScientificState } from './ScientificState.js';
 
-// Identificadores COMMAND usados por scripts/descargar-efemerides.mjs.
+// Mantengo el mapa de identificadores COMMAND de NASA/JPL Horizons empleados en la descarga local.
 export const HORIZONS_PLANETS = Object.freeze({
   Mercurio: '199', Venus: '299', Tierra: '399', Marte: '499',
   Jupiter: '599', Saturno: '699', Urano: '799', Neptuno: '899'
@@ -12,9 +26,11 @@ export const HORIZONS_PLANETS = Object.freeze({
 const MONTHS = Object.freeze({ Jan: '01', Feb: '02', Mar: '03', Apr: '04',
   May: '05', Jun: '06', Jul: '07', Aug: '08', Sep: '09',
   Oct: '10', Nov: '11', Dec: '12' });
-const JD_TOLERANCE_DAYS = 1e-8; // Formato diario; < 0,9 ms.
+// Tolero 1e-8 días (< 0,9 ms) para comparar fechas julianas del formato diario.
+const JD_TOLERANCE_DAYS = 1e-8;
 const STEP_TOLERANCE_DAYS = 1e-8;
 
+/** Compruebo que el valor recibido sea un objeto plano no nulo. */
 function object(value, path) {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     throw new TypeError(`${path} debe ser un objeto.`);
@@ -22,6 +38,7 @@ function object(value, path) {
   return value;
 }
 
+/** Compruebo que el campo recibido sea una cadena de texto no vacía. */
 function requiredString(value, path) {
   if (typeof value !== 'string' || value.trim() === '') {
     throw new TypeError(`${path} debe ser una cadena no vacía.`);
@@ -29,10 +46,12 @@ function requiredString(value, path) {
   return value;
 }
 
+/** Exijo coincidencia estricta entre el valor observado en metadatos y el esperado por el contrato. */
 function expect(value, expected, path) {
   if (value !== expected) throw new RangeError(`${path}: se esperaba ${expected}; recibido ${value}.`);
 }
 
+/** Extraigo la fecha ISO `YYYY-MM-DD` desde una etiqueta diaria `A.D. YYYY-Mon-DD 00:00:00.0000` de Horizons. */
 function dateFromTdbLabel(value, path) {
   const label = requiredString(value, path);
   const match = /^A\.D\. ([0-9]{4})-([A-Z][a-z]{2})-([0-9]{2}) 00:00:00\.0000$/.exec(label);
@@ -42,7 +61,11 @@ function dateFromTdbLabel(value, path) {
   return `${match[1]}-${MONTHS[match[2]]}-${match[3]}`;
 }
 
-/** Verifica el perfil exacto de los metadatos que produce el generador actual. */
+/**
+ * Aquí verifico el perfil exacto de metadatos exigido a un archivo diario de
+ * NASA/JPL Horizons (origen, marco, escala TDB, unidades, corrección, marca
+ * `consultaUTC` real y rango de fechas).
+ */
 export function validateHorizonsMetadata(metadata) {
   object(metadata, 'metadatos');
   requiredString(metadata.fuente, 'metadatos.fuente');
@@ -84,7 +107,11 @@ export function validateHorizonsMetadata(metadata) {
   return { firstJdTdb, lastJdTdb };
 }
 
-/** Valida una muestra sin convertir ni modificar sus valores originales. */
+/**
+ * Aquí valido una muestra diaria individual comprobando la correspondencia
+ * entre `jdTDB` y `fechaTDB` y la finitud de sus vectores en AU y AU/día,
+ * sin convertir ni alterar sus valores originales.
+ */
 export function validateHorizonsSample(record, path = 'registro') {
   object(record, path);
   requireFiniteNumber(record.jdTDB, `${path}.jdTDB`);
@@ -99,10 +126,11 @@ export function validateHorizonsSample(record, path = 'registro') {
 }
 
 /**
- * Valida las ocho series y devuelve advertencias separadas de errores.
- * Umbrales de advertencia conservadores, específicos de estos planetas:
- * distancia > 1000 AU, rapidez > 1 AU/día o vector de posición nulo.
- * No certifican exactitud astrométrica ni rechazan valores por plausibilidad.
+ * Aquí valido las ocho series planetarias diarias, compruebo el paso exacto de
+ * 1 día sin huecos ni desorden y recopilo advertencias separadas de los errores.
+ * Aplico umbrales conservadores (distancia > 1000 AU, rapidez > 1 AU/día o
+ * posición nula) solo como aviso; no certifico exactitud astrométrica ni rechazo
+ * registros por plausibilidad.
  */
 export function validateHorizonsDataset(dataset) {
   object(dataset, 'dataset');
@@ -143,7 +171,11 @@ export function validateHorizonsDataset(dataset) {
   return { sampleCountPerPlanet: expectedCount, firstJdTdb, lastJdTdb, warnings };
 }
 
-/** Adapta una muestra diaria, sin cambiar el JSON ni depender de Three.js. */
+/**
+ * Aquí adapto una muestra diaria de NASA/JPL Horizons a `ScientificState`
+ * convirtiendo AU → km y AU/día → km/s, sin modificar el JSON de entrada ni
+ * depender de Three.js.
+ */
 export function adaptHorizonsSample(dataset, name, index) {
   object(dataset, 'dataset');
   const { firstJdTdb, lastJdTdb } = validateHorizonsMetadata(dataset.metadatos);

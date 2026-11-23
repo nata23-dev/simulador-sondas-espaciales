@@ -1,10 +1,10 @@
-// Etapa 12F — dinámica y guiado de descenso sobre un cuerpo central cualquiera (modelo de masa puntual, un solo cuerpo).
-// Unidades: km, km/s, s, kg, N. Las aceleraciones de guiado se calculan en m/s² y se convierten a km/s² (÷1000).
-// Estado (8 componentes, como 12D): [x, y, z, vx, vy, vz, m, Δv_acum]
+// En este módulo calculo la dinámica y el guiado de descenso propulsado sobre cualquier cuerpo central con modelo de masa puntual y un solo cuerpo.
+// Trabajo en unidades de km, km/s, s, kg y N; calculo las aceleraciones de guiado en m/s² y las convierto a km/s² dividiendo por 1000.
+// Integro un vector de estado de 8 componentes: [x, y, z, vx, vy, vz, m, Δv_acum]
 //   dr/dt = v            dv/dt = −μ r/|r|³ + θ·F_max·û/(m·1000)
 //   dm/dt = −θ·F_max/(Isp·g0)            dΔv/dt = θ·F_max/(m·1000)   [km/s]
-// Perturbaciones EXPLÍCITAMENTE ausentes: arrastre/atmósfera, J2 y no esfericidad, terceros cuerpos, mareas, radiación solar,
-// actitud y deslizamiento de propelente. Todo el modelo depende solo del perfil del cuerpo (μ, R, ω opcional).
+// Excluyo de forma explícita perturbaciones no modeladas: atmósfera/arrastre, J2 y no esfericidad, terceros cuerpos, mareas,
+// presión de radiación solar, dinámica de actitud y chapoteo de propelente. Todo depende únicamente del perfil del cuerpo (μ, R y ω opcional).
 import { integrateDopri54 } from '../science/NumericalIntegrator.js';
 import { STANDARD_GRAVITY_M_S2 } from './BodyLandingVehicle.js';
 
@@ -15,11 +15,10 @@ export const LANDING_ABS_TOL = [1e-7, 1e-7, 1e-7, 1e-10, 1e-10, 1e-10, 1e-6, 1e-
 export const LANDING_REL_TOL = 1e-10;
 export const DEFAULT_LANDING_GUIDANCE = Object.freeze({
   descentPeriapsisAltitudeKm: 15, deorbitDelaySeconds: 0,
-  // Perfil vertical: v_z,obj = −√(v_td² + 2·a_d·máx(h − h_ref, 0)), a_d = fracción·(F_max/m − g), ganancia K (1/s).
-  // Corredor de altitud h_ref = c·v_h^1,5 + τc·v_h (m, v_h en m/s): el vehículo no desciende por debajo mientras queda velocidad horizontal
-  // por frenar. Es una ley heurística de guiado (no una trayectoria óptima ni un resultado predefinido).
+  // Defino aquí la ley heurística de guiado vertical: v_z,obj = −√(v_td² + 2·a_d·máx(h − h_ref, 0)), con a_d = fracción·(F_max/m − g) y ganancia K (1/s).
+  // Mantengo el vehículo sobre un corredor de altitud h_ref = c·v_h^1,5 + τc·v_h (m, con v_h en m/s) mientras aún quede velocidad horizontal que frenar.
   descentDecelFraction: 0.5, verticalGainPerS: 2, corridorCoefficient: 0.2, corridorLinearSeconds: 3, touchdownSpeedMS: 1, horizontalTimeConstantS: 3,
-  // Umbrales de fase (solo etiquetas): frenado principal si v_h > 200 m/s; reducción horizontal si v_h > 5 m/s; si no, terminal.
+  // Uso estos umbrales solo para etiquetar las fases del descenso: frenado principal si v_h > 200 m/s, reducción horizontal si v_h > 5 m/s y terminal por debajo.
   mainBrakingSpeedMS: 200, horizontalReductionSpeedMS: 5
 });
 export const DEFAULT_LANDING_LIMITS = Object.freeze({ softVerticalMS: 3, softHorizontalMS: 1.5, hardVerticalMS: 6, hardHorizontalMS: 3 });
@@ -28,6 +27,7 @@ const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const norm = a => Math.hypot(a[0], a[1], a[2]);
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 
+// Construyo el entorno físico inmutable del descenso a partir de GM, radio medio y vector de rotación opcional del cuerpo.
 export function createLandingEnvironment(profile) {
   if (!profile?.gm || !profile?.radiusKm) throw new LandingError('MISSING_BODY_DATA', `Faltan datos físicos de ${profile?.name ?? 'el cuerpo'}: ${!profile?.gm ? 'GM' : 'radio'}.`);
   const w = profile.rotation ? profile.rotation.angularVelocityRadS : 0;
@@ -35,15 +35,17 @@ export function createLandingEnvironment(profile) {
     omegaVectorRadS: profile.rotation ? profile.rotation.axis.map(x => x * w) : null, rotates: Boolean(profile.rotation) });
 }
 
+// Calculo la gravedad en superficie (m/s²) y la velocidad orbital circular (km/s) a una altitud dada.
 export const surfaceGravityMS2 = env => env.mu / env.radiusKm ** 2 * 1000;
 export const circularSpeedKmS = (env, altitudeKm) => Math.sqrt(env.mu / (env.radiusKm + altitudeKm));
 
-// v_rel = v − ω × r. Solo si el cuerpo declara rotación; en otro caso el "suelo" se supone en reposo en el marco local.
+// Calculo la velocidad relativa al suelo v_rel = v − ω × r si el cuerpo tiene rotación declarada; en caso contrario tomo el suelo en reposo local.
 export function relativeVelocityKmS(env, position, velocity) {
   if (!env.omegaVectorRadS) return [velocity[0], velocity[1], velocity[2]];
   const wr = cross(env.omegaVectorRadS, position);
   return [velocity[0] - wr[0], velocity[1] - wr[1], velocity[2] - wr[2]];
 }
+// Descompongo la cinemática local en altitud, vertical local, velocidades vertical y horizontal respecto al suelo (m/s) y gravedad local (m/s²).
 export function surfaceKinematics(env, position, velocity) {
   const r = norm(position), up = [position[0] / r, position[1] / r, position[2] / r];
   const rel = relativeVelocityKmS(env, position, velocity);
@@ -56,8 +58,8 @@ export function descentPhaseOf(guidance, horizontalMS) {
   return horizontalMS > guidance.mainBrakingSpeedMS ? 'braking' : horizontalMS > guidance.horizontalReductionSpeedMS ? 'horizontal-reduction' : 'terminal';
 }
 
-// Orden de guiado. mode: 'off' | 'retrograde' (salida de órbita, θ = 1 contra la velocidad inercial) | 'descent' (lazo cerrado).
-// Devuelve el empuje real (N), dirección, acelerador aplicado y banderas de saturación. Función pura del estado.
+// Calculo la orden de empuje como función pura del estado según el modo: 'off', 'retrograde' (empuje pleno contra v inercial) o 'descent' (lazo cerrado).
+// Devuelvo el empuje efectivo (N), dirección unitaria, acelerador aplicado y banderas de saturación y fase.
 export function landingCommand(env, lander, guidance, mode, state, massDryKg) {
   const engine = lander.engine, none = { thrustN: 0, throttle: 0, direction: [0, 0, 0], saturated: false, engineOn: false, phase: null, commandedThrottle: 0 };
   if (mode === 'off' || state[6] <= massDryKg + 1e-9) return none;
@@ -68,13 +70,13 @@ export function landingCommand(env, lander, guidance, mode, state, massDryKg) {
     return { thrustN: engine.thrustMaxN, throttle: 1, direction: velocity.map(x => -x / speed), saturated: false, engineOn: true, phase: 'deorbit', commandedThrottle: 1 };
   }
   const k = surfaceKinematics(env, position, velocity);
-  const aMax = engine.thrustMaxN / m; // m/s²
+  const aMax = engine.thrustMaxN / m; // aceleración máxima disponible en m/s²
   const vh = k.horizontalMS, hM = Math.max(0, k.altitudeKm * 1000);
-  const gEff = k.gravityMS2 - vh * vh / (k.radiusKm * 1000); // alivio centrífugo respecto a la superficie
+  const gEff = k.gravityMS2 - vh * vh / (k.radiusKm * 1000); // descuento el alivio centrífugo respecto a la superficie
   const aD = Math.max(0.05, guidance.descentDecelFraction * (aMax - k.gravityMS2));
   const hRef = guidance.corridorCoefficient * vh ** 1.5 + guidance.corridorLinearSeconds * vh;
   const vzTarget = -Math.sqrt(guidance.touchdownSpeedMS ** 2 + 2 * aD * Math.max(0, hM - hRef));
-  // Prealimentación a_d sobre el perfil (se anula al acercarse a la velocidad de contacto, para no mantener un vuelo estacionario).
+  // Aplico una prealimentación a_d sobre el perfil vertical que reduzco a cero al acercarme a la velocidad de contacto para evitar quedar en vuelo estacionario.
   const feedForward = aD * Math.min(1, Math.max(0, (-vzTarget - guidance.touchdownSpeedMS) / guidance.touchdownSpeedMS));
   let aUp = Math.max(0, gEff + feedForward + guidance.verticalGainPerS * (vzTarget - k.verticalMS));
   let saturated = false;
@@ -92,12 +94,13 @@ export function landingCommand(env, lander, guidance, mode, state, massDryKg) {
     requiredVerticalMS2: aUp, availableMS2: aMax };
 }
 
+// Construyo la función derivada de 8 componentes (posición, velocidad, masa y Δv acumulado) para el integrador DOPRI54.
 export function makeLandingDerivative(env, lander, guidance, mode, massDryKg) {
   const isp = lander.engine.ispS;
   return (t, s, out) => {
     const r2 = s[0] * s[0] + s[1] * s[1] + s[2] * s[2], r = Math.sqrt(r2), g = -env.mu / (r2 * r);
     const c = landingCommand(env, lander, guidance, mode, s, massDryKg);
-    const a = c.thrustN / s[6] / 1000; // km/s²
+    const a = c.thrustN / s[6] / 1000; // convierto N/kg (m/s²) a km/s²
     out[0] = s[3]; out[1] = s[4]; out[2] = s[5];
     out[3] = g * s[0] + a * c.direction[0]; out[4] = g * s[1] + a * c.direction[1]; out[5] = g * s[2] + a * c.direction[2];
     out[6] = -c.thrustN / (isp * STANDARD_GRAVITY_M_S2); out[7] = a;
@@ -108,12 +111,12 @@ const integrate = (derivative, state, t0, t1, maxStep, record, shouldAbort = nul
   derivative, initialState: state, startSeconds: t0, targetSeconds: t1, initialStepSeconds: Math.min(1, t1 - t0), minStepSeconds: 1e-9,
   maxStepSeconds: Math.min(maxStep, Math.max(t1 - t0, 1e-9)), absTol: LANDING_ABS_TOL, relTol: LANDING_REL_TOL, recordSteps: record, shouldAbort });
 
-// Integra un tramo y se detiene en el primer evento: 'contact' (|r| < R), 'depleted' (m ≤ masa seca), o `stopWhen`. Refina por bisección.
-// Tolerancias de contacto (12F.1, OBS-12F-01), que son magnitudes DISTINTAS:
-//  · predicado geométrico: contacto si |r| < R − CONTACT_PREDICATE_KM (1e-9 km); fija el signo, no la precisión;
-//  · intervalo temporal: la bisección termina con un intervalo [lo, hi] ≤ CONTACT_BRACKET_SECONDS (1e-7 s);
-//  · error espacial de localización ≲ |v_r|·Δt_intervalo (≈ 0,15 mm a 1,5 km/s), MAYOR que 1e-9 km;
-//  · error de integración: lo gobiernan las tolerancias DOPRI54 (LANDING_ABS_TOL, LANDING_REL_TOL), no la bisección.
+// Integro un tramo y me detengo en el primer evento detectado: 'contact' (|r| < R), 'depleted' (m ≤ masa seca) o `stopWhen`, refinándolo por bisección.
+// Mantengo separadas las cuatro magnitudes de tolerancia del contacto:
+//  · predicado geométrico: marco contacto cuando |r| < R − CONTACT_PREDICATE_KM (1e-9 km), que fija el cruce pero no la precisión final;
+//  · intervalo temporal: cierro la bisección cuando [lo, hi] ≤ CONTACT_BRACKET_SECONDS (1e-7 s);
+//  · error espacial de localización: queda acotado por |v_r|·Δt_intervalo (≈ 0,15 mm a 1,5 km/s), mayor que 1e-9 km;
+//  · error de integración: depende exclusivamente de LANDING_ABS_TOL y LANDING_REL_TOL en DOPRI54.
 export const CONTACT_PREDICATE_KM = 1e-9;
 export const CONTACT_BRACKET_SECONDS = 1e-7;
 export function runLandingLeg({ env, lander, guidance, mode, massDryKg, state, t0, t1, maxStepSeconds = 2, stopWhen = null }) {
@@ -150,7 +153,7 @@ export function runLandingLeg({ env, lander, guidance, mode, massDryKg, state, t
 const zero = () => ({ acceptedSteps: 0, rejectedSteps: 0, functionEvaluations: 0, minStepSeconds: 0, maxStepSeconds: 0 });
 
 // ---- Órbita inicial local -----------------------------------------------------------------------------------------------
-// Elementos clásicos en el marco local (inclinación respecto al plano xy local, arbitrario salvo que exista rotación definida).
+// Calculo los elementos orbitales clásicos en el marco inercial local (con inclinación referida al plano xy local).
 export function orbitalSummary(env, position, velocity) {
   const r = norm(position), v2 = dot(velocity, velocity), h = cross(position, velocity), hn = norm(h), energy = v2 / 2 - env.mu / r;
   const rv = dot(position, velocity);
@@ -162,6 +165,7 @@ export function orbitalSummary(env, position, velocity) {
     eccentricityVector: e, angularMomentumVector: h };
 }
 
+// Valido que los parámetros keplerianos iniciales sean finitos, estén sobre la superficie y tengan inclinación válida.
 export function validateInitialOrbit(env, orbit) {
   const issues = [];
   const rp = orbit.periapsisAltitudeKm, ra = orbit.apoapsisAltitudeKm ?? rp;
@@ -175,6 +179,7 @@ export function validateInitialOrbit(env, orbit) {
   return issues;
 }
 
+// Convierto la órbita inicial dada en elementos clásicos a vector de posición (km) y velocidad (km/s) en el marco local.
 export function initialOrbitState(env, orbit) {
   const issues = validateInitialOrbit(env, orbit);
   if (issues.length) throw new LandingError('INVALID_ORBIT', issues.join(' '), { issues });

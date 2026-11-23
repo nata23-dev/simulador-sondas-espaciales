@@ -1,3 +1,6 @@
+// En este módulo regulo dinámicamente la escala visual de los planetas según el modo activo,
+// la cercanía de observación y la protección frente a tránsitos solares artificiales o solapes
+// con sondas históricas en modo exploratorio, sin modificar jamás los centros heliocéntricos.
 import * as THREE from 'three';
 import {
   calcularEscalaObjetivoPlaneta,
@@ -12,9 +15,9 @@ function suavizar(inicio, fin, valor) {
 }
 
 /**
- * Ajusta el tamaño visible de los cuerpos según el modo de escala activo y la cercanía de observación.
- * Solo ajusta su escala visual: conserva los centros heliocéntricos y los datos científicos.
- * También atenúa las ocultaciones artificiales del Sol por cuerpos ampliados.
+ * Creo el controlador de escala visual de planetas que suaviza cada transición por fotograma,
+ * atenúa ocultaciones artificiales del Sol por discos ampliados y evita que un planeta en modo
+ * exploratorio envuelva una sonda histórica durante un sobrevuelo cercano.
  */
 export function crearProteccionTransitosSolares({
   camera,
@@ -40,7 +43,7 @@ export function crearProteccionTransitosSolares({
         objetoSeleccionado.planeta.radio)
       : 0;
 
-    // Si no se inyecta `obtenerModoEscala`, conserva exactamente la política heredada para compatibilidad de pruebas.
+    // Si no recibo `obtenerModoEscala`, aplico la curva panorámica clásica de respaldo.
     const panorama = suavizar(180, 650, distanciaSol);
     const ampliacionGeneral = 1 + 1.5 * panorama;
 
@@ -72,7 +75,7 @@ export function crearProteccionTransitosSolares({
         const delante = suavizar(0, radio * 2, distanciaSol - distancia - radio * escala);
 
         if (delante > 0 && distancia > 0) {
-          // Compara los tamaños angulares antes de reducir una ocultación visual del Sol.
+          // Comparo los radios angulares del Sol y del planeta interpuesto para atenuar eclipses visuales artificiales.
           const separacion = Math.acos(THREE.MathUtils.clamp(
             haciaSol.dot(haciaPlaneta.multiplyScalar(1 / distancia)), -1, 1
           ));
@@ -83,8 +86,7 @@ export function crearProteccionTransitosSolares({
         }
       }
 
-      // En Modo Exploratorio, evita que una esfera planetaria ampliada o los anillos de Saturno
-      // engullan visualmente una sonda histórica durante un sobrevuelo cercano real.
+      // En modo exploratorio limito la escala ampliada para que el globo o los anillos no cubran una sonda histórica cercana.
       if (modoEscala && modoEscala !== 'cientifica' && sondasHistoricas) {
         let menorDistSonda = Infinity;
         for (const sHist of sondasHistoricas.values()) {
@@ -102,7 +104,7 @@ export function crearProteccionTransitosSolares({
         }
       }
 
-      // La transición exponencial mantiene la escala estable a cualquier frecuencia de fotogramas.
+      // Aplico amortiguación exponencial independiente de la frecuencia de fotogramas.
       const anterior = objeto.posicion.scale.x;
       const mezcla = 1 - Math.exp(-6 * Math.max(segundos, 0.001));
       objeto.posicion.scale.setScalar(anterior + (escala - anterior) * mezcla);

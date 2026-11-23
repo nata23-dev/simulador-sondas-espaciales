@@ -1,10 +1,12 @@
+// Aquí gestiono el reloj interno de simulación mediante una época fija en JD TDB y segundos transcurridos,
+// evitando la pérdida de resolución en coma flotante al sumar pasos pequeños sobre un número juliano (~2.46e6).
+// Unidades: segundos (`elapsedSeconds`) y días julianos (`jdTdb`); escala temporal TDB pura, sin `Date` ni UTC.
 import { requireFiniteNumber, SECONDS_PER_DAY } from './Units.js';
 import { requireJdTdb, secondsBetweenJdTdb } from './Time.js';
 
 /**
- * Representa un instante interno de simulación mediante segundos transcurridos
- * desde una época de referencia JD TDB. Evita acumular pequeños pasos sobre un
- * número juliano grande (~2.46e6, donde 1 ULP ~ 40.2 us).
+ * Aquí represento un instante interno de simulación mediante segundos transcurridos desde una época de referencia JD TDB,
+ * evitando acumular incrementos pequeños directamente sobre un número juliano grande (~2.46e6, donde 1 ULP ≈ 40,2 μs).
  */
 export function createSimulationInstant(epochJdTdb, elapsedSeconds = 0) {
   requireJdTdb(epochJdTdb);
@@ -24,7 +26,7 @@ export function createSimulationInstant(epochJdTdb, elapsedSeconds = 0) {
 }
 
 /**
- * Avanza un instante interno acumulando sobre `elapsedSeconds`, nunca sobre `jdTdb`.
+ * Aquí avanzo un instante interno acumulando siempre sobre `elapsedSeconds` y nunca directamente sobre `jdTdb`.
  */
 export function advanceSimulationInstant(instant, deltaSeconds) {
   if (!instant || typeof instant !== 'object') {
@@ -41,20 +43,21 @@ export function advanceSimulationInstant(instant, deltaSeconds) {
 }
 
 /**
- * Convierte un JD TDB externo en segundos relativos a `epochJdTdb`.
+ * Aquí convierto un instante JD TDB externo en segundos relativos a `epochJdTdb`.
  */
 export function jdTdbToElapsedSeconds(epochJdTdb, targetJdTdb) {
   return secondsBetweenJdTdb(epochJdTdb, targetJdTdb);
 }
 
 /**
- * Descompone `(epochJdTdb, elapsedSeconds)` en fecha y hora gregoriana en la
- * escala TDB mediante aritmética entera de Día Juliano, sin utilizar `Date` ni UTC.
+ * Aquí descompongo `(epochJdTdb, elapsedSeconds)` en fecha y hora gregoriana dentro de la escala TDB
+ * mediante aritmética entera de Número de Día Juliano (JDN), sin usar `Date` ni conversiones UTC.
  */
 export function decomposeJdTdbCalendar(epochJdTdb, elapsedSeconds = 0) {
   requireJdTdb(epochJdTdb);
   requireFiniteNumber(elapsedSeconds, 'elapsedSeconds');
 
+  // Desplazo 0,5 días porque el día juliano comienza al mediodía mientras el día civil arranca a las 00:00.
   const shiftedEpoch = epochJdTdb + 0.5;
   const baseJdn = Math.floor(shiftedEpoch);
   const baseDaySeconds = (shiftedEpoch - baseJdn) * SECONDS_PER_DAY;
@@ -78,6 +81,7 @@ export function decomposeJdTdbCalendar(epochJdTdb, elapsedSeconds = 0) {
   const minute = Math.floor((totalWholeSeconds % 3600) / 60);
   const second = (totalWholeSeconds % 60) + fractionalSeconds;
 
+  // Aplico la conversión entera estándar de JDN a calendario gregoriano proléptico (Richards / Fliegel–Van Flandern).
   const jdn = baseJdn + dayOffset;
   const a = jdn + 32044;
   const b = Math.floor((4 * a + 3) / 146097);
@@ -110,7 +114,7 @@ export function decomposeJdTdbCalendar(epochJdTdb, elapsedSeconds = 0) {
 }
 
 /**
- * Formatea una duración de misión en formato legible `T+DDd HHh MMm SSs` (o `T-`).
+ * Aquí formateo una duración de misión en el formato legible `T+DDd HHh MMm SSs` (o `T-` para tiempos previos).
  */
 export function formatMissionElapsedTime(elapsedSeconds) {
   requireFiniteNumber(elapsedSeconds, 'elapsedSeconds');

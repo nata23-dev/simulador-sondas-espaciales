@@ -1,4 +1,4 @@
-/* Scoped layout for both time systems. No time calculations or duplicated inputs. */
+/* Aquí organizo la disposición de las líneas temporales (2026 e histórica 1977–2026) sin alterar la lógica ni duplicar entradas. */
 #app .temporal-layout {
   position:absolute;
   z-index:12;

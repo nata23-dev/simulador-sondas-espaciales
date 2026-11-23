@@ -1,4 +1,4 @@
-/* Marco de exploración. El motor y el lienzo conservan el viewport completo. */
+/* Aquí defino el marco principal del espacio de trabajo (cabecera, dock y panel inspector) manteniendo el lienzo 3D a pantalla completa. */
 #app.workspace-ready { --edge:24px; --surface:#111316f5; }
 .workspace-ready .app-header { top:0; left:0; right:0; height:74px; padding:0 24px; gap:24px; background:#08090ce8; border-bottom:1px solid var(--line); }
 .workspace-ready .brand { flex:1; min-width:0; }

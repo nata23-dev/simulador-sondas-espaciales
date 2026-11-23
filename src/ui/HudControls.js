@@ -1,4 +1,5 @@
-// Este módulo solo cambia la presentación; la selección, el viaje y la fecha tienen sus propios controladores.
+// En este módulo controlo únicamente la presentación del HUD principal: el modo inmersivo, el indicador de objetivo observado y el comportamiento de los menús desplegables.
+// No gestiono la selección física, el movimiento de cámara ni la fecha; cada uno tiene su propio controlador.
 export function crearControlesHUD() {
   const app = document.querySelector('#app');
   const boton = document.querySelector('#immersive-button');
@@ -15,6 +16,7 @@ export function crearControlesHUD() {
   let sondaActiva = false;
   let nombreSondaActual = 'Sonda';
 
+  // Actualizo la etiqueta «Observando · …» según si la cámara sigue a un planeta o a una sonda.
   function actualizarObservacion() {
     const etiquetaPlaneta = planetaActual === 'Jupiter' ? 'Júpiter' : planetaActual;
     const observando = Boolean(etiquetaPlaneta) || sondaActiva;
@@ -29,12 +31,13 @@ export function crearControlesHUD() {
     }
   }
 
+  // Alterno el modo inmersivo marcando como inertes los paneles ocultos para excluirlos del teclado y anunciando el cambio de estado.
   function establecerInmersivo(valor) {
     if (inmersivo === valor) return;
     inmersivo = valor;
     if (valor) focoAnterior = document.activeElement;
     app.classList.toggle('is-immersive', valor);
-    // Los controles ocultos tampoco deben recibir foco con el teclado.
+    // Aplico inert a los instrumentos secundarios para que ningún control oculto reciba foco con Tab.
     for (const instrumento of instrumentos) instrumento.inert = valor;
     boton.setAttribute('aria-pressed', String(valor));
     boton.setAttribute('aria-label', valor ? 'Mostrar controles' : 'Activar modo inmersivo');
@@ -57,6 +60,7 @@ export function crearControlesHUD() {
   info.addEventListener('toggle', () => {
     info.querySelector('.collapse-hint').textContent = info.open ? 'Contraer' : 'Ver datos';
   });
+  // Atiendo Escape para salir del modo inmersivo o cerrar menús desplegados, y la tecla «I» para alternar la vista inmersiva.
   document.addEventListener('keydown', event => {
     const editando = event.target.closest('input, select, textarea, [contenteditable="true"]');
     if (event.key === 'Escape') {
@@ -74,6 +78,7 @@ export function crearControlesHUD() {
     }
   });
 
+  // Mantengo abierto solo un menú desplegable a la vez y cierro cualquiera al pulsar fuera de él.
   for (const menu of menus) {
     menu.addEventListener('toggle', () => {
       if (menu.open) for (const otro of menus) if (otro !== menu) otro.open = false;
@@ -83,6 +88,7 @@ export function crearControlesHUD() {
     for (const menu of menus) if (menu.open && !menu.contains(event.target)) menu.open = false;
   });
 
+  // Reflejo en el HUD el destino planetario activo y ajusto la apertura inicial de la ficha según el ancho de pantalla.
   function actualizarSeleccion(nombre) {
     planetaActual = nombre;
     if (nombre) sondaActiva = false;
@@ -91,10 +97,11 @@ export function crearControlesHUD() {
     actualizarObservacion();
     if (destino.contains(document.activeElement)) destino.querySelector('summary').focus();
     destino.open = false;
-    // En móviles la ficha empieza contraída para dejar libre la escena.
+    // En móviles dejo la ficha contraída por defecto para no tapar la escena.
     if (nombre) info.open = !window.matchMedia('(max-width: 760px)').matches;
   }
 
+  // Reflejo en el HUD cuando el objetivo observado pasa a ser una sonda.
   function actualizarSeleccionSonda(activa, nombreSonda = 'Sonda') {
     sondaActiva = Boolean(activa);
     nombreSondaActual = nombreSonda;

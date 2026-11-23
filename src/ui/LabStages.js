@@ -1,9 +1,8 @@
-// Etapa 17 — estructura del laboratorio: tres etapas (panel lateral) y las pestañas de cada una. Módulo sin DOM ni estilos para
-// que la navegación (ExperimentalLaboratory, misión guiada, menú de áreas) y las pruebas compartan la misma definición.
+// En este módulo defino la estructura de navegación del laboratorio en tres etapas y sus pestañas.
+// Lo mantengo libre de DOM y estilos para que el laboratorio, la misión guiada y el menú compartan exactamente la misma fuente de verdad.
 import { MC_PANES } from './MissionControlCenter.js';
 
-// 17: el laboratorio se organiza en tres etapas (panel lateral) y cada etapa en pestañas. Solo presentación y navegación:
-// las herramientas son las mismas de las etapas 12–16 y conservan su estado al cambiar de etapa o de pestaña.
+// Organizo cada etapa y cada pestaña como objetos inmutables; cambiar entre ellas solo alterna la vista y conserva el estado de cada herramienta.
 const tab = (id, title, desc, chain = null) => Object.freeze({ id, title, desc, chain });
 export const LAB_STAGES = Object.freeze([
   Object.freeze({ id: 'probe', number: 1, title: 'Elegir sonda', tabs: Object.freeze([
@@ -24,5 +23,5 @@ export const LAB_STAGES = Object.freeze([
     tab('events', MC_PANES.events, 'Fases y eventos calculados: pulsa uno para saltar a su instante.'),
     tab('results', MC_PANES.results, 'Resultado según el modelo, restricciones y simplificaciones de la misión en reproducción.')]) })
 ]);
-/** Pestaña `tabId` de la etapa `stageId`, o null si la combinación no existe. */
+// Devuelvo los metadatos de la pestaña pedida dentro de su etapa, o null si la combinación no existe.
 export const labTab = (stageId, tabId) => LAB_STAGES.find(stage => stage.id === stageId)?.tabs.find(item => item.id === tabId) ?? null;

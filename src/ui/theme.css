@@ -1,7 +1,5 @@
-/* Etapas 14 y 14.1 — capa visual común del simulador.
-   Se importa al final (src/main.js) y se superpone a las hojas existentes sin reescribirlas. Solo presentación: ningún valor
-   de esta hoja altera posiciones, escalas, tiempos ni resultados. Lenguaje visual: espacio negro, superficies grafito
-   neutras, texto blanco/gris y color solo con significado (cuerpos, naves y misiones, estado del tiempo, acciones). */
+/* Aquí centralizo la identidad visual oscura del simulador: tipografía Inter, tokens de color y superficies traslúcidas.
+   Se carga al final en src/main.js y solo controla presentación, sin alterar escalas ni cálculos científicos. */
 
 /* ---------- Tipografía (Inter, SIL OFL 1.1; licencia en src/ui/fonts/OFL.txt) ---------- */
 @font-face {

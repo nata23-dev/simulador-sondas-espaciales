@@ -1,15 +1,18 @@
-// Etapa 25 — línea de tiempo de la presentación del lanzamiento Voyager. Puro: sin DOM ni Three.js.
-//
-// Relaciona el tiempo de la PRESENTACIÓN (segundos de pantalla, p) con el tiempo de MISIÓN (segundos desde la ignición de los
-// motores sólidos, t). Los tramos alrededor de cada acontecimiento van a velocidad real (×1) o casi; los largos (ascenso, crucero
-// en la órbita de aparcamiento) se aceleran y se indica siempre el factor. Los cambios de velocidad son rampas suaves dentro de los
-// tramos rápidos, t(p) es la integral del factor y el reloj nunca retrocede.
+/**
+ * En este módulo puro (sin DOM ni Three.js) defino la línea de tiempo de la
+ * presentación del lanzamiento Voyager.
+ * Relaciono el tiempo de pantalla `p` (segundos de presentación) con el tiempo
+ * de misión `t` (segundos desde la ignición de los motores sólidos, T = 0):
+ * alrededor de cada hito clave avanzo a velocidad real o cercana (×1–×3) y en
+ * los tramos largos (ascenso y crucero de aparcamiento) aplico rampas suaves de
+ * aceleración integrando `t(p)` de forma monótona creciente.
+ */
 import { eventoPorId } from '../science/VoyagerLaunchProfile.js';
 
-export const INICIO_MISION_S = -24; // la presentación empieza en T − 24 s (aproximación desde el espacio)
+export const INICIO_MISION_S = -24; // Inicio en T - 24 s para cubrir la aproximación desde el espacio.
 export const INICIO_CUENTA_ATRAS_S = -10;
 
-/** Tramos [t inicial, t final, factor] a partir de los acontecimientos documentados de la misión. */
+// Construyo los tramos `[tInicio, tFin, factorVelocidad]` a partir de los hitos documentados de la misión.
 export function tramosPresentacion(mision) {
   const t = id => {
     const e = eventoPorId(mision, id);
@@ -20,31 +23,31 @@ export function tramosPresentacion(mision) {
   const meco1 = t('meco1'), mes2 = t('mes2'), meco2 = t('meco2'), sep = t('separacion-nave'), pmI = t('pm-ignicion');
   const pmO = t('pm-apagado'), mast = t('mastiles'), pmS = t('pm-separacion');
   return [
-    [INICIO_MISION_S, 20, 1], // aproximación, cuenta atrás y despegue a velocidad real
+    [INICIO_MISION_S, 20, 1], // Mantengo velocidad real durante la aproximación, la cuenta atrás y el despegue.
     [20, srm - 4, 6],
-    [srm - 4, srm + 6, 1], // separación de los motores sólidos
+    [srm - 4, srm + 6, 1], // Vuelvo a velocidad real para la separación de los motores sólidos.
     [srm + 6, e1 - 3, 12],
-    [e1 - 3, cofia + 5, 2], // cambio de etapa y separación de la cofia
+    [e1 - 3, cofia + 5, 2], // Ralentizo para mostrar el cambio de etapa y la apertura de la cofia.
     [cofia + 5, e2 - 3, 16],
-    [e2 - 3, mes1 + 4, 3], // separación Titan–Centaur y primer encendido
+    [e2 - 3, mes1 + 4, 3], // Muestro la separación Titan-Centaur y el primer encendido del Centaur.
     [mes1 + 4, meco1 - 2, 16],
     [meco1 - 2, meco1 + 6, 1],
-    [meco1 + 6, mes2 - 4, 250], // crucero en la órbita de aparcamiento (≈ 43 min)
+    [meco1 + 6, mes2 - 4, 250], // Acelero el crucero de unos 43 minutos en la órbita de aparcamiento.
     [mes2 - 4, mes2 + 6, 1],
     [mes2 + 6, meco2 - 3, 40],
     [meco2 - 3, meco2 + 4, 1],
     [meco2 + 4, sep - 4, 25],
-    [sep - 4, pmI + 4, 3], // separación de la nave e ignición del módulo de propulsión
+    [sep - 4, pmI + 4, 3], // Desacelero para la separación de la nave y la ignición del módulo de propulsión.
     [pmI + 4, pmO - 2, 6],
     [pmO - 2, pmO + 6, 1.5],
     [pmO + 6, mast - 2, 12],
-    [mast - 2, mast + 10, 1.5], // suelta de los mástiles: aparece el modelo de NASA
+    [mast - 2, mast + 10, 1.5], // Mantengo ritmo pausado durante el despliegue de mástiles y la transición al modelo NASA.
     [mast + 10, pmS - 3, 60],
     [pmS - 3, pmS + 8, 1]
   ];
 }
 
-// Fases para el panel (por tiempo de misión). `hasta` exclusivo.
+// Defino las fases narrativas del panel por tiempo de misión (límite `hasta` exclusivo).
 export function fasesPresentacion(mision) {
   const t = id => eventoPorId(mision, id).t;
   return [
@@ -77,7 +80,7 @@ export function fasesPresentacion(mision) {
   ];
 }
 
-// Planos de cámara (por tiempo de misión). `suave`: se funde con el anterior en lugar de cortar.
+// Planifico los cortes y transiciones suaves (`suave: true`) de cámara a lo largo de los hitos del lanzamiento.
 export function planosPresentacion(mision) {
   const t = id => eventoPorId(mision, id).t;
   const srm = t('srm-separacion'), e1 = t('etapa1-apagado'), cofia = t('cofia'), mes1 = t('mes1'), meco1 = t('meco1');
@@ -103,10 +106,7 @@ export function planosPresentacion(mision) {
   ].map((plano, i, lista) => ({ ...plano, hasta: lista[i + 1]?.desde ?? Infinity }));
 }
 
-/**
- * Crea la línea de tiempo. Devuelve conversiones p ↔ t, el factor instantáneo, la fase, el plano y los acontecimientos con su
- * instante de presentación.
- */
+// Integro numéricamente la relación biyectiva p <-> t con rampas logarítmicas suaves y devuelvo consultas de fase, plano y eventos.
 export function crearLineaTiempo(mision) {
   const tramos = tramosPresentacion(mision);
   for (let i = 0; i < tramos.length; i++) {
@@ -114,9 +114,7 @@ export function crearLineaTiempo(mision) {
     if (!(b > a) || !(f > 0)) throw new RangeError(`Tramo ${i} inválido: [${a}, ${b}] × ${f}`);
     if (i > 0 && Math.abs(tramos[i - 1][1] - a) > 1e-9) throw new RangeError(`Tramos ${i - 1} y ${i} no contiguos`);
   }
-  // Velocidad continua: cada tramo rápido arranca y termina a la velocidad de su vecino más lento y la alcanza con una rampa suave
-  // (en escala logarítmica) de RAMPA segundos de pantalla. Los tramos lentos, donde están los acontecimientos, quedan intactos, y la
-  // duración en pantalla de cada tramo se ajusta para que cubra exactamente su intervalo de misión.
+  // Construyo rampas logarítmicas de 1,5 s dentro de los tramos rápidos para mantener velocidad continua sin alterar los tramos lentos de los hitos.
   const RAMPA = 1.5, DP = 0.01;
   const suave = u => u * u * (3 - 2 * u);
   const rampa = (r0, r1, u) => Math.exp(Math.log(r0) + (Math.log(r1) - Math.log(r0)) * suave(u));
@@ -132,6 +130,7 @@ export function crearLineaTiempo(mision) {
     : tr.der && x > tr.duracion - RAMPA ? rampa(tr.der, tr.f, (tr.duracion - x) / RAMPA) : tr.f;
   const pTabla = [], tTabla = [], fTabla = [];
   let p0 = 0;
+  // Tabulo `t(p)` por regla del trapecio fijando exactamente el extremo `tr.b` de cada tramo para evitar deriva acumulada.
   for (const tr of plan) {
     const pasos = Math.max(1, Math.ceil(tr.duracion / DP)), h = tr.duracion / pasos;
     let t = tr.a, fAnt = factorLocal(tr, 0);
@@ -139,13 +138,14 @@ export function crearLineaTiempo(mision) {
     for (let j = 1; j <= pasos; j++) {
       const fj = factorLocal(tr, j * h);
       t += 0.5 * (fAnt + fj) * h; fAnt = fj;
-      pTabla.push(p0 + j * h); tTabla.push(j === pasos ? tr.b : t); fTabla.push(fj); // el final del tramo cae en su instante exacto
+      pTabla.push(p0 + j * h); tTabla.push(j === pasos ? tr.b : t); fTabla.push(fj);
     }
     p0 += tr.duracion;
   }
   const N = pTabla.length, duracion = p0, tFinal = tTabla[N - 1];
   const buscar = (tabla, v) => { let lo = 0, hi = N - 1; while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (tabla[mid] <= v) lo = mid; else hi = mid; } return lo; };
 
+  // Convierto segundos de presentación en segundos de misión interpolando linealmente sobre la tabla integrada.
   function misionDesdePresentacion(p) {
     if (p <= 0) return tTabla[0];
     if (p >= duracion) return tFinal;
@@ -153,6 +153,7 @@ export function crearLineaTiempo(mision) {
     return tTabla[j] + (tTabla[j + 1] - tTabla[j]) * (p - pTabla[j]) / (pTabla[j + 1] - pTabla[j]);
   }
   const factorEn = p => fTabla[buscar(pTabla, Math.min(Math.max(p, 0), duracion))];
+  // Invierto la tabla monótona para obtener el segundo de presentación correspondiente a un tiempo de misión dado.
   function presentacionDesdeMision(t) {
     if (t <= tTabla[0]) return 0;
     if (t >= tFinal) return duracion;
@@ -171,7 +172,7 @@ export function crearLineaTiempo(mision) {
   });
 }
 
-/** Reloj de misión «T − 00:10» / «T + 01:02:19». */
+// Formateo el reloj de misión en estilo «T − 00:10» o «T + 1:02:19».
 export function formatearRelojMision(t) {
   const signo = t < 0 ? '−' : '+', s = Math.abs(t), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), seg = Math.floor(s % 60);
   const dos = v => String(v).padStart(2, '0');

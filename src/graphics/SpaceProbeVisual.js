@@ -1,3 +1,6 @@
+// En este módulo construyo la representación 3D de una sonda espacial, comparto en caché
+// la plantilla GLB oficial de Voyager, ofrezco respaldo procedimental o modelo externo de misión
+// y dibujo su trayectoria recorrida y predicha con actualizaciones parciales de buffer en WebGL.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MODOS_ESCALA_VISUAL } from './ScaleModeConfig.js';
@@ -17,10 +20,10 @@ export const METADATOS_MODELO_VOYAGER = Object.freeze({
   advertenciaCientifica: 'Representación visual tridimensional oficial NASA VTAD de Voyager 1 (-31) y Voyager 2 (-32) en el modo histórico. La sonda de una misión del laboratorio usa el modelo de su propio diseño.'
 });
 
-// Caché compartida en memoria para evitar descargar o subir texturas de Voyager.glb más de una vez
+// Mantengo en memoria una caché compartida de promesas GLB para descargar y subir Voyager.glb una sola vez.
 const cachePlantillaVoyagerGlb = new Map();
 
-// 25: también la usa el lanzamiento 3D, que muestra el mismo modelo oficial al desplegarse la nave (sin descargarlo dos veces).
+// Cargo y comparto la plantilla oficial de Voyager.glb entre la escena principal y el despliegue en el lanzamiento 3D.
 export function cargarPlantillaVoyagerCompartida(urlGlb) {
   if (cachePlantillaVoyagerGlb.has(urlGlb)) {
     return cachePlantillaVoyagerGlb.get(urlGlb);
@@ -33,6 +36,7 @@ export function cargarPlantillaVoyagerCompartida(urlGlb) {
   return promesa;
 }
 
+// Reutilizo una única textura radial en canvas para la baliza luminosa lejana de todas las sondas.
 let texturaBalizaCompartida = null;
 function crearTexturaBaliza() {
   if (texturaBalizaCompartida) return texturaBalizaCompartida;
@@ -58,11 +62,11 @@ function crearTexturaBaliza() {
 }
 
 /**
- * Normaliza la escena glTF oficial de Voyager (NASA VTAD):
- * - Oculta el cubo auxiliar transparente de raíz exportado desde Blender (`material.name === 'clear'`).
- * - Centra el pivote de rotación sobre el eje de simetría del bus decagonal y la antena parabólica de 3,7 m.
- * - Orienta el eje de la antena de alta ganancia (+Y en el glTF original) hacia +Z local para `lookAt`.
- * - Escala de forma estrictamente uniforme (1:1:1) sin deformar ningún componente.
+ * Normalizo la escena glTF oficial de Voyager (NASA VTAD):
+ * - Oculto el cubo auxiliar transparente de raíz exportado desde Blender (`material.name === 'clear'`).
+ * - Centro el pivote de giro sobre el eje de simetría del bus decagonal y la antena parabólica de 3,7 m.
+ * - Giro el eje de la antena de alta ganancia (+Y original) hacia +Z local para orientarlo con `lookAt`.
+ * - Aplico un escalado estrictamente uniforme (1:1:1) sin deformar ningún componente.
  */
 export function normalizarEscenaVoyagerGltf(escenaGltf, {
   diametroAntenaObjetivo = 0.78,
@@ -251,8 +255,8 @@ function construirGeometriaProcedural(mallasSeleccionables, idSonda) {
 }
 
 /**
- * Representación gráfica de una sonda espacial con soporte compartido para el modelo oficial
- * Voyager glTF 2.0 de NASA VTAD, respaldo procedural automático y línea de trayectoria.
+ * Construyo el objeto visual de una sonda espacial con modelo oficial Voyager glTF 2.0 bajo demanda,
+ * respaldo procedimental automático, soporte para modelos externos de misión y buffers de trayectoria.
  */
 export function crearSondaVisual({
   idSonda = '__SONDA__',
@@ -280,8 +284,7 @@ export function crearSondaVisual({
   grupoVoyagerContenedor.visible = false;
   visual.add(grupoVoyagerContenedor);
 
-  // 17.1: modelo de la sonda de una misión planificada en el laboratorio (p. ej. el modelo oficial de NASA de Cassini).
-  // Lo prepara quien llama, con radio envolvente ~1 y la antena hacia +Z (eje que se orienta hacia la Tierra). Solo presentación.
+  // Alojo aquí el modelo externo de una misión diseñada en el laboratorio (normalizado con radio ~1 y antena en +Z).
   const grupoExterno = new THREE.Group();
   grupoExterno.name = `${nombreGrupo}_ModeloMision`;
   grupoExterno.visible = false;
@@ -315,7 +318,7 @@ export function crearSondaVisual({
   baliza.scale.setScalar(1.4);
   posicion.add(baliza);
 
-  // Iluminación de relleno local suave y neutra (decay = 0 para invariancia frente a escala visual y >150 AU)
+  // Añado iluminación local neutra sin decaimiento (decay = 0) para que la nave siga legible más allá de 150 AU.
   const luzRellenoPrincipal = new THREE.PointLight(0xeef2fb, 0.56, 1.5, 0);
   luzRellenoPrincipal.position.set(1.3, 1.1, 1.5);
   const luzContraluzSuave = new THREE.PointLight(0xc9d8f0, 0.30, 1.5, 0);
@@ -325,8 +328,7 @@ export function crearSondaVisual({
   const trayectoriaGrupo = new THREE.Group();
   trayectoriaGrupo.name = `${nombreGrupo}_Trayectoria`;
 
-  // One independent line segment per adjacent pair. A degenerate pair marks
-  // an uncertified SPK handoff without drawing a fictional connecting chord.
+  // Construyo segmentos independientes por par adyacente; un segmento degenerado marca un empalme SPK sin dibujar una cuerda ficticia.
   const bufferPredicho = new Float32Array(Math.max(0, maxMuestrasTrayectoria - 1) * 6);
   const attrPredicho = new THREE.BufferAttribute(bufferPredicho, 3);
   const geoPredicha = new THREE.BufferGeometry();
@@ -420,7 +422,7 @@ export function crearSondaVisual({
   let ocultaPorPrimeraPersona = false;
   let modeloExterno = null;
   let radioObservacionExterno = 0.95;
-  // Multiplica los tamaños visuales (no la posición): cerca de un planeta la nave ampliada no debe tapar el disco a escala 1:1.
+  // Multiplico el tamaño visual (nunca la posición) para reducir la nave cerca de planetas o satélites a escala 1:1.
   let factorEscala = 1;
   const observadoresModelo = new Set();
   const direccionApuntado = new THREE.Vector3();
@@ -457,8 +459,7 @@ export function crearSondaVisual({
     });
   }
 
-  // 18: Voyager.glb (3 MB) se descarga la primera vez que la sonda se muestra con su apariencia Voyager (o si se pide con
-  // solicitarModelo), no al crear la escena: el modo de exploración no lo necesita.
+  // Solicito Voyager.glb bajo demanda la primera vez que se muestra la sonda o se precarga el modo histórico.
   function solicitarModelo() {
     if (cargaSolicitada || !cargarModeloGlb || typeof fetch !== 'function') return;
     cargaSolicitada = true;
@@ -682,7 +683,7 @@ export function crearSondaVisual({
     ultimaPosRecorridoY = posicionEscena.y;
     ultimaPosRecorridoZ = posicionEscena.z;
 
-    // PERF-02: sube a WebGL solo los 1–2 segmentos modificados en vez del buffer completo (hasta 393 KB por fotograma).
+    // Subo a WebGL únicamente el rango de segmentos modificados en lugar de reenviar el buffer entero en cada fotograma.
     marcarRangoRecorridoSucio(minDirtyEdge * 6, (maxDirtyEdge - minDirtyEdge + 1) * 6);
     geoRecorrida.setDrawRange(0, drawCount);
   }
@@ -701,6 +702,7 @@ export function crearSondaVisual({
     }
   }
 
+  // Interpolo la escala aparente de la sonda y su baliza lejana según el enfoque de cámara y el modo de escala.
   function actualizarEscalaVisual(segundos, camera, enfocada) {
     if (!posicion.visible) return;
     if (!modeloExterno && aparienciaPreferida === MODELOS_VISUALES_SONDA.VOYAGER) solicitarModelo();
@@ -731,7 +733,7 @@ export function crearSondaVisual({
     materialBaliza.opacity = (modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA ? 0.45 : 0.62) * visibilidadBaliza;
     baliza.visible = materialBaliza.opacity > 0.01;
     if (baliza.visible) {
-      // 23: el mínimo sigue al factor de escala de la nave (menor cerca de un planeta o satélite), para no tapar el cuerpo.
+      // Escalo el tamaño mínimo de la baliza con `factorEscala` para no ocultar el disco de un planeta o satélite cercano.
       const tamanoBaliza = THREE.MathUtils.clamp(distancia * 0.011, 0.004 * factorEscala, 24);
       baliza.scale.setScalar(tamanoBaliza);
     }

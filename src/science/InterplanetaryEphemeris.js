@@ -1,7 +1,17 @@
-// Etapa 12G — proveedor de estados heliocéntricos para planificación interplanetaria.
-// Reutiliza EphemerisProvider (validación de formato, cobertura, conflictos) y la interpolación cúbica de Hermite
-// (posición + velocidad). Nunca extrapola: fuera de cobertura devuelve «Efemérides no disponibles para el intervalo
-// solicitado». Módulo puro: `loadJson` se inyecta (fetch en el navegador, lectura de disco en pruebas).
+/**
+ * En este módulo proveo estados heliocéntricos planetarios y ventanas síncronas
+ * serializables para la planificación de trayectorias interplanetarias.
+ *
+ * - Unidades: posiciones en km, velocidades en km/s, intervalos y cadencias en
+ *   segundos (s) y épocas en JD TDB.
+ * - Marco de referencia: opero en `SUN_CENTER` (`500@10`) / `ICRF_ECLIPTIC_J2000`
+ *   con oblicuidad J2000 ε = 84 381,448″ y vectores geométricos (`VEC_CORR=NONE`)
+ *   de NASA/JPL Horizons; el Sol (`'10'`) es el origen por definición.
+ * - Límites: reutilizo `EphemerisProvider` para validar formato, cobertura y
+ *   conflictos, interpolo con polinomios cúbicos de Hermite sin extrapolar jamás
+ *   y devuelvo «Efemérides no disponibles para el intervalo solicitado» fuera de
+ *   cobertura. Módulo puro con `loadJson` inyectado (fetch en navegador o disco en pruebas).
+ */
 import { createEphemerisProvider } from './EphemerisProvider.js';
 import { interpolateHermiteState } from './HermiteInterpolation.js';
 import { requireJdTdb, secondsBetweenJdTdb } from './Time.js';
@@ -15,7 +25,7 @@ export const INTERPLANETARY_FRAME = Object.freeze({
   vectorType: 'Vectores geométricos (VEC_CORR=NONE): sin tiempo de luz ni aberración', inertial: true
 });
 export const PLANET_NAMES = Object.freeze({ '199': 'Mercurio', '299': 'Venus', '399': 'Tierra', '499': 'Marte', '599': 'Júpiter', '699': 'Saturno', '799': 'Urano', '899': 'Neptuno' });
-// Error máximo de la interpolación medido contra estados de Horizons NO usados como nodos (tests/fixtures/interplanetary-horizons-holdout-v1.json).
+// Registro aquí el error máximo de interpolación que medí frente a estados de NASA/JPL Horizons no usados como nodos (`tests/fixtures/interplanetary-horizons-holdout-v1.json`).
 export const MEASURED_INTERPOLATION_ERROR = Object.freeze({
   '199': { positionKm: 18.72, velocityKmS: 6.5e-4 }, '299': { positionKm: 0.18, velocityKmS: 6.3e-6 }, '399': { positionKm: 0.088, velocityKmS: 3.1e-6 },
   '499': { positionKm: 0.0091, velocityKmS: 2.8e-7 }, '599': { positionKm: 94.5, velocityKmS: 1.34e-3 }, '699': { positionKm: 6.87, velocityKmS: 8.0e-5 },
@@ -24,6 +34,7 @@ export const MEASURED_INTERPOLATION_ERROR = Object.freeze({
 
 const vec = v => [v.x, v.y, v.z];
 
+/** Compongo los metadatos inmutables de dataset, cobertura y calidad de interpolación de un nodo. */
 function crearMetadatosNodo(bodyId, entry, sourceState) {
   const md = sourceState.provenance?.sourceMetadata ?? {};
   return Object.freeze({
@@ -33,6 +44,7 @@ function crearMetadatosNodo(bodyId, entry, sourceState) {
   });
 }
 
+/** Construyo la respuesta estructurada de un estado disponible en `jdTdb` con su trazabilidad completa. */
 function describe(bodyId, jdTdb, state, entry, method, interval, nodes, sourceState = state) {
   const meta = crearMetadatosNodo(bodyId, entry, sourceState);
   return Object.freeze({
@@ -46,6 +58,10 @@ function describe(bodyId, jdTdb, state, entry, method, interval, nodes, sourceSt
   });
 }
 
+/**
+ * Aquí interpolo posición (km) y velocidad (km/s) con polinomios cúbicos de
+ * Hermite entre dos nodos consecutivos `[t0, t1]` sin extrapolar.
+ */
 function interpolarVectoresHermite(p0, v0, t0, p1, v1, t1, jdTdb) {
   const duration = secondsBetweenJdTdb(t0, t1);
   const u = secondsBetweenJdTdb(t0, jdTdb) / duration;
@@ -69,7 +85,13 @@ function interpolarVectoresHermite(p0, v0, t0, p1, v1, t1, jdTdb) {
   return { positionKm, velocityKmS };
 }
 
+/**
+ * Aquí construyo el evaluador síncrono de una ventana precargada, con caché del
+ * último segmento (`lastLo`) y del último instante evaluado (`lastJd`/`lastResult`)
+ * para acelerar búsquedas de Lambert y barridos secuenciales.
+ */
 function construirEvaluadorVentana(tables, startJdTdb, endJdTdb, bodyIds) {
+  /** Localizo el segmento `[times[lo], times[lo+1]]` probando el último segmento cacheado y sus vecinos antes de la bisección. */
   function resolveSegmentIndex(table, jdTdb) {
     const times = table.times;
     const maxLo = times.length - 2;
@@ -156,7 +178,7 @@ function construirEvaluadorVentana(tables, startJdTdb, endJdTdb, bodyIds) {
   return Object.freeze({ startJdTdb, endJdTdb, stateAt, bodyIds: Object.freeze([...bodyIds]), serializeWindow });
 }
 
-/** Reconstruye un evaluador de ventana en un Web Worker a partir de `window.serializeWindow()`. */
+/** Aquí reconstruyo el evaluador síncrono de ventana (por ejemplo en un Web Worker) a partir de `window.serializeWindow()`. */
 export function createInterplanetaryWindowFromSerialized(serialized) {
   const tables = new Map();
   for (const [bodyId, raw] of Object.entries(serialized.tables ?? {})) {
@@ -192,17 +214,23 @@ export function createInterplanetaryWindowFromSerialized(serialized) {
   return construirEvaluadorVentana(tables, serialized.startJdTdb, serialized.endJdTdb, serialized.bodyIds ?? []);
 }
 
+/** Devuelvo un estado de indisponibilidad cuando el cuerpo carece de cobertura o el instante queda fuera de rango. */
 function unavailable(bodyId, jdTdb, reason, coverage = null) {
   return Object.freeze({ status: 'unavailable', bodyId, name: PLANET_NAMES[bodyId] ?? bodyId, epoch: Object.freeze({ jdTdb, scale: 'TDB' }), message: UNAVAILABLE_MESSAGE, reason, coverage });
 }
 
-/** Sol: origen del marco por definición (no es un dato de efeméride). */
+/** Devuelvo el estado del Sol (`'10'`), que es el origen nulo del marco heliocéntrico por definición. */
 function sunState(jdTdb) {
   return Object.freeze({ status: 'available', bodyId: '10', name: 'Sol', epoch: Object.freeze({ jdTdb, scale: 'TDB' }), positionKm: [0, 0, 0], velocityKmS: [0, 0, 0],
     origin: INTERPLANETARY_FRAME.originLabel, frame: INTERPLANETARY_FRAME, units: INTERPLANETARY_FRAME.units, vectorType: 'Origen del marco por definición',
     dataset: null, coverage: null, interpolation: Object.freeze({ method: 'definition', intervalSeconds: 0, nodeJdTdb: [] }), quality: Object.freeze({ extrapolated: false }) });
 }
 
+/**
+ * Aquí creo el proveedor interplanetario sobre un catálogo validado, exponiendo
+ * consultas puntuales asíncronas (`getBodyState`), cobertura contigua (`coverage`)
+ * y precarga de ventanas síncronas (`loadWindow`).
+ */
 export function createInterplanetaryEphemeris({ catalog, loadJson }) {
   const provider = createEphemerisProvider({ catalog, loadJson, maxCachedDatasets: 8 });
   const entries = provider.listDatasets();
@@ -211,11 +239,13 @@ export function createInterplanetaryEphemeris({ catalog, loadJson }) {
     const ranges = entries.filter(entry => entry.bodyIds.includes(bodyId)).map(entry => entry.bodyCoverage?.[bodyId] ?? entry.coverage).sort((a, b) => a.startJdTdb - b.startJdTdb);
     if (!ranges.length) return null;
     let start = ranges[0].startJdTdb, end = ranges[0].endJdTdb;
-    for (const range of ranges.slice(1)) { if (range.startJdTdb > end) break; end = Math.max(end, range.endJdTdb); } // solo el tramo contiguo inicial
+    // Conservo únicamente el primer tramo contiguo de cobertura sin puentear huecos entre datasets.
+    for (const range of ranges.slice(1)) { if (range.startJdTdb > end) break; end = Math.max(end, range.endJdTdb); }
     return Object.freeze({ startJdTdb: start, endJdTdb: end });
   }
   function cadenceFor(bodyId) { return Math.max(...entries.filter(entry => entry.bodyIds.includes(bodyId)).map(entry => entry.cadenceSeconds)); }
 
+  /** Resuelvo de forma asíncrona el estado heliocéntrico de un cuerpo en `jdTdb`, rechazando fechas fuera de cobertura sin extrapolar. */
   async function getBodyState(bodyId, jdTdb) {
     requireJdTdb(jdTdb);
     if (bodyId === '10') return sunState(jdTdb);
@@ -229,8 +259,10 @@ export function createInterplanetaryEphemeris({ catalog, loadJson }) {
   }
 
   /**
-   * Carga una ventana [start, end] para varios cuerpos y devuelve un evaluador SÍNCRONO (búsquedas y reproducción).
-   * Incluye el nodo anterior y posterior para poder interpolar en los extremos; no extiende la cobertura.
+   * Aquí precargo una ventana `[startJdTdb, endJdTdb]` para varios cuerpos y
+   * devuelvo un evaluador síncrono apto para búsquedas y reproducción. Incluyo
+   * un nodo previo y otro posterior para interpolar en los extremos sin ampliar
+   * la cobertura real, y rechazo conflictos o huecos superiores a la cadencia.
    */
   async function loadWindow(bodyIds, startJdTdb, endJdTdb) {
     requireJdTdb(startJdTdb); requireJdTdb(endJdTdb);

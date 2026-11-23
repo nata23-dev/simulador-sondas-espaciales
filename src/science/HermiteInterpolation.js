@@ -1,3 +1,15 @@
+/**
+ * En este módulo interpolo estados científicos (posición y velocidad) entre dos
+ * muestras contiguas usando polinomios cúbicos de Hermite.
+ *
+ * - Unidades: posiciones en km, velocidades en km/s, duraciones e intervalos en
+ *   segundos (s) y épocas en JD TDB.
+ * - Marco de referencia: conservo exactamente la identidad, el origen y el marco de
+ *   referencia (`SUN_CENTER` / `ICRF_ECLIPTIC_J2000` u otro contrato validado) que
+ *   comparten las dos muestras de entrada.
+ * - Límites: nunca extrapolo fuera de `[start, end]`; rechazo intervalos mayores que
+ *   `maxIntervalSeconds`, muestras con tiempos no crecientes o estados incompatibles.
+ */
 import { createScientificState } from './ScientificState.js';
 import { requireJdTdb, secondsBetweenJdTdb } from './Time.js';
 import { requireFiniteNumber } from './Units.js';
@@ -5,7 +17,11 @@ import { requireFiniteNumber } from './Units.js';
 export const HERMITE_ALGORITHM = 'cubic-hermite';
 export const HERMITE_ALGORITHM_VERSION = '1';
 
-/** Interpola posición y su derivada temporal; nunca extrapola. */
+/**
+ * Aquí interpolo con polinomios de Hermite cúbicos la posición y su derivada
+ * temporal (velocidad) en `jdTdb`, devolviendo el estado exacto si coincide con
+ * un extremo y rechazando siempre cualquier intento de extrapolación.
+ */
 export function interpolateHermiteState(firstInput, lastInput, jdTdb,
   { maxIntervalSeconds = 86400 } = {}) {
   const first = createScientificState(firstInput);
@@ -13,6 +29,7 @@ export function interpolateHermiteState(firstInput, lastInput, jdTdb,
   requireJdTdb(jdTdb);
   requireFiniteNumber(maxIntervalSeconds, 'maxIntervalSeconds');
   if (maxIntervalSeconds <= 0) throw new RangeError('maxIntervalSeconds debe ser positivo.');
+  // Compruebo que ambos extremos pertenezcan al mismo cuerpo, marco, escala temporal y unidades.
   if (first.identity.id !== last.identity.id || first.identity.type !== last.identity.type
     || first.identity.origin !== last.identity.origin
     || first.reference.id !== last.reference.id
@@ -29,6 +46,7 @@ export function interpolateHermiteState(firstInput, lastInput, jdTdb,
   if (duration > maxIntervalSeconds) throw new RangeError('El intervalo excede maxIntervalSeconds.');
   if (jdTdb === start) return first;
   if (jdTdb === end) return last;
+  // Evalúo las bases cúbicas de Hermite y sus derivadas en el parámetro normalizado u ∈ (0, 1).
   const u = secondsBetweenJdTdb(start, jdTdb) / duration;
   const u2 = u * u;
   const h01 = u2 * (3 - 2 * u);
@@ -44,7 +62,7 @@ export function interpolateHermiteState(firstInput, lastInput, jdTdb,
     const p1 = last.position[axis];
     const v0 = first.velocity[axis];
     const v1 = last.velocity[axis];
-    // h00+h01=1 and d00+d01=0: use the small displacement directly.
+    // Aprovecho que h00 + h01 = 1 y d00 + d01 = 0 para operar directamente con la diferencia (p1 − p0) y reducir cancelación numérica.
     position[axis] = p0 + h01 * (p1 - p0) + duration * (h10 * v0 + h11 * v1);
     velocity[axis] = d00 * (p0 - p1) / duration + d10 * v0 + d11 * v1;
   }

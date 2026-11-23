@@ -1,6 +1,5 @@
-// Etapa 17 — ayudas contextuales para los términos científicos del laboratorio. Solo presentación: marca las etiquetas
-// existentes (métricas, campos, cabeceras) cuyo texto empieza por un término conocido y muestra una explicación breve al
-// pasar el puntero, al enfocarlas con el teclado o al tocarlas. No cambia ningún texto ni ningún cálculo.
+// En este módulo proporciono el glosario científico y las ayudas contextuales (tooltips) del laboratorio.
+// Solo intervengo en la presentación: marco etiquetas existentes cuyo texto coincide con un término técnico y muestro su explicación al pasar el puntero, enfocar con teclado o tocar, sin alterar textos ni cálculos.
 export const GLOSSARY = Object.freeze([
   { id: 'dv', term: 'Δv (delta-v)', match: /^(Δv|Delta-v)|Δv (ideal|finito|impulsivo|sonda|de )/,
     text: 'Cambio de velocidad que puede dar la nave con su propelente, o que exige una maniobra. El «Δv ideal» sale de la ecuación de Tsiolkovski, sin pérdidas por gravedad ni por la duración del encendido.' },
@@ -48,21 +47,24 @@ export const GLOSSARY = Object.freeze([
     text: 'Tablas de posición y velocidad de los cuerpos en función del tiempo. Aquí proceden de NASA/JPL Horizons y no se extrapolan fuera de su cobertura.' }
 ]);
 const BY_ID = new Map(GLOSSARY.map(entry => [entry.id, entry]));
+// Busco si el texto de una etiqueta corresponde a alguno de los términos científicos del glosario.
 export const termFor = text => GLOSSARY.find(entry => entry.match.test(String(text ?? '').trim())) ?? null;
 
 const CANDIDATES = '.lab-metric > span, .lab-facts dt, th, legend, summary, .lab-field, .lab-eng-card > span';
 
+// Creo el tooltip flotante compartido, anoto los términos detectados dentro del laboratorio y escucho nuevos resultados en lote.
 export function createLabGlossary(root) {
   const tip = document.createElement('div');
   tip.className = 'lab-tooltip'; tip.id = 'lab-tooltip'; tip.setAttribute('role', 'tooltip'); tip.hidden = true;
   document.body.append(tip);
   let current = null, timer = null;
+  // Marco un elemento reconocido como término interactivo y accesible con teclado y aria-describedby.
   function mark(element, entry) {
     element.dataset.term = entry.id; element.classList.add('lab-term');
     if (!element.closest('label') && !element.matches('summary, button')) element.tabIndex = 0;
     element.setAttribute('aria-describedby', 'lab-tooltip');
   }
-  // Las etiquetas de campo envuelven el texto inicial en un <span> para no tocar el control que contienen.
+  // Recorro las etiquetas nuevas del contenedor; en los campos .lab-field envuelvo solo el nodo de texto en un <span> para no interferir con el control asociado.
   function annotate(scope = root) {
     for (const element of scope.querySelectorAll(CANDIDATES)) {
       if (element.dataset.termChecked) continue;
@@ -78,6 +80,7 @@ export function createLabGlossary(root) {
       if (entry) mark(element, entry);
     }
   }
+  // Posiciono el tooltip junto al término evitando salirme de los bordes horizontales o inferiores de la ventana.
   function show(element) {
     const entry = BY_ID.get(element.dataset.term); if (!entry) return;
     current = element;
@@ -92,6 +95,7 @@ export function createLabGlossary(root) {
     tip.style.top = `${below + height > window.innerHeight - 8 ? Math.max(8, box.top - height - 8) : below}px`;
   }
   function hide() { tip.hidden = true; current = null; }
+  // Muestro u oculto la ayuda contextual ante puntero, foco de teclado, toque, Escape o desplazamiento.
   const over = event => { const el = event.target.closest?.('[data-term]'); if (el && root.contains(el)) { clearTimeout(timer); show(el); } };
   const out = event => { if (current && !current.contains(event.relatedTarget)) { clearTimeout(timer); timer = setTimeout(hide, 120); } };
   const key = event => { if (event.key === 'Escape') hide(); };
@@ -100,7 +104,7 @@ export function createLabGlossary(root) {
   root.addEventListener('click', event => { const el = event.target.closest?.('[data-term]'); if (el && !el.closest('label')) show(el); });
   document.addEventListener('keydown', key);
   window.addEventListener('scroll', hide, true);
-  // Las tablas de resultados se rehacen al calcular: se revisan en lote, como mucho dos veces por segundo.
+  // Como las tablas de resultados se regeneran al calcular, agrupo las reanotaciones para ejecutarlas como máximo dos veces por segundo.
   let pending = null;
   const observer = new MutationObserver(() => { if (!pending) pending = setTimeout(() => { pending = null; annotate(); }, 500); });
   observer.observe(root, { childList: true, subtree: true });

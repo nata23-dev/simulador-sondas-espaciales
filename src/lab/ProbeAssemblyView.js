@@ -1,3 +1,6 @@
+// Aquí construyo la vista 3D del Hangar y los ensamblajes modulares en Three.js para las sondas del laboratorio.
+// Genero la geometría procedimental de buses y piezas (en metros), integro las piezas de herencia y los modelos GLB
+// oficiales de NASA bajo demanda, mido holguras reales sobre las mallas y muestro marcadores de centro de masas y anclajes libres.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { getComponent, ILLUSTRATIVE_PROGRAM } from './ComponentCatalog.js';
@@ -33,6 +36,7 @@ function rod(group, a, b, radius = 0.035, material = metal) {
   item.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
   return item;
 }
+// Construyo la geometría procedimental de un bus ilustrativo a partir de sus dimensiones nominales en metros.
 function makeCore(component) {
   const group = new THREE.Group();
   const [width, height] = component.dimensionsM;
@@ -52,6 +56,7 @@ function makeCore(component) {
   }
   return group;
 }
+// Genero la malla procedimental correspondiente a cada categoría de componente ilustrativo (motor, depósito, paneles, etc.).
 function makePart(component, socketId) {
   const group = new THREE.Group();
   switch (component.category) {
@@ -63,7 +68,7 @@ function makePart(component, socketId) {
       if (component.id === 'engine-ion') cylinder(group, 0.31, 0.31, 0.05, glass, [0, -0.51, 0], 20);
       break;
     case 'tank':
-      // Collar visible: el depósito queda externo y unido al bus.
+      // Coloco un collar de montaje visible para dejar el depósito fuera de la pared del bus y unido a ella.
       rod(group, [0, 0, 0.35], [0, 0, 0.52], 0.08, dark).name = 'tank-mount';
       cylinder(group, 0.38, 0.38, 0.76, metal, [0, 0, 0], 16);
       mesh(group, new THREE.SphereGeometry(0.38, 16, 8), gold, [0, 0.37, 0]).scale.y = 0.28;
@@ -122,11 +127,12 @@ function makePart(component, socketId) {
   return group;
 }
 
+// Retiro y libero las geometrías del ensamblaje respetando los recursos compartidos de las plantillas de NASA.
 function clearAssembly(assembly) {
   while (assembly.children.length) {
     const child = assembly.children[0]; assembly.remove(child);
     child.traverse(node => {
-      if (node.userData.sharedNasaResource) return; // 15.1: geometría compartida con la plantilla del modelo de NASA
+      if (node.userData.sharedNasaResource) return; // Evito liberar geometría compartida con la caché de modelos de NASA.
       node.geometry?.dispose();
       if (node.userData.selectionHelper) node.material?.dispose();
     });
@@ -135,8 +141,8 @@ function clearAssembly(assembly) {
 
 const isHeritage = component => Boolean(component?.heritage && component.heritage !== ILLUSTRATIVE_PROGRAM);
 const UP = new THREE.Vector3(0, 1, 0), FORWARD = new THREE.Vector3(0, 0, 1);
-// 15: una pieza de herencia se extiende a lo largo de la normal del punto (+Y local → dirección del punto). Las alas solares
-// giran además sobre su eje para que sus células miren hacia donde apunta la antena principal del bus (eje solar habitual).
+// Oriento una pieza de herencia alineando su +Y local con la normal del punto de anclaje; si es un ala solar,
+// la giro además sobre ese eje para que las células miren hacia la dirección de la antena principal del bus.
 function orientHeritagePart(node, socket, component, sunAxis) {
   if (component.mount === 'internal' || !socket.direction) return;
   const d = new THREE.Vector3(...socket.direction).normalize();
@@ -149,6 +155,7 @@ function orientHeritagePart(node, socket, component, sunAxis) {
   const angle = Math.atan2(d.dot(z.clone().cross(n)), z.dot(n));
   node.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(d, angle));
 }
+// Construyo el anillo visual que marca la instalación explícita de un adaptador estructural entre herrajes distintos.
 function adapterRing(component, socket) {
   const r = Math.min(0.32, Math.max(0.12, Math.min(...component.dimensionsM) * 0.6));
   const ring = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.08, 18), HERITAGE_MATERIALS.blanket);
@@ -157,6 +164,7 @@ function adapterRing(component, socket) {
   return ring;
 }
 
+// Ensamblo la estructura central y todas las piezas en sus anclajes, publicando la esfera envolvente para buses de herencia.
 function mountAssembly(assembly, design) {
   const nodes = new Map();
   const core = getComponent(design.coreId);
@@ -178,8 +186,8 @@ function mountAssembly(assembly, design) {
     assembly.add(node); nodes.set(entry.id, node);
   }
   assembly.updateMatrixWorld(true);
-  // Radio de la esfera envolvente (m). Solo se publica para los buses de herencia: las vistas lo usan para encuadrar sondas de
-  // hasta ~20 m sin alterar la presentación ya validada de los diseños ilustrativos.
+  // Calculo el radio envolvente (m) solo para los buses de herencia para que las cámaras encuadren sondas grandes (~20 m)
+  // sin modificar el encuadre predeterminado de los diseños ilustrativos.
   if (heritageCore) {
     const sphere = new THREE.Box3().setFromObject(assembly).getBoundingSphere(new THREE.Sphere());
     assembly.userData.boundingRadiusM = sphere.radius; assembly.userData.boundingCenterM = sphere.center.toArray();
@@ -187,8 +195,7 @@ function mountAssembly(assembly, design) {
   return nodes;
 }
 
-// El Centro de misión usa exactamente las mismas piezas y conexiones del
-// Hangar, con materiales propios para no liberar recursos compartidos.
+// Creo un ensamblaje 3D autónomo con materiales clonados para el Centro de Misión y la escena principal sin tocar los compartidos del Hangar.
 export function createProbeAssemblyModel(design) {
   const assembly = new THREE.Group();
   mountAssembly(assembly, design);
@@ -204,11 +211,12 @@ export function createProbeAssemblyModel(design) {
   return assembly;
 }
 
+// Libero geometrías y materiales propios de un ensamblaje clonado sin destruir plantillas compartidas de NASA.
 export function disposeProbeAssemblyModel(assembly) {
   if (!assembly) return;
   const geometries = new Set(), materials = new Set();
   assembly.traverse(node => {
-    if (node.userData.sharedNasaResource) return; // 15.1: la plantilla del modelo de NASA se comparte entre vistas
+    if (node.userData.sharedNasaResource) return; // Respeto los recursos compartidos de la plantilla oficial de NASA.
     if (node.geometry) geometries.add(node.geometry);
     for (const material of Array.isArray(node.material) ? node.material : [node.material]) if (material) materials.add(material);
   });
@@ -228,7 +236,7 @@ function landingClearanceFromNodes(design, nodes) {
   return { engineBottomY, padBottomY, clearanceM: engineBottomY - padBottomY };
 }
 
-// Calculado sobre las mallas montadas con sus transformaciones mundiales reales.
+// Mido en metros la holgura vertical entre la base de la tobera y las patas de aterrizaje usando las mallas ya montadas.
 export function measureLandingClearance(design) {
   const temporary = new THREE.Group();
   const nodes = mountAssembly(temporary, design);
@@ -237,8 +245,7 @@ export function measureLandingClearance(design) {
   return result;
 }
 
-// Distancias a la pared cilíndrica posterior: cuerpo de cámara y tanque
-// deben permanecer externos; sus soportes deben alcanzar la estructura.
+// Mido el ajuste respecto a la pared trasera del bus para comprobar que tanque y cámara queden externos con soportes en contacto.
 export function measureRearMountFit(design) {
   const temporary = new THREE.Group();
   const nodes = mountAssembly(temporary, design);
@@ -262,13 +269,14 @@ export function measureRearMountFit(design) {
   return result;
 }
 
+// Creo la vista 3D interactiva del Hangar con iluminación de taller, selección por clic, marcadores técnicos y carga diferida de GLB.
 export function createProbeAssemblyView(host, onSelect, { onModelState = null } = {}) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x080d16);
   scene.fog = new THREE.FogExp2(0x080d16, 0.028);
   const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 100);
   camera.position.set(5.8, 3.3, 6.8);
-  const renderer = crearRenderizadorWebGL(opcionesRenderizador({ antialias: true, alpha: false }), 'modelo 3D de la sonda'); // STAB-01
+  const renderer = crearRenderizadorWebGL(opcionesRenderizador({ antialias: true, alpha: false }), 'modelo 3D de la sonda');
   const unregisterQuality = registerRenderer(renderer);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.append(renderer.domElement);
@@ -289,6 +297,7 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
   };
   const DEFAULT_VIEW = { position: [5.8, 3.3, 6.8], target: [0, 0, 0], maxDistance: 17, far: 100, fog: 0.028, gridY: -2.12, gridScale: 1 };
   let currentFrame = DEFAULT_VIEW, frameKey = null;
+  // Calculo un encuadre de cámara y rejilla proporcional al tamaño envolvente de la sonda montada.
   function frameFor(design) {
     const r = assembly.userData.boundingRadiusM;
     if (!r) return DEFAULT_VIEW;
@@ -307,7 +316,7 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
   function clearMarkers() {
     while (markers.children.length) { const child = markers.children[0]; markers.remove(child); child.geometry?.dispose(); }
   }
-  // Marcadores de lectura: centro de masas calculado por la ingeniería (octaedro dorado) y puntos de montaje libres (anillos).
+  // Dibujo los marcadores técnicos del Hangar: octaedro dorado para el centro de masas y anillos azules para anclajes libres.
   function drawMarkers(design, options) {
     clearMarkers();
     const core = getComponent(design.coreId);
@@ -371,15 +380,16 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
       if (controlsConnected) { controls.disconnect(); controlsConnected = false; }
     }
   }
-  // 15.1: los buses con modelo oficial de NASA se montan primero con la geometría procedimental (respaldo inmediato y sin red)
-  // y, cuando llega el GLB, este la sustituye. Mientras la sonda no cambie no se vuelve a montar.
+  // Monto inicialmente la geometría procedimental como respaldo sin red y, si el bus tiene GLB oficial de NASA,
+  // lo sustituyo en cuanto se descarga sin reconstruir mientras la sonda no cambie.
   let mountToken = 0, mountedKey = null, pendingNasa = null;
   function startPendingNasa() { const start = pendingNasa; pendingNasa = null; start?.(); }
   const modelState = { source: 'procedural', entry: null, error: null };
   const designKey = design => JSON.stringify([design.coreId, design.parts.map(p => [p.socketId, p.componentId, p.fuelKg ?? null, p.adapter ?? false])]);
+  // Actualizo la sonda visible en el Hangar, el resaltado de pieza seleccionada y la descarga diferida del modelo NASA.
   function setDesign(design, selected = selectedId, options = {}) {
     if (disposed) return;
-    // 17: `procedural` fuerza la reconstrucción técnica (esquema con selección resaltada, o ensamblaje experimental sin modelo oficial).
+    // Cuando `procedural` es cierto fuerzo la reconstrucción técnica (esquema con selección resaltada o diseño experimental).
     const procedural = Boolean(options.procedural);
     const key0 = designKey(design) + (procedural ? '|esquema' : '');
     if (key0 === mountedKey && modelState.source === 'nasa') { selectedId = selected; currentDesign = design; return; }
@@ -393,8 +403,7 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
     Object.assign(modelState, { source: entry ? 'cargando' : procedural ? 'esquema' : 'procedural', entry, error: null });
     if (entry) {
       const token = ++mountToken;
-      // 18: el GLB oficial (1–9 MB) solo se descarga cuando la vista 3D está visible; mientras tanto queda la geometría
-      // procedimental. setVisible(true) lanza la carga pendiente.
+      // Retraso la descarga del GLB oficial (1–9 MB) hasta que la vista 3D esté visible; `setVisible(true)` dispara la carga.
       pendingNasa = () => attachNasaModel(assembly, design.coreId, { isCurrent: () => !disposed && token === mountToken }).then(result => {
         if (disposed || token !== mountToken) return;
         if (result.status !== 'nasa') { Object.assign(modelState, { source: 'procedural', error: result.error?.message ?? null }); onModelState?.({ ...modelState }); return; }
@@ -414,6 +423,7 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
       }
     }
   }
+  // Selecciono una pieza montada al hacer clic en el lienzo mediante raycasting sobre los subárboles del ensamblaje.
   function onCanvasClick(event) {
     const bounds = renderer.domElement.getBoundingClientRect();
     pointer.set((event.clientX - bounds.left) / bounds.width * 2 - 1,
@@ -432,6 +442,7 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
   renderer.domElement.addEventListener('pointerup', onPointerEnd);
   renderer.domElement.addEventListener('pointercancel', onPointerEnd);
   setVisible(false);
+  // Libero todos los recursos WebGL, materiales, controles y escuchadores al cerrar la vista del Hangar.
   function dispose() {
     if (disposed) return;
     setVisible(false);

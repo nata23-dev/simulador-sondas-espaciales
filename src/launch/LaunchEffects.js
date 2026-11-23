@@ -1,10 +1,14 @@
-// Etapa 25 — llamas y humo del lanzamiento (ilustrativos).
-//
-// Llamas: conos aditivos cuyo brillo depende del ángulo de visión (más denso en el centro de la silueta) y que se ensanchan y
-// alargan al bajar la presión ambiente (escala de altura de 7,2 km). Colores cualitativos de cada propulsante: motores sólidos
-// con aluminio (blanco amarillento, muy luminosos y con mucho humo), hipergólicos Aerozine-50/N2O4 (anaranjado translúcido),
-// hidrógeno y oxígeno líquidos de los RL10 (casi invisible, azulado) y el sólido del módulo de propulsión.
-// Humo: billboards instanciados, ordenados de atrás adelante, con luz solar envolvente y el resplandor de la llama cercana.
+/**
+ * En este módulo genero los efectos volumétricos ilustrativos del lanzamiento
+ * 3D: penachos de escape, nubes de humo, estela continua de los motores sólidos
+ * y destello solar fuera de la atmósfera.
+ * Uso metros y el marco local de la escena de lanzamiento. Los penachos son
+ * conos aditivos que se ensanchan y alargan al disminuir la presión atmosférica
+ * (escala de altura de 7,2 km), con paletas cualitativas por propulsante:
+ * sólidos con aluminio (blanco amarillento), hipergólicos Aerozine-50/N2O4
+ * (anaranjado), RL10 de hidrógeno/oxígeno (azulado tenue) y módulo sólido final.
+ * El humo se dibuja con billboards instanciados ordenados de atrás hacia delante.
+ */
 import * as THREE from 'three';
 import { crearSpritePropio } from './LaunchSharedResources.js';
 
@@ -18,6 +22,7 @@ export const TIPOS_PENACHO = Object.freeze({
 const LOG_V = '#include <common>\n#include <logdepthbuf_pars_vertex>\n';
 const LOG_F = '#include <logdepthbuf_pars_fragment>\n';
 
+// Construyo el material de shader aditivo para cada capa del penacho, compatible con el búfer de profundidad logarítmico.
 function materialPenacho(tipo) {
   const p = TIPOS_PENACHO[tipo];
   return new THREE.ShaderMaterial({
@@ -62,6 +67,7 @@ function materialPenacho(tipo) {
 }
 
 let texturaResplandor = null;
+// Genero y reutilizo un lienzo radial suave para el resplandor de la tobera.
 function resplandor() {
   if (texturaResplandor) return texturaResplandor;
   const c = document.createElement('canvas'); c.width = c.height = 128;
@@ -72,15 +78,14 @@ function resplandor() {
   return texturaResplandor;
 }
 
-/** Penacho de un motor. `actualizar` recibe encendido (0–1), presión relativa (1 al nivel del mar) y el tiempo. */
+// Creo el penacho completo de un motor (dos capas concéntricas + resplandor) y expongo su actualización por presión relativa y su limpieza WebGL.
 export function crearPenacho(tipo) {
   const p = TIPOS_PENACHO[tipo], grupo = new THREE.Group(); grupo.name = `penacho_${tipo}`;
   const geo = new THREE.CylinderGeometry(1, 1, 1, 32, 24, true); geo.translate(0, -0.5, 0);
   const capas = [materialPenacho(tipo), materialPenacho(tipo)];
   capas[1].uniforms.uSemilla.value += 3.7;
   const mallas = capas.map((m, i) => { const o = new THREE.Mesh(geo, m); o.frustumCulled = false; o.renderOrder = 5 + i; grupo.add(o); return o; });
-  // LAN-02: textura propia sobre el lienzo común (misma imagen) y geometría propia: el renderizador del lanzamiento no deja sus
-  // oyentes en objetos que sobreviven al lanzamiento (la caché del módulo y la geometría global de los sprites de three).
+  // Clono la textura y uso geometría propia de sprite para que el renderizador del lanzamiento no retenga oyentes en la caché compartida ni en la geometría global de sprites.
   const brillo = crearSpritePropio(new THREE.SpriteMaterial({ map: resplandor().clone(), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, color: new THREE.Color(...p.borde) }));
   brillo.renderOrder = 7; grupo.add(brillo);
   return {
@@ -88,7 +93,8 @@ export function crearPenacho(tipo) {
     actualizar(encendido, presionRel, tiempo) {
       grupo.visible = encendido > 0.001;
       if (!grupo.visible) return;
-      const vacio = 1 - presionRel; // los gases se expanden al bajar la presión exterior
+      // Al caer la presión exterior en altura, expando la pluma de gases y reduzco su densidad luminosa.
+      const vacio = 1 - presionRel;
       const largo = p.largo * (1 + 2.5 * vacio) * (0.6 + 0.4 * encendido), r1 = p.radioSalida * (p.ensanche + 9 * vacio);
       const intensidad = p.intensidad * encendido / (1 + 3.5 * vacio);
       capas.forEach((m, i) => {
@@ -99,10 +105,12 @@ export function crearPenacho(tipo) {
       brillo.scale.setScalar(p.radioSalida * (8 + 6 * presionRel) * (0.7 + 0.3 * encendido));
       brillo.position.y = -p.radioSalida * 0.6;
     },
+    // Libero geometrías, shaders, textura clonada y material del resplandor al cerrar el lanzamiento.
     destruir() { geo.dispose(); capas.forEach(m => m.dispose()); brillo.geometry.dispose(); brillo.material.map.dispose(); brillo.material.dispose(); }
   };
 }
 
+// Pinto de forma determinista una textura de bocanada de humo en escala de grises.
 function texturaHumo() {
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d');
@@ -117,10 +125,7 @@ function texturaHumo() {
   return t;
 }
 
-/**
- * Humo: billboards instanciados. `actualizar(particulas, camara)` recibe un arreglo de { x, y, z, r, a, calor, semilla }
- * en coordenadas del mundo; se ordenan de atrás adelante.
- */
+// Creo el sistema de humo por billboards instanciados con iluminación solar envolvente, brillo térmico cercano y ordenación sin asignaciones por fotograma.
 export function crearHumo(maximo = 2400) {
   const base = new THREE.PlaneGeometry(1, 1);
   const geo = new THREE.InstancedBufferGeometry();
@@ -174,7 +179,8 @@ export function crearHumo(maximo = 2400) {
       const n = Math.min(cuenta, maximo);
       const cx = camara.position.x, cy = camara.position.y, cz = camara.position.z;
       for (let i = 0; i < n; i++) { const q = particulas[i]; orden[i] = i; dist[i] = (q.x - cx) ** 2 + (q.y - cy) ** 2 + (q.z - cz) ** 2; }
-      const idx = orden.subarray(0, n).sort(deAtrasAdelante); // 26: sin copiar el índice en un arreglo nuevo cada fotograma
+      // Ordeno en sitio sobre una subvista del TypedArray para no crear arreglos temporales en cada fotograma.
+      const idx = orden.subarray(0, n).sort(deAtrasAdelante);
       for (let k = 0; k < n; k++) {
         const q = particulas[idx[k]];
         pos[k * 3] = q.x; pos[k * 3 + 1] = q.y; pos[k * 3 + 2] = q.z;
@@ -189,7 +195,7 @@ export function crearHumo(maximo = 2400) {
   };
 }
 
-/** Destello del Sol fuera de la atmósfera (el cielo de Preetham ya dibuja el disco dentro de ella). */
+// Dibujo el destello del Sol para cuando la cámara sale de la atmósfera (dentro de ella ya lo aporta el cielo de Preetham).
 export function crearSolEspacio() {
   const c = document.createElement('canvas'); c.width = c.height = 256;
   const g = c.getContext('2d'), gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
@@ -204,15 +210,13 @@ export function crearSolEspacio() {
     g.fillStyle = l; g.fillRect(-128, -1.2, 256, 2.4); g.restore();
   }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-  const sprite = crearSpritePropio(new THREE.SpriteMaterial({ map: t, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: true, transparent: true, fog: false })); // LAN-02
+  // Uso un sprite con geometría propia para poder liberarla al cerrar el lanzamiento sin retener el renderizador en Three.js.
+  const sprite = crearSpritePropio(new THREE.SpriteMaterial({ map: t, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: true, transparent: true, fog: false }));
   sprite.renderOrder = -5;
   return sprite;
 }
 
-/**
- * Estela continua de los motores sólidos: cinta orientada a la cámara a lo largo de la trayectoria. `actualizar(puntos, camara,
- * solMundo)` recibe { x, y, z, ancho, a } ordenados desde la plataforma hacia arriba.
- */
+// Construyo la cinta continua de la estela de los motores sólidos orientada hacia la cámara a lo largo de la trayectoria de ascenso.
 export function crearEstela(maximo = 400) {
   const pos = new Float32Array(maximo * 2 * 3), dat = new Float32Array(maximo * 2 * 3); // u, v, alfa
   const idx = [];

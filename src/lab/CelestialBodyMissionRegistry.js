@@ -1,13 +1,12 @@
-// Etapa 12F — registro de perfiles físicos de cuerpos para misiones multicuerpo.
-//
-// Fuente única de verdad para "qué podemos simular en cada destino". Se DERIVA de los catálogos del proyecto:
-//   · SOLAR_SYSTEM_GM_CATALOG (Sol, 8 planetas y Luna: GM y radio de referencia, JPL DE440),
-//   · MOONS / MOON_CATALOG (10 satélites con efemérides: id NAIF, planeta, radio medio, cobertura),
+// En este módulo mantengo el registro central de perfiles físicos de cuerpos celestes para misiones multicuerpo.
+// Derivo los datos base a partir de los catálogos validados del proyecto:
+//   · SOLAR_SYSTEM_GM_CATALOG (Sol, 8 planetas y Luna: GM y radio de referencia de JPL DE440),
+//   · MOONS (10 satélites con efemérides: identificador NAIF, planeta central y radio medio),
 //   · PLANETAS (los 8 planetas con efemérides heliocéntricas locales).
-// Lo único que este módulo añade son datos que el proyecto NO tenía y que se declaran con procedencia propia:
-//   · SATELLITE_GM_JPL: GM de los 9 satélites sin GM en el catálogo (JPL SSD, Planetary Satellite Physical Parameters).
-//   · PHYSICAL_CLASS: clasificación CUALITATIVA (tipo y relevancia atmosférica). No contiene números físicos.
-// Rotación: ningún dato del proyecto la define → `rotation: null` y se declara qué falta. No se inventan períodos.
+// Solo añado dos bloques con procedencia declarada que no existían en los catálogos previos:
+//   · SATELLITE_GM_JPL: parámetros GM (km³/s²) de los 9 satélites restantes según JPL SSD.
+//   · PHYSICAL_CLASS: clasificación cualitativa del tipo de cuerpo y la relevancia de su atmósfera.
+// Como ningún catálogo incluye todavía períodos ni polos de rotación, dejo `rotation: null` y declaro explícitamente qué falta.
 import { SOLAR_SYSTEM_GM_CATALOG } from '../science/GravitationalParameters.js';
 import { MOONS } from '../science/PlanetaryMoons.js';
 import { PLANETAS } from '../astronomy/Ephemerides.js';
@@ -19,12 +18,11 @@ export const DESTINATION_GROUP = Object.freeze({
   giant: 'C · gigante gaseoso o helado', star: 'D · estrella (no es destino de aterrizaje)'
 });
 
-// Gaseosos/helados y Sol: sin superficie sólida convencional.
+// Relaciono los códigos NAIF de los 8 planetas con el nombre usado en las efemérides heliocéntricas.
 const NAIF_NAME = { 199: 'Mercurio', 299: 'Venus', 399: 'Tierra', 499: 'Marte', 599: 'Jupiter', 699: 'Saturno', 799: 'Urano', 899: 'Neptuno' };
 
-// GM de satélites (km³/s²) y su incertidumbre 1σ, leídos de https://ssd.jpl.nasa.gov/sats/phys_par/ (consulta 2026-11-17).
-// Los radios medios de esa tabla coinciden con los de PlanetaryMoons.js (que sigue siendo la fuente de radios).
-// Titania y Miranda tienen incertidumbre grande (≈2 % y ≈5 %): se conservan como están publicados.
+// Cargo los parámetros gravitacionales GM (km³/s²) y sus incertidumbres 1σ de JPL SSD (Planetary Satellite Physical Parameters).
+// Conservo las incertidumbres publicadas incluso en satélites menos precisos como Titania (~2 %) y Miranda (~5 %); los radios siguen viniendo de PlanetaryMoons.js.
 export const SATELLITE_GM_JPL = Object.freeze({
   501: Object.freeze({ gm: 5959.91547, sigma: 0.00135 }), 502: Object.freeze({ gm: 3202.71210, sigma: 0.00181 }),
   503: Object.freeze({ gm: 9887.83275, sigma: 0.00247 }), 504: Object.freeze({ gm: 7179.28340, sigma: 0.00324 }),
@@ -34,10 +32,11 @@ export const SATELLITE_GM_JPL = Object.freeze({
 export const SATELLITE_GM_SOURCE = Object.freeze({ source: 'NASA/JPL SSD — Planetary Satellite Physical Parameters', url: 'https://ssd.jpl.nasa.gov/sats/phys_par/',
   note: 'GM tomado de la efeméride especificada por JPL; leído por el proyecto el 2026-11-17 y pendiente de verificación independiente.' });
 
-// Clasificación cualitativa (literatura general; sin modelo atmosférico numérico en el proyecto).
-//  atmosphere: 'none-significant' → el vacío es una aproximación defendible para un descenso corto;
-//              'tenuous' → atmósfera muy tenue pero no analizada; 'relevant' → arrastre/calentamiento no despreciables;
-//              'envelope' → sin superficie sólida convencional.
+// Clasifico cualitativamente cada cuerpo para decidir si el modelo de descenso en vacío es aplicable:
+//  · 'none-significant': puedo usar aproximación de vacío en un descenso corto;
+//  · 'tenuous': atmósfera tenue cuyo efecto aún no he analizado;
+//  · 'relevant': exige modelo atmosférico (arrastre, calentamiento y paracaídas);
+//  · 'envelope': cuerpo sin superficie sólida convencional.
 const PHYSICAL_CLASS = Object.freeze({
   10: { type: 'star', atmosphere: 'envelope', note: 'Estrella: sin superficie sólida.' },
   199: { type: 'rocky-planet', atmosphere: 'none-significant', note: 'Exosfera despreciable para el modelo; entorno térmico extremo no modelado.' },
@@ -63,7 +62,7 @@ const MOON_EPHEMERIS = Object.freeze({ source: 'public/data/moons-*.json (NASA/J
 
 const finitePositive = value => Number.isFinite(value) && value > 0;
 
-// Valida y congela un perfil. Rechaza datos incompletos; `gm` y `radiusKm` son obligatorios para operar.
+// Valido, normalizo el eje de rotación si existe y congelo el perfil físico del cuerpo celeste.
 export function createBodyProfile(raw) {
   const issues = [];
   if (!raw || typeof raw !== 'object') throw new TypeError('El perfil debe ser un objeto.');
@@ -119,8 +118,8 @@ export function getBodyProfile(id) {
 }
 
 // ---- Capacidad de descenso propulsado --------------------------------------------------------------------------------
-// Nivel por cuerpo: OPERATIVO solo para destinos con escenario de integración comprobado por pruebas locales
-// (siguen pendientes de la auditoría independiente). El resto, con datos suficientes, es EXPERIMENTAL.
+// Marco como OPERATIVO solo los destinos cuyo escenario de descenso tengo verificado por pruebas locales;
+// el resto de cuerpos sólidos sin atmósfera con GM y radio completos los clasifico como EXPERIMENTAL.
 const VERIFIED_SCENARIOS = Object.freeze(new Set(['301', '502']));
 export function landingCapability(profileOrId) {
   const p = typeof profileOrId === 'object' ? profileOrId : getBodyProfile(profileOrId);
@@ -142,7 +141,8 @@ export function landingCapability(profileOrId) {
     missing: p.rotation ? [] : ['rotación del cuerpo'], vacuumJustification: p.atmosphere.note };
 }
 
-// ---- Contratos de marcos y tiempo (documentales y verificables) ----------------------------------------------------------
+// ---- Contratos de marcos de referencia y escalas de tiempo ------------------------------------------------------------
+// Declaro los marcos admitidos por el simulador para no confundir trayectorias absolutas en ICRF con simulaciones locales.
 export const FRAME_CONTRACTS = Object.freeze({
   'barycentric-or-heliocentric': { description: 'Estado respecto al Sol/baricentro en ICRF eclíptico J2000 (efemérides locales).', timeScale: 'TDB', absolute: true },
   'planet-relative': { description: 'Estado respecto al centro de un planeta; ejes ICRF salvo que se indique otra cosa.', timeScale: 'TDB', absolute: true },

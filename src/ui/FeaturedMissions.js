@@ -1,17 +1,17 @@
-// Etapa 14.1 — portada del Sistema Solar: misiones destacadas como puerta de entrada a Voyager y al laboratorio.
-// Cada tarjeta solo navega con los controles existentes. Las imágenes son fotografías Voyager (NASA/JPL) ya incluidas en el
-// proyecto con sus créditos; no se presentan como vistas del simulador.
+// En este módulo construyo el panel de misiones destacadas en la portada del Sistema Solar como acceso rápido a Voyager y al laboratorio.
+// Cada tarjeta navega reutilizando los controles existentes y muestra fotografías Voyager (NASA/JPL) ya presentes en el proyecto con sus créditos.
 const BASE = import.meta.env.BASE_URL;
 const STORAGE_KEY = 'simulador:featured-collapsed';
 
 const CARDS = Object.freeze([
   { id: 'voyager-1', accent: 'voyager-1', title: 'Voyager 1', meta: 'Lanzada el 5 sep 1977', text: 'Júpiter, Saturno y Titán; hoy, el objeto humano más lejano.', image: 'images/voyager/v1-jupiter-grs-1979-thumb.jpg', alt: 'Gran Mancha Roja de Júpiter fotografiada por Voyager 1 en 1979', area: 'voyager', destination: 'voyager-1' },
   { id: 'voyager-2', accent: 'voyager-2', title: 'Voyager 2', meta: 'Neptuno · 25 ago 1989', text: 'La única visita a Urano y Neptuno, con el gran recorrido de 1977–1989.', image: 'images/voyager/v2-neptune-gds-1989-thumb.jpg', alt: 'Neptuno y su Gran Mancha Oscura fotografiados por Voyager 2 en 1989', area: 'voyager', destination: 'voyager-2' },
-  // 16: puerta de entrada para quien llega por primera vez al laboratorio.
+  // Incluyo la misión guiada como puerta de entrada recomendada para quien llega por primera vez al laboratorio.
   { id: 'guide', accent: 'mission', title: 'Tu primera misión: Cassini a Marte', meta: 'Laboratorio · misión guiada en 5 pasos', text: 'Elige la sonda, calcula el viaje con efemérides de NASA/JPL y míralo en 3D.', image: 'textures/mars.jpg', alt: '', area: 'guide', planet: true },
   { id: 'integrated', accent: 'mission', title: 'Misión completa a Europa', meta: 'Laboratorio · pendiente de auditoría independiente', text: 'Captura en Júpiter y sobrevuelo de Europa con Cassini o Juno, por fases.', image: 'images/voyager/v1-europa-1979-thumb.jpg', alt: 'Europa fotografiada por Voyager 1 en 1979', area: 'integrated' }
 ]);
 
+// Monto el panel lateral de tarjetas, recuerdo si el usuario prefirió contraerlo y sincronizo su visibilidad con el modo y el inspector.
 export function createFeaturedMissions({ navigator } = {}) {
   const app = document.querySelector('#app');
   const scene = document.querySelector('.scene-panel');
@@ -40,22 +40,26 @@ export function createFeaturedMissions({ navigator } = {}) {
   scene.append(panel);
   const collapseButton = panel.querySelector('.fm-collapse');
   let collapsed = false;
-  try { collapsed = localStorage.getItem(STORAGE_KEY) === '1'; } catch { /* almacenamiento no disponible */ }
+  // Leo la preferencia de plegado y, en pantallas estrechas, empiezo contraído para despejar la escena 3D.
+  try { collapsed = localStorage.getItem(STORAGE_KEY) === '1'; } catch { /* Si falla el almacenamiento local, sigo con el valor por defecto. */ }
   if (window.matchMedia?.('(max-width: 760px)').matches) collapsed = true;
+  // Actualizo el estado plegado del panel, su aria-expanded y, si corresponde, lo guardo en localStorage.
   function setCollapsed(value, remember = true) {
     collapsed = value; panel.dataset.collapsed = String(value);
     collapseButton.setAttribute('aria-expanded', String(!value));
     collapseButton.title = value ? 'Mostrar misiones destacadas' : 'Contraer';
-    if (remember) { try { localStorage.setItem(STORAGE_KEY, value ? '1' : '0'); } catch { /* sin persistencia */ } }
+    if (remember) { try { localStorage.setItem(STORAGE_KEY, value ? '1' : '0'); } catch { /* Ignoro errores si el navegador impide guardar preferencias. */ } }
   }
   collapseButton.addEventListener('click', () => setCollapsed(!collapsed));
   panel.querySelector('.fm-all').addEventListener('click', () => document.querySelector('#app-nav-toggle')?.click());
+  // Al pulsar una tarjeta, repliego el panel, navego al área destino y selecciono el objetivo concreto si aplica.
   async function open(card) {
     setCollapsed(true, false);
     await navigator?.go(card.area);
     if (card.destination) requestAnimationFrame(() => document.querySelector(`#context-search-results [data-destination="${card.destination}"]`)?.click());
   }
   const inspector = document.querySelector('#context-inspector');
+  // Muestro el panel solo en modo exploración, fuera del modo inmersivo y cuando el inspector contextual está cerrado.
   function updateVisibility() {
     const visible = app.dataset.appMode === 'exploracion' && !app.classList.contains('is-immersive')
       && (!inspector || inspector.dataset.state === 'closed' || !inspector.dataset.state);

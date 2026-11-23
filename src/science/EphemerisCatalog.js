@@ -1,3 +1,17 @@
+/**
+ * En este módulo valido y congelo el catálogo local de conjuntos de efemérides
+ * antes de que el proveedor cargue cualquier archivo JSON.
+ *
+ * - Unidades: coberturas temporales en JD TDB, cadencias en segundos (s) y unidades
+ *   de archivo verificadas por formato (`AU` y `AU/dia` para `horizons-daily-v1`;
+ *   `km` y `km/s` para `scientific-states-v1` y `horizons-compact-v1`).
+ * - Marco de referencia: exijo estrictamente `SUN_CENTER` / `ICRF_ECLIPTIC_J2000`,
+ *   coherente con las salidas de NASA/JPL Horizons usadas en el simulador.
+ * - Límites y seguridad: solo acepto rutas JSON locales relativas sin ascensos (`..`),
+ *   rechazo identificadores o archivos duplicados, verifico que la cadencia sea
+ *   representable en doble precisión JD TDB y exijo el perfil estricto de 8 planetas
+ *   para el formato diario de Horizons.
+ */
 import { HORIZONS_FRAME } from './Frames.js';
 import { requireJdTdb } from './Time.js';
 import { requireFiniteNumber } from './Units.js';
@@ -5,6 +19,7 @@ import { HORIZONS_PLANETS } from './HorizonsEphemerides.js';
 
 const FORMATS = new Set(['horizons-daily-v1', 'scientific-states-v1', 'horizons-compact-v1']);
 
+/** Compruebo que el campo recibido sea una cadena de texto no vacía. */
 function nonempty(value, path) {
   if (typeof value !== 'string' || value.trim() === '') {
     throw new TypeError(`${path} debe ser una cadena no vacía.`);
@@ -12,6 +27,7 @@ function nonempty(value, path) {
   return value;
 }
 
+/** Compruebo que el valor recibido sea un objeto plano y no un arreglo ni `null`. */
 function object(value, path) {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     throw new TypeError(`${path} debe ser un objeto.`);
@@ -19,7 +35,11 @@ function object(value, path) {
   return value;
 }
 
-/** Valida y copia un catálogo. Sus rutas son relativas a la base local del sitio. */
+/**
+ * Aquí valido y copio de forma inmutable un catálogo de efemérides versión 1.
+ * Verifico rutas relativas locales, formatos soportados, coberturas globales y
+ * por cuerpo, cadencias, marco científico y coherencia de unidades.
+ */
 export function createEphemerisCatalog(input) {
   object(input, 'catalog');
   if (input.catalogVersion !== 1) throw new RangeError('catalog.catalogVersion debe ser 1.');
@@ -35,6 +55,7 @@ export function createEphemerisCatalog(input) {
     if (ids.has(id)) throw new RangeError(`${path}.id duplicado: ${id}.`);
     ids.add(id);
     const file = nonempty(raw.file, `${path}.file`);
+    // Impido rutas absolutas, barras invertidas o ascensos de directorio fuera del sitio local.
     if (!/^(?!\/)(?!.*(?:^|\/)\.\.?\/)[A-Za-z0-9_./-]+\.json$/.test(file)
       || file.includes('//') || file.includes('..') || file.includes('\\')) {
       throw new RangeError(`${path}.file debe ser una ruta JSON local relativa y sin ascensos.`);
@@ -54,8 +75,7 @@ export function createEphemerisCatalog(input) {
     if (raw.coverage.endJdTdb < raw.coverage.startJdTdb) {
       throw new RangeError(`${path}.coverage termina antes de empezar.`);
     }
-    // Extensión opcional de v1: límites por cuerpo; coverage sigue siendo
-    // la envolvente global del archivo para catálogos anteriores.
+    // Admito límites individuales opcionales por cuerpo; mantengo `coverage` como envolvente global del archivo.
     let bodyCoverage = null;
     if (raw.bodyCoverage !== undefined) {
       object(raw.bodyCoverage, `${path}.bodyCoverage`);
@@ -79,6 +99,7 @@ export function createEphemerisCatalog(input) {
     if (raw.cadenceSeconds !== null) {
       requireFiniteNumber(raw.cadenceSeconds, `${path}.cadenceSeconds`);
       if (raw.cadenceSeconds <= 0) throw new RangeError(`${path}.cadenceSeconds debe ser positivo o null.`);
+      // Compruebo que el paso temporal no desaparezca por redondeo en aritmética IEEE-754 sobre JD TDB.
       const stepDays = raw.cadenceSeconds / 86400;
       if (stepDays === 0 || raw.coverage.startJdTdb + stepDays === raw.coverage.startJdTdb) {
         throw new RangeError(`${path}.cadenceSeconds no es representable en JD TDB.`);

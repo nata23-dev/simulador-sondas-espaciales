@@ -1,26 +1,20 @@
-// Etapa 21 — salida desde la plataforma: lanzamiento de 12E → órbita de aparcamiento → inyección de empuje finito → hipérbola de
-// escape → salida de la esfera de influencia (SOI) terrestre, apuntada para empalmar con el crucero heliocéntrico.
+// En este módulo calculo la salida interplanetaria completa desde la plataforma de lanzamiento hasta la frontera de la
+// esfera de influencia (SOI) terrestre: ascenso atmosférico, órbita de aparcamiento, inyección con empuje finito e hipérbola de escape.
 //
-// Sin DOM ni Three.js. Tierra puntual (mismo GM que 12E y el catálogo), sin J2, sin la Luna ni el Sol dentro de la SOI (cónicas
-// parcheadas, como el resto de la cadena). El ascenso es el de 12E sin cambios (atmósfera US-1976 corrotante, Tierra que gira);
-// se calcula una vez con ángulo de rotación inicial 0 y se gira alrededor del eje terrestre al instante del despegue. En ese
-// modelo es equivalente a recalcularlo con otro ángulo inicial salvo el error de integración (0,23 m en la posición final y 5·10⁻⁵ s en el corte de la circularización, medidos
-// en tests/Stage21LaunchInjection.test.mjs). Después todo se integra en ejes eclípticos J2000.
+// Trabajo sin DOM ni Three.js, usando una Tierra puntual (mismo GM del catálogo) sin J2 ni perturbación lunar o solar dentro de la SOI.
+// Para acelerar el apuntado calculo el ascenso atmosférico una sola vez con ángulo de rotación inicial 0 y lo roto alrededor del eje
+// terrestre hasta el instante real del despegue; a partir de la órbita de aparcamiento integro todo en ejes eclípticos J2000.
 //
-// Apuntado: incógnitas x = (instante del despegue, duración del aparcamiento, duración de la inyección); condición en la salida de
-// la SOI, frente a la velocidad que pide el Lambert del crucero desde ESE punto y en ESE instante (`requiredVelocityAt`):
-//   · empalme 'asymptote' (por defecto desde la etapa 28, el convencional de las cónicas parcheadas): velocidad de la Tierra + v∞ de la
-//     asíntota de salida de la hipérbola = velocidad pedida. El C3 es el del centro de la Tierra. En la frontera la velocidad de la
-//     hipérbola es algo mayor que la del crucero (≈ μ⊕/(R_SOI·v∞), unos 0,14 km/s con v∞ = 3 km/s): es lo que la gravedad terrestre
-//     fuera de la SOI le quita hasta el infinito y que las cónicas, que la ignoran allí, aplican de golpe en la frontera. Es el único
-//     salto de velocidad de la cadena; se declara (no es un encendido).
-//   · empalme 'velocity' (el de la etapa 21, conservado para compararlo): velocidad de la hipérbola en la frontera = velocidad pedida.
-//     Trayectoria continua, pero el C3 baja en ≈ 2μ⊕/R_SOI (0,86 km²/s²): con la Tierra actuando también fuera de la SOI la nave llega
-//     millones de km lejos (medido en la etapa 22).
-// Newton amortiguado con jacobiano por diferencias finitas. El despegue gira el plano de la órbita de aparcamiento alrededor del
-// eje terrestre (ascensión recta de la asíntota), el aparcamiento coloca la asíntota en el plano (declinación) y la inyección fija
-// su módulo (C3). La declinación alcanzable no supera la inclinación de la órbita de aparcamiento: si el acimut es «auto», se busca
-// el acimut con la inclinación necesaria.
+// Para apuntar la salida resuelvo con Newton amortiguado y jacobiano por diferencias finitas las tres incógnitas
+// x = (desfase del despegue, duración del aparcamiento, duración de la inyección) frente a la velocidad que exige el crucero
+// desde el punto y el instante exactos de salida de la SOI (`requiredVelocityAt`):
+//   · Empalme 'asymptote' (por defecto, cónicas parcheadas convencionales): igualo la velocidad de la Tierra más la asíntota v∞
+//     de salida con la velocidad pedida. El C3 corresponde al centro terrestre y aparece un pequeño salto declarado en la frontera
+//     (≈ μ⊕/(R_SOI·v∞), ~0,14 km/s a v∞ = 3 km/s), que representa la gravedad terrestre que las cónicas ignoran fuera de la SOI.
+//   · Empalme 'velocity' (alternativa de comparación): igualo directamente la velocidad hiperbólica en la frontera con la pedida,
+//     logrando continuidad en el borde pero reduciendo el C3 real en ≈ 2μ⊕/R_SOI (~0,86 km²/s²).
+// El despegue rota el plano de aparcamiento (ascensión recta de la asíntota), el aparcamiento orienta la asíntota en el plano
+// (declinación) y la duración de inyección fija su módulo (C3). Si el acimut es «auto», busco la inclinación necesaria para alcanzar la declinación.
 import { simulateLaunch, DEFAULT_GUIDANCE, DEFAULT_SCHEDULE } from './LaunchSimulation.js';
 import { DEMO_LAUNCHER, scaleLauncher } from './LaunchVehicle.js';
 import { ORBIT_CLASSES } from './LaunchOrbit.js';
@@ -35,7 +29,7 @@ import { propagateNBody, NBODY_PERTURBERS, NBodyDataError } from './NBodyCruise.
 import { IntegrationError } from '../science/NumericalIntegrator.js';
 
 export const EARTH_DEPARTURE_VERSION = '28-earth-departure-2';
-/** 28: modelos de empalme en la frontera de la SOI terrestre (véase el comentario de cabecera). */
+// Ofrezco dos criterios de empalme en la frontera de la SOI terrestre: por asíntota hiperbólica o por velocidad directa en el borde.
 export const DEPARTURE_PATCH_MODELS = Object.freeze({
   asymptote: Object.freeze({ id: 'asymptote', label: 'Asíntota (cónicas parcheadas convencionales)' }),
   velocity: Object.freeze({ id: 'velocity', label: 'Velocidad en la frontera (etapa 21)' })
@@ -49,11 +43,8 @@ const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a
 const norm = a => Math.hypot(a[0], a[1], a[2]);
 const unit = a => scale(a, 1 / norm(a));
 
-/**
- * 28: velocidad de exceso hiperbólico (km/s, vector de la asíntota de SALIDA) de un estado (r, v) respecto a un cuerpo de parámetro μ.
- * |v∞|² = v² − 2μ/r (C3) y su dirección es la del radio en la anomalía verdadera límite ν∞ = acos(−1/e):
- * ŝ = (−ê + √(e² − 1)·(ĥ × ê)) / e. null si la órbita no es hiperbólica (o es rectilínea).
- */
+// Calculo el vector de exceso hiperbólico v∞ (km/s) de la asíntota de salida para un estado (r, v) bajo parámetro μ.
+// Uso |v∞|² = v² − 2μ/r (C3) y la dirección límite ν∞ = acos(−1/e): ŝ = (−ê + √(e² − 1)·(ĥ × ê)) / e. Devuelvo null si no escapa.
 export function hyperbolicExcessVelocity(r, v, mu) {
   const rn = norm(r), c3 = dot(v, v) - 2 * mu / rn, h = cross(r, v), hn = norm(h);
   if (!(c3 > 0) || !(hn > 0)) return null;
@@ -63,25 +54,22 @@ export function hyperbolicExcessVelocity(r, v, mu) {
   return scale(add(scale(eh, -1), scale(side, k)), Math.sqrt(c3) / e);
 }
 
-// Etapa de inyección: Centaur D-1T, la que inyectó a las Voyager (también a Viking y Helios). Empuje, Isp y masas del resumen de
-// sistemas de 1973 (los mismos de la etapa 25). Simplificaciones declaradas: aquí no se enciende durante el ascenso (en vuelo,
-// el primer encendido, MES-1, completaba la órbita de aparcamiento), no hay evaporación y la dirección de empuje es progrado.
+// Defino la etapa superior de inyección Centaur D-1T con sus masas, empuje e Isp históricos.
+// Simplifico su operación usándola solo en la inyección progrado desde aparcamiento, sin encendido previo de circularización ni evaporación criogénica.
 const c = TITAN_IIIE_CENTAUR.centaur;
 export const CENTAUR_D1T = Object.freeze({ id: 'centaur-d1t', name: 'Centaur D-1T (2 × RL10A-3-3)', thrustN: c.empujeN, ispS: c.ispVacioS,
   propellantKg: c.propulsanteKg, dryMassKg: c.masaSecaKg,
   provenance: 'Centaur D-1T del Titan IIIE-Centaur: empuje (30 000 lbf), Isp (444 s), propelente (29 750 lb) y masa seca (4 400 lb) del resumen de sistemas de 1973, los mismos de la etapa 25.' });
 
-// Lanzador hasta la órbita de aparcamiento: el demostrativo de 12E escalado ×9 (masas y empujes ×9; mismo empuje/peso, Isp y Cd).
-// Es ilustrativo, como el pesado ×2,5 de la etapa 16: no corresponde a ningún cohete real. Su capacidad con el programa de
-// ascenso por defecto (acimut 90°) se mide por bisección en las pruebas (≈ 24,6 t), suficiente para la Centaur llena (15,5 t)
-// y cualquier sonda de la flota.
+// Escalo ×9 el lanzador demostrativo de dos etapas (masas y empujes proporcionales, mismo empuje/peso, Isp y Cd) para disponer
+// de una capacidad ilustrativa cercana a 24,6 t a órbita de aparcamiento, suficiente para elevar la Centaur llena y cualquier sonda.
 export const DEPARTURE_LAUNCHER_SCALE = 9;
 export const DEPARTURE_LAUNCHER = scaleLauncher(DEMO_LAUNCHER, DEPARTURE_LAUNCHER_SCALE, { id: 'demo-two-stage-superheavy-v1', name: 'Lanzador demostrativo superpesado (×9)' });
 export const DEPARTURE_LAUNCHER_CAPACITY_KG = 24600;
 
-// Sitio: LC-41 de Cabo Cañaveral (coordenadas de la etapa 25). La altitud de la plataforma no está en las fuentes del proyecto: 0 m.
+// Tomo las coordenadas del complejo LC-41 de Cabo Cañaveral a altitud 0 m como plataforma de lanzamiento.
 export const DEPARTURE_SITE = Object.freeze({ name: LC41.nombre, latDeg: LC41.latDeg, lonDeg: LC41.lonDeg, altitudeM: 0 });
-// La etapa 2 del lanzador circulariza y se separa al alcanzar la órbita (sin tramo balístico posterior en 12E).
+// Termino la simulación de ascenso justo al completar la circularización, sin tramo balístico adicional en el simulador de lanzamiento.
 export const DEPARTURE_LAUNCH_SCHEDULE = Object.freeze({ ...DEFAULT_SCHEDULE, postCoastSeconds: 0 });
 export const DEPARTURE_TARGET_ORBIT = Object.freeze({ minPerigeeAltitudeKm: 160, maxApogeeAltitudeKm: 2000, targetAltitudeKm: 200, inclinationDeg: null, inclinationToleranceDeg: 1 });
 
@@ -94,6 +82,7 @@ const gravity = mu => (t, s, out) => {
   out[0] = s[3]; out[1] = s[4]; out[2] = s[5]; out[3] = k * s[0]; out[4] = k * s[1]; out[5] = k * s[2];
 };
 
+// Monto las opciones de lanzamiento para un acimut y una época de despegue dados.
 export function departureLaunchOptions(azimuthDeg, { liftoffJdTdb = null, earthRotationAngleDeg = 0 } = {}) {
   const label = liftoffJdTdb == null ? '2000-01-01T12:00:00Z' : tdbToTimeScales(liftoffJdTdb).labelUtc.replace(' · ', 'T').replace(' UTC', 'Z');
   return { site: { latDeg: DEPARTURE_SITE.latDeg, lonDeg: DEPARTURE_SITE.lonDeg, altitudeM: DEPARTURE_SITE.altitudeM }, launchDateUtc: label,
@@ -102,7 +91,7 @@ export function departureLaunchOptions(azimuthDeg, { liftoffJdTdb = null, earthR
 
 const inclinationDeg = (r, v) => { const h = cross(r, v); return Math.acos(Math.max(-1, Math.min(1, h[2] / norm(h)))) / DEG; };
 
-/** Tiempo desde el estado (r, v) de una hipérbola de salida hasta |r| = rTarget (rama saliente). null si no es hiperbólica. */
+// Calculo analíticamente el tiempo (s) desde (r, v) en una hipérbola saliente hasta alcanzar el radio rTarget; devuelvo null si no escapa.
 export function hyperbolicTimeToRadius(r, v, mu, rTarget) {
   const rn = norm(r), energy = dot(v, v) / 2 - mu / rn;
   if (!(energy > 0)) return null;
@@ -113,18 +102,11 @@ export function hyperbolicTimeToRadius(r, v, mu, rTarget) {
   return (M(F1) - M(F0)) / n;
 }
 
-/**
- * 28: gravedad terrestre FUERA de la SOI en el apuntado de la salida. La asíntota corrige la energía (el C3), pero la Tierra sigue
- * tirando de la nave más allá de la frontera: frente a una cónica que sale de la SOI con la velocidad de la asíntota, la nave real va
- * por delante una distancia que crece como (μ⊕/v∞²)·ln(r/R_SOI) y que el Sol amplifica a lo largo del crucero (≈ 0,5 millones de km
- * en la llegada de A1). Aquí se mide esa diferencia con el estado REAL de la nave en la frontera, propagado con el Sol y la Tierra
- * (DOPRI54, como el crucero de n cuerpos de la etapa 22, con el GM de la Luna sumado en el centro de la Tierra), hasta la llegada
- * del crucero cónico. Devuelve la corrección de la velocidad pedida que la anula a primer orden: Δ = −(∂r_llegada/∂v)⁻¹ · fallo,
- * con la sensibilidad de la cónica (diferencias finitas sobre Kepler). IntegratedMission la suma a la velocidad pedida y vuelve a
- * apuntar la salida hasta que el fallo baja de `EARTH_BEYOND_SOI.toleranceKm`.
- * `input` = { stateAt(ephemerisId, jd) → { positionKm } | null, exit: { jdTdb, helioPositionKm, helioVelocityActualKmS },
- *   cruiseVelocityKmS (la del Lambert desde la frontera), arrivalJdTdb, muSun }.
- */
+// Compenso la gravedad residual de la Tierra fuera de su SOI durante el crucero heliocéntrico.
+// Aunque el empalme por asíntota corrige el C3, la atracción terrestre más allá de R_SOI desplaza la nave una distancia
+// que crece como (μ⊕/v∞²)·ln(r/R_SOI) y que la dinámica solar amplifica hasta cientos de miles de km en la llegada.
+// Propago el estado real en la frontera con Sol + Tierra (DOPRI54) hasta la época de llegada y calculo por diferencias
+// finitas sobre Kepler la corrección lineal Δv = −(∂r_llegada/∂v)⁻¹ · fallo que anula ese desvío al reapuntar la salida.
 export const EARTH_BEYOND_SOI = Object.freeze({ toleranceKm: 1, maxRounds: 8, jacobianStepKmS: 1e-5,
   perturbers: Object.freeze(NBODY_PERTURBERS.filter(p => p.id === '399')) });
 export function earthBeyondSoiCorrection({ stateAt, exit, cruiseVelocityKmS, arrivalJdTdb, muSun }) {
@@ -153,11 +135,9 @@ function solveLinear3(J, b) {
   return [0, 1, 2].map(k => det(J.map((row, i) => row.map((val, j) => (j === k ? b[i] : val)))) / D);
 }
 
-/**
- * `input`: { payloadMassKg, liftoffGuessJdTdb, earthStateAt(jd) → { positionKm, velocityKmS } | null, requiredVelocityAt(posKm, jd)
- *   → velocidad heliocéntrica | null, soiRadiusKm, azimuthDeg ('auto' | número), launcher?, upperStage?, previous? (solución
- *   anterior, para recalcular con otra llegada) }.
- */
+// Diseño y apunto la salida completa desde la plataforma hasta la frontera de la SOI terrestre.
+// Recibo masa útil, época tentativa de despegue, efemérides terrestres, función `requiredVelocityAt(posKm, jd)`, radio SOI,
+// acimut ('auto' o ángulo fijo) y opcionalmente una solución previa para reutilizar la misma ventana al iterar con el crucero.
 export function designEarthDeparture(input) {
   const { payloadMassKg, liftoffGuessJdTdb: tg, earthStateAt, requiredVelocityAt, soiRadiusKm } = input;
   const patch = input.patch ?? DEPARTURE_PATCH_MODELS.asymptote.id;
@@ -169,7 +149,7 @@ export function designEarthDeparture(input) {
   const base = { model: EARTH_DEPARTURE_VERSION, patch, launcherName: launcher.name, upperStage: upper, site: DEPARTURE_SITE, payloadMassKg, stackMassKg: stackKg, soiRadiusKm };
   const fail = (status, reason, extra = {}) => Object.freeze({ ...base, ...extra, status, ok: false, reason });
 
-  // Asíntota pedida si se saliera del centro de la Tierra en la fecha prevista (solo para el valor inicial y el acimut).
+  // Estimo la asíntota inicial desde el centro de la Tierra en la fecha prevista para elegir el acimut y el arranque del solver.
   const e0 = earthStateAt(tg);
   if (!e0) return fail(DEPARTURE_STATUS.aim, 'Efemérides de la Tierra no disponibles en la fecha de salida.');
   const v0 = requiredVelocityAt(e0.positionKm, tg);
@@ -177,7 +157,7 @@ export function designEarthDeparture(input) {
   const vInf0 = sub(v0, e0.velocityKmS), sEq = unit(eclipticJ2000ToIcrfEquatorial(vInf0));
   const declinationDeg = Math.asin(sEq[2]) / DEG;
 
-  // 1. Ascenso (12E) y acimut.
+  // 1. Calculo el ascenso a órbita de aparcamiento y, si el acimut es automático, busco por bisección el acimut noreste necesario.
   const ascend = az => simulateLaunch({ launcher, payloadMassKg: stackKg, options: departureLaunchOptions(az) });
   const reached = sim => sim.orbit.classification === ORBIT_CLASSES.orbit;
   let azimuthDeg = input.azimuthDeg ?? 'auto', ascent, azimuthNote, launcherLimit = false;
@@ -185,12 +165,12 @@ export function designEarthDeparture(input) {
     ascent = ascend(90); azimuthDeg = 90;
     const i90 = reached(ascent) ? inclinationDeg(ascent.final.positionKm, ascent.final.velocityKmS) : null;
     if (i90 != null && Math.abs(declinationDeg) > i90 - cfg.declinationMarginDeg) {
-      // Rama noreste: la inclinación crece al bajar el acimut. Bisección hasta |δ| + 1°.
+      // Hacia el noreste la inclinación sube al disminuir el acimut; hago bisección hasta lograr |δ| + 1°.
       const want = Math.min(89, Math.abs(declinationDeg) + 1);
       let lo = 1, hi = 90;
       for (let k = 0; k < 30 && hi - lo > 0.01; k++) {
         const mid = (lo + hi) / 2, sim = ascend(mid);
-        if (!reached(sim)) { lo = mid; launcherLimit = true; continue; } // con acimutes menores el lanzador no llega a la órbita
+        if (!reached(sim)) { lo = mid; launcherLimit = true; continue; } // si el acimut es demasiado bajo, pierdo impulso de rotación y el lanzador no alcanza órbita
         if (inclinationDeg(sim.final.positionKm, sim.final.velocityKmS) > want) lo = mid; else hi = mid;
       }
       azimuthDeg = Math.round(hi * 100) / 100; ascent = ascend(azimuthDeg);
@@ -209,11 +189,11 @@ export function designEarthDeparture(input) {
       { ascent, azimuthDeg, declinationDeg, parkingInclinationDeg });
   }
 
-  // 2. Valor inicial analítico.
+  // 2. Genero las dos ventanas analíticas iniciales (nodos ascendente y descendente) y verifico el presupuesto impulsivo de la etapa superior.
   const tc0 = tdbToTimeScales(tg), sDate = unit(applyMatrix(precessionMatrixJ2000ToDate(tc0.jdTt), sEq));
   const n0 = unit(cross(r0, vp0)), A = n0[0] * sDate[0] + n0[1] * sDate[1], B = n0[0] * sDate[1] - n0[1] * sDate[0], C = n0[2] * sDate[2], Rab = Math.hypot(A, B);
   const base0 = Math.atan2(B, A), dg = Math.acos(Math.max(-1, Math.min(1, -C / Rab)));
-  const gmst0 = greenwichMeanSiderealDeg(tg) * DEG, siderealRate = 2 * Math.PI * 1.0027378119113546 / 86400; // rad/s (IERS 1.00273781191135448, escrito como el double que ya resultaba)
+  const gmst0 = greenwichMeanSiderealDeg(tg) * DEG, siderealRate = 2 * Math.PI * 1.0027378119113546 / 86400; // velocidad angular sidérea terrestre en rad/s
   const wrap = x => Math.atan2(Math.sin(x), Math.cos(x));
   const vInfMag = norm(vInf0), rP = norm(r0), energy0 = dot(vp0, vp0) / 2 - mu / rP, aP = -mu / (2 * energy0), nMean = Math.sqrt(mu / aP ** 3), period = 2 * Math.PI / nMean;
   const dvNeed = Math.sqrt(vInfMag ** 2 + 2 * mu / rP) - norm(vp0);
@@ -234,15 +214,15 @@ export function designEarthDeparture(input) {
     let tc = dth / nMean - tb0 / 2; while (tc < 0) tc += period;
     return [dtL, tc, tb0];
   }).sort((a, b) => Math.abs(a[0]) - Math.abs(b[0]));
-  // Con una solución anterior (otra iteración de la llegada), se parte de ella: la ventana elegida no cambia.
+  // Si recibo una solución previa al iterar con el crucero, parto de ella para permanecer en la misma ventana de lanzamiento.
   if (input.previous?.x) guesses.unshift(input.previous.x.slice());
 
-  // 3. Evaluación de la cadena para x = [desfase del despegue respecto a tg (s), aparcamiento (s), inyección (s)].
+  // 3. Evalúo la cadena completa para x = [desfase del despegue (s), aparcamiento (s), duración de inyección (s)] y la resuelvo por Newton amortiguado.
   let evaluations = 0;
   function chain(x, detail = false) {
     evaluations++;
     const jdL = tg + x[0] / 86400, frame = launchFrameToEclipticJ2000(jdL), M = frame.matrix;
-    // Los tramos terrestres se convierten al Sol con la Tierra de las efemérides: el despegue también debe estar cubierto (no se extrapola).
+    // Exijo cobertura de efemérides terrestres desde el despegue para transformar todos los tramos al marco heliocéntrico sin extrapolar.
     if (!earthStateAt(jdL)) return { error: 'aim', reason: 'el despegue quedaría fuera de la cobertura de efemérides de la Tierra (no se extrapola)' };
     const r = applyMatrix(M, r0), v = applyMatrix(M, vp0);
     if (!(x[1] >= 0) || x[1] > cfg.maxParkingCoastSeconds || !(x[2] >= 1) || x[2] > fullBurnS) return { error: 'bounds' };
@@ -257,7 +237,7 @@ export function designEarthDeparture(input) {
     const ex = propagateKepler(bo.positionKm, bo.velocityKmS, dt, mu);
     const tExit = tAsc + x[1] + x[2] + dt, jdExit = jdL + tExit / 86400, earth = earthStateAt(jdExit);
     if (!earth) return { error: 'aim', reason: 'Efemérides de la Tierra no disponibles en la salida de la SOI.' };
-    // 28: `actual` es la velocidad de la nave en la frontera; `achieved`, la que se compara con la pedida según el empalme.
+    // Distingo entre `actual` (velocidad real de la nave en la frontera) y `achieved` (la magnitud que igualo al crucero según el empalme).
     const X = add(earth.positionKm, ex.positionKm), actual = add(ex.velocityKmS, earth.velocityKmS), req = requiredVelocityAt(X, jdExit);
     if (!req) return { error: 'aim', reason: 'El crucero no puede apuntarse desde la salida de la SOI.' };
     const vInf = hyperbolicExcessVelocity(bo.positionKm, bo.velocityKmS, mu);
@@ -290,7 +270,7 @@ export function designEarthDeparture(input) {
       if (!ok) break;
       const dx = solve3(J, scale(cur.F, -1));
       if (!dx) break;
-      // Pasos limitados (despegue ≤ 1 h, aparcamiento ≤ 10 min, inyección ≤ 20 s) y amortiguados si el residuo no baja.
+      // Limito cada paso de Newton (despegue ≤ 1 h, aparcamiento ≤ 10 min, inyección ≤ 20 s) y reduzco λ si el residuo no disminuye.
       const lim = [3600, 600, 20], k0 = Math.min(1, ...dx.map((d, i) => lim[i] / Math.max(1e-300, Math.abs(d))));
       let lambda = k0, next = null;
       for (let tries = 0; tries < 8; tries++, lambda /= 2) {
@@ -312,7 +292,7 @@ export function designEarthDeparture(input) {
     return fail(status, `Salida no apuntada: ${why}${best ? ` (residuo ${(best.residual * 1e6).toFixed(3)} mm/s)` : ''}.`, { ascent, azimuthDeg, declinationDeg, parkingInclinationDeg });
   }
 
-  // 4. Solución: estados de cada tramo en ejes eclípticos J2000, relativos al centro de la Tierra; tiempos desde el despegue.
+  // 4. Ensamblo la solución final en ejes eclípticos J2000 relativos al centro de la Tierra, midiendo los tiempos desde el despegue.
   const d = chain(best.x, true), M = d.frame.matrix;
   const rot = p => applyMatrix(M, p);
   const ascentKnots = ascent.knots.map(k => ({ elapsedSeconds: k.elapsedSeconds, positionKm: rot(k.positionKm), velocityKmS: rot(k.velocityKmS), massKg: k.massKg }));
@@ -335,8 +315,8 @@ export function designEarthDeparture(input) {
       gravityLossKmS: b.propulsiveDeltaVMS / 1000 - impulsiveDvKmS, massAfterKg: bo.massKg, c3Km2S2: c3, vInfKmS: Math.sqrt(c3), burnoutAltitudeKm: rBo - 6378.137 },
     upperSeparation: { elapsedSeconds: tBurnEnd, jettisonedKg: bo.massKg - payloadMassKg },
     escape: { startSeconds: tBurnEnd, endSeconds: d.tExit, durationSeconds: d.escapeSeconds, initial: { positionKm: bo.positionKm, velocityKmS: bo.velocityKmS } },
-    // 28: helioVelocityAchievedKmS es la magnitud apuntada (asíntota + Tierra, o la de la frontera con el empalme 'velocity');
-    // helioVelocityActualKmS, la velocidad de la nave en la frontera; soiVelocityJumpKmS, su diferencia con la del crucero.
+    // Guardo por separado la velocidad apuntada (`helioVelocityAchievedKmS`), la real en la frontera (`helioVelocityActualKmS`)
+    // y el salto declarado entre la hipérbola en el borde de la SOI y la velocidad inicial del crucero (`soiVelocityJumpKmS`).
     exit: { elapsedSeconds: d.tExit, jdTdb: d.jdExit, geocentric: { positionKm: d.exit.positionKm, velocityKmS: d.exit.velocityKmS }, helioPositionKm: d.X,
       helioVelocityAchievedKmS: d.achieved, helioVelocityActualKmS: d.actual, helioVelocityRequiredKmS: d.req, earthState: d.earth,
       vInfVectorKmS: d.vInf, soiVelocityJumpKmS: sub(d.actual, d.req) }

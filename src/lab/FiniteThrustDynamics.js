@@ -1,13 +1,10 @@
-// Etapa 12D — dinámica traslacional con empuje finito. Módulo puro: sin DOM,
-// sin Three.js y sin conocimiento del Hangar. Unidades de propagación: km,
-// km/s, s y kg. El empuje se recibe en newtons y se convierte aquí a km/s².
+// En este módulo integro la dinámica traslacional de empuje finito de manera pura (sin DOM, sin Three.js y sin acoplarme al Hangar).
+// Propago el estado en km, km/s, s y kg, recibiendo el empuje en newtons y convirtiéndolo a km/s².
 //
-// Estado integrado (8 componentes):  [x, y, z, vx, vy, vz, m, Δv_acum]
+// Integro un vector de estado de 8 componentes: [x, y, z, vx, vy, vz, m, Δv_acum]
 //   dr/dt = v            dv/dt = a_grav + (θ·F/m)·û / 1000
 //   dm/dt = −θ·F/(Isp·g0)            dΔv/dt = θ·F/(m·1000)   [km/s]
-// θ es el acelerador (0<θ≤1) constante dentro de cada encendido; Isp se
-// supone independiente del acelerador. El impulso específico y g0 siguen la
-// definición de Isp en segundos (NIST SP 811, B.9: g0 = 9,80665 m/s²).
+// Mantengo el acelerador θ (0 < θ ≤ 1) y el Isp constantes dentro de cada encendido, usando g0 = 9,80665 m/s² (NIST SP 811).
 import { integrateDopri54 } from '../science/NumericalIntegrator.js';
 
 export const G0_M_S2 = 9.80665;
@@ -19,9 +16,9 @@ export const THRUST_DIRECTION_LABELS = Object.freeze({
 });
 export const MIN_BURN_SECONDS = 1;
 export const MAX_BURNS = 8;
-// Umbrales de casos degenerados (km, km/s, seno del ángulo posición–velocidad).
+// Fijo umbrales para detectar geometrías degeneradas (radio mínimo en km, velocidad en km/s y seno del ángulo entre r y v).
 const MIN_RADIUS_KM = 1e-6, MIN_SPEED_KMS = 1e-12, MIN_SIN_ANGLE = 1e-9;
-// Un encendido restante de menos de 1 ms por falta de propelente no se ejecuta.
+// Omito cualquier encendido residual menor de 1 ms cuando ya casi no queda propelente.
 const MIN_EXECUTABLE_BURN_SECONDS = 1e-3;
 const MASS_SNAP_TOLERANCE_KG = 1e-6;
 
@@ -29,19 +26,18 @@ export class FiniteThrustError extends Error {
   constructor(code, message, details = {}) { super(message); this.name = 'FiniteThrustError'; this.code = code; this.details = details; }
 }
 
-// ---- Conversiones explícitas -------------------------------------------------
+// ---- Conversiones propulsivas explícitas ------------------------------------
 export const exhaustVelocityMS = ispS => ispS * G0_M_S2;
 export const massFlowKgS = (thrustN, ispS) => thrustN / (ispS * G0_M_S2);
-// N/kg = m/s²; ÷1000 → km/s².
+// Convierto la aceleración de N/kg (m/s²) a km/s² dividiendo por 1000.
 export const accelerationKmS2 = (thrustN, massKg) => thrustN / massKg / 1000;
 export const kmS2ToMS2 = value => value * 1000;
 export const tsiolkovskyDeltaVMS = (ispS, initialMassKg, finalMassKg) => exhaustVelocityMS(ispS) * Math.log(initialMassKg / finalMassKg);
 
-// ---- Dirección del empuje ------------------------------------------------------
-// Marco: geocéntrico inercial (ICRF eclíptico J2000, el de MissionPhysics).
-//  progrado/retrógrado = ±v̂ ; radial exterior/interior = ±r̂ (r desde el centro de la Tierra);
-//  normal/antinormal = ±ĥ con h = r×v. Las seis direcciones orbitales se reevalúan en cada
-//  evaluación de la derivada (cambian durante el vuelo); 'inertial' es un vector ICRF fijo.
+// ---- Dirección unitaria del empuje ------------------------------------------
+// Calculo el vector unitario de empuje en el marco inercial de propagación (ICRF eclíptico J2000):
+//  · progrado/retrógrado = ±v̂ ; radial exterior/interior = ±r̂ ; normal/antinormal = ±ĥ (con h = r × v).
+// Reevalúo las seis direcciones orbitales en cada llamada de la derivada; en modo 'inertial' normalizo el vector fijo recibido.
 export function thrustDirectionUnit(direction, position, velocity, out = new Float64Array(3)) {
   const type = direction?.type;
   if (type === 'inertial') {
@@ -73,6 +69,7 @@ export function thrustDirectionUnit(direction, position, velocity, out = new Flo
 }
 
 // ---- Validación del programa de encendidos ----------------------------------
+// Compruebo tiempos, aceleradores, direcciones, horizonte temporal y ausencia de solapes entre encendidos.
 export function validateBurnSchedule(burns, { endSeconds, engine }) {
   const issues = [];
   if (!Array.isArray(burns)) return ['El programa de encendidos debe ser una lista.'];
@@ -123,7 +120,8 @@ function coastDerivative(gravityDerivative) {
   return (t, s, out) => { gravityDerivative(t, s, out); out[6] = 0; out[7] = 0; };
 }
 
-// gravityDerivative(t, estado, out) debe rellenar out[0..5] = [v, a_gravedad] leyendo estado[0..5].
+// Propago por tramos (vuelo libre y encendidos consecutivos) integrando con DOPRI54 y cortando al agotar el propelente.
+// Exijo que `gravityDerivative(t, estado, out)` escriba out[0..5] = [v, a_gravedad] a partir de estado[0..5].
 export function propagateFiniteThrust({
   gravityDerivative, initialPositionKm, initialVelocityKmS, initialMassKg, dryMassKg, engine = null,
   burns = [], endSeconds, maxCoastStepSeconds = 3600, maxBurnStepSeconds = 600

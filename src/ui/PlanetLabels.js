@@ -1,7 +1,9 @@
+// En este módulo proyecto y administro las etiquetas y marcadores 2D sobre la escena para planetas, el Sol,
+// satélites naturales y sondas, evitando oclusiones por discos celestes, solapamientos y choques con controles superpuestos.
 import * as THREE from 'three';
 
 const NOMBRES = { Jupiter: 'Júpiter' };
-// 14.1: color identificativo de cada cuerpo (presentación). Coincide con los tokens --body-* de theme.css.
+// Asocio a cada cuerpo su color identificativo de presentación en sintonía con los tokens --body-* del tema.
 const COLORES_MARCADOR = {
   Mercurio: '#a88bc9',
   Venus: '#d9a443',
@@ -18,11 +20,8 @@ const COLORES_MARCADOR = {
 };
 const PRIORIDAD = ['Tierra', 'Jupiter', 'Saturno', 'Marte', 'Neptuno', 'Urano', 'Venus', 'Mercurio'];
 
-/**
- * 24: posición de un rótulo que no tape los controles superpuestos a la escena (vista inmersiva del Centro de Misión).
- * El rótulo se dibuja centrado en x con su borde inferior en y (translate(-50%,-100%)). Prueba encima del marcador y, si choca
- * con un obstáculo (rectángulos en coordenadas del contenedor), debajo. Devuelve la y elegida o null (ocultar el rótulo).
- */
+// Calculo una coordenada vertical libre para el rótulo evitando tapar los controles superpuestos a la escena:
+// pruebo encima del marcador, después debajo si hay sitio y devuelvo null si en ambos casos choca con algún obstáculo.
 export function posicionEtiquetaLibre({ x, yArriba, yAbajo = null, ancho, alto = 18, obstaculos = null }) {
   if (!obstaculos?.length) return yArriba;
   const choca = y => obstaculos.some(o => x - ancho / 2 < o.right && x + ancho / 2 > o.left && y - alto < o.bottom && y > o.top);
@@ -30,7 +29,7 @@ export function posicionEtiquetaLibre({ x, yArriba, yAbajo = null, ancho, alto =
   if (Number.isFinite(yAbajo) && !choca(yAbajo)) return yAbajo;
   return null;
 }
-// Anchura aproximada del rótulo sin medir el DOM en cada fotograma (mayúsculas espaciadas de 11 px).
+// Estimo la anchura del rótulo a partir de su texto para no provocar mediciones de diseño del DOM en cada fotograma.
 const anchoEtiqueta = (texto, porLetra = 9.8) => String(texto).length * porLetra + 12;
 
 function suavizarPaso(borde0, borde1, x) {
@@ -38,6 +37,7 @@ function suavizarPaso(borde0, borde1, x) {
   return t * t * (3 - 2 * t);
 }
 
+// Creo la capa de marcadores y etiquetas en pantalla y devuelvo las funciones para proyectarlos, detectar clics y gestionar el estado visual.
 export function crearEtiquetasPlanetas(
   container,
   camera,
@@ -70,7 +70,7 @@ export function crearEtiquetasPlanetas(
     elementos.set(nombre, etiqueta);
   }
 
-  // Etiqueta discreta del Sol (utilizada en vista primera persona / recreación desde espacio profundo)
+  // Preparo el marcador y el rótulo discreto del Sol para mostrarlos en primera persona desde el espacio profundo.
   const marcadorSol = document.createElement('span');
   marcadorSol.className = 'celestial-marker';
   marcadorSol.style.setProperty('--marker-color', COLORES_MARCADOR.Sol);
@@ -84,7 +84,7 @@ export function crearEtiquetasPlanetas(
   etiquetaSol.hidden = true;
   capa.append(etiquetaSol);
 
-  // Sondas (sonda de la misión del laboratorio + Voyager 1 + Voyager 2)
+  // Registro los marcadores y etiquetas de la sonda activa del laboratorio y de las sondas históricas.
   const registrosSondas = [];
   if (sonda) {
     const marcadorSonda = document.createElement('span');
@@ -135,7 +135,7 @@ export function crearEtiquetasPlanetas(
     });
   }
 
-  // Satélites naturales en ventanas de encuentro (Ío, Titán, Tritón)
+  // Registro los marcadores y etiquetas de los satélites naturales visibles durante sus ventanas de encuentro.
   const registrosSatelites = [];
   if (satelites) {
     for (const [key, sat] of satelites.entries()) {
@@ -171,6 +171,7 @@ export function crearEtiquetasPlanetas(
   let objetivosPantalla = [];
   let hoverActualId = null;
 
+  // Compruebo si el rayo desde la cámara hacia un objetivo atraviesa el disco de otro cuerpo más cercano.
   function intersectaDisco(centro, radio, distancia) {
     if (radio <= 0) return false;
     alDisco.copy(centro).sub(camera.position);
@@ -181,6 +182,7 @@ export function crearEtiquetasPlanetas(
       avance - Math.sqrt(Math.max(0, radio * radio - separacionCuadrada)) < distancia;
   }
 
+  // Determino si el Sol o algún planeta oculta visualmente la línea de visión hacia el cuerpo evaluado.
   function ocultoPorDisco(nombre, centro, distancia, radioSolActual) {
     rayo.copy(centro).sub(camera.position).multiplyScalar(1 / Math.max(distancia, 1e-8));
     if (nombre !== 'Sol' && intersectaDisco(centroSol, radioSolActual * 1.08, distancia)) return true;
@@ -193,6 +195,7 @@ export function crearEtiquetasPlanetas(
     return false;
   }
 
+  // Proyecto en cada fotograma todos los cuerpos visibles a coordenadas 2D, resuelvo prioridades y actualizo los objetivos clicables.
   function actualizar(
     seleccionado,
     sondaSeleccionada = false,
@@ -331,7 +334,7 @@ export function crearEtiquetasPlanetas(
     for (const candidato of candidatos) {
       const esPrioritario = candidato.esProtagonista || candidato.nombre === hoverActualId;
       const umbralX = modoPrimeraPersona && esPrioritario ? 46 : 92;
-      // 24: si el rótulo cae bajo un control de la escena, se prueba debajo del marcador; si tampoco cabe, se oculta.
+      // Si el rótulo choca con un control superpuesto de la escena, pruebo debajo del marcador y lo oculto si tampoco cabe.
       const yAbajo = candidato.yCentro + Math.min(Math.max(candidato.radioPx, 4), 32) + 24;
       const yLibre = posicionEtiquetaLibre({ x: candidato.x, yArriba: candidato.y, yAbajo: yAbajo < alto - 6 ? yAbajo : null,
         ancho: anchoEtiqueta(candidato.elemento.textContent), obstaculos });
@@ -355,7 +358,7 @@ export function crearEtiquetasPlanetas(
       });
     }
 
-    // Rótulo discreto del Sol en primera persona
+    // Proyecto el marcador y el rótulo discreto del Sol cuando la cámara está en primera persona.
     if (modoPrimeraPersona && !vistaTierraDistante) {
       const distSol = camera.position.length();
       proyectado.copy(centroSol).sub(camera.position);
@@ -385,7 +388,7 @@ export function crearEtiquetasPlanetas(
       etiquetaSol.hidden = true;
     }
 
-    // Satélites naturales en ventanas de encuentro
+    // Proyecto las etiquetas y marcadores de los satélites naturales activos en la escena.
     for (const regSat of registrosSatelites) {
       const nodo = regSat.sat.posicion;
       if (!nodo.visible) {
@@ -442,10 +445,10 @@ export function crearEtiquetasPlanetas(
       });
     }
 
-    // Sondas (Experimental + Voyager 1 + Voyager 2)
+    // Proyecto los marcadores y etiquetas de la sonda activa y de las sondas históricas visibles.
     for (const reg of registrosSondas) {
       const s = reg.sonda;
-      // Si la cámara está en primera persona dentro de esta sonda, su visual está oculta
+      // Oculto marcador y rótulo cuando la cámara en primera persona está dentro de esta sonda y su malla está oculta.
       if (!s.posicion.visible || !s.visual.visible) {
         reg.etiqueta.hidden = true;
         reg.marcador.hidden = true;
@@ -517,6 +520,7 @@ export function crearEtiquetasPlanetas(
     }
   }
 
+  // Identifico qué cuerpo o sonda se encuentra bajo unas coordenadas de pantalla dando prioridad al área del rótulo.
   function objetivoEnPantalla(clientX, clientY) {
     if (!visible || objetivosPantalla.length === 0) return null;
     const rectContenedor = container.getBoundingClientRect();
@@ -543,10 +547,12 @@ export function crearEtiquetasPlanetas(
     return mejor;
   }
 
+  // Guardo el cuerpo resaltado bajo el puntero para destacarlo visualmente en la siguiente actualización.
   function establecerHover(id) {
     hoverActualId = id ?? null;
   }
 
+  // Muestro u oculto la capa completa de etiquetas y limpio la lista de objetivos clicables al ocultarla.
   function mostrar(valor) {
     visible = valor;
     capa.hidden = !valor;
@@ -554,7 +560,7 @@ export function crearEtiquetasPlanetas(
   }
 
   mostrar(false);
-  // 17.1: el nombre de la sonda de la misión sale del diseño con el que se calculó.
+  // Actualizo el texto de la etiqueta de la sonda activa para reflejar el nombre del diseño con el que se calculó la misión.
   function establecerNombreSonda(nombre) {
     const registro = registrosSondas.find(item => item.tipo === 'sonda');
     if (registro) registro.etiqueta.textContent = nombre || 'Sonda';

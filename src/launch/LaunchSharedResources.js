@@ -1,18 +1,17 @@
-// LAN-02 — recursos compartidos entre el lanzamiento 3D y la escena principal.
-//
-// El modelo de NASA del lanzamiento es un clon (`clone(true)`) de la plantilla Voyager que también dibuja la escena principal:
-// sus geometrías y texturas son los mismos objetos. Cada WebGLRenderer que dibuja una geometría o una textura le añade su propio
-// oyente «dispose» (three r186: WebGLGeometries y WebGLTextures), y `renderer.dispose()` no lo retira. Al cerrar el lanzamiento
-// quedaban en la plantilla 5 oyentes de geometría y 3 de textura más por cada lanzamiento, y con ellos el estado interno del
-// renderizador destruido (su contexto perdido y su lienzo). La plantilla no se puede desechar: la sigue usando la escena principal.
-//
-// Aquí cada malla recibe una geometría propia que apunta a los MISMOS atributos (los mismos arrays: no se duplica memoria ni se
-// cambia la forma) y cada material, texturas propias que apuntan a la MISMA imagen (`Texture.source`). El renderizador del
-// lanzamiento registra sus oyentes en esos objetos propios, que se desechan al cerrar; la plantilla no se toca.
+/**
+ * En este módulo aíslo los objetos WebGL de geometría y textura que el
+ * lanzamiento 3D comparte con la escena principal para evitar fugas de memoria
+ * al destruir el renderizador temporal del lanzamiento.
+ * En Three.js cada `WebGLRenderer` suscribe un oyente `dispose` sobre cada
+ * geometría y textura dibujada y `renderer.dispose()` no lo desregistra. Aquí
+ * creo envoltorios propios que apuntan exactamente a los mismos búferes e
+ * imágenes subyacentes (sin duplicar memoria) para poder desecharlos al cerrar
+ * el lanzamiento sin tocar las plantillas activas en la escena principal.
+ */
 
 import * as THREE from 'three';
 
-/** Geometría nueva que comparte índice, atributos y atributos de morfología con `fuente` (sin copiar sus datos). */
+// Creo una `BufferGeometry` nueva que reutiliza los mismos atributos, índices y morphTargets de `fuente` sin copiar arrays.
 export function geometriaQueComparteDatos(fuente) {
   const g = new THREE.BufferGeometry();
   g.name = fuente.name;
@@ -28,23 +27,14 @@ export function geometriaQueComparteDatos(fuente) {
   return g;
 }
 
-/**
- * Todos los `THREE.Sprite` comparten una única geometría global de three (`Sprite.js`), también los de la escena principal: el
- * renderizador del lanzamiento dejaba en ella su oyente y quedaba retenido al cerrarse. Este sprite tiene geometría propia con los
- * mismos datos; quien lo crea desecha `sprite.geometry` al terminar.
- */
+// Construyo un `THREE.Sprite` con geometría propia para evitar que el renderizador del lanzamiento deje oyentes en la geometría global compartida por todos los sprites de Three.js.
 export function crearSpritePropio(material) {
   const sprite = new THREE.Sprite(material);
   sprite.geometry = geometriaQueComparteDatos(sprite.geometry);
   return sprite;
 }
 
-/**
- * three r186 usa en todos los WebGLRenderer una única textura DFG para los materiales físicos (`DFGLUTData.js`, no exportada); cada
- * renderizador le añade su oyente «dispose» y `renderer.dispose()` no lo retira. Devuelve esa textura si `renderer` la usó en algún
- * material de `escena` (o null). Hay que pedirla antes de desechar los materiales. Desecharla es seguro: es de 16 × 16, sus datos
- * siguen en memoria y cualquier otro renderizador la vuelve a subir la próxima vez que la use.
- */
+// Localizo la textura DFG LUT interna de Three.js usada por los materiales físicos de `escena` para desechar su oyente antes de cerrar el renderizador; los demás renderizadores la vuelven a subir si la necesitan.
 export function texturaDfgCompartida(renderer, escena) {
   let lut = null;
   escena.traverse(o => {
@@ -57,11 +47,7 @@ export function texturaDfgCompartida(renderer, escena) {
   return lut;
 }
 
-/**
- * Sustituye en `objeto` las geometrías y las texturas de sus materiales por objetos propios que comparten los datos. Sus materiales
- * deben ser ya propios (p. ej. clonados por `prepararFundido`): las texturas se cambian en ellos. Devuelve la función que desecha
- * solo esos objetos propios (geometrías y texturas), nunca los de la plantilla.
- */
+// Sustituyo en un árbol clonado sus geometrías y texturas por envoltorios propios sobre los mismos datos y devuelvo una función idempotente que libera solo esos envoltorios al cerrar.
 export function separarRecursosCompartidos(objeto) {
   const geometrias = new Map(), texturas = new Map();
   objeto.traverse(o => {
@@ -74,7 +60,8 @@ export function separarRecursosCompartidos(objeto) {
       if (!material) continue;
       for (const [clave, valor] of Object.entries(material)) {
         if (!valor?.isTexture) continue;
-        if (!texturas.has(valor)) texturas.set(valor, valor.clone()); // mismo `source`: la imagen no se duplica
+        // Al clonar la textura comparto el mismo `Texture.source` para no duplicar la imagen en memoria.
+        if (!texturas.has(valor)) texturas.set(valor, valor.clone());
         material[clave] = texturas.get(valor);
       }
     }

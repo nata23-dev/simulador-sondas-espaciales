@@ -1,3 +1,7 @@
+// Aquí defino el registro maestro de las misiones históricas Voyager 1 (NAIF -31) y Voyager 2 (NAIF -32),
+// con sus fechas oficiales de lanzamiento, cobertura inicial de efemérides NASA/JPL Horizons (DE440),
+// uniones documentadas de segmentos SPK (donde no interpolo) y resolución de fase histórica.
+// Unidades y escala temporal: épocas en JD TDB y UTC oficial; saltos de empalme SPK en km dentro del marco heliocéntrico eclíptico J2000.
 import { gregorianTimestampToJdTdb } from './Time.js';
 import { utcTimestampToTdb } from './HistoricalTime.js';
 
@@ -10,8 +14,8 @@ const v2Launch = utcTimestampToTdb('1977-08-20T14:29:00Z');
 const v1Launch = utcTimestampToTdb('1977-09-05T12:56:00Z');
 
 /**
- * Registro extensible de misiones históricas (preparado para incorporar
- * futuras misiones como Cassini o New Horizons sin alterar contratos).
+ * Aquí mantengo el registro extensible de misiones históricas (listo para sumar misiones como
+ * Cassini o New Horizons sin alterar los contratos existentes).
  */
 export const HISTORICAL_MISSIONS_CATALOG = Object.freeze({
   [VOYAGER_1_ID]: Object.freeze({
@@ -91,12 +95,13 @@ export const VOYAGER_MISSION_LIST = Object.freeze([
   HISTORICAL_MISSIONS_CATALOG[VOYAGER_2_ID]
 ]);
 
+/** Aquí recupero la ficha inmutable de una misión histórica por identificador, o `null` si no está registrada. */
 export function getHistoricalMissionById(missionId) {
   return HISTORICAL_MISSIONS_CATALOG[missionId] ?? null;
 }
 
 /**
- * Clasifica la fase histórica de misión de cada sonda en función del instante JD TDB.
+ * Aquí clasifico la fase histórica de la misión seleccionada en función del instante `jdTdb`.
  */
 export function resolveMissionPhase(missionId, jdTdb) {
   const mission = getHistoricalMissionById(missionId);

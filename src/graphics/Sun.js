@@ -1,3 +1,6 @@
+// En este módulo construyo el Sol en el origen de la escena: fotosfera procedimental animada
+// con LOD geométrico, corona aditiva orientada a la cámara, destello puntual lejano para escala 1:1
+// y fuente de luz puntual heliocéntrica con decaimiento cuadrático.
 import * as THREE from 'three';
 import { INTENSIDAD_SOL_ESCENA } from './SolarIllumination.js';
 import {
@@ -110,12 +113,14 @@ function crearTexturaDestelloSolar() {
   return texture;
 }
 
+// Comparto tres niveles de subdivisión esférica para adaptar el coste geométrico del Sol según su tamaño en pantalla.
 const geometriasSol = {
   alto: new THREE.SphereGeometry(5, 64, 48),
   medio: new THREE.SphereGeometry(5, 40, 28),
   bajo: new THREE.SphereGeometry(5, 24, 16)
 };
 
+/** Creo el conjunto visual y lumínico del Sol con soporte para cambios de escala y nivel de detalle (LOD). */
 export function crearSol() {
   const grupo = new THREE.Group();
   const material = new THREE.ShaderMaterial({
@@ -126,7 +131,7 @@ export function crearSol() {
   const superficie = new THREE.Mesh(geometriasSol.alto, material);
   grupo.add(superficie);
 
-  // El resplandor usa una sola lámina aditiva, sin desenfocar planetas ni estrellas.
+  // Dibujo el resplandor coronal con una sola lámina aditiva orientada a la cámara sin desenfocar planetas ni estrellas.
   const corona = new THREE.Mesh(
     new THREE.PlaneGeometry(46, 46),
     new THREE.ShaderMaterial({
@@ -143,7 +148,7 @@ export function crearSol() {
   grupo.add(corona);
   const intensidadCorona = corona.material.uniforms.uIntensidad;
 
-  // Resplandor estelar puntual cuando el Sol se observa a escala física 1:1 desde grandes distancias.
+  // Añado un destello estelar puntual para preservar la presencia visual del Sol a escala física 1:1 desde lejos.
   const materialDestello = new THREE.SpriteMaterial({
     map: crearTexturaDestelloSolar(),
     color: 0xffe8c2,
@@ -157,8 +162,7 @@ export function crearSol() {
   destelloLejano.renderOrder = 2;
   grupo.add(destelloLejano);
 
-  // La caída 1/r² usa la distancia heliocéntrica. La conversión de irradiancia
-  // bolométrica a RGB es visual; no es una calibración fotométrica.
+  // Configuro la fuente solar con caída física 1/r² (decay = 2) e intensidad visual proporcional a 1 AU.
   const luz = new THREE.PointLight(0xfff3db, INTENSIDAD_SOL_ESCENA, 0, 2);
   grupo.add(luz);
 
@@ -195,8 +199,8 @@ export function crearSol() {
         0.62, 1, THREE.MathUtils.smoothstep(distanciaSol, 30 * escalaActual, 140 * escalaActual)
       );
 
-      // Si el disco físico solar subtiende un ángulo muy pequeño, el destello puntual mantiene su presencia estelar
-      // compensando el FOV activo para conservar tamaño angular aparente limpio incluso con teleobjetivo ISS (0,424°).
+      // Cuando el disco solar subtiende un ángulo muy pequeño, activo el destello puntual compensando el FOV
+      // para conservar un aspecto limpio incluso con el teleobjetivo estrecho ISS (0,424°).
       const radioEfectivo = 5 * escalaActual;
       const factorFov = Math.tan(THREE.MathUtils.degToRad(camera.getEffectiveFOV()) * 0.5)
         / Math.tan(THREE.MathUtils.degToRad(48) * 0.5);
@@ -209,6 +213,7 @@ export function crearSol() {
         destelloLejano.scale.setScalar(tamanoDestello);
       }
     },
+    // Actualizo la subdivisión de la esfera fotosférica según el perfil de calidad y su radio aparente en píxeles.
     actualizarNivelDetalle({ detalle = 'alto', radioPx = Infinity } = {}) {
       const nivel = detalle === 'alto' || radioPx >= 24 ? 'alto' : detalle === 'medio' || radioPx >= 8 ? 'medio' : 'bajo';
       const geo = geometriasSol[nivel] ?? geometriasSol.alto;

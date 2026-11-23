@@ -1,11 +1,12 @@
-// Etapa 12F — módulo de aterrizaje. Parámetros ILUSTRATIVOS (no corresponden a un vehículo real).
-// Se distinguen: carga útil (la sonda del Hangar, con su masa húmeda real), estructura del módulo (cuerpo, depósitos,
-// patas), sistema de propulsión (empuje, Isp, estrangulamiento) y propelente del módulo. El propelente de la sonda del
-// Hangar NO se usa durante el descenso: viaja como masa de carga útil.
+// En este módulo defino la estructura de datos y validaciones de un módulo de aterrizaje propulsado.
+// Distingo entre la carga útil (la sonda del Hangar con su masa húmeda completa), la masa estructural del módulo
+// (bus, depósitos y tren de aterrizaje), el motor de descenso (empuje, Isp y estrangulamiento) y su propelente propio.
+// No consumo el combustible interno de la sonda durante el descenso: lo trato como parte fija de la carga útil.
 import { calculateEngineering } from './ProbeEngineering.js';
 import { designSignature } from './MissionPlanStore.js';
 
-export const STANDARD_GRAVITY_M_S2 = 9.80665; // NIST SP 811 B.9, definición de Isp en segundos
+// Uso la gravedad estándar internacional (m/s²) para convertir el impulso específico en segundos a caudal másico.
+export const STANDARD_GRAVITY_M_S2 = 9.80665;
 
 export const DEMO_LANDER = Object.freeze({
   id: 'demo-lander-v1', name: 'Módulo de aterrizaje demostrativo',
@@ -15,9 +16,12 @@ export const DEMO_LANDER = Object.freeze({
   engine: Object.freeze({ name: 'Motor de descenso estrangulable (ilustrativo)', thrustMaxN: 16000, ispS: 311, throttleable: true, throttleMin: 0.1, restartable: true })
 });
 
+// Calculo la masa seca estructural del módulo sumando bus, depósitos y tren de aterrizaje (kg).
 export const landerStructuralMassKg = lander => lander.structure.busKg + lander.structure.tankageKg + lander.structure.landingGearKg;
+// Calculo el gasto másico del motor (kg/s) para una fracción de acelerador dada usando dm/dt = F / (Isp · g0).
 export const massFlowAtThrottle = (engine, throttle) => throttle * engine.thrustMaxN / (engine.ispS * STANDARD_GRAVITY_M_S2);
 
+// Compruebo que las masas, el empuje, el Isp y el rango de estrangulamiento del módulo sean físicamente válidos.
 export function validateLander(lander) {
   const issues = [];
   if (!lander?.structure || !lander.engine) return ['El módulo necesita estructura y motor.'];
@@ -32,7 +36,7 @@ export function validateLander(lander) {
   return issues;
 }
 
-// Carga útil: sonda del Hangar con masa húmeda real (seca + propelente cargado).
+// Extraigo la carga útil a partir de la sonda del Hangar tomando su masa húmeda total (seca + combustible cargado).
 export function payloadFromDesign(design) {
   const engineering = calculateEngineering(design);
   const issues = [...engineering.structuralIssues];
@@ -40,4 +44,5 @@ export function payloadFromDesign(design) {
   return { name: design.name, designId: design.id, designSignature: designSignature(design), massKg: engineering.wetMassKg, dryMassKg: engineering.dryMassKg, fuelKg: engineering.fuelKg, issues };
 }
 
+// Sumo la carga útil, la estructura del módulo y su propelente para obtener la masa húmeda inicial del conjunto (kg).
 export const landerWetMassKg = (lander, payloadMassKg) => payloadMassKg + landerStructuralMassKg(lander) + lander.propellantMassKg;

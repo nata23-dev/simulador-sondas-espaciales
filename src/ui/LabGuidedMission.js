@@ -1,13 +1,12 @@
-// Etapa 16 — misión guiada del laboratorio para quien llega por primera vez: Cassini a Marte (escenario A1 de «Misión completa»),
-// un caso que el motor completa de principio a fin (tests/Stage16Coherence.test.mjs). Solo navega y pulsa los mismos controles
-// que el usuario: no calcula nada por su cuenta, no cambia datos y cada paso se da por hecho mirando el estado real de la interfaz.
-// 17: el laboratorio se recorre con el panel lateral de etapas; el objetivo resaltado puede depender de dónde está el usuario.
+// En este módulo guío al usuario paso a paso en su primera misión dentro del laboratorio: Cassini hacia Marte (escenario A1 de «Misión completa»).
+// Aquí solo navego, resalto controles y pulso las mismas acciones que el usuario: no calculo nada por mi cuenta ni altero datos, y compruebo cada paso leyendo el estado real de la interfaz.
 import { GUIDED_MISSION } from '../lab/FleetGuide.js';
 
 const { probeId: PROBE, scenarioId: SCENARIO } = GUIDED_MISSION;
 const COMPLETE = /^CADENA CALCULADA COMPLETA/;
 const inStage = (api, stage, tab) => api.stage ? api.stage() === stage && (!tab || api.tab() === tab) : null;
 
+// Defino los pasos de la misión guiada con su control objetivo, condición de cumplimiento, aviso contextual y acción asistida.
 export const GUIDE_STEPS = Object.freeze([
   { id: 'intro', title: 'Tu primera misión: Cassini a Marte',
     text: 'En cinco pasos vas a elegir una sonda real, calcular su viaje a Marte con posiciones de NASA/JPL y verlo en 3D. Haz cada paso tú mismo o pulsa «Hazlo por mí».' },
@@ -48,8 +47,7 @@ export const GUIDE_STEPS = Object.freeze([
     text: 'Cassini ya viaja hacia Marte. Para seguir: cambia a Voyager en la barra superior y vuelve a calcular (verás por qué no puede frenar), o elige «Júpiter (órbita tipo Juno) y sobrevuelo de Europa» con Juno.' }
 ]);
 
-// 16: desplaza solo las zonas que el usuario puede desplazar. scrollIntoView también mueve contenedores con overflow
-// oculto (el laboratorio entero subía y dejaba una franja vacía); su posición se restaura después.
+// Desplazo únicamente los contenedores con scroll real: guardo y restauro la posición de los ancestros con overflow oculto para evitar que scrollIntoView desplace todo el laboratorio.
 export function revealInScrollAreas(element, options = { block: 'nearest', inline: 'nearest' }) {
   if (!element?.scrollIntoView) return;
   const locked = [];
@@ -61,6 +59,7 @@ export function revealInScrollAreas(element, options = { block: 'nearest', inlin
   for (const [node, top, left] of locked) { node.scrollTop = top; node.scrollLeft = left; }
 }
 
+// Construyo el asistente flotante de la misión guiada, vigilo el progreso real y resalto el siguiente control sugerido.
 export function createLabGuidedMission({ host, api }) {
   const dock = document.createElement('aside');
   dock.id = 'lab-guide'; dock.className = 'lab-guide'; dock.hidden = true;
@@ -79,6 +78,7 @@ export function createLabGuidedMission({ host, api }) {
   const done = s => (s.isDone ? Boolean(s.isDone(api)) : true);
 
   const selectorOf = value => typeof value === 'function' ? value(api) : value ?? null;
+  // Aplico o retiro la clase de resaltado sobre el control correspondiente al paso actual.
   function setTarget(value) {
     const selector = selectorOf(value);
     target?.classList.remove('lab-guide-target'); target = null; targetSelector = selector;
@@ -86,12 +86,14 @@ export function createLabGuidedMission({ host, api }) {
     target = host.querySelector(selector);
     target?.classList.add('lab-guide-target');
   }
+  // Cambio de paso, ejecuto su preparación de vista y llevo su objetivo a la zona visible en el siguiente fotograma.
   function enter(i) {
     index = Math.max(0, Math.min(GUIDE_STEPS.length - 1, i)); autoAdvance = false;
     step().enter?.(api);
     render();
     requestAnimationFrame(() => { setTarget(step().target); revealInScrollAreas(target); });
   }
+  // Actualizo textos, indicadores de progreso, estado accesible y avance automático tras «Hazlo por mí».
   function render() {
     const s = step(), real = s.isDone ? done(s) : null, numbered = GUIDE_STEPS.length - 2;
     $('#lab-guide-step').textContent = s.id === 'intro' ? 'Misión guiada' : s.id === 'done' ? 'Misión guiada · completada' : `Misión guiada · paso ${index} de ${numbered}`;
@@ -112,12 +114,14 @@ export function createLabGuidedMission({ host, api }) {
     dock.dataset.step = s.id;
     if (real && autoAdvance && !acting) { autoAdvance = false; setTimeout(() => { if (!dock.hidden && step() === s) enter(index + 1); }, 700); }
   }
+  // Compruebo periódicamente si cambió el control objetivo o si el usuario completó manualmente el paso actual.
   function tick() {
     if (dock.hidden) return;
     const wanted = selectorOf(step().target);
     if ((target && !target.isConnected) || wanted !== targetSelector || (!target && wanted)) { setTarget(step().target); if (wanted !== null) revealInScrollAreas(target); }
     render();
   }
+  // Ejecuto de forma asíncrona la acción asistida del paso actual y activo el avance automático al completarse.
   async function act() {
     const s = step(); if (!s.act || acting) return;
     acting = true; autoAdvance = true; render();
@@ -129,11 +133,13 @@ export function createLabGuidedMission({ host, api }) {
     $('#lab-guide-min').setAttribute('aria-expanded', String(!value));
     $('#lab-guide-min').textContent = value ? 'Mostrar' : 'Minimizar';
   }
+  // Inicio la misión guiada desde la introducción, activo el temporizador de comprobación y enfoco el botón principal.
   function start() {
     dock.hidden = false; setMinimized(false); enter(0);
     clearInterval(timer); timer = setInterval(tick, 400);
     requestAnimationFrame(() => $('#lab-guide-next').focus({ preventScroll: true }));
   }
+  // Cierro el asistente, detengo su temporizador y retiro cualquier resaltado pendiente en el laboratorio.
   function stop() { dock.hidden = true; clearInterval(timer); timer = null; setTarget(null); }
   $('#lab-guide-next').addEventListener('click', () => { if (step().id === 'done') stop(); else enter(index + 1); });
   $('#lab-guide-back').addEventListener('click', () => enter(index - 1));

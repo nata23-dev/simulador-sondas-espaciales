@@ -1,3 +1,8 @@
+// Aquí orquesto la propagación numérica de la trayectoria de una sonda espacial (RK4 o DOPRI54)
+// con verificación estricta de cobertura de efemérides planetarias y almacenamiento separado de nodos físicos 6D
+// y muestras decimadas para visualización.
+// Unidades: km, km/s, s (tiempo interno relativo a `epochJdTdb`) y JD TDB.
+// Marco de referencia: heliocéntrico eclíptico J2000/ICRF (estándar NASA/JPL Horizons); nunca extrapolo fuera del rango cubierto.
 import {
   createHeliocentricProbeDerivative,
   createTwoBodyDerivative,
@@ -17,6 +22,7 @@ import { createSimulationInstant, jdTdbToElapsedSeconds } from './SimulationTime
 import { requireJdTdb } from './Time.js';
 import { requireFiniteNumber } from './Units.js';
 
+/** Aquí localizo por búsqueda binaria el tramo de nodos que contiene `querySeconds`, aprovechando el índice `hint` para consultas secuenciales. */
 function binarySearchKnot(times, querySeconds, forward, hint) {
   const last = times.length - 1;
   if (last <= 0) return 0;
@@ -39,13 +45,12 @@ function binarySearchKnot(times, querySeconds, forward, hint) {
 }
 
 /**
- * Propaga la trayectoria de una sonda espacial a partir de un `ProbeDynamicState`
- * inicial y almacena por separado:
- *   1. Los nodos físicos de cálculo (`computationKnots`: tiempo, estado 6D y derivada 6D
- *      en `Float64Array`) para recuperar estados científicos mediante Hermite quíntica.
- *   2. Las muestras decimadas/regulares de posición en km destinadas al renderizado 3D.
+ * Aquí propago la trayectoria de una sonda espacial a partir de un `ProbeDynamicState` inicial y almaceno por separado:
+ *   1. Los nodos físicos de cálculo (`computationKnots`: tiempo, estado 6D y derivada 6D en `Float64Array`)
+ *      para reconstruir estados científicos con interpolación quíntica de Hermite.
+ *   2. Las muestras regulares de posición en km destinadas al renderizado 3D.
  *
- * Respeta estrictamente la cobertura de las efemérides planetarias y jamás extrapola.
+ * Valido siempre la cobertura real de las efemérides planetarias y jamás extrapolo fuera de ella.
  */
 export async function propagateProbeTrajectory({
   initialState,
@@ -112,7 +117,7 @@ export async function propagateProbeTrajectory({
     throw new RangeError('renderSampleIntervalSeconds debe ser estrictamente positivo.');
   }
 
-  // Preparación y verificación de cobertura de efemérides para el Modelo A
+  // Preparo y verifico la cobertura de efemérides planetarias para el modelo heliocéntrico con perturbadores prescritos.
   if (model.kind === DYNAMICAL_MODELS.PRESCRIBED_EPHEMERIS_HELIOCENTRIC_PROBE
     && model.perturbingBodyIds.length > 0
     && !activeField
@@ -125,7 +130,7 @@ export async function propagateProbeTrajectory({
     }
 
     if (coveragePolicy === 'clamp_to_coverage') {
-      // Determinar la intersección de cobertura disponible entre todos los cuerpos perturbadores
+      // Calculo la intersección de cobertura disponible entre todos los cuerpos perturbadores y recorto el objetivo si hace falta.
       let commonStartJd = -Infinity;
       let commonEndJd = Infinity;
       for (const bodyId of model.perturbingBodyIds) {
@@ -265,7 +270,7 @@ export async function propagateProbeTrajectory({
     );
   }
 
-  // Empaquetado plano en Float64Array para localidad de caché y eficiencia de memoria
+  // Empaqueto los nodos aceptados en arreglos planos Float64Array para mejorar la localidad de caché y reducir memoria.
   const knotTimes = new Float64Array(rawKnots.times);
   const knotStates = new Float64Array(knotCount * 6);
   const knotDerivatives = new Float64Array(knotCount * 6);
@@ -295,6 +300,7 @@ export async function propagateProbeTrajectory({
   const s1Scratch = new Float64Array(6);
   const d1Scratch = new Float64Array(6);
 
+  /** Aquí evalúo el vector de estado 6D en `querySeconds` mediante interpolación quíntica de Hermite sin extrapolar. */
   function writeStateVectorAtElapsedSeconds(querySeconds, out6 = new Float64Array(6)) {
     requireFiniteNumber(querySeconds, 'querySeconds');
     if (querySeconds < minSeconds || querySeconds > maxSeconds) {
@@ -333,7 +339,7 @@ export async function propagateProbeTrajectory({
     );
   }
 
-  // Construcción independiente de las muestras destinadas al renderizado (en km físicos)
+  // Construyo por separado la serie de muestras regulares en km físicos destinada al renderizado 3D.
   let renderCount;
   if (totalDurationAbs === 0) {
     renderCount = 1;
@@ -359,6 +365,7 @@ export async function propagateProbeTrajectory({
     renderPositionsKm[i * 3 + 2] = sampleScratch6[2];
   }
 
+  /** Aquí reconstruyo el objeto inmutable `ProbeDynamicState` correspondiente a `querySeconds` sin extrapolar. */
   function getStateAtElapsedSeconds(querySeconds) {
     const vec = writeStateVectorAtElapsedSeconds(querySeconds, new Float64Array(6));
     if (querySeconds === startSeconds && method === model.integratorMethod) {
@@ -378,6 +385,7 @@ export async function propagateProbeTrajectory({
     });
   }
 
+  /** Aquí convierto un instante externo `queryJdTdb` a segundos relativos y devuelvo el estado propagado correspondiente. */
   function getStateAtJdTdb(queryJdTdb) {
     requireJdTdb(queryJdTdb);
     const relSeconds = jdTdbToElapsedSeconds(epochJdTdb, queryJdTdb);

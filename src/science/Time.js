@@ -1,19 +1,22 @@
+// Aquí agrupo las utilidades de validación, comparación, aritmética temporal y conversión entre etiquetas
+// gregorianas y números de día juliano (JD) en la escala TDB, sin depender jamás de `Date` ni de zonas horarias.
+// Unidades: días julianos (JD) y segundos (86 400 s/día); escala temporal homogénea TDB (sin conversión UTC↔TDB).
 import { requireFiniteNumber, SECONDS_PER_DAY } from './Units.js';
 
-/** Un número juliano en la escala TDB; no acepta fechas UTC de JavaScript. */
+/** Aquí valido que el valor sea un número juliano finito en la escala TDB (rechazo objetos `Date` o no finitos). */
 export function requireJdTdb(jdTdb) {
   requireFiniteNumber(jdTdb, 'jdTdb');
   return jdTdb;
 }
 
-/** Segundos desde `fromJdTdb` hasta `toJdTdb` (ambos TDB). */
+/** Aquí calculo los segundos transcurridos desde `fromJdTdb` hasta `toJdTdb` en la escala TDB. */
 export function secondsBetweenJdTdb(fromJdTdb, toJdTdb) {
   const seconds = (requireJdTdb(toJdTdb) - requireJdTdb(fromJdTdb)) * SECONDS_PER_DAY;
   if (!Number.isFinite(seconds)) throw new RangeError('La diferencia TDB excede el rango numérico.');
   return seconds;
 }
 
-/** Avanza (o retrocede con segundos negativos) un JD TDB. */
+/** Aquí avanzo (o retrocedo con segundos negativos) un instante JD TDB y verifico que no pierda resolución en `double`. */
 export function advanceJdTdb(jdTdb, seconds) {
   requireJdTdb(jdTdb);
   requireFiniteNumber(seconds, 'seconds');
@@ -24,7 +27,7 @@ export function advanceJdTdb(jdTdb, seconds) {
   return result;
 }
 
-/** Devuelve -1, 0 o 1 para dos instantes TDB. */
+/** Aquí comparo dos instantes JD TDB y devuelvo -1, 0 o 1. */
 export function compareJdTdb(a, b) {
   requireJdTdb(a);
   requireJdTdb(b);
@@ -32,9 +35,8 @@ export function compareJdTdb(a, b) {
 }
 
 /**
- * Día juliano a las 00:00 de una fecha de calendario gregoriano en la MISMA
- * escala de tiempo que el dato externo. Solo relaciona etiquetas de calendario
- * con números julianos; no realiza ninguna conversión UTC/TDB.
+ * Aquí convierto una fecha gregoriana `YYYY-MM-DD` (a las 00:00) a su número juliano dentro de la MISMA escala
+ * temporal que el dato externo; solo relaciono etiquetas de calendario con JD y no aplico conversión UTC/TDB.
  */
 export function gregorianLabelToJulianMidnight(label) {
   if (typeof label !== 'string' || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(label)) {
@@ -46,6 +48,7 @@ export function gregorianLabelToJulianMidnight(label) {
   if (year < 1583 || month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) {
     throw new RangeError(`Etiqueta gregoriana inválida: ${label}.`);
   }
+  // Aplico la fórmula entera de calendario gregoriano a Número de Día Juliano y resto 0,5 para alinear con 00:00.
   const a = Math.floor((14 - month) / 12);
   const y = year + 4800 - a;
   const m = month + 12 * a - 3;
@@ -55,9 +58,8 @@ export function gregorianLabelToJulianMidnight(label) {
 }
 
 /**
- * Convierte una etiqueta gregoriana `YYYY-MM-DD`, `YYYY-MM-DD HH:MM` o
- * `YYYY-MM-DD HH:MM:SS(.sss)` en la MISMA escala temporal (TDB) a número juliano,
- * sin usar `Date` de JavaScript ni zonas horarias del navegador.
+ * Aquí convierto una marca gregoriana `YYYY-MM-DD`, `YYYY-MM-DD HH:MM` o `YYYY-MM-DD HH:MM:SS(.sss)`
+ * en la MISMA escala temporal (TDB) a número juliano, sin usar `Date` de JavaScript ni zonas horarias del navegador.
  */
 export function gregorianTimestampToJdTdb(label) {
   if (typeof label !== 'string') {
@@ -83,8 +85,8 @@ export function gregorianTimestampToJdTdb(label) {
 }
 
 /**
- * Descompone un JD (posterior a 1582-10-15) en componentes gregorianas exactas
- * dentro de la MISMA escala temporal del argumento (p. ej., TDB), sin `Date`.
+ * Aquí descompongo un número juliano (posterior a 1582-10-15) en componentes gregorianas exactas dentro de la
+ * MISMA escala temporal del argumento (por ejemplo, TDB), siguiendo el algoritmo clásico de Meeus sin usar `Date`.
  */
 export function jdToGregorianComponents(jd) {
   requireJdTdb(jd);

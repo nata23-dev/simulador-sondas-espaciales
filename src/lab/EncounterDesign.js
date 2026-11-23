@@ -1,15 +1,11 @@
-// Etapa 13 — diseño de encuentros con cónicas parcheadas sobre efemérides reales.
-//
-// 1) aimEncounter: apuntado de un arco de Lambert (cuerpo central μc) a la ENTRADA en la esfera de influencia del objetivo,
-//    con la hipérbola de llegada fijada por (radio de periapsis, ángulo del plano B) y el periapsis en una época dada.
-//    Iteración de punto fijo: hipérbola(v∞) → estado en la SOI → punto heliocéntrico/planetocéntrico = objetivo(t_SOI) +
-//    estado relativo → Lambert hasta ese punto → v∞ asintótica del estado relativo REAL del arco → repetir. Al converger,
-//    el estado del arco en la frontera, transformado con la efeméride del objetivo, ES el estado de la hipérbola apuntada:
-//    posición y velocidad continuas por construcción. La verificación propaga ese estado y mide periapsis y plano B.
-// 2) targetFiniteBurn: un encendido FINITO de dirección inercial fija (12D) que lleva la nave al punto de apuntado en la
-//    época pedida (método de disparo, Newton con jacobiano por diferencias finitas). No se sustituye por un impulso.
-// 3) searchMoonTransfer: transferencias planetocéntricas de cero revoluciones desde la órbita de captura hasta un satélite.
-// 4) screenCloseApproaches: distancia mínima a otros satélites a lo largo de un tramo (validez de la cónica parcheada).
+// En este módulo resuelvo el diseño de encuentros planetarios y lunares con cónicas parcheadas sobre efemérides reales.
+// Implemento cuatro herramientas principales en km, km/s y s:
+// 1) aimEncounter: apunto un arco de Lambert a la entrada de la esfera de influencia (SOI) del objetivo fijando radio de periapsis,
+//    ángulo del plano B y época de paso. Al converger, el estado en la frontera coincide de forma continua con la hipérbola apuntada.
+// 2) targetFiniteBurn: ajusto un encendido finito de dirección inercial fija mediante método de disparo con Newton para alcanzar
+//    un punto de apuntado en la época pedida, integrando con DOPRI54 sin sustituirlo por un impulso instantáneo.
+// 3) searchMoonTransfer: exploro transferencias planetocéntricas de cero revoluciones desde la órbita de captura hasta un satélite.
+// 4) screenCloseApproaches: mido la distancia mínima a otros satélites durante un tramo para comprobar la validez de la cónica parcheada.
 import { solveLambert, LAMBERT_STATUS } from '../science/LambertSolver.js';
 import { propagateKepler, conicSummary } from '../science/KeplerPropagator.js';
 import { integrateDopri54 } from '../science/NumericalIntegrator.js';
@@ -31,7 +27,7 @@ function resolveB(bPlane, vInfVector, pole) {
   return { angle: bPlane?.angleDeg ?? 0, minimumInclinationDeg: null };
 }
 
-/** ¿Corta el arco (r1, v1, duración) la esfera de radio R? Solo puede hacerlo si su periapsis está dentro y se recorre en el tramo. */
+// Compruebo si un arco balístico (r1, v1, duración) interseca la esfera de radio R, verificando si pasa por su periapsis dentro del tramo.
 export function arcIntersectsBody(r1, v1, durationSeconds, mu, radiusKm) {
   const c = conicSummary(r1, v1, mu);
   if (c.periapsisKm >= radiusKm) return false;
@@ -41,10 +37,8 @@ export function arcIntersectsBody(r1, v1, durationSeconds, mu, radiusKm) {
   return norm(propagateKepler(r1, v1, durationSeconds, mu).positionKm) < radiusKm;
 }
 
-/**
- * `targetStateAt(jdTdb)` → { positionKm, velocityKmS } del objetivo respecto al cuerpo central (o null sin cobertura).
- * `bPlane`: { mode: 'fixed', angleDeg } | { mode: 'normal', normal } (minimiza la inclinación respecto a esa normal).
- */
+// Apunto un arco de Lambert hasta la entrada en la SOI del destino para lograr el periapsis y el ángulo del plano B solicitados.
+// Recibo `targetStateAt(jdTdb)` con el estado del objetivo respecto al cuerpo central y `bPlane` en modo ángulo fijo o normal mínima.
 export function aimEncounter({ departurePositionKm, departureJdTdb, periapsisJdTdb, targetStateAt, muCentral, muTarget, targetRadiusKm, periapsisRadiusKm,
   bPlane = { mode: 'fixed', angleDeg: 0 }, poleVector = [0, 0, 1], soiRadiusKm, maxIterations = 40, toleranceKmS = 1e-10, centralRadiusKm = 0 }) {
   const base = { model: ENCOUNTER_DESIGN_VERSION, departureJdTdb, periapsisJdTdb, periapsisRadiusKm, soiRadiusKm, bPlaneRequest: bPlane };
@@ -57,9 +51,9 @@ export function aimEncounter({ departurePositionKm, departureJdTdb, periapsisJdT
   try { target = at(periapsisJdTdb); } catch (error) { return Object.freeze({ ...base, status: AIM_STATUS.noCoverage, reason: error.message }); }
   lambert = solveLambert(departurePositionKm, target.positionKm, tof0, muCentral, { direction: 'prograde' });
   if (lambert.status !== LAMBERT_STATUS.converged) return Object.freeze({ ...base, status: AIM_STATUS.lambert, reason: lambert.reason ?? 'Lambert al centro del objetivo no convergió.' });
-  // Incógnita: v∞ (vector) de la hipérbola apuntada. Residuo F(v∞) = v∞ asintótica del estado relativo REAL del arco en la
-  // SOI − v∞. Newton amortiguado con jacobiano por diferencias finitas (el punto fijo simple diverge cuando la SOI es grande,
-  // p. ej., Júpiter: ~95 d de hipérbola). Al anularse F, el arco y la hipérbola coinciden en la frontera.
+  // Resuelvo el vector v∞ de la hipérbola mediante Newton amortiguado con jacobiano por diferencias finitas,
+  // porque una iteración de punto fijo simple diverge en esferas de influencia enormes (como la de Júpiter, con ~95 d de hipérbola).
+  // Cuando el residuo F(v∞) se anula, el estado relativo del arco en la SOI coincide con el de la hipérbola apuntada.
   const evaluate = vInfVector => {
     const b = resolveB(bPlane, vInfVector, poleVector);
     const hyp = hyperbolaFromBPlane({ vInfVectorKmS: vInfVector, muKm3S2: muTarget, periapsisRadiusKm, bAngleDeg: b.angle, poleVector });
@@ -101,7 +95,7 @@ export function aimEncounter({ departurePositionKm, departureJdTdb, periapsisJdT
   if (centralRadiusKm > 0 && arcIntersectsBody(departurePositionKm, lambert.departureVelocityKmS, (soi.jdTdb - departureJdTdb) * 86400, muCentral, centralRadiusKm)) {
     return Object.freeze({ ...base, status: AIM_STATUS.impact, reason: 'El arco de transferencia atraviesa el cuerpo central.' });
   }
-  // Verificación independiente: propagar el estado relativo REAL desde la SOI hasta el periapsis y medir el resultado.
+  // Verifico de manera independiente propagando el estado relativo real desde la frontera de la SOI hasta el periapsis.
   const atPeri = propagateKepler(soi.relative.positionKm, soi.relative.velocityKmS, soi.secondsToPeriapsis, muTarget);
   const achievedB = bPlaneFromState(soi.relative.positionKm, soi.relative.velocityKmS, muTarget, poleVector);
   const achievedConic = conicSummary(soi.relative.positionKm, soi.relative.velocityKmS, muTarget);
@@ -131,11 +125,9 @@ function solve3(J, f) {
   return [0, 1, 2].map(i => (inv[i][0] * f[0] + inv[i][1] * f[1] + inv[i][2] * f[2]) / det);
 }
 
-/**
- * Encendido finito de dirección inercial fija centrado en `burnCenterSeconds` que lleva la nave a `aimPositionKm` en
- * `arrivalSeconds` (tiempos relativos al estado dado). Incógnita: vector u (km/s) — dirección û y duración por Tsiolkovsky
- * T = m(1 − e^(−|u|/ve))/ṁ. La integración (DOPRI54, gravedad central + empuje) decide el resultado; Newton ajusta u.
- */
+// Calculo un encendido finito de dirección inercial fija centrado en `burnCenterSeconds` para llevar la nave hasta `aimPositionKm`
+// en `arrivalSeconds`. Ajusto el vector incógnita u (km/s) con Newton amortiguado, traduciendo |u| a duración vía Tsiolkovsky
+// e integrando cada prueba con DOPRI54 bajo gravedad central más empuje constante.
 export function targetFiniteBurn({ mu, positionKm, velocityKmS, massKg, propellantKg, engine, burnCenterSeconds, aimPositionKm, arrivalSeconds, initialDeltaVKmS, toleranceKm = 0.05, maxIterations = 20, centralRadiusKm = 0 }) {
   const flow = massFlowKgS(engine.thrustN, engine.ispS), ve = exhaustVelocityMS(engine.ispS) / 1000;
   const simulate = (u, record = false) => {
@@ -181,12 +173,10 @@ export function targetFiniteBurn({ mu, positionKm, velocityKmS, massKg, propella
     knots: final.knots, preBurn: final.pre, postBurn: final.post, arrival: final.arrival };
 }
 
-/**
- * Exploración (tiempo de salida en la órbita × tiempo de vuelo) de transferencias planetocéntricas de cero revoluciones a un
- * satélite. Coste = Δv impulsivo de salida + Δv impulsivo de captura ideal en el satélite (referencia para elegir).
- */
+// Exploro una cuadrícula (instante de salida × tiempo de vuelo) de transferencias planetocéntricas de cero revoluciones hacia un satélite.
+// Elijo la mejor celda comparando Δv de transferencia más captura ideal, o solo el Δv de salida si el objetivo es un sobrevuelo.
 export function searchMoonTransfer({ spacecraft, mu, centralRadiusKm, moonStateAt, moon, departureOffsetsSeconds, tofSecondsList, objective = 'capture' }) {
-  // 15: con objetivo «flyby» el coste es solo el Δv de salida (el satélite no se captura).
+  // Cuando el objetivo es «flyby», evalúo únicamente el Δv de salida porque no voy a capturarme en el satélite.
   const cost = cell => (objective === 'flyby' ? cell.transferDeltaVKmS : cell.totalKmS);
   let best = null, evaluated = 0, rejected = { coverage: 0, lambert: 0, impact: 0 };
   const cells = [];
@@ -210,7 +200,7 @@ export function searchMoonTransfer({ spacecraft, mu, centralRadiusKm, moonStateA
   return { best, evaluated, rejected, cells };
 }
 
-/** Distancia mínima de la nave a cada satélite en un tramo; marca si entra en su esfera de influencia (cónica joviana no válida allí). */
+// Mido la distancia mínima de la nave respecto a cada satélite durante un tramo y señalo si invade alguna esfera de influencia.
 export function screenCloseApproaches({ sampleSpacecraft, startSeconds, endSeconds, jdAt, moons, stepSeconds = 1800 }) {
   return moons.map(moon => {
     let best = { distanceKm: Infinity, elapsedSeconds: null }, available = 0;
@@ -221,7 +211,7 @@ export function screenCloseApproaches({ sampleSpacecraft, startSeconds, endSecon
       if (d < best.distanceKm) best = { distanceKm: d, elapsedSeconds: Math.min(t, endSeconds) };
       prev = d;
     }
-    if (best.elapsedSeconds != null) { // refinamiento por sección áurea alrededor del mínimo muestreado
+    if (best.elapsedSeconds != null) { // refino el instante del mínimo por sección áurea alrededor de la muestra más cercana
       let a = Math.max(startSeconds, best.elapsedSeconds - stepSeconds), b = Math.min(endSeconds, best.elapsedSeconds + stepSeconds);
       for (let i = 0; i < 60 && b - a > 1; i++) { const c = b - (b - a) / 1.618, d = a + (b - a) / 1.618, fc = distance(c), fd = distance(d); if (fc == null || fd == null) break; if (fc < fd) b = d; else a = c; }
       const t = (a + b) / 2, d = distance(t); if (d != null && d < best.distanceKm) best = { distanceKm: d, elapsedSeconds: t };

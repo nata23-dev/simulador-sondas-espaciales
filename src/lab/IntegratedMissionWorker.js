@@ -1,5 +1,6 @@
-// PERF-03 — Web Worker de cálculo astrodinámico pesado (misiones integradas, refinamiento de oportunidad y crucero de n cuerpos).
-// Ejecuta exactamente las mismas funciones científicas puras que el hilo principal, sin modificar constantes, tolerancias ni modelos.
+// En este módulo ejecuto el cálculo astrodinámico pesado dentro de un Web Worker para no congelar la interfaz del navegador.
+// Reconstruyo las ventanas de efemérides a partir de los datos serializados y llamo exactamente a las mismas funciones puras
+// del hilo principal (refinamiento de oportunidad, misión integrada completa y comparación de crucero de N cuerpos), sin variar modelos ni tolerancias.
 import { createInterplanetaryWindowFromSerialized } from '../science/InterplanetaryEphemeris.js';
 import { createPlanetocentricWindow } from '../science/PlanetocentricWindow.js';
 import { refineTransferCandidate } from './InterplanetaryPlan.js';
@@ -7,6 +8,7 @@ import { computeIntegratedMission } from './IntegratedMission.js';
 import { compareMissionCruise } from './NBodyCruise.js';
 import { integratedMissionInput } from '../ui/IntegratedMissionPlanner.js';
 
+// Despacho cada tarea soportada por el Worker (`computeIntegratedMission` o `compareNBody`) y devuelvo un resultado serializable.
 export function executeIntegratedMissionWorkerTask(payload) {
   if (payload?.type === 'computeIntegratedMission') {
     const helio = createInterplanetaryWindowFromSerialized(payload.helioWindow);
@@ -47,6 +49,7 @@ export function executeIntegratedMissionWorkerTask(payload) {
   throw new TypeError(`Tarea de Worker desconocida: ${String(payload?.type)}`);
 }
 
+// Escucho mensajes solo cuando este archivo corre realmente en el contexto de un Web Worker y respondo con el identificador de solicitud.
 if (typeof self !== 'undefined' && typeof self.postMessage === 'function') {
   self.addEventListener('message', event => {
     const { id, payload } = event.data ?? {};

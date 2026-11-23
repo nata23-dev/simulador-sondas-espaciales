@@ -1,6 +1,6 @@
-// Etapa 15 — modelos 3D procedimentales de las piezas de herencia. Reconstrucciones con las dimensiones de HeritageCatalog.js
-// (en metros), no modelos CAD oficiales. Convención: el eje +Y local es la normal exterior del punto de montaje (dirección en la
-// que la pieza se extiende); la pieza nace en el origen, que es el punto de montaje.
+// En este módulo genero los modelos 3D procedimentales de los buses y piezas de herencia usando Three.js.
+// Reconstruyo cada geometría en metros a partir de las dimensiones declaradas en HeritageCatalog.js (no son modelos CAD oficiales).
+// Sigo una convención fija: el origen de cada pieza coincide con su punto de montaje y el eje +Y local apunta hacia la normal exterior.
 import * as THREE from 'three';
 
 const M = {
@@ -16,6 +16,7 @@ const M = {
   lens: new THREE.MeshStandardMaterial({ color: 0x6fb2d6, metalness: 0.5, roughness: 0.15, emissive: 0x0d2a3a })
 };
 export const HERITAGE_MATERIALS = M;
+// Libero todos los materiales compartidos cuando se desmonta la escena 3D del laboratorio.
 export function disposeHeritageMaterials() { for (const m of Object.values(M)) m.dispose(); }
 
 const Y = new THREE.Vector3(0, 1, 0);
@@ -36,7 +37,7 @@ function rod(group, a, b, radius, material = M.aluminium) {
 const box = (group, size, material, position) => mesh(group, new THREE.BoxGeometry(...size), material, position);
 const cyl = (group, rTop, rBottom, h, material, position, sides = 16) => mesh(group, new THREE.CylinderGeometry(rTop, rBottom, h, sides), material, position);
 
-// Paraboloide de diámetro D y profundidad d con la apertura hacia +Y, más alimentador y puntales.
+// Construyo un reflector parabólico de diámetro D y profundidad d abierto hacia +Y, junto con su alimentador focal y tres puntales.
 function dish(group, D, depth) {
   const R = D / 2, points = [];
   for (let i = 0; i <= 16; i++) { const x = R * i / 16; points.push(new THREE.Vector2(x, depth * (x / R) ** 2)); }
@@ -47,7 +48,7 @@ function dish(group, D, depth) {
   cyl(group, 0.06, 0.09, 0.22, M.black, [0, focus, 0], 12);
   for (let k = 0; k < 3; k++) { const a = k * 2 * Math.PI / 3; rod(group, [Math.cos(a) * R * 0.82, 0.12 + depth * 0.67, Math.sin(a) * R * 0.82], [0, focus - 0.08, 0], 0.012); }
 }
-// Ala solar: yugo desde la raíz y paneles a lo largo de +Y; la cara activa mira a +Z.
+// Modelo un ala solar con yugo en la raíz y paneles distribuidos a lo largo de +Y, orientando las células hacia +Z.
 function wing(group, c) {
   const [width, length, thickness] = c.dimensionsM, panelLength = c.panelLengthM ?? length * 0.9, yoke = length - panelLength;
   if (yoke > 0.02) { rod(group, [-width * 0.3, 0, 0], [0, yoke, 0], 0.025); rod(group, [width * 0.3, 0, 0], [0, yoke, 0], 0.025); }
@@ -68,6 +69,7 @@ function nozzle(group, throat, exit, length, y0 = 0, x = 0) {
   mesh(group, new THREE.CylinderGeometry(throat, exit, length * 0.75, 24, 1, true), M.nozzle, [x, y0 + length * 0.62, 0]);
 }
 
+// Construyo el cuerpo central (bus) de cada sonda histórica según su forma geométrica declarada.
 export function buildHeritageCore(c) {
   const g = new THREE.Group(), [w, h, d] = c.dimensionsM;
   switch (c.shape) {
@@ -104,6 +106,7 @@ export function buildHeritageCore(c) {
   return g;
 }
 
+// Ensamblo la malla 3D de una pieza acoplable según su tipo de forma (`dish`, `wing`, `rtg`, `nozzle`, `tank-*`, etc.).
 export function buildHeritagePart(c) {
   const g = new THREE.Group(), [w, h, d] = c.dimensionsM;
   switch (c.shape) {

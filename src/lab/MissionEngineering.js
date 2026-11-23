@@ -1,7 +1,11 @@
+// Aquí evalúo la viabilidad ingenieril de una misión lunar a partir del diseño de la sonda y de la transferencia.
+// Calculo el consumo propulsivo por maniobra mediante la ecuación de Tsiolkovski (kg, s, N, m/s) y compruebo
+// márgenes de propelente, validez de la aproximación impulsiva y presupuesto eléctrico (W y Wh).
 import { getComponent } from './ComponentCatalog.js';
 import { calculateEngineering, STANDARD_GRAVITY_M_S2 } from './ProbeEngineering.js';
 import { EARTH_MU_KM3_S2 } from './MissionPhysics.js';
 
+// Simulo secuencialmente el consumo de propelente (kg) y la duración de encendido (s) para una lista de impulsos Δv (m/s).
 export function consumeManeuvers({ dryMassKg, fuelKg, ispS, thrustN, deltaVMS }) {
   if (![dryMassKg, fuelKg, ispS, thrustN].every(Number.isFinite) || dryMassKg <= 0 || fuelKg < 0 || ispS <= 0 || thrustN <= 0
     || !Array.isArray(deltaVMS) || deltaVMS.some(value => !Number.isFinite(value) || value < 0)) throw Error('Parámetros propulsivos inválidos.');
@@ -27,6 +31,7 @@ export function consumeManeuvers({ dryMassKg, fuelKg, ispS, thrustN, deltaVMS })
   return { maneuvers, finalMassKg: massKg, fuelRemainingKg: Math.max(0, massKg - dryMassKg) };
 }
 
+// Evalúo si la sonda puede ejecutar la inyección lunar verificando estructura, propulsión, fracción de periodo orbital y energía.
 export function evaluateMission(design, transfer) {
   const engineering = calculateEngineering(design);
   const reasons = [];
@@ -46,9 +51,11 @@ export function evaluateMission(design, transfer) {
     ? STANDARD_GRAVITY_M_S2 * engineering.effectiveIspS * Math.log(budget.finalMassKg / engineering.dryMassKg)
     : null;
   if (maneuver && !maneuver.executable) reasons.push(`Combustible insuficiente: requiere ${maneuver.fuelRequiredKg.toFixed(1)} kg y dispone de ${engineering.fuelKg.toFixed(1)} kg.`);
+  // Comparo el tiempo de encendido con el periodo de la órbita de estacionamiento para validar la hipótesis impulsiva.
   const parkingPeriodSeconds = 2 * Math.PI * Math.sqrt(transfer.parkingRadiusKm ** 3 / EARTH_MU_KM3_S2);
   const burnFraction = maneuver?.burnSeconds == null ? null : maneuver.burnSeconds / parkingPeriodSeconds;
   if (burnFraction != null && burnFraction > 0.1) reasons.push('Encendido demasiado largo para la aproximación impulsiva (>10 % del período orbital inicial); falta modelar empuje finito.');
+  // Verifico que la generación nominal y la batería cubran tanto el pico durante el encendido como el crucero en reposo.
   const requiredPowerW = engineering.idlePowerW + (engineSpec?.activePowerW ?? 0);
   const burnHours = (maneuver?.burnSeconds ?? 0) / 3600;
   const energyShortfallWh = Math.max(0, requiredPowerW - engineering.generationW) * burnHours;

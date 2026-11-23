@@ -1,9 +1,14 @@
-// Etapa 25 — director del lanzamiento 3D de las Voyager desde LC-41 (se carga bajo demanda).
-//
-// Une la ciencia (secuencia documentada, ascenso calibrado, Sol y estrellas del instante) con la presentación (línea de tiempo
-// con aceleraciones indicadas, planos de cámara, llamas, humo, separaciones y fundido al modelo 3D oficial de NASA). Todo el
-// estado visual se deduce del instante de misión, así que se puede pausar, saltar a un acontecimiento o volver atrás sin
-// acumular errores. Las piezas separadas siguen un vuelo libre de dos cuerpos desde su instante de separación.
+/**
+ * En este módulo dirijo bajo demanda la experiencia 3D completa del lanzamiento
+ * de Voyager 1 y Voyager 2 desde el Complejo 41 de Cabo Cañaveral.
+ * Integro la trayectoria calibrada de ascenso, la iluminación solar/estelar,
+ * la línea de tiempo con aceleraciones suaves, la realización de cámara, las
+ * separaciones balísticas de etapas, los efectos de humo/penachos y la
+ * transición al modelo 3D oficial de NASA.
+ * Todo el estado visual se calcula de forma determinista a partir del instante
+ * de misión `t` (segundos desde la ignición, en metros ENU local), de modo que
+ * pausar, saltar entre hitos o retroceder no acumula deriva.
+ */
 import * as THREE from 'three';
 import {
   LANZAMIENTOS_VOYAGER, RADIO_TIERRA_M, trayectoriaLanzamiento, estadoEnu, estadoInercial, inercialAEnu, propagarBalistico, eventoPorId, instanteUtcMs
@@ -22,16 +27,13 @@ const DEG = Math.PI / 180;
 const suave = x => { const u = Math.min(1, Math.max(0, x)); return u * u * (3 - 2 * u); };
 const azar = (i, k = 0) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
 const V3 = THREE.Vector3;
-/** Último acontecimiento con t ≤ instante (la lista está ordenada); sin copiar ni invertir la lista en cada fotograma. */
+// Recorro de atrás hacia delante la lista ordenada para hallar el último hito ocurrido hasta `t` sin copiar arreglos en cada fotograma.
 function ultimoEventoHasta(eventos, t) {
   for (let i = eventos.length - 1; i >= 0; i--) if (eventos[i].t <= t) return eventos[i];
   return null;
 }
 
-/**
- * Crea el lanzamiento en `contenedor`. Devuelve el controlador; `listo` se resuelve cuando la escena está compilada y con texturas.
- * `alCambiar(estado)` informa al panel (≈ 8 veces por segundo); `alTerminar({ misionId })` al acabar o saltar.
- */
+// Monto el lienzo WebGL 2 del lanzamiento dentro de `contenedor`, precaliento texturas y shaders y devuelvo los controles de reproducción y limpieza.
 export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', calidad = 'alto', detalle = 'alto', baseUrl = '/', fovInicial = 48,
   alCambiar = () => {}, alTerminar = () => {}, reducirMovimiento = false, escritorio = true } = {}) {
   const mision = LANZAMIENTOS_VOYAGER[misionId];
@@ -50,12 +52,11 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   canvas.setAttribute('aria-label', `Reconstrucción 3D del lanzamiento de la ${mision.nombre} desde el Complejo 41 de Cabo Cañaveral`);
   contenedor.append(canvas);
   let mundo;
-  // STAB-01: si no hay contexto WebGL 2 para el lanzamiento, el lienzo vacío no se queda sobre la escena principal (aún no
-  // existe `destruir()` que lo retire); el llamador recibe el error y cierra el lanzamiento.
+  // Si falla la creación del contexto WebGL 2, retiro inmediatamente el lienzo huérfano antes de relanzar el error al coordinador.
   try { mundo = crearMundoLanzamiento({ canvas, mision, calidad, detalle, baseUrl, escritorio }); }
   catch (error) { canvas.remove(); throw error; }
   const { escena, camara, renderer, ajustes } = mundo;
-  // 27: si la calidad automática baja el nivel de detalle durante el lanzamiento, se aplica lo que no obliga a recompilar.
+  // Escucho descensos automáticos de calidad durante el vuelo para apagar sombras o nubes sin recompilar shaders.
   let detalleVigente = ajustes.detalle;
   const bajaDetalle = onQualityChange(estado => {
     if (estado.contexto !== 'lanzamiento' || !estado.detalle || estado.detalle === detalleVigente) return;
@@ -70,7 +71,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   raiz.traverse(o => { if (o.isMesh) o.frustumCulled = false; });
   const yNave = P.nave.position.y;
 
-  // ---- Llamas: una por tobera, unida a su pieza (se apaga antes de separarse) ----
+  // Vinculo un penacho a cada tobera según el perfil de encendido de su etapa.
   const penachos = [];
   const unirPenacho = (pieza, tipo, encendido) => {
     for (const punto of pieza.userData.toberas ?? []) {
@@ -95,7 +96,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   const estela = crearEstela(420);
   escena.add(estela.malla);
 
-  // ---- Estado del vehículo en cada instante ----
+  // Calculo la posición, el triedro ortonormal y el cuaternión del lanzador en el instante de misión `t`.
   const tmpA = new V3(), tmpB = new V3(), basis = new THREE.Matrix4();
   function azimutRodadura(t) { return (mision.acimutPlataformaDeg + (mision.acimutVueloDeg - mision.acimutPlataformaDeg) * suave((t - tGiro) / 5)) * DEG; }
   function calcularEstado(t, e = { pos: new V3(), eje: new V3(), lado: new V3(), normal: new V3(), arriba: new V3(), q: new THREE.Quaternion() }) {
@@ -104,7 +105,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     enuAEscena(s.direccion, e.eje).normalize();
     e.arriba.copy(e.pos).sub(CENTRO_TIERRA).normalize();
     const A = azimutRodadura(t);
-    tmpA.set(Math.cos(A), 0, Math.sin(A)); // eje de los motores sólidos: perpendicular al acimut (ENU (cos A, −sen A, 0))
+    tmpA.set(Math.cos(A), 0, Math.sin(A)); // Oriento el eje de los motores sólidos perpendicular al acimut de plataforma/vuelo.
     tmpB.crossVectors(e.eje, e.arriba);
     const w = suave((tmpB.length() - 0.03) / 0.12);
     if (w > 0) tmpB.normalize();
@@ -119,7 +120,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   let p = 0, velocidad = 1, pausado = false, terminado = false, destruido = false, ultimoInforme = 0, mundoInfo = null, esperaFinal = 0;
   let ultimoEvento = null, instanteAnterior = null, tiempoAnim = 0;
 
-  // ---- Piezas que se separan ----
+  // Defino las ocho piezas separables con su instante de suelta, impulso relativo y propagación balística de dos cuerpos tras soltarse.
   const cofiaApertura = 1.4;
   const separables = [
     { clave: 'srm1', t: tSrmSep, pivote: new V3(G.srmSeparacionEjes, 13, 0), vel: new V3(5, -0.6, 0), giro: new V3(0, 0, -0.2), nariz: new V3(G.srmSeparacionEjes, 26, 0), cola: new V3(G.srmSeparacionEjes, 1.5, 0) },
@@ -132,12 +133,13 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     { clave: 'moduloPropulsion', t: tPmS, pivote: new V3(0, yNave - 0.6, 0), vel: new V3(0, -0.35, 0), giro: new V3(0.012, 0.02, 0) }
   ].map(s => ({ ...s, pieza: P[s.clave], origen: P[s.clave].position.clone(), cache: null, q: null, impacto: false }));
   const qGiro = new THREE.Quaternion(), eGiro = new THREE.Euler(), pivoteMundo = new V3(), desplaz = new V3();
+  // Coloco cada etapa unida al cohete o en vuelo libre balístico según `t`, reiniciando su caché al retroceder en el tiempo.
   function colocarPiezas(t) {
     for (const s of separables) {
       const { pieza } = s;
       const lado = pieza.userData.lado;
       if (s.clave.startsWith('cofia')) {
-        // Apertura en abanico alrededor de la bisagra de la base y giro continuo tras soltarse.
+        // Giro cada mitad en abanico alrededor de su bisagra inferior antes y después de desprenderse.
         const phi = t < tCofia ? 0 : t < s.t ? 0.5 * suave((t - tCofia) / cofiaApertura) : 0.5 + 0.32 * (t - s.t);
         pieza.userData.bisagra.rotation.z = -lado * phi;
       }
@@ -150,7 +152,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
       if (pieza.parent !== escena) escena.add(pieza);
       if (!s.q) s.q = calcularEstado(s.t).q.clone();
       if (!s.cache || t < s.cache.t) { const b = estadoInercial(tray, s.t); s.cache = { t: s.t, p: b.p, v: b.v }; s.impacto = false; }
-      // Vuelo libre por tramos de ≤ 20 s; al llegar al suelo (motores sólidos, etapa I) la pieza se oculta y deja de propagarse.
+      // Propago el vuelo libre en bloques de hasta 20 s y oculto la pieza cuando cae por debajo del radio terrestre.
       while (!s.impacto && t > s.cache.t + 1e-6) {
         const siguiente = propagarBalistico(s.cache, Math.min(20, t - s.cache.t), { paso: 1 });
         if (Math.hypot(...siguiente.p) < RADIO_TIERRA_M) { s.impacto = true; break; }
@@ -168,7 +170,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     }
   }
 
-  // ---- Modelo oficial de NASA al desplegarse los mástiles ----
+  // Cargo de forma asíncrona la plantilla oficial de NASA para fundirla sobre la nave plegada al desplegar los mástiles.
   const plegada = P.nave.children[0];
   const fundirPlegada = prepararFundido(plegada);
   let fundirNasa = null, estadoModeloNasa = 'cargando', envolturaNasa = null, liberarRecursosNasa = null;
@@ -177,24 +179,22 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     if (destruido) return;
     const normalizado = normalizarEscenaVoyagerGltf(plantilla.clone(true), { diametroAntenaObjetivo: 3.66, idSonda: misionId });
     const envoltura = new THREE.Group(); envoltura.name = 'VoyagerNASA';
-    envoltura.rotation.x = -Math.PI / 2; // la antena (+Z del modelo normalizado) apunta hacia delante (+Y del vehículo)
+    // Giro el modelo normalizado para que su antena (+Z) apunte hacia la proa del vehículo (+Y).
+    envoltura.rotation.x = -Math.PI / 2;
     envoltura.position.y = 0.95;
     envoltura.add(normalizado.grupo);
     P.nave.add(envoltura); envolturaNasa = envoltura;
-    fundirNasa = prepararFundido(envoltura); // clona los materiales: el fundido no altera la Voyager de la escena principal
-    // LAN-02: geometrías y texturas propias que comparten los datos de la plantilla, para que el renderizador del lanzamiento no
-    // deje sus oyentes (y con ellos su estado) en la plantilla de la escena principal al cerrarse. Después de clonar los materiales.
+    // Clono materiales para el fundido y luego separo geometrías y texturas respecto a la plantilla compartida con la escena principal.
+    fundirNasa = prepararFundido(envoltura);
     liberarRecursosNasa = separarRecursosCompartidos(envoltura);
     fundirNasa(0);
     estadoModeloNasa = 'cargado';
-    // 26: si el modelo llega después de la compilación inicial, sus sombreadores se compilan ya, en paralelo, y no al aparecer.
+    // Precompilo sus shaders en segundo plano para evitar pausas en el instante del despliegue de mástiles.
     renderer.compileAsync(envoltura, camara, escena).catch(() => { /* se compilará al mostrarse */ });
   }).catch(err => { estadoModeloNasa = 'no disponible'; console.warn('Lanzamiento: no se pudo cargar Voyager.glb; se mantiene la nave plegada.', err); });
 
-  // ---- Humo determinista (función del instante) ----
+  // Preparo los emisores deterministas de humo y estela ajustando densidad y tamaño al nivel de detalle activo.
   const salidas = PLATAFORMA_1977.salidasFosoLlamasM;
-  // 27: con menos partículas (detalle bajo o mínimo) las emisiones se reparten por el mismo intervalo de tiempo y cada bocanada es
-  // algo mayor, para cubrir lo mismo. Con detalle alto (340 y 90) las fórmulas son las de la etapa 25.
   const nSuelo = ajustes.nubeSuelo, nBase = ajustes.nubeBase, escalaSuelo = Math.pow(340 / nSuelo, 0.25);
   const nubeSuelo = Array.from({ length: nSuelo }, (_, k) => ({
     te: 0.05 + 14 * Math.pow(k / nSuelo, 1.25), salida: salidas[k % 2], ang: (azar(k, 1) - 0.5) * 0.9, vel: 0.6 + 0.8 * azar(k, 2),
@@ -203,16 +203,15 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   const nubeBase = Array.from({ length: nBase }, (_, k) => ({
     te: 0.1 + 9 * (k / nBase), ang: azar(k, 7) * Math.PI * 2, rad: 6 + 14 * azar(k, 8), sube: 0.5 + azar(k, 9), semilla: azar(k, 10)
   }));
-  // Estela: puntos de emisión a lo largo de la trayectoria mientras arden los motores sólidos y el aire es denso (< 45 km).
+  // Precalculo los puntos de origen de la estela a lo largo del tramo atmosférico (< 45 km) de los motores sólidos.
   const estelaPuntos = [];
   for (let te = tLift + 1.2; te < tE1 + 2; te += te < 30 ? 0.5 : te < 70 ? 1 : 2) {
     const e = calcularEstado(te);
     if (e.altitud > 45000) break;
     estelaPuntos.push({ te, x: e.pos.x - e.eje.x * 30, y: e.pos.y - e.eje.y * 30, z: e.pos.z - e.eje.z * 30, h: e.altitud });
   }
-  const viento = h => [-3 - 14 * suave((h - 2000) / 10000), 2 + 3 * suave((h - 4000) / 8000)]; // m/s (x, z), ilustrativo
-  // 26: las partículas se escriben en un conjunto reutilizable. Antes cada fotograma creaba ≈ 2 500 objetos nuevos (≈ 150 000 por
-  // segundo) y el recolector de memoria interrumpía la animación. Las fórmulas no cambian.
+  const viento = h => [-3 - 14 * suave((h - 2000) / 10000), 2 + 3 * suave((h - 4000) / 8000)]; // Viento ilustrativo en m/s (x, z).
+  // Reutilizo pools de objetos de partículas y estela entre fotogramas para eliminar la presión sobre el recolector de basura.
   const particulas = [], puntosEstela = [];
   let nParticulas = 0, nEstela = 0;
   const puntoLocal = new V3();
@@ -227,6 +226,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     nEstela++;
   }
   const [vientoSueloX, vientoSueloZ] = viento(0);
+  // Calculo el estado determinista de las nubes de foso, base, estela y bocanadas de separación en el instante `t`.
   function generarHumo(t) {
     nParticulas = 0; nEstela = 0;
     if (t > 0) {
@@ -252,7 +252,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
         emitirEstela(est.pos.x - est.eje.x * 24, est.pos.y - est.eje.y * 24, est.pos.z - est.eje.z * 24, 6 * (1 + est.altitud / 6000), 0.85);
       }
     }
-    // Bocanadas de los cohetes de separación de los motores sólidos y del cambio de etapa («fire in the hole»).
+    // Emito bocanadas breves para los cohetes de separación de los sólidos y la ignición en caliente entre etapas.
     const bocanadas = (pieza, puntos, t0, dur, crece, n = 3) => {
       const edad = t - t0; if (edad < 0 || edad > dur) return;
       pieza.updateMatrixWorld();
@@ -268,15 +268,16 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   const separablesSrm = separables.slice(0, 2).map(s => ({ pieza: s.pieza, puntosBocanada: [s.nariz, s.cola] }));
   const bocanadaEtapa1 = [new V3(0, G.topeEtapa1, 1.6), new V3(0, G.topeEtapa1, -1.6), new V3(1.6, G.topeEtapa1, 0), new V3(-1.6, G.topeEtapa1, 0)];
 
-  // ---- Cámara: planos ----
+  // Configuro los planos de cámara desde el descenso orbital inicial hasta el despliegue final de la Voyager.
   const camPos = new V3(), camMira = new V3(), camArriba = new V3(0, 1, 0), anterior = { pos: new V3(), mira: new V3(), arriba: new V3(), fov: 45, valido: false };
   const D0 = 6378137 / Math.sin(0.3 * fovInicial * DEG);
   const dir0 = new V3(0, 1, 0), dir1 = new V3(0.895, 0.156, 0.417).normalize(), mira1 = new V3(0, 30, 0);
   const dir1Horizontal = new V3(dir1.x, 0, dir1.z).normalize(), arribaMundo = new V3(0, 1, 0), norte = new V3(0, 0, -1);
   const anclaPadSuelo = (dist, azDeg, alto, destino) => destino.set(Math.sin(azDeg * DEG) * dist, alto, -Math.cos(azDeg * DEG) * dist);
   const centroVisible = t => (t < tSrmSep ? 24 : t < tE2sep ? 32 : t < tSep ? 38 : yNave + 0.4);
+  // Interpolo con curva suave de grado 5 la aproximación logarítmica desde el espacio para empalmar con el acercamiento de la escena principal.
   function poseAproximacion(u, salida) {
-    const e = u * u * u * (u * (6 * u - 15) + 10); // arranca y llega con velocidad nula (continúa el acercamiento de la escena principal)
+    const e = u * u * u * (u * (6 * u - 15) + 10);
     const D = Math.exp(Math.log(D0) + (Math.log(520) - Math.log(D0)) * e);
     const w = suave((u - 0.45) / 0.55);
     const dir = tmpA.copy(dir0).lerp(dir1, w).normalize();
@@ -289,6 +290,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   }
   const pose = { pos: new V3(), mira: new V3(), arriba: new V3(), fov: 45 };
   const solProy = new V3();
+  // Calculo la posición, punto de mira, vector arriba y FOV de cada plano narrativo en el instante `(t, p)`.
   function calcularPlano(plano, t, p, e) {
     const p0 = linea.presentacionDesdeMision(plano.desde), dp = p - p0;
     pose.arriba.copy(e.arriba);
@@ -316,9 +318,9 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
         pose.fov = THREE.MathUtils.clamp(2 * Math.atan(2.4 * 70 / d) / DEG, 0.7, 30); pose.arriba.set(0, 1, 0); return pose;
       }
       case 'persecucion': enVehiculo(-70, 24, 32, 18); pose.fov = 46; return pose;
-      case 'lateral-separacion': enVehiculo(2, 88, 0, -6); pose.fov = 50; return pose; // los motores caen hacia atrás
+      case 'lateral-separacion': enVehiculo(2, 88, 0, -6); pose.fov = 50; return pose;
       case 'persecucion-alta': enVehiculo(-46, 15, 11, 42); pose.fov = 55; return pose;
-      case 'lateral-etapas': enVehiculo(24, 58, 9, 26); pose.fov = 48; return pose; // las mitades de la cofia se abren a los lados
+      case 'lateral-etapas': enVehiculo(24, 58, 9, 26); pose.fov = 48; return pose;
       case 'persecucion-orbital': enVehiculo(centroVisible(t) - 34, 10, 7, centroVisible(t)); pose.fov = 52; return pose;
       case 'orbita-aparcamiento': {
         const phi = 0.4 + 0.085 * dp, r = 27;
@@ -329,32 +331,32 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
       case 'persecucion-pm': enVehiculo(yNave - 15, 5, 4.5, yNave + 1.5); pose.fov = 44; return pose;
       case 'nave-despliegue':
       case 'nave-final': {
-        // Órbita lenta por el lado iluminado; en el plano final se aleja y deja la Tierra detrás de la nave.
+        // Orbito lentamente por el lado iluminado por el Sol; en el plano final me alejo dejando la Tierra al fondo.
         solProy.copy(mundoInfo?.dirSol ?? e.normal);
         const phi0 = Math.atan2(solProy.dot(e.normal), solProy.dot(e.lado)) + 0.55;
         const tPlano = plano.id === 'nave-final' ? linea.presentacionDesdeMision(tMast - 2) : p0, phi = phi0 + 0.07 * (p - tPlano);
         const r = plano.id === 'nave-final' ? 11 + 1.1 * dp : 11, centro = yNave + 0.7;
         pose.pos.copy(e.pos).addScaledVector(e.lado, Math.cos(phi) * r).addScaledVector(e.normal, Math.sin(phi) * r).addScaledVector(e.eje, centro + 1.2);
-        pose.pos.addScaledVector(e.arriba, (plano.id === 'nave-final' ? 0.45 : 0.6) * r); // la Tierra queda detrás de la nave
+        pose.pos.addScaledVector(e.arriba, (plano.id === 'nave-final' ? 0.45 : 0.6) * r);
         pose.mira.copy(e.pos).addScaledVector(e.eje, centro); pose.fov = 46; return pose;
       }
       default: enVehiculo(-40, 12, 10, 20); pose.fov = 50; return pose;
     }
   }
   const temblor = new V3();
-  // Pantallas verticales: los planos están pensados para formato apaisado; se amplía el campo vertical para conservar el
-  // horizontal que tendría el plano con proporción 0,9 (máximo 80°). La aproximación no se toca: empalma con la escena principal.
+  // En pantallas verticales amplio el FOV vertical para conservar el encuadre horizontal de referencia, salvo en la aproximación inicial.
   const fovSegunFormato = (pl, f) => {
     const aspecto = camara.aspect, ref = 0.9;
     if (pl.id === 'aproximacion' || !(aspecto < ref)) return f;
     return Math.min(80, 2 * Math.atan(Math.tan(f * DEG / 2) * ref / aspecto) / DEG);
   };
+  // Aplico el plano activo a la cámara gestionando transiciones suaves, vibración acústica del despegue y protección contra singularidad en `lookAt`.
   function colocarCamara(t, p, e) {
     const plano = linea.planoEn(t);
     const nueva = calcularPlano(plano, t, p, e);
     camPos.copy(nueva.pos); camMira.copy(nueva.mira); camArriba.copy(nueva.arriba);
     let fov = fovSegunFormato(plano, nueva.fov);
-    // Fundido de cámara en los planos «suaves»: se interpolan las posiciones relativas al vehículo.
+    // Interpolo con el plano anterior durante 2,5 s cuando el plano está marcado como transición suave.
     if (plano.suave && anterior.valido) {
       const k = suave((p - linea.presentacionDesdeMision(plano.desde)) / 2.5);
       if (k < 1) {
@@ -365,13 +367,13 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
         const fovViejo = fovSegunFormato(previo, viejo.fov); fov = fovViejo + (fov - fovViejo) * k;
       }
     }
-    // Vibración de la cámara en tierra durante los primeros segundos (salvo «reducir movimiento»).
+    // Aplico vibración atenuada en las cámaras cercanas al suelo durante el despegue, respetando `prefers-reduced-motion`.
     if (!reducirMovimiento && t > 0 && t < 14 && ['despegue-suelo', 'plataforma-base', 'seguimiento-largo'].includes(plano.id)) {
       const a = 0.05 * Math.exp(-Math.max(0, t - 3) / 4) * (plano.id === 'seguimiento-largo' ? 0.3 : 1);
       temblor.set(Math.sin(p * 61) + Math.sin(p * 37), Math.sin(p * 53), Math.sin(p * 47)).multiplyScalar(a);
       camMira.add(temblor.multiplyScalar(camPos.distanceTo(camMira) * 0.01));
     }
-    // Si el vector «arriba» es casi paralelo a la mirada, se usa la normal del vehículo.
+    // Sustituyo el vector arriba por la normal del vehículo si queda casi colineal con la dirección de mirada.
     tmpA.subVectors(camMira, camPos).normalize();
     if (Math.abs(tmpA.dot(camArriba)) > 0.97) camArriba.copy(e.normal);
     camara.position.copy(camPos); camara.up.copy(camArriba); camara.lookAt(camMira);
@@ -380,16 +382,14 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     return plano;
   }
 
-  // ---- Bucle ----
+  // Actualizo pose del vehículo, brazos umbilicales, etapas separables, visibilidad de interiores sellados, penachos y fundido del modelo NASA.
   const luzSombra = new THREE.Color(), luzSol = new THREE.Color();
   function aplicarInstante(t, tiempoAnim, { forzarInternos = false } = {}) {
     calcularEstado(t, est);
     raiz.position.copy(est.pos); raiz.quaternion.copy(est.q);
     plataforma.retraerBrazos(suave((t + 9) / 6));
     colocarPiezas(t);
-    // LAN-01: mientras la cofia permanece cerrada (t < tCofia) y la etapa I unida (t < tE1off), las piezas internas selladas
-    // dentro de la cofia opaca (Centaur, módulo de propulsión y Voyager plegada) y la tobera LR91 dentro del interetapa no son
-    // visibles desde ningún ángulo exterior; omitirlas ahorra 20 llamadas de dibujo (~37 con sombras) y ~9 386 triángulos.
+    // Oculto las piezas selladas dentro de la cofia cerrada y la tobera LR91 dentro del interetapa para ahorrar llamadas de dibujo y triángulos mientras no pueden verse.
     const mostrarInteriorCofia = forzarInternos || t >= tCofia - 0.1;
     if (!mostrarInteriorCofia) {
       P.centaur.visible = false;
@@ -405,6 +405,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     fundirPlegada(fundirNasa ? 1 - k : 1);
     fundirNasa?.(k);
   }
+  // Bucle principal de renderizado del lanzamiento: avanzo el reloj de presentación, actualizo mundo/efectos, dibujo, informo tiempos al perfil de calidad y notifico a la interfaz.
   function fotograma() {
     if (destruido) return;
     const ahoraMs = performance.now(), intervalo = instanteAnterior === null ? 0 : (ahoraMs - instanteAnterior) / 1000, dt = Math.min(0.1, intervalo);
@@ -417,7 +418,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     aplicarInstante(t, tiempoAnim);
     const plano = colocarCamara(t, p, est);
     camara.updateMatrixWorld();
-    // LAN-01: a más de 25 km de la plataforma, la estructura de 50 m subtiende < 0,1 px y queda fuera de plano.
+    // Oculto la plataforma cuando la cámara se aleja más de 25 km porque ya subtiende menos de una fracción de píxel.
     plataforma.grupo.visible = camara.position.lengthSq() < 25000 * 25000;
     mundoInfo = mundo.actualizar({ ms, foco: tmpB.copy(est.pos).addScaledVector(est.eje, 20), tiempoAnim });
     luzSol.setRGB(1, 0.97, 0.92).multiplyScalar(0.7 + 0.3 * mundoInfo.brilloCielo);
@@ -428,7 +429,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     estela.actualizar(puntosEstela, camara, mundoInfo.dirSol, nEstela);
     renderer.render(escena, camara);
     const ahora = performance.now();
-    // 27: resolución dinámica del lanzamiento con su intervalo real (sin el tope de 0,1 s) y el tiempo de CPU del fotograma.
+    // Reporto el intervalo real y el tiempo de CPU para que el gestor de calidad ajuste resolución y detalle del lanzamiento.
     if (intervalo > 0) reportFrame(intervalo, { contexto: 'lanzamiento', cpu: (ahora - ahoraMs) / 1000 });
     const evento = ultimoEventoHasta(linea.eventos, t);
     if (evento !== ultimoEvento || ahora - ultimoInforme > 120) {
@@ -438,6 +439,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
       alCambiar(estadoPublico(t, plano, nuevoEvento ? evento : null));
     }
   }
+  // Construyo la instantánea de telemetría y fase que consume la superposición de interfaz del lanzamiento.
   function estadoPublico(t, plano, eventoNuevo = null) {
     const fase = linea.faseEn(t);
     return {
@@ -454,14 +456,13 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   observador.observe(contenedor);
   mundo.redimensionar(contenedor.clientWidth || 800, contenedor.clientHeight || 600);
 
-  // Listo cuando hay texturas (o tras 8 s) y los sombreadores están compilados; luego empieza la reproducción.
+  // Preparo el arranque sin tirones: espero cargas (con tope de 8 s), subo texturas una por fotograma, precaliento shaders a nivel de plataforma y hago un primer dibujo oculto antes de mostrar el lienzo.
   const listo = Promise.race([mundo.cargas, new Promise(r => setTimeout(r, 8000))]).then(async () => {
     if (destruido) return;
-    await mundo.subirTexturas(); // 26: texturas en la GPU antes de reproducir (sin tirones al entrar en el encuadre)
+    // Subo las texturas ya decodificadas a la GPU de forma escalonada antes de iniciar la animación.
+    await mundo.subirTexturas();
     if (destruido) return;
-    // LAN-01: precalentar también un fotograma oculto a nivel de plataforma (t = 0,5 s) con cielo, parches de terreno,
-    // plataforma, vehículo, piezas internas y penachos activos, antes de situar la cámara en el espacio (tInicio = -24 s).
-    // Así se evita compilar/validar por primera vez el cielo y las capas de terreno en mitad de la aproximación a ~80 km.
+    // Precaliento un fotograma oculto a nivel de plataforma con cielo, terreno, piezas internas y penachos activos para evitar compilaciones a mitad de la aproximación.
     aplicarInstante(0.5, 0, { forzarInternos: true });
     colocarCamara(-8, linea.presentacionDesdeMision(-8), est);
     camara.updateMatrixWorld();
@@ -474,8 +475,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     poseAproximacion(0, pose); camara.position.copy(pose.pos); camara.up.copy(pose.arriba); camara.lookAt(pose.mira); camara.updateMatrixWorld();
     plataforma.grupo.visible = true;
     mundoInfo = mundo.actualizar({ ms: instanteUtcMs(mision, linea.tInicio), foco: null, tiempoAnim: 0 });
-    // 26: primer dibujo con el lienzo aún invisible: la primera vez que se usa cada programa y búfer tiene un coste que, sin
-    // esto, caía en el primer fotograma visible.
+    // Realizo el primer dibujo del plano inicial con el lienzo aún oculto para absorber el coste de arranque de programas y búferes.
     renderer.render(escena, camara);
     await new Promise(r => requestAnimationFrame(() => r()));
     if (destruido) return;
@@ -484,8 +484,9 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     canvas.classList.add('is-visible');
   });
 
+  // Salto a un segundo de presentación concreto invalidando la caché balística de las etapas separables.
   function irAPresentacion(nuevaP) {
-    if (Number.isNaN(nuevaP)) return; // un salto sin instante válido no cambia nada (±∞ se acotan a los extremos)
+    if (Number.isNaN(nuevaP)) return;
     p = THREE.MathUtils.clamp(nuevaP, 0, linea.duracion); esperaFinal = 0; terminado = false; for (const s of separables) s.cache = null; }
   function finalizar() {
     if (terminado) return;
@@ -494,7 +495,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   }
   return {
     canvas, mision, linea, listo,
-    /** Solo para diagnóstico (guiones de revisión): escena, cámara y renderizador. */
+    // Expongo referencias internas únicamente para guiones de diagnóstico y revisión visual.
     interno: { escena, camara, renderer },
     pausar() { pausado = true; },
     reanudar() { pausado = false; },
@@ -507,6 +508,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     reiniciar() { irAPresentacion(0); pausado = false; },
     saltar() { finalizar(); },
     estado() { return estadoPublico(linea.misionDesdePresentacion(p), linea.planoEn(linea.misionDesdePresentacion(p))); },
+    // Detengo el bucle, desconecto observadores y libero todos los recursos propios de WebGL sin tocar la plantilla Voyager de la escena principal.
     destruir() {
       if (destruido) return;
       destruido = true;
@@ -514,9 +516,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
       renderer.setAnimationLoop(null);
       observador.disconnect();
       for (const { pen } of penachos) pen.destruir();
-      // El modelo de NASA comparte los datos de geometrías y texturas con la plantilla de la escena principal (clone(true)): se separa
-      // antes de desechar el vehículo y el mundo, y solo se liberan sus objetos propios (materiales clonados y, LAN-02, las
-      // geometrías y texturas que apuntan a los datos de la plantilla); la plantilla no se toca.
+      // Separo y libero solo los materiales clonados y los envoltorios propios del modelo NASA para dejar intacta la plantilla compartida.
       if (envolturaNasa) {
         envolturaNasa.traverse(o => { if (o.isMesh) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.dispose()); });
         liberarRecursosNasa?.(); liberarRecursosNasa = null;

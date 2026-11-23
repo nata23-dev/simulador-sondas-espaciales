@@ -1,3 +1,18 @@
+/**
+ * En este módulo resuelvo efemérides históricas verificadas de NASA/JPL Horizons
+ * para los ocho planetas, Voyager 1 (`-31`), Voyager 2 (`-32`) y los satélites de
+ * encuentro, además de calcular su telemetría científica y la polilínea multianual.
+ *
+ * - Unidades: posiciones y distancias en km (y equivalentes en AU), velocidades en
+ *   km/s, tiempos de luz y tiempos de misión en segundos (s), cadencias en segundos
+ *   y épocas en JD TDB.
+ * - Marco de referencia: exijo `SUN_CENTER` / `ICRF_ECLIPTIC_J2000` con vectores
+ *   geométricos (`VEC_CORR=NONE`).
+ * - Límites y políticas: priorizo siempre el conjunto de mayor resolución temporal
+ *   (ventanas densas de sobrevuelo sobre crucero), nunca extrapolo ni interpolo a
+ *   través de una unión documentada de segmentos SPK (`spkSegmentSplice`), y cacheo
+ *   en memoria tanto el proveedor LRU como las polilíneas históricas construidas.
+ */
 import { createEphemerisProvider } from './EphemerisProvider.js';
 import { HORIZONS_FRAME } from './Frames.js';
 import { HORIZONS_PLANETS } from './HorizonsEphemerides.js';
@@ -16,7 +31,8 @@ import {
 import { findPreviousAndNextEvents } from './VoyagerHistoricalEvents.js';
 import { MOON_CATALOG as MOONS } from './MoonCatalog.js';
 
-export const SPEED_OF_LIGHT_KM_S = 299792.458; // Definición exacta SI / UAI
+// Adopto la velocidad exacta de la luz en el vacío según el SI / IAU (km/s).
+export const SPEED_OF_LIGHT_KM_S = 299792.458;
 export const HISTORICAL_CATALOG_PATH = 'data/historical-ephemerides-catalog-v1.json';
 const COVERAGE_TOLERANCE_DAYS = 1e-8;
 
@@ -26,6 +42,7 @@ export const HISTORICAL_ENCOUNTER_MOONS = Object.freeze(Object.fromEntries(
   })])
 ));
 
+/** Formateo un tiempo de viaje de la luz en segundos como `h min s` o segundos decimales. */
 export function formatLightTimeHms(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return '—';
   const totalSec = Math.round(seconds);
@@ -41,6 +58,7 @@ export function formatLightTimeHms(seconds) {
   return `${seconds.toFixed(1)} s`;
 }
 
+/** Formateo el tiempo transcurrido desde el lanzamiento en años, días, horas y minutos. */
 export function formatMissionElapsed(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return 'Pre-lanzamiento';
   const totalSec = Math.floor(seconds);
@@ -57,9 +75,9 @@ export function formatMissionElapsed(seconds) {
 }
 
 /**
- * Selecciona el conjunto histórico que cubre `(bodyId, jdTdb)` con la mayor
+ * Aquí selecciono el conjunto histórico que cubre `(bodyId, jdTdb)` con mayor
  * resolución temporal (menor `cadenceSeconds`), priorizando ventanas de sobrevuelo
- * sobre archivos multianuales de crucero.
+ * frente a archivos multianuales de crucero.
  */
 export function selectBestHistoricalDataset(datasets, bodyId, jdTdb) {
   const targetId = String(bodyId);
@@ -87,6 +105,7 @@ export function selectBestHistoricalDataset(datasets, bodyId, jdTdb) {
   return candidates[0].entry;
 }
 
+/** Extraigo un resumen inmutable de procedencia (dataset, archivo, cadencia, solución Horizons y nodos usados). */
 function summarizeSampleProvenance(resolution) {
   if (!resolution?.state) return null;
   const state = resolution.state;
@@ -112,6 +131,11 @@ function summarizeSampleProvenance(resolution) {
   });
 }
 
+/**
+ * Aquí calculo la telemetría científica completa de una sonda Voyager en `jdTdb`:
+ * distancias al Sol, a la Tierra y a la sonda gemela (en km y AU), rapidez
+ * heliocéntrica (km/s), tiempo de luz de ida, fase de misión y procedencia.
+ */
 export function computeProbeScientificTelemetry({
   missionId,
   probeResolution,
@@ -216,6 +240,10 @@ export function computeProbeScientificTelemetry({
   });
 }
 
+/**
+ * Aquí creo el resolvedor histórico con inicialización perezosa del catálogo,
+ * caché LRU de conjuntos de efemérides y caché de polilíneas de trayectoria.
+ */
 export function createHistoricalEphemerisResolver({
   loadJson,
   catalog = null,
@@ -232,6 +260,7 @@ export function createHistoricalEphemerisResolver({
   let timelineBounds = null;
   const backboneCache = new Map();
 
+  /** Inicializo una única vez el proveedor y determino las cotas temporales comunes verificadas. */
   async function ensureInitialized() {
     if (provider) return;
     if (!initPromise) {
@@ -245,7 +274,7 @@ export function createHistoricalEphemerisResolver({
         });
         const allDatasets = createdProvider.listDatasets();
 
-        // Calcula el límite superior común verificado para los 8 planetas y ambas Voyager
+        // Calculo el límite superior común verificado entre los 8 planetas y ambas Voyager.
         const requiredEndIds = [...Object.values(HORIZONS_PLANETS), VOYAGER_1_NAIF_ID, VOYAGER_2_NAIF_ID];
         let commonMaxJdTdb = Infinity;
         for (const bodyId of requiredEndIds) {
@@ -275,6 +304,7 @@ export function createHistoricalEphemerisResolver({
     return timelineBounds;
   }
 
+  /** Resuelvo un planeta, luna o cuerpo estándar seleccionando el dataset más fino e interpolando con Hermite cúbica. */
   async function resolveStandardBody(bodyId, jdTdb) {
     await ensureInitialized();
     requireJdTdb(jdTdb);
@@ -315,6 +345,11 @@ export function createHistoricalEphemerisResolver({
     });
   }
 
+  /**
+   * Aquí resuelvo el estado histórico de Voyager 1 o Voyager 2 distinguiendo
+   * pre-lanzamiento, fase visual de ascenso antes de la primera muestra Horizons,
+   * transiciones entre segmentos SPK y cobertura real certificada.
+   */
   async function resolveProbeState(missionId, jdTdb) {
     await ensureInitialized();
     requireJdTdb(jdTdb);
@@ -346,13 +381,12 @@ export function createHistoricalEphemerisResolver({
       });
     }
 
-    // Protección explícita contra interpolación a través de la unión documentada de segmentos SPK
+    // Evito explícitamente interpolar a través de una unión documentada de segmentos SPK.
     const splice = mission.spkSegmentSplice;
     if (splice
       && jdTdb > splice.beforeJdTdb + COVERAGE_TOLERANCE_DAYS
       && jdTdb < splice.afterJdTdb - COVERAGE_TOLERANCE_DAYS) {
-      // Una muestra del extremo pertenece a otra época: no es un estado válido
-      // para este instante. Tampoco se interpola una unión de soluciones distintas.
+      // Rechazo devolver un extremo de otra época o interpolar soluciones orbitales distintas en la junta.
       return Object.freeze({
         status: 'spk_segment_transition',
         missionId,
@@ -373,6 +407,7 @@ export function createHistoricalEphemerisResolver({
     });
   }
 
+  /** Enruto la consulta de un cuerpo NAIF hacia `resolveProbeState` si es Voyager o hacia `resolveStandardBody`. */
   async function resolveBodyState(bodyId, jdTdb) {
     const id = String(bodyId);
     if (id === VOYAGER_1_NAIF_ID) return resolveProbeState(VOYAGER_1_ID, jdTdb);
@@ -381,10 +416,10 @@ export function createHistoricalEphemerisResolver({
   }
 
   /**
-   * Consulta atómica de todos los cuerpos del Modo Histórico en `jdTdb`:
-   * - 8 planetas del Sistema Solar (obligatorios dentro de cobertura).
-   * - Voyager 1 (-31) y Voyager 2 (-32) con telemetría científica completa.
-   * - Satélites de encuentro (Ío, Titán, Tritón) cuando el instante cae en su ventana de alta densidad.
+   * Aquí consulto de forma atómica todos los cuerpos del Modo Histórico en `jdTdb`:
+   * - Los 8 planetas del Sistema Solar (exijo que todos tengan estado válido).
+   * - Voyager 1 (`-31`) y Voyager 2 (`-32`) con su telemetría científica completa.
+   * - Los satélites de encuentro cuando el instante cae dentro de su ventana densa.
    */
   async function queryHistoricalSnapshot(jdTdb) {
     await ensureInitialized();
@@ -448,9 +483,9 @@ export function createHistoricalEphemerisResolver({
   }
 
   /**
-   * Construye y memoriza la polilínea histórica multianual verificada de una sonda
-   * combinando muestras de crucero con muestras densas de sobrevuelos planetarios
-   * para conservar intacta la curvatura real de las asistencias gravitacionales.
+   * Aquí construyo y cacheo la polilínea histórica multianual verificada de una
+   * sonda combinando muestras de crucero con muestras densas de sobrevuelos
+   * planetarios para conservar la curvatura real de las asistencias gravitacionales.
    */
   async function loadMissionTrajectoryBackbone(missionId) {
     await ensureInitialized();
@@ -465,7 +500,7 @@ export function createHistoricalEphemerisResolver({
 
       const rawDataList = await Promise.all(probeEntries.map(entry => loadJson(entry.file)));
 
-      // Ordenados de más denso a menos denso; un conjunto grueso cede dentro de ventanas ya cubiertas por uno más fino
+      // Recorro los conjuntos del más fino al más grueso: descarto nodos gruesos dentro de ventanas ya cubiertas por un conjunto más denso.
       const fineWindows = [];
       const collectedKnots = [];
 
@@ -475,7 +510,7 @@ export function createHistoricalEphemerisResolver({
         const cov = entry.bodyCoverage?.[mission.naifId] ?? entry.coverage;
         const series = raw?.series?.[mission.naifId] ?? [];
 
-        // En ventanas ultra-densas (<= 1200 s), submuestrea cada 2 puntos para mantener ~3500-5500 vértices ágiles en GPU
+        // En ventanas muy densas (<= 1800 s) aplico un paso de submuestreo para mantener ~3500–5500 vértices fluidos en GPU.
         const stride = entry.cadenceSeconds <= 900 ? 3 : (entry.cadenceSeconds <= 1800 ? 2 : 1);
 
         for (let s = 0; s < series.length; s++) {
@@ -502,7 +537,7 @@ export function createHistoricalEphemerisResolver({
 
       collectedKnots.sort((a, b) => a.jdTdb - b.jdTdb);
 
-      // Elimina cualquier instante duplicado exacto en bordes entre conjuntos contiguos
+      // Elimino instantes duplicados en las fronteras entre conjuntos contiguos.
       const uniqueKnots = [];
       for (const knot of collectedKnots) {
         if (uniqueKnots.length > 0 && Math.abs(knot.jdTdb - uniqueKnots[uniqueKnots.length - 1].jdTdb) <= 1e-7) {
@@ -511,8 +546,8 @@ export function createHistoricalEphemerisResolver({
         uniqueKnots.push(knot);
       }
 
-      // A refit boundary has two valid endpoint samples but no certified
-      // trajectory between them. Keep the samples and flag the absent edge.
+      // En una frontera de reajuste SPK existen dos extremos válidos pero no una trayectoria certificada entre ellos;
+      // conservo ambos nodos y marco `breakBefore` para no trazar un segmento ficticio sobre la junta.
       const splice = mission.spkSegmentSplice;
       const certifiedKnots = uniqueKnots.map((knot, index) => Object.freeze({
         ...knot,

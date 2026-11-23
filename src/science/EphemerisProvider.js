@@ -1,3 +1,18 @@
+/**
+ * En este módulo gestiono la carga bajo demanda, validación, indexación,
+ * caché LRU e interpolación cúbica de Hermite de los conjuntos locales de
+ * efemérides declarados en un catálogo.
+ *
+ * - Unidades: posiciones en km, velocidades en km/s, intervalos y cadencias
+ *   en segundos (s) y épocas en JD TDB.
+ * - Marco de referencia: valido y conservo el contrato heliocéntrico
+ *   `SUN_CENTER` / `ICRF_ECLIPTIC_J2000` (vectores geométricos de NASA/JPL
+ *   Horizons con `VEC_CORR=NONE`).
+ * - Límites y políticas: nunca extrapolo fuera de cobertura, detecto y rechazo
+ *   conflictos entre datasets solapados, acoto memoria con `maxStatesPerDataset`
+ *   y `maxCachedDatasets`, y solo interpolo sobre huecos o cadencias irregulares
+ *   cuando se autoriza explícitamente.
+ */
 import { createEphemerisCatalog } from './EphemerisCatalog.js';
 import { adaptHorizonsSample, HORIZONS_PLANETS, validateHorizonsDataset } from './HorizonsEphemerides.js';
 import { createScientificState } from './ScientificState.js';
@@ -9,8 +24,9 @@ import { HERMITE_ALGORITHM, HERMITE_ALGORITHM_VERSION,
 const DAY_SECONDS = 86400;
 const TIME_TOLERANCE_DAYS = 1e-8;
 
+/** Adjunto a un estado ya validado los metadatos de trazabilidad del dataset y archivo fuente. */
 function enrichedState(state, entry) {
-  // state ya pasó createScientificState/adaptHorizonsSample en rawStates.
+  // Asumo que `state` ya fue validado por `createScientificState` o `adaptHorizonsSample` en `rawStates`.
   return Object.freeze({ ...state, provenance: Object.freeze({ ...state.provenance,
     sourceMetadata: Object.freeze({ ...state.provenance.sourceMetadata,
       ephemerisDatasetId: entry.id, ephemerisFile: entry.file,
@@ -18,6 +34,7 @@ function enrichedState(state, entry) {
       filePositionUnit: entry.fileUnits.position, fileVelocityUnit: entry.fileUnits.velocity }) }) });
 }
 
+/** Aquí valido y adapto un archivo `horizons-compact-v1` (filas compactas en km y km/s) a objetos `ScientificState`. */
 function adaptCompactDatasetStates(data, entry, maxStatesPerDataset) {
   if (!data || typeof data !== 'object' || Array.isArray(data)
     || data.format !== 'horizons-compact-v1' || data.formatVersion !== 1
@@ -101,6 +118,7 @@ function adaptCompactDatasetStates(data, entry, maxStatesPerDataset) {
   return out;
 }
 
+/** Despacho la decodificación del JSON según el formato declarado y aplico el tope `maxStatesPerDataset`. */
 function rawStates(data, entry, maxStatesPerDataset) {
   if (entry.format === 'horizons-daily-v1') {
     const count = Object.values(data?.planetas ?? {}).reduce((total, series) =>
@@ -125,6 +143,11 @@ function rawStates(data, entry, maxStatesPerDataset) {
   return data.states.map(state => createScientificState(state));
 }
 
+/**
+ * Aquí valido la coherencia temporal, de marco, fuente, cadencia y cobertura
+ * real de todas las muestras de un archivo e indexo cada cuerpo en una serie
+ * ordenada y un mapa exacto por JD TDB.
+ */
 function validateAndIndex(data, entry, maxStatesPerDataset) {
   const states = rawStates(data, entry, maxStatesPerDataset);
   const series = new Map(entry.bodyIds.map(id => [id, []]));
@@ -183,12 +206,17 @@ function validateAndIndex(data, entry, maxStatesPerDataset) {
   return Object.freeze({ entry, series, byTime, stateCount: states.length });
 }
 
+/** Compruebo si dos estados coinciden exactamente en tipo de cuerpo, posición (km) y velocidad (km/s). */
 function samePhysicalState(a, b) {
   if (a.identity.type !== b.identity.type) return false;
   return ['position', 'velocity'].every(field =>
     ['x', 'y', 'z'].every(axis => a[field][axis] === b[field][axis]));
 }
 
+/**
+ * Aquí resuelvo una muestra exacta en `jdTdb` entre todos los datasets cargados,
+ * detectando discrepancias físicas (`conflict`) o ausencia dentro/fuera de cobertura.
+ */
 function resolvedAt(bodyId, jdTdb, loaded) {
   const candidates = [];
   for (const dataset of loaded) {
@@ -212,6 +240,7 @@ function resolvedAt(bodyId, jdTdb, loaded) {
     alternates: Object.freeze(candidates.slice(1)) });
 }
 
+/** Identifico huecos internos donde la separación entre dos muestras supera la cadencia nominal. */
 function intervalGaps(items, cadenceSeconds, datasetId) {
   if (cadenceSeconds === null) return [];
   const stepDays = cadenceSeconds / DAY_SECONDS;
@@ -228,7 +257,13 @@ function intervalGaps(items, cadenceSeconds, datasetId) {
   return gaps;
 }
 
+// Mantengo por serie el último índice de segmento consultado para acelerar búsquedas secuenciales en O(1).
 const neighborIndexCache = new WeakMap();
+/**
+ * Localizo el par de muestras consecutivas que encierran estrictamente a `jdTdb`:
+ * primero pruebo el segmento cacheado y sus vecinos inmediatos, y solo recurro a
+ * búsqueda binaria cuando la consulta salta lejos en el tiempo.
+ */
 function neighbors(items, jdTdb) {
   if (!items || items.length < 2) return null;
   let lastLo = neighborIndexCache.get(items);
@@ -262,8 +297,10 @@ function neighbors(items, jdTdb) {
 }
 
 /**
- * Proveedor local de muestras exactas JD TDB. No interpola ni extrapola.
- * loadJson recibe una ruta relativa del catálogo y devuelve el JSON leído.
+ * Aquí creo el proveedor local de efemérides con caché LRU de datasets y acceso
+ * a muestras exactas, interpolación cúbica de Hermite (sin extrapolación),
+ * procedencia, rangos y análisis completo de cobertura y conflictos.
+ * Recibo `loadJson`, una función asíncrona que lee rutas relativas del catálogo.
  */
 export function createEphemerisProvider({ catalog, loadJson,
   maxStatesPerDataset = 100000, maxCachedDatasets = 8 }) {
@@ -275,6 +312,7 @@ export function createEphemerisProvider({ catalog, loadJson,
   }
   const cache = new Map();
 
+  // Desalojo las entradas ya resueltas más antiguas cuando supero `maxCachedDatasets`.
   function trimCache() {
     for (const [id, item] of cache) {
       if (cache.size <= maxCachedDatasets) break;
@@ -282,6 +320,7 @@ export function createEphemerisProvider({ catalog, loadJson,
     }
   }
 
+  // Cargo o reutilizo en caché LRU un dataset del catálogo, eliminándolo si falla la lectura o validación.
   function loadEntry(entry) {
     const cached = cache.get(entry.id);
     if (cached) {
@@ -320,11 +359,17 @@ export function createEphemerisProvider({ catalog, loadJson,
   return Object.freeze({
     listDatasets: () => validatedCatalog.datasets,
     listBodies: () => Object.freeze([...new Set(validatedCatalog.datasets.flatMap(entry => entry.bodyIds))]),
+    /** Devuelvo únicamente una muestra exacta en `jdTdb`, sin interpolar ni extrapolar. */
     async getExact(bodyId, jdTdb) {
       assertBodyId(bodyId);
       requireJdTdb(jdTdb);
       return resolvedAt(bodyId, jdTdb, await loadRelevant(bodyId, jdTdb, jdTdb));
     },
+    /**
+     * Resuelvo el estado en `jdTdb`: devuelvo la muestra exacta si existe o interpolo
+     * con Hermite cúbica entre muestras vecinas verificando límite de intervalo, huecos,
+     * cadencia irregular y ausencia de solapamientos ambiguos o extremos en conflicto.
+     */
     async getInterpolated(bodyId, jdTdb, options = {}) {
       assertBodyId(bodyId);
       requireJdTdb(jdTdb);
@@ -400,6 +445,7 @@ export function createEphemerisProvider({ catalog, loadJson,
           file: chosen.dataset.entry.file, provenance: source.provenance }))),
         warnings: Object.freeze(chosen.warnings) });
     },
+    /** Devuelvo la procedencia científica de todas las fuentes que cubren exactamente `(bodyId, jdTdb)`. */
     async getProvenance(bodyId, jdTdb) {
       assertBodyId(bodyId);
       requireJdTdb(jdTdb);
@@ -414,6 +460,7 @@ export function createEphemerisProvider({ catalog, loadJson,
           datasetId: candidate.datasetId, file: candidate.file,
           provenance: candidate.state.provenance }))) });
     },
+    /** Devuelvo en orden cronológico todas las muestras exactas de `bodyId` dentro de `[startJdTdb, endJdTdb]`. */
     async getRange(bodyId, startJdTdb, endJdTdb) {
       assertBodyId(bodyId);
       requireJdTdb(startJdTdb);
@@ -426,6 +473,7 @@ export function createEphemerisProvider({ catalog, loadJson,
       return Object.freeze([...times].sort((a, b) => a - b)
         .map(jd => resolvedAt(bodyId, jd, loaded)));
     },
+    /** Analizo la cobertura completa de `bodyId`: intervalos, segmentos contiguos, huecos, solapamientos y conflictos. */
     async getCoverage(bodyId) {
       assertBodyId(bodyId);
       const loaded = await loadRelevant(bodyId, -Infinity, Infinity);

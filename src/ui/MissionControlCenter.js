@@ -1,3 +1,5 @@
+// En este módulo coordino el Centro de Misión: reproduzco misiones lunares, de empuje finito, lanzamientos, descensos,
+// transferencias interplanetarias y misiones integradas, gestionando cámaras, telemetría, eventos, vista inmersiva y errores.
 import { createMissionExecution, createPlaybackClock, sampleMissionExecution } from '../lab/MissionPlayback.js';
 import { deriveMissionTelemetry } from '../lab/MissionTelemetry.js';
 import { createFiniteThrustExecution, deriveFiniteThrustTelemetry, sampleFiniteThrustExecution } from '../lab/FiniteThrustPlayback.js';
@@ -14,16 +16,15 @@ import { KM_PER_AU } from '../science/Units.js';
 import { mostrarVista3DNoDisponible } from './WebGLUnavailableNotice.js';
 import { getQualityState } from '../graphics/QualityProfile.js';
 
-// 26: un formateador por número de decimales; crear uno nuevo en cada llamada costaba CPU en cada fotograma de la reproducción.
+// Reutilizo un formateador por cantidad de decimales y evito el signo «-0» al redondear para no desperdiciar CPU en cada fotograma.
 const formatosNumero = new Map();
 const number = (value, digits = 1) => {
   if (!Number.isFinite(value)) return 'No disponible';
   let formato = formatosNumero.get(digits);
-  if (!formato) formatosNumero.set(digits, formato = new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits, signDisplay: 'negative' })); // sin «-0» al redondear
+  if (!formato) formatosNumero.set(digits, formato = new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits, signDisplay: 'negative' }));
   return formato.format(value);
 };
-// 26: escribir en el DOM solo lo que cambia. La reproducción actualiza estos paneles en cada fotograma; reescribir el mismo texto o
-// el mismo atributo invalida estilos y despierta al glosario (que vuelve a anotar los términos) sin cambiar nada visible.
+// Escribo en el DOM únicamente cuando el texto o el atributo cambian de verdad para no invalidar estilos ni despertar observadores innecesariamente.
 const setText = (element, text) => { const value = text == null ? '' : String(text); if (element.textContent !== value) element.textContent = value; };
 const setAttr = (element, name, value) => { if (element.getAttribute(name) !== value) element.setAttribute(name, value); };
 const vector = (values, digits) => `[${values.map(value => number(value, digits)).join(', ')}]`;
@@ -43,22 +44,22 @@ const FOOT_DEFAULT = 'Centros y trayectoria: 1 unidad = 10 000 km · marcadores 
 const FOOT_LANDING_LOCAL = 'Cámara local: escena del cuerpo central (radio → 0,6371 u) · nave ampliada y apoyada por su base sobre el punto calculado, orientada con la vertical local · parche de suelo a radio R exacto · sin control de actitud';
 const INTEGRATED_SUMMARIES = Object.freeze({ '#mc-state-metrics': 'Fase, época y estado en el marco del cuerpo central', '#mc-derived-metrics': 'Órbita osculante y distancias',
   '#mc-resource-metrics': 'Motor, masa y propelente por depósito', '#mc-energy-metrics': 'Energía eléctrica, maniobras y límites' });
-// 13: pie de la vista según el contexto dibujado de la misión integrada.
+// Defino el pie explicativo correspondiente a cada marco visual disponible en una misión integrada.
 const FOOT_INTEGRATED = Object.freeze({ helio: 'Contexto heliocéntrico: 32 unidades = 1 AU (centros) · Sol, planetas y nave con tamaños ampliados ilustrativos · estados de los tramos calculados convertidos al marco del Sol con las efemérides en la misma época TDB',
   earth: 'Contexto geocéntrico (salida desde la plataforma): 1 unidad = 10 000 km (centros) · Tierra a tamaño real, sin textura ni rotación dibujada; marcador de la nave ampliado (ilustrativo) · ejes ICRF eclíptico J2000',
   planet: 'Contexto planetocéntrico: 1 unidad = 10 000 km (centros) · planeta a tamaño real; marcadores de nave y satélite ampliados (ilustrativos) · ejes ICRF eclíptico J2000',
   moon: 'Contexto centrado en el satélite: 1 unidad = 10 000 km · satélite a tamaño real; marcador de la nave ampliado (ilustrativo) · ejes ICRF eclíptico J2000',
   landing: 'Escena local del descenso (12F): radio del cuerpo → 0,6371 u · el estado inicial del descenso es el estado final de la captura (mismo marco centrado en el satélite)' });
 const FOOT_HELIO = 'Escena heliocéntrica: 32 unidades = 1 AU (centros) · Sol, planetas y nave con tamaños ampliados ilustrativos · la sonda sigue la cónica propagada desde la solución de Lambert';
-// 17.1: las misiones heliocéntricas se reproducen en el Sistema Solar principal (mismos ejes y escala que la exploración).
+// Uso este pie cuando reproduzco misiones heliocéntricas directamente en el Sistema Solar principal.
 export const FOOT_MAIN_SCENE = 'Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · planetas en la época TDB de cada instante, sin extrapolar · nave ampliada (menor cerca del destino), orientada a la Tierra · sin satélites';
-// 23: con un satélite galileano en la misión, sus cuatro satélites se dibujan con la ventana de Horizons del cálculo.
+// Cuando la misión incluye un satélite galileano, indico en el pie la ventana TDB exacta de sus efemérides de Horizons.
 const jdDate = jd => new Date((jd - 2440587.5) * 86400000).toISOString().slice(0, 10);
 export function mainSceneFoot(state) {
   if (!state?.moon || !state.moonCoverage) return FOOT_MAIN_SCENE;
   return `Sistema Solar principal: 32 unidades = 1 AU · radios 1:1 · época TDB de cada instante, sin extrapolar · satélites galileanos de Horizons solo en su ventana (${jdDate(state.moonCoverage.startJdTdb)} → ${jdDate(state.moonCoverage.endJdTdb)} TDB) · nave ampliada, orientada a la Tierra`;
 }
-// 12F.1: mensajes según el cuerpo central y la fase real de cada tipo de misión.
+// Redacto los mensajes iniciales y de reinicio según el cuerpo central y la fase real de cada tipo de misión.
 export function preparedMessage(execution) {
   if (!execution) return '';
   if (execution.kind === 'landing') return `Descenso preparado en la órbita inicial alrededor de ${execution.simulation.bodyName} (marco inercial local).`;
@@ -73,7 +74,7 @@ export function resetMessage(execution) {
   if (execution?.kind === 'interplanetary' || execution?.kind === 'integrated') return 'Reproducción reiniciada en la salida heliocéntrica.';
   return 'Reproducción reiniciada antes del impulso.';
 }
-// 12F.1: el resultado de un descenso es local y según el modelo; no equivale al éxito de una misión completa.
+// Aclaro que el resultado de un descenso corresponde a un tramo local aislado y no certifica una misión completa.
 export function landingOutcomeText(phaseLabel, result) {
   const verdict = result ? `${result.classification} (descenso local aislado)` : 'resultado del descenso al final de la reproducción';
   return `${phaseLabel} · ${verdict}. Misión completa (viaje, llegada y descenso conectados): no evaluada. Viabilidad operativa: no verificada.`;
@@ -87,34 +88,32 @@ const CAMERA_DESCRIPTIONS = Object.freeze({ overview: 'Encuadra toda la trayecto
   exterior: 'Sigue a la nave desde fuera, a corta distancia.', onboard: 'Desde la posición de la nave hacia lo que elijas en «Mirar hacia».',
   destination: 'Desde las cercanías del destino, mirando hacia la nave.', cinematic: 'Por detrás de la nave, en la dirección de su movimiento.',
   local: 'Escena local del cuerpo central (lanzamiento y descenso).' });
-// 17.1: en el Sistema Solar principal las cámaras usan la cámara de la escena; la de destino compone el planeta y la nave al llegar.
+// Describo las cámaras disponibles cuando reproduzco la misión en el Sistema Solar principal.
 export const MAIN_SCENE_CAMERA_DESCRIPTIONS = Object.freeze({ overview: 'Encuadra la trayectoria calculada, la Tierra, el destino y la nave en el Sistema Solar.',
   exterior: 'Sigue a la nave desde fuera, a corta distancia.', destination: 'Desde las cercanías del planeta de destino (o del satélite durante su fase), mirando hacia la nave. Si arrastras, la cámara pasa a tu control.' });
 export const MC_PANES = Object.freeze({ playback: 'Reproducción', cameras: 'Cámaras', telemetry: 'Telemetría', trajectory: 'Trayectoria y maniobras', events: 'Eventos', results: 'Resultados' });
 
-/**
- * 17.1: zona libre y recorte del Sistema Solar principal dentro de la ventana de la escena (rectángulos de getBoundingClientRect;
- * el resultado, en coordenadas del lienzo). La zona queda entre la barra de cámaras y la de reproducción, a la derecha de la ficha de
- * fase si hay sitio. 17.1.1 (D-01): si entre las barras no quedan MAIN_SCENE_MIN_FREE_HEIGHT px (teléfonos bajos), se encuadra en
- * toda la ventana: mejor bajo las barras que fuera de ella. El recorte es siempre la ventana completa. Solo presentación.
- */
+// Calculo la zona libre y el recorte del Sistema Solar principal dentro de la ventana de la escena en coordenadas del lienzo.
+// Dejo espacio entre la barra de cámaras, la barra de reproducción y el HUD; si en pantallas bajas no quedan al menos
+// MAIN_SCENE_MIN_FREE_HEIGHT px, encuadro en toda la ventana manteniendo siempre el recorte completo de la escena.
 export const MAIN_SCENE_MIN_FREE_HEIGHT = 96;
 export function mainSceneFrameZone({ stage: r, bar = null, transport = null, hud = null, canvas, radius = 0, obstacles = [] }) {
-  const left = hud?.width && r.right - hud.right >= 380 ? hud.right + 36 : r.left + 16; // 36 px: sitio para el rótulo del planeta
+  // Reservo 36 px a la derecha del HUD para no pisar el rótulo del planeta cuando hay anchura suficiente.
+  const left = hud?.width && r.right - hud.right >= 380 ? hud.right + 36 : r.left + 16;
   let top = (bar?.height ? bar.bottom : r.top + 56) + 8, bottom = (transport?.height ? transport.top : r.bottom - 48) - 8;
   if (bottom - top < MAIN_SCENE_MIN_FREE_HEIGHT) { top = r.top + 8; bottom = r.bottom - 8; }
-  // 24: controles sobre la escena (estado, cámaras, HUD, reproducción…) que los rótulos de los planetas deben esquivar.
+  // Recopilo los rectángulos de los controles superpuestos a la escena para que los rótulos de los planetas los esquiven.
   const obstaculos = [bar, transport, hud, ...obstacles].filter(o => o?.width > 0 && o?.height > 0)
     .map(o => ({ left: o.left - canvas.left - 4, right: o.right - canvas.left + 4, top: o.top - canvas.top - 4, bottom: o.bottom - canvas.top + 4 }));
   return { left: left - canvas.left, right: r.right - canvas.left - 16, top: top - canvas.top, bottom: bottom - canvas.top, obstaculos,
-    // El Sistema Solar solo se dibuja dentro de la ventana de la escena (borde redondeado incluido).
+    // Recorto el dibujo del Sistema Solar al contorno visible de la ventana de escena, respetando el radio de las esquinas.
     recorte: { top: r.top - canvas.top, right: canvas.right - r.right, bottom: canvas.bottom - r.bottom, left: r.left - canvas.left, radius } };
 }
 
+// Construyo el Centro de Misión completo: escenario 3D, HUD, barra de transporte, panel lateral por pestañas y lógica de reproducción.
 export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = () => {}, onOpenResults = onOpenPlanner, sceneView = null, onSceneMode = () => {}, onPane = () => {} } = {}) {
   host.classList.add('mission-control');
-  // 17: la escena ocupa el centro y un único panel lateral reúne, por pestañas, reproducción, cámaras, telemetría,
-  // trayectoria, eventos y resultados. Mismos identificadores que antes: la lógica de reproducción no cambia.
+  // Organizo la escena en el centro y agrupo reproducción, cámaras, telemetría, trayectoria, eventos y resultados en un panel lateral por pestañas.
   host.innerHTML = `
     <div class="mc-stage lab-stage"><div class="lab-stage-top"><span class="eyebrow">MISIÓN EN REPRODUCCIÓN / ESTADOS CALCULADOS</span><strong id="mc-stage-status">Sin plan vigente</strong>
         <div class="mc-layout-toggles" role="group" aria-label="Paneles del Centro de Misión"><button type="button" data-mc-panel="drawer" aria-pressed="true" aria-controls="mc-drawer" title="Mostrar u ocultar el panel lateral (la reproducción sigue)">Panel</button><button type="button" data-mc-panel="immersive" aria-pressed="false" title="Vista inmersiva: solo la escena y los controles mínimos (Esc para salir)"><svg class="icon" aria-hidden="true"><use href="#icon-expand"></use></svg><span>Vista inmersiva</span></button></div></div>
@@ -187,7 +186,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
   for (const mode of MISSION_CAMERA_MODES) {
     const button = document.createElement('button'); button.type = 'button'; button.dataset.camera = mode; button.textContent = CAMERA_LABELS[mode];
     $('.mc-camera-bar').append(button);
-    // 17: la pestaña «Cámaras» repite las mismas cámaras con una explicación; ambas listas llaman al mismo control.
+    // Repito las mismas cámaras en la pestaña «Cámaras» con su descripción para que ambos controles compartan el mismo selector.
     const item = document.createElement('button'); item.type = 'button'; item.dataset.camera = mode; item.className = 'mc-camera-item';
     const name = document.createElement('strong'); name.textContent = CAMERA_LABELS[mode];
     const desc = document.createElement('small'); desc.textContent = CAMERA_DESCRIPTIONS[mode] ?? '';
@@ -196,10 +195,10 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
   let execution = null, clock = null, sourceResult = null, sourceDesign = null, sourceName = null;
   let visible = false, frame = null, lastNow = null, interrupted = false, selectedEvent = 'parking';
   let contextMode = 'auto', viewContext = null, autoRate = false, pane = 'playback', modelInfo = null;
-  // 17.1: `sceneActive` = la ejecución vigente se dibuja en el Sistema Solar principal (sceneView) y no en la escena local.
+  // Llevo en `sceneActive` si estoy dibujando la ejecución vigente en el Sistema Solar principal en lugar de la escena local.
   let sceneActive = false, sceneNote = '';
   let view;
-  // 17: identidad del vehículo en la escena: el nombre y el modelo 3D salen del diseño con el que se calculó la misión.
+  // Muestro la tarjeta del vehículo en escena tomando el nombre y el estado del modelo 3D a partir del diseño calculado.
   function renderVehicle() {
     const card = $('#mc-vehicle');
     if (!execution) { card.dataset.state = 'none'; $('#mc-vehicle-name').textContent = 'Ninguno'; $('#mc-vehicle-model').textContent = 'Sin misión en reproducción'; delete host.dataset.vehicle; delete host.dataset.vehicleModel; return; }
@@ -214,20 +213,21 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     host.dataset.vehicle = design?.basedOn ?? (design ? 'experimental' : 'ninguno');
     host.dataset.vehicleModel = status;
   }
+  // Inicializo la vista 3D local del Centro de Misión; si WebGL no está disponible muestro un aviso y mantengo operativos reloj y telemetría.
   try { view = createMissionExecutionView($('#mc-canvas'), { onModel: info => { modelInfo = info; renderVehicle(); } }); }
   catch (error) {
-    mostrarVista3DNoDisponible($('#mc-canvas'), error, { vista: 'La vista 3D del Centro de Misión', sigue: 'La telemetría y la reproducción temporal siguen disponibles.' }); // STAB-01
+    mostrarVista3DNoDisponible($('#mc-canvas'), error, { vista: 'La vista 3D del Centro de Misión', sigue: 'La telemetría y la reproducción temporal siguen disponibles.' });
     console.error('Centro de Misión 3D no disponible:', error);
     view = { setExecution() {}, setSample() {}, setCameraMode() {}, setLookTarget() {}, setTouchInteraction() {}, setVisible() {}, dispose() {}, getCameraMode: () => 'overview' };
   }
   const coarse = window.matchMedia('(pointer: coarse)').matches;
   $('#mc-touch-toggle').hidden = !coarse;
-  // En pantallas táctiles el arrastre desplaza la página hasta activar el control 3D (también en la escena principal).
+  // En pantallas táctiles dejo que el gesto desplace la página hasta que el usuario active explícitamente el control 3D.
   host.dataset.touch3d = coarse ? 'off' : 'on';
   host.dataset.scene = 'local';
   const activeView = () => (sceneActive ? sceneView : view);
   function publishSceneMode() { onSceneMode(visible && sceneActive ? 'main' : null); }
-  // El Sistema Solar principal encuadra en el área de la escena del Centro de Misión, entre la barra de cámaras y la de reproducción.
+  // Indico al Sistema Solar principal el rectángulo libre del escenario para encuadrar entre la barra de cámaras y el transporte.
   sceneView?.setFrameZoneProvider(canvas => {
     const stage = host.querySelector('.mc-stage');
     if (!visible || !stage?.getClientRects().length) return null;
@@ -236,8 +236,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
       canvas, radius: parseFloat(getComputedStyle(stage).borderTopLeftRadius) || 0,
       obstacles: [...host.querySelectorAll('.mc-stage .lab-stage-top > :is(.eyebrow, strong, .mc-layout-toggles), .mc-stage > .lab-stage-foot, .mc-onboard-target:not([hidden]), #mc-touch-toggle:not([hidden])')].map(el => el.getBoundingClientRect()) });
   });
-  // La vista general se recalcula cuando la ventana de la escena cambia de tamaño de forma apreciable (vista inmersiva,
-  // panel lateral oculto, panel de etapas plegado, giro o cambio de tamaño de la ventana). Espera a que acabe la transición CSS.
+  // Recalculo el encuadre general cuando el escenario cambia de tamaño de forma apreciable, esperando a que termine la transición CSS.
   let stageSize = null, reframeTimer = null;
   const stageObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(([entry]) => {
     const { width, height } = entry.contentRect;
@@ -251,7 +250,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
   function applyCameraButtons() {
     for (const button of host.querySelectorAll('[data-camera]')) {
       const mode = button.dataset.camera;
-      // La cámara local solo existe para ejecuciones con cuerpo central local (lanzamiento, descenso).
+      // Muestro la cámara local únicamente en misiones o contextos que tienen una escena local de cuerpo central.
       const local = mode === 'local' && !(execution && (['launch', 'landing'].includes(execution.kind) || (execution.kind === 'integrated' && viewContext === 'landing')));
       button.hidden = local || (sceneActive && !sceneView.cameraModes.includes(mode));
       const desc = button.querySelector('small');
@@ -267,7 +266,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     if (sceneActive) $('.mc-onboard-target').hidden = true;
     applyCameraButtons(); publishSceneMode();
   }
-  // Prepara el Sistema Solar principal para la ejecución; mientras tanto (o si no procede) se usa la escena local.
+  // Intento preparar la ejecución en el Sistema Solar principal; mientras carga o si no aplica, mantengo la escena local.
   function prepareScene(next) {
     setSceneActive(false); sceneNote = '';
     if (!sceneView) return;
@@ -305,6 +304,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     $('#mc-look').disabled = !execution;
     $('#mc-touch-toggle').disabled = !execution;
   }
+  // Construyo la lista interactiva de eventos calculados para saltar directamente a cada instante y sincronizar las marcas.
   function renderEvents() {
     const list = $('#mc-events'); list.replaceChildren();
     if (!execution) { list.textContent = 'No hay eventos calculados.'; renderTicks(); return; }
@@ -379,8 +379,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     setText($('#mc-energy-note'), `${t.provenance.spacecraft} ${t.provenance.frame} ${t.provenance.limits}`);
   }
   const INTERPLANETARY_NOTE = 'La sonda sigue la cónica heliocéntrica propagada (Kepler, μ solar) desde la velocidad de Lambert; los planetas siguen las efemérides de Horizons interpoladas por Hermite. Reproducir o retroceder no recalcula ni consume propelente: no hay maniobras propagadas durante el crucero.';
-  // 24: unidad de las distancias derivadas (solo presentación). «auto» conserva lo de antes: km, y la distancia al Sol también
-  // (o solo, en la misión completa) en AU.
+  // Formateo las distancias derivadas según la preferencia de unidad elegida (solo afecta la presentación visual).
   let distanceUnit = 'auto', lastTime = null;
   function distance(kmValue, { digits = 0, sun = false, auOnly = false } = {}) {
     if (!Number.isFinite(kmValue)) return 'No disponible';
@@ -437,7 +436,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     const tanks = pr.tanks, v = m.vehicle;
     metrics('#mc-resource-metrics', [['Motor', pr.engineOn ? `ENCENDIDO · ${pr.activeManeuver ?? (pr.landing ? 'descenso guiado 12F' : '')}` : 'APAGADO (tramo balístico)'],
       ['Masa total', `${number(pr.massKg, 1)} kg`], [`Propelente sonda «${v.probe.name}»`, `${number(tanks.probe, 1)} kg`],
-      // 15.1: la interfaz ya no ofrece módulos auxiliares; sus filas solo aparecen si el resultado los incluye.
+      // Muestro las filas de módulos auxiliares únicamente cuando el resultado calculado los incluye.
       ...(v.module ? [['Propelente del módulo', `${number(tanks.module, 0)} kg${pr.separated ? ' · módulo separado' : ''}`]] : []),
       ...(v.lander ? [['Propelente del módulo de aterrizaje', `${number(tanks.lander, 1)} kg`],
         ['Acelerador del descenso', pr.landing ? `${number(pr.landing.throttle * 100, 0)} % · ${number(pr.landing.thrustN / 1000, 2)} kN` : 'No aplica'],
@@ -461,6 +460,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     [/^Distancia al Sol$/, 'Distancia al Sol'], [/^Masa (total|instantánea)$/, 'Masa'],
     [/^(Propelente restante|Combustible restante|Propelente del módulo)$/, 'Propelente'], [/^Motor$/, 'Motor']];
   let hudPhase = '';
+  // Sincronizo el HUD superpuesto, la barra de transporte, los anuncios de cambio de fase y el progreso visible.
   function updateHud() {
     const hud = $('#mc-hud'), transport = $('#mc-transport');
     hud.hidden = transport.hidden = !execution;
@@ -469,7 +469,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     const phase = $('#mc-outcome').textContent.split(' · ')[0];
     setText($('#mc-hud-kind'), HUD_KIND[execution.kind] ?? 'Misión');
     if (phase !== hudPhase) {
-      // 17.1: el lector de pantalla oye cada cambio de fase (no la preparación inicial, que ya anuncia #mc-message).
+      // Anuncio cada cambio de fase en la región viva sin repetir la preparación inicial que ya comunica #mc-message.
       const anuncio = anuncioCambioFase(hudPhase, phase);
       if (anuncio) $('#mc-announcer').textContent = anuncio;
       hudPhase = phase; $('#mc-hud-phase').textContent = phase;
@@ -477,21 +477,21 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     }
     const civil = ['integrated', 'interplanetary'].includes(execution.kind) && lastTime ? lastTime.utc : null;
     setText($('#mc-hud-time'), `${$('#mc-stage-status').textContent} · ${civil ? `${civil} · ` : ''}${$('#mc-elapsed').textContent}`);
-    // 24: al pasar por la fecha se explica la escala: UTC es la hora civil; los cálculos usan TDB.
+    // Explico en la descripción emergente de la fecha la diferencia entre la hora civil UTC y la escala TDB de cálculo.
     const tituloHora = civil ? `Fecha civil en UTC. Las efemérides y la integración usan TDB (${lastTime.tdb}); TDB − UTC = ${tdbMinusUtcText(lastTime.jdTdb)}.` : '';
     if ($('#mc-hud-time').title !== tituloHora) $('#mc-hud-time').title = tituloHora;
     const rows = [...host.querySelectorAll('#mc-state-metrics .lab-metric, #mc-derived-metrics .lab-metric, #mc-resource-metrics .lab-metric')]
       .map(row => [row.firstElementChild.textContent, row.lastElementChild.textContent]);
     const picked = [];
     for (const [pattern, label] of HUD_FIELDS) {
-      // El HUD solo muestra magnitudes escalares; los vectores siguen completos en la telemetría.
+      // Muestro en el HUD únicamente magnitudes escalares; dejo los vectores completos en el panel de telemetría.
       const row = rows.find(([name, value]) => pattern.test(name) && !value.trim().startsWith('['));
       if (row && picked.length < 4 && !picked.some(x => x[0] === label)) picked.push([label, row[1].length > 34 ? `${row[1].slice(0, 33)}…` : row[1]]);
     }
     const list = $('#mc-hud-metrics');
     if (list.children.length !== picked.length * 2) list.replaceChildren(...picked.flatMap(() => [document.createElement('dt'), document.createElement('dd')]));
     picked.forEach(([label, value], i) => { setText(list.children[2 * i], label); setText(list.children[2 * i + 1], value); });
-    // 24: con la barra ampliada, si la reproducción sale del intervalo se vuelve a la misión completa.
+    // Si la barra está ampliada y la reproducción sale de esa ventana, restablezco automáticamente toda la misión.
     if (zoom && snap.playing && (snap.elapsedSeconds < zoom.inicio - 1e-6 || snap.elapsedSeconds > zoom.fin + 1e-6)) { zoom = null; renderTicks(); announce('La reproducción salió del intervalo ampliado: la barra vuelve a mostrar toda la misión.'); }
     const win = trackWindow();
     $('#mc-track-fill').style.transform = `scaleX(${Math.min(1, Math.max(0, (snap.elapsedSeconds - win.inicio) / (win.fin - win.inicio)))})`;
@@ -502,8 +502,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     setAttr(play, 'aria-label', snap.playing ? 'Pausar' : 'Reproducir');
     for (const tick of $('#mc-track-ticks').children) setAttr(tick, 'aria-current', tick.dataset.events.split(' ').includes(selectedEvent) ? 'step' : 'false');
   }
-  // 24: las marcas que caerían a menos de 12 px se agrupan en una sola; pulsar un grupo amplía la barra alrededor de él
-  // (zoom temporal). El deslizador «Instante de misión» sigue cubriendo toda la misión.
+  // Agrupo las marcas demasiado cercanas en la barra inferior y permito ampliar alrededor de un grupo sin alterar el deslizador completo.
   let zoom = null;
   const trackWindow = () => zoom ?? { inicio: 0, fin: execution?.durationSeconds || 1 };
   const shortDuration = seconds => seconds < 60 ? `${number(seconds, 1)} s` : duration(seconds);
@@ -531,21 +530,21 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     const first = events[0].elapsedSeconds, last = events.at(-1).elapsedSeconds, span = last - first;
     const current = trackWindow(), width = Math.max(span * 2.2, 10);
     goToEvent(events[0]);
-    // Eventos en el mismo instante (o ya separados al máximo): no se amplía; se salta al primero y se nombran todos.
+    // Si los eventos coinciden en el mismo instante o ya están separados al máximo, salto al primero y listo todos sin ampliar más.
     if (!(span > 1e-3) || width >= (current.fin - current.inicio) * 0.95) { message(`${events.length} eventos en ${span > 1e-3 ? shortDuration(span) : 'el mismo instante'}: ${events.map(e => e.title).join(' · ')}.`); return; }
     zoom = ventanaZoom({ total: execution.durationSeconds, centro: (first + last) / 2, fraccion: width / execution.durationSeconds, minimoS: 10 });
     renderTicks(); updateHud();
     announce(`Barra ampliada a ${shortDuration(zoom.fin - zoom.inicio)} alrededor de ${events.length} eventos. «Toda la misión» la restablece.`);
   }
   $('#mc-zoom-exit').addEventListener('click', () => { zoom = null; renderTicks(); updateHud(); announce('La barra vuelve a mostrar toda la misión.'); });
-  // Las marcas se recalculan cuando cambia el ancho de la barra (ventana, panel, vista inmersiva).
+  // Recalculo las marcas cuando cambia la anchura visible de la barra de progreso.
   let trackWidth = 0;
   const trackObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(([entry]) => {
     const width = Math.round(entry.contentRect.width);
     if (Math.abs(width - trackWidth) >= 2) { trackWidth = width; renderTicks(); if (execution) updateHud(); }
   }) : null;
   trackObserver?.observe($('#mc-track'));
-  // El pie de escala no se recorta: su altura real (cambia con el texto y el ancho) coloca la barra de reproducción encima (CSS --mc-foot-h).
+  // Mido la altura real del pie de escala para situar la barra de transporte justo encima mediante la variable CSS --mc-foot-h.
   const footObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(([entry]) => {
     $('.mc-stage').style.setProperty('--mc-foot-h', `${Math.ceil(entry.target.offsetHeight)}px`);
   }) : null;
@@ -556,6 +555,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     const target = step > 0 ? events.find(e => e.elapsedSeconds > t + 1e-6) : [...events].reverse().find(e => e.elapsedSeconds < t - 1e-6);
     if (target) host.querySelector(`#mc-events button[data-event="${CSS.escape(target.id)}"]`)?.click();
   }
+  // Muestreo el instante actual, actualizo la escena 3D y vuelco toda la telemetría; ante cualquier error detengo la reproducción con seguridad.
   function refreshCore() {
     if (!execution || !clock) return;
     try {
@@ -570,7 +570,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
         setText($('#mc-stage-status'), position.finished ? 'FINALIZADA LA REPRODUCCIÓN' : position.playing ? (position.direction < 0 ? 'REPRODUCCIÓN INVERSA' : 'EN REPRODUCCIÓN') : position.elapsedSeconds === 0 ? 'PREPARADA' : 'PAUSADA');
         setText($('#mc-outcome'), `${telemetry.phaseLabel} · ${telemetry.phaseStatus ?? 'fase calculada'}. ${execution.mission.verdict}`);
         renderIntegrated(telemetry, position); updateSelectedEvent(position); setText($('#mc-model-note'), INTEGRATED_NOTE);
-        // 16: el marco «Descenso» solo aparece si la misión incluye un descenso (la interfaz ya no ofrece módulos de aterrizaje); 21: «Tierra», si empieza en la plataforma.
+        // Muestro los botones de marco «Descenso» y «Tierra» solo cuando la misión integrada contiene esos tramos.
         for (const b of $('#mc-context').querySelectorAll('button')) {
           const desactivado = b.dataset.context !== 'auto' && !execution.contexts[b.dataset.context], oculto = ['landing', 'earth'].includes(b.dataset.context) && !execution.contexts[b.dataset.context];
           if (b.disabled !== desactivado) b.disabled = desactivado;
@@ -683,9 +683,8 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     }
   }
   function stopFrame() { if (frame != null) cancelAnimationFrame(frame); frame = null; lastNow = null; }
-  // PERF-02: en reproducción continua, el estado 3D se actualiza en cada fotograma, pero el formateo y mutación DOM
-  // de telemetría se modera según el perfil de calidad (55 ms en detalle bajo/mínimo, 28 ms en medio); al pausar,
-  // saltar, cruzar una frontera o terminar se vuelca al instante.
+  // Aquí modero la actualización del DOM según el perfil de calidad para no frenar el lienzo 3D durante la reproducción continua;
+  // en cambio, la vista 3D avanza en cada fotograma y vuelco la telemetría al instante al pausar, saltar o cruzar de fase.
   let ultimoRefrescoDom = -Infinity, ultimaFaseDom = '';
   function sincronizarEscenaSolo() {
     if (!execution || !clock) return false;
@@ -719,7 +718,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     const detalle = getQualityState().detalle;
     const intervaloDomMs = (detalle === 'bajo' || detalle === 'minimo') ? 95 : detalle === 'medio' ? 40 : 0;
     if (intervaloDomMs > 0 && now - ultimoRefrescoDom < intervaloDomMs && sincronizarEscenaSolo()) {
-      // Escena 3D actualizada; el DOM se refrescará en el siguiente pulso o al pausar/cruzar de fase.
+      // Mantengo fluida la escena 3D y dejo el refresco del DOM para el siguiente pulso o cambio de fase.
     } else {
       ultimoRefrescoDom = now;
       refresh();
@@ -731,8 +730,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     if (clock?.snapshot().playing && !interrupted) frame = requestAnimationFrame(tick);
     else { refresh(); stopFrame(); }
   }
-  // 13: en modo automático el reloj adopta el ritmo sugerido para el tipo de tramo y se detiene un instante en cada frontera
-  // de tramo (no salta encendidos de minutos a ritmos de días por segundo). En un ritmo manual avanza sin esas paradas.
+  // En ritmo automático ajusto la velocidad al tipo de tramo y me detengo exactamente en cada frontera para no saltar encendidos cortos.
   function advanceIntegrated(realDelta) {
     const snap = clock.snapshot(), t = snap.elapsedSeconds, segments = execution.mission.segments;
     if (!autoRate) { clock.advance(realDelta); return; }
@@ -745,7 +743,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     if (crossing != null) clock.seek(crossing); else clock.advance(realDelta);
   }
   function startFrame() { if (frame == null && visible) { lastNow = null; frame = requestAnimationFrame(tick); } }
-  // 17: resúmenes estáticos de la misión en reproducción (salen del mismo objeto de ejecución que dibuja la escena).
+  // Genero los resúmenes estáticos de trayectoria y resultados directamente a partir de la ejecución en curso.
   const duration = seconds => !Number.isFinite(seconds) ? 'No disponible' : seconds < 3600 ? `${number(seconds / 60, 1)} min`
     : seconds < 2 * 86400 ? `${number(seconds / 3600, 2)} h` : `${number(seconds / 86400, 1)} d`;
   function staticRows(container, rows) {
@@ -816,7 +814,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
       for (const text of limits) { const li = document.createElement('li'); li.textContent = text; ul.append(li); }
       box.append(title, ul);
     }
-    // 24: órbita final de cada captura (objetivo frente a alcanzado) y lo que hizo la sonda real, para no confundir simulación e historia.
+    // Incluyo la comparativa de cada órbita de captura y el resumen histórico de la sonda real para separar simulación e historia.
     if (execution.kind === 'integrated') for (const p of m.phases.filter(p => ['capture', 'moon-capture'].includes(p.id) && p.insertion?.finalOrbit)) box.append(captureCard(p));
     const real = compararConMisionReal(execution.design?.basedOn, simulatedDestinations(execution));
     if (real) box.append(realMissionCard(real));
@@ -824,7 +822,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
   }
   const simulatedDestinations = ex => ex.kind === 'integrated' ? [ex.mission.destinationName, ex.mission.moonName]
     : ex.kind === 'interplanetary' ? [ex.result.destinationName] : ex.kind === 'landing' ? [ex.simulation?.bodyName] : ex.kind === 'finite-thrust' || !ex.kind || ex.kind === 'mission' ? ['Luna'] : [];
-  // Nombre del token --body-* (sin tildes; algunos satélites con su nombre inglés).
+  // Normalizo el nombre del cuerpo para resolver el token CSS --body-* correspondiente.
   const BODY_TOKEN = { Ganimedes: 'Ganymede', Calisto: 'Callisto', Encelado: 'Enceladus' };
   const bodyToken = name => { const plain = String(name ?? '').normalize('NFD').replace(/\p{M}/gu, ''); return BODY_TOKEN[plain] ?? plain; };
   const SVG = 'http://www.w3.org/2000/svg';
@@ -843,7 +841,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
       svg.append(svgEl('ellipse', { cx: a.cx, cy: a.cy, rx: a.rx, ry: a.ry, class: 'is-achieved' }));
       svg.append(svgEl('circle', { cx: geometry.foco.x, cy: geometry.foco.y, r: geometry.radioCuerpoPx, class: 'is-body' }));
       svg.append(svgEl('circle', { cx: a.periapsisX, cy: a.cy, r: 3, class: 'is-apsis' }), svgEl('circle', { cx: a.apoapsisX, cy: a.cy, r: 3, class: 'is-apsis' }));
-      // P y A por fuera de la órbita, para no tapar el cuerpo ni las elipses.
+      // Coloco las letras P y A fuera de las elipses para no tapar el cuerpo central ni las curvas orbitales.
       const outer = Math.max(a.periapsisX, geometry.objetivo?.periapsisX ?? -Infinity), inner = Math.min(a.apoapsisX, geometry.objetivo?.apoapsisX ?? Infinity);
       const label = (x, text, anchor) => { const t = svgEl('text', { x, y: a.cy + 3.5, 'text-anchor': anchor }); t.textContent = text; return t; };
       svg.append(label(outer + 5, 'P', 'start'), label(inner - 5, 'A', 'end'));
@@ -868,7 +866,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     const extra = document.createElement('p'); extra.className = 'mission-hint';
     extra.textContent = `${o.bound ? `Excentricidad ${number(o.eccentricity, 4)}${Number.isFinite(o.periodHours) ? ` · periodo ${number(o.periodHours, 2)} h` : ''}. ` : ''}Esquema a escala en el plano de la órbita (periapsis P a la derecha); no muestra la orientación en el espacio.`;
     card.append(extra);
-    // 20: cómo se llegó a ese periapsis (llegada apuntada más alta) o por qué no se compensó.
+    // Explico si apliqué compensación de periapsis durante la captura o el motivo por el que no se compensó.
     const pc = p.periapsisCompensation;
     if (pc && pc.status !== 'innecesaria') {
       const aimed = document.createElement('p'); aimed.className = 'mission-hint mc-capture-aim';
@@ -901,6 +899,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     }
     return card;
   }
+  // Limpio la ejecución activa, detengo la animación y restablezco el escenario vacío y los paneles informativos.
   function clear(reason) {
     stopFrame(); execution = null; clock = null; zoom = null; lastTime = null; sourceResult = null; sourceDesign = null; sourceName = null; interrupted = false; viewContext = null; $('#mc-context').hidden = true;
     view.setExecution(null); sceneView?.clear(); sceneNote = ''; setSceneActive(false); $('#mc-stage-empty').hidden = false;
@@ -912,6 +911,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     modelInfo = null; renderVehicle(); renderTrajectory(); renderResultsSummary();
     renderEvents(); updateAvailability(); message(''); updateHud();
   }
+  // Cargo un plan candidato en el Centro de Misión, configuro su reloj, vistas y controles, o limpio el estado si falla la creación.
   function setPlan(candidate) {
     if (!candidate?.ready) { clear(candidate?.reason); return; }
     if (candidate.result === sourceResult && candidate.design === sourceDesign && candidate.name === sourceName) return;
@@ -953,6 +953,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
       renderVehicle(); renderTrajectory(); renderResultsSummary(); autoImmersive();
     } catch (error) { clear(error.message); }
   }
+  // Conecto los controles de reproducción, velocidad, cambio de marco, deslizador temporal, cámaras y barra inferior de transporte.
   $('#mc-open-planner').addEventListener('click', onOpenPlanner);
   function start() {
     if (!clock) return;
@@ -1002,7 +1003,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     input.value = String(Math.min(Number(input.max), win.inicio + Math.min(1, Math.max(0, (event.clientX - box.left) / box.width)) * (win.fin - win.inicio)));
     input.dispatchEvent(new Event('input'));
   });
-  // 17: un panel lateral con pestañas (sustituye a los paneles «Control» y «Telemetría»). Ocultarlo no detiene la reproducción.
+  // Gestiono la apertura del panel lateral por pestañas; ocultarlo mantiene activa la reproducción en curso.
   function setDrawer(open) {
     host.dataset.drawer = open ? 'shown' : 'hidden';
     host.querySelector('[data-mc-panel="drawer"]').setAttribute('aria-pressed', String(open));
@@ -1016,7 +1017,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     setDrawer(true);
   }
   let immersive = false, sheetOpen = false, autoImmersiveFor = null;
-  // 24: en pantallas estrechas el panel se abre como hoja inferior sobre la escena, sin salir de la vista inmersiva.
+  // En pantallas estrechas abro el panel como hoja inferior sobre la escena para no sacar al usuario de la vista inmersiva.
   const narrowScreen = window.matchMedia('(max-width: 820px)');
   function setSheet(open, { focus = true } = {}) {
     const next = Boolean(open) && immersive;
@@ -1034,7 +1035,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     if (!immersive) setSheet(false, { focus: false });
     onImmersive(immersive);
   }
-  // 24: vista inmersiva por defecto en pantallas estrechas, una vez por misión: si se sale, no se vuelve a imponer.
+  // Activo la vista inmersiva automáticamente una sola vez por misión en pantallas estrechas para respetar si el usuario decide salir.
   function autoImmersive() {
     if (!visible || !execution || !narrowScreen.matches || autoImmersiveFor === execution) return;
     autoImmersiveFor = execution; setImmersive(true);
@@ -1053,7 +1054,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     for (const item of host.querySelectorAll('[data-unit]')) item.setAttribute('aria-pressed', String(item === button));
     if (execution) refresh();
   });
-  // 24: atajos del Centro de Misión (espacio, ← / →, Inicio / Fin). No actúan sobre campos, botones ni controles con teclado propio.
+  // Atiendo los atajos de teclado del Centro de Misión (Escape, espacio, flechas, Inicio y Fin) sin interferir con campos ni diálogos.
   function seekEdge(end) {
     if (!clock || !execution) return;
     clock.pause(); stopFrame();
@@ -1088,6 +1089,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     view.setTouchInteraction(active); host.dataset.touch3d = active ? 'on' : 'off'; $('#mc-touch-toggle').setAttribute('aria-pressed', String(active));
     $('#mc-touch-toggle').textContent = active ? 'Desactivar control 3D' : 'Activar control 3D';
   });
+  // Pauso automáticamente la reproducción cuando la pestaña del navegador pasa a segundo plano.
   function onVisibilityChange() { if (document.hidden && clock?.snapshot().playing) { clock.pause(); stopFrame(); refresh(); } }
   document.addEventListener('visibilitychange', onVisibilityChange);
   clear(); $('.mc-onboard-target').hidden = true;
@@ -1095,7 +1097,7 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     setPlan,
     start,
     setPane, getPane: () => pane, setImmersive,
-    // 17: estado resumido para la barra de contexto del laboratorio (solo lectura).
+    // Expongo un resumen de solo lectura del estado actual para la barra de contexto del laboratorio.
     getStatus() {
       const snap = clock?.snapshot();
       return { ready: Boolean(execution), kind: execution?.kind ?? null, name: execution?.name ?? null,

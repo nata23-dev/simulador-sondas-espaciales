@@ -1,3 +1,5 @@
+// En este archivo coordino el arranque del simulador, la carga de efemérides, la escena 3D principal,
+// los tres modos de operación (Sistema Solar, Misiones Históricas y Laboratorio) y la carga diferida de módulos pesados.
 import './style.css';
 import { crearWorkspaceLayout } from './ui/WorkspaceLayout.js';
 
@@ -15,8 +17,8 @@ import { crearSelectorPlanetas } from './ui/PlanetSelector.js';
 import { crearControlesTemporales } from './ui/TimelineControls.js';
 import { crearControlesVisualizacion } from './ui/VisualizationControls.js';
 import { crearControlesHUD } from './ui/HudControls.js';
-// 18: la hoja del laboratorio se carga aquí, en su lugar de siempre en la cascada (antes de theme.css y lab-shell.css), aunque el
-// código del laboratorio se descargue al entrar en él: si llegara después, sus reglas pisarían las de capas posteriores.
+// Importo aquí la hoja del laboratorio para respetar su orden en la cascada CSS (antes de theme.css y lab-shell.css),
+// aunque el código del laboratorio se descargue bajo demanda al entrar en ese modo.
 import './ui/experimental-laboratory.css';
 import { createSolarSystemMissionView } from './integration/SolarSystemMissionView.js';
 import { createMissionProbeSceneModel } from './lab/MissionProbeSceneModel.js';
@@ -57,9 +59,8 @@ import { crearSuperficieLanzamientoCinematografico, metadatosLanzamiento } from 
 import { LANZAMIENTOS_VOYAGER, LC41, instanteUtcMs, puntoSubsolar } from './science/VoyagerLaunchProfile.js';
 import { esFalloWebGL } from './graphics/WebGLSupport.js';
 import { mostrarAvisoJunto, mostrarFalloEscenaPrincipal } from './ui/WebGLUnavailableNotice.js';
-// 14: capa visual común (tokens, componentes y movimiento). Se importa después de los demás estilos para prevalecer.
+// Importo al final la capa visual común y los estilos de la estructura en tres pasos del laboratorio para que prevalezcan.
 import './ui/theme.css';
-// 17: laboratorio en tres etapas (panel lateral, pestañas y Centro de Misión con panel por pestañas); después de theme.css.
 import './ui/lab-shell.css';
 
 const ETIQUETAS_CUERPOS = {
@@ -69,7 +70,7 @@ const ETIQUETAS_CUERPOS = {
   Triton: 'Tritón'
 };
 
-// Este módulo coordina los datos, la escena y los tres modos de operación sin mezclar estados.
+// Aquí mantengo las referencias principales del DOM y el estado global compartido entre modos sin mezclarlos.
 const estadoDatos = document.querySelector('#data-status');
 const botonReintentar = document.querySelector('#retry-button');
 const fechaEscena = document.querySelector('#scene-date');
@@ -92,11 +93,11 @@ let datosLunas = null;
 let estadosLunas = {};
 let proveedorCientifico = null;
 let consultaActual = 0;
-// 17.1: reproducción de la misión del laboratorio en esta misma escena (se crea junto al simulador).
+// Con esta vista reproduzco las misiones heliocéntricas del laboratorio directamente en la escena principal del Sistema Solar.
 let vistaMisionLaboratorio = null;
 const modoCientifico = scientificPipelineEnabled(window.location.search);
 
-// Estado del Modo Histórico Voyager 1 y Voyager 2
+// Estado interno exclusivo del Modo Histórico (Voyager 1 y Voyager 2).
 let pipelineHistorico = null;
 let motorHistorico = null;
 let promesaInicioHistorico = null;
@@ -107,6 +108,7 @@ let ultimoRefrescoDomHist = -Infinity;
 let consultaHistToken = 0;
 let bucleHistOcupado = false;
 
+// Detengo el bucle de reproducción histórica y limpio el identificador de requestAnimationFrame.
 function detenerBucleHistorico() {
   if (rafHistoricoId !== null) {
     cancelAnimationFrame(rafHistoricoId);
@@ -117,6 +119,7 @@ function detenerBucleHistorico() {
   }
 }
 
+// Actualizo las fichas laterales del planeta o luna seleccionados respetando la época activa de cada modo.
 function actualizarPanel(fecha) {
   const planetaParaFicha = modoOperacion === 'historico' || lunaSeleccionada ? null : planetaSeleccionado;
   panelInfo.actualizar(
@@ -125,7 +128,7 @@ function actualizarPanel(fecha) {
     datosAstronomicos?.metadatos,
     fecha
   );
-  // 23: con la misión del laboratorio en la escena, el satélite está en la época de la misión, no en la de exploración.
+  // Si una misión del laboratorio controla la escena, tomo el estado del satélite desde la época de esa misión.
   let estadoPanelLuna = vistaMisionLaboratorio?.isControlling() ? vistaMisionLaboratorio.moonInfoState(lunaSeleccionada) : estadosLunas[lunaSeleccionada];
   if (modoOperacion === 'historico' && lunaSeleccionada && ultimoSnapshotHistorico) {
     const lunar = ultimoSnapshotHistorico.moons?.[lunaSeleccionada]?.state;
@@ -142,6 +145,7 @@ function actualizarPanel(fecha) {
   panelLuna.actualizar(lunaSeleccionada, estadoPanelLuna);
 }
 
+// Consulto las posiciones planetocéntricas de las diez lunas en el instante JD TDB activo y actualizo la escena.
 function actualizarLunasExploracion(jdTdb) {
   estadosLunas = {};
   if (modoOperacion !== 'historico' && datosLunas) {
@@ -157,6 +161,7 @@ function actualizarLunasExploracion(jdTdb) {
   }
 }
 
+// Resuelvo el extremo físico (km, JD TDB y posición en escena) de cualquier cuerpo para la herramienta de medición 3D.
 function obtenerDescriptorCientificoCuerpo(idCuerpo) {
   // En Modo Histórico todas las distancias se calculan con estados reales en el mismo instante JD TDB histórico
   if (modoOperacion === 'historico') {
@@ -417,6 +422,8 @@ function actualizarEncabezadoHistorico(snapshot) {
   }
 }
 
+// Consulto el instante histórico en el pipeline de efemérides y actualizo la escena 3D y los paneles de Voyager.
+// Uso un token incremental para descartar respuestas tardías si el usuario ya cambió de fecha o de modo.
 async function aplicarInstanteHistorico(jdTdb, {
   reencuadrarEvento = null,
   accionPosteriorEscena = null,
@@ -522,6 +529,7 @@ function objetivoContextualEvento(ev) {
   return ev?.focusTarget?.startsWith('voyager-') ? 'Sol' : (ev?.focusTarget || 'Sol');
 }
 
+// Avanzo el reloj histórico cuadro a cuadro, detecto cruces de empalmes SPK y modero el refresco del DOM en perfiles ligeros.
 function bucleReproduccionHistorica(ahora) {
   if (modoOperacion !== 'historico' || !motorHistorico || !motorHistorico.isPlaying()) {
     rafHistoricoId = null;
@@ -657,6 +665,7 @@ async function inicializarModoHistoricoSiNecesario() {
   await promesaInicioHistorico;
 }
 
+// Cambio de forma ordenada entre Sistema Solar, Misiones Históricas y Laboratorio evitando fugas de estado entre modos.
 async function cambiarModoOperacion(nuevoModo) {
   if (nuevoModo === modoOperacion) return;
   const modoPrevio = modoOperacion;
@@ -687,7 +696,7 @@ async function cambiarModoOperacion(nuevoModo) {
       });
       if (esInicio1977) sincronizarAcontecimientoHistorico(VOYAGER_HISTORICAL_EVENTS[0]);
       else actualizarOrientacionHistorica(motorHistorico.getTriggeredEvent());
-      // UX-02: no se abre si mientras se preparaba el modo el usuario ya pasó a otra sección.
+      // Evito abrir la bienvenida si el usuario ya cambió de sección mientras se cargaba el modo histórico.
       if (modoOperacion === 'historico') modalBienvenida?.abrir(false);
     } catch (err) {
       console.error(err);
@@ -696,13 +705,14 @@ async function cambiarModoOperacion(nuevoModo) {
     return;
   }
 
-  // Salida de Modo Histórico hacia Exploración o Experimental
+  // Salida de Modo Histórico hacia Exploración o Experimental.
   if (modoPrevio === 'historico') {
     detenerBucleHistorico();
     ++consultaHistToken;
     simulador.ocultarModoHistoricoEscena();
     recorridoGuiado?.mostrar(false);
-    modalBienvenida?.cerrar({ restaurarFoco: false }); // UX-02: la bienvenida no se queda sobre otro modo
+    // Cierro el modal de bienvenida sin robar el foco al cambiar hacia otro modo.
+    modalBienvenida?.cerrar({ restaurarFoco: false });
     cerrarLanzamiento3D();
     const dockHist = document.querySelector('#hist-mission-dock');
     if (dockHist) dockHist.hidden = true;
@@ -711,7 +721,7 @@ async function cambiarModoOperacion(nuevoModo) {
   }
 
   const fecha2026 = controlesTemporales.obtenerFecha() || '2026-10-10';
-  // 17.1: si la misión del laboratorio ocupa la escena, sus planetas están en la época de la misión: no se sobrescriben.
+  // Si una misión del laboratorio controla la escena, no sobrescribo las posiciones planetarias de su época.
   if (datosAstronomicos && !vistaMisionLaboratorio?.isControlling()) {
     const jdFecha = gregorianLabelToJulianMidnight(fecha2026);
     instanteCientificoActivo = {
@@ -726,8 +736,7 @@ async function cambiarModoOperacion(nuevoModo) {
     estadoDatos.textContent = `NASA/JPL Horizons · muestra diaria ${fecha2026} (TDB)`;
   }
 
-  // 17.1: el modo experimental es el laboratorio de misiones (la Sonda Experimental 01 ya no forma parte de la interfaz).
-  // La sonda de la escena solo aparece cuando «3 · Reproducir» dibuja una misión planificada en este Sistema Solar.
+  // En modo Laboratorio solo muestro la sonda en esta escena cuando el Centro de Misión está reproduciendo un viaje.
   controlesTemporales.detener();
   if (!vistaMisionLaboratorio?.isControlling()) simulador.ocultarSonda();
   controlesDistancia.configurarModoOperacion('exploracion');
@@ -743,8 +752,7 @@ async function cambiarModoOperacion(nuevoModo) {
   actualizarPanel(fecha2026);
 }
 
-// 17.1: al terminar la reproducción de una misión del laboratorio, la escena vuelve a la fecha de exploración.
-// En el modo histórico no se toca: ese modo aplica su propio instante al activarse.
+// Cuando termina la reproducción de una misión del laboratorio, devuelvo la escena principal a la fecha de exploración de 2026.
 function restaurarEscenaTrasMisionLaboratorio() {
   if (modoOperacion === 'historico' || !datosAstronomicos) return;
   ++consultaActual;
@@ -877,13 +885,14 @@ function continuarRecorridoHistorico() {
   actualizarOrientacionHistorica();
 }
 
-// 25: lanzamiento 3D en su propio módulo (carga diferida): acercamiento a la Tierra en la escena principal, fundido a la escena de
-// Cabo Cañaveral y, al terminar, vuelta al Sistema Solar en el instante del lanzamiento.
+// Cargo de forma diferida la escena 3D del lanzamiento Voyager: primero acerco la cámara a la Tierra,
+// luego muestro Cabo Cañaveral LC-41 y al cerrar o terminar devuelvo la vista al Sistema Solar en 1977.
 let lanzamiento3D = null;
 let lanzamientoEnCurso = false;
 let misionLanzamiento = null;
 let solicitudLanzamiento = 0;
 
+// Cierro y libero por completo la escena de Lanzamiento 3D, cancelando cualquier carga que siga en curso.
 function cerrarLanzamiento3D() {
   solicitudLanzamiento += 1;
   lanzamiento3D?.destruir();
@@ -906,13 +915,15 @@ function alCompletarLanzamiento({ misionId }) {
   }).catch(console.error);
 }
 
+// Inicio el lanzamiento 3D con carga diferida del director gráfico y manejo seguro si falla el contexto WebGL 2.
 async function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
   if (modoOperacion !== 'historico' || lanzamientoEnCurso) return;
+  // Marco el lanzamiento como activo y elimino cualquier aviso previo de error WebGL 2 antes de reintentar.
   lanzamientoEnCurso = true;
-  document.querySelector('#hist-launch-webgl-note')?.remove(); // STAB-01: aviso de un intento anterior sin WebGL 2
+  document.querySelector('#hist-launch-webgl-note')?.remove();
   misionLanzamiento = misionId;
   const solicitud = ++solicitudLanzamiento;
-  // 27: la preparación (acercamiento, texturas, compilación) no cuenta para la resolución dinámica.
+  // Suspendo la adaptación automática de resolución mientras preparo la escena y compilo shaders.
   let finPreparacion = () => {};
   suspenderAdaptacion(new Promise(resolve => { finPreparacion = resolve; }));
   detenerBucleHistorico();
@@ -931,7 +942,8 @@ async function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
       contenedor: document.querySelector('.scene-panel'),
       misionId,
       calidad: getQualityState().profile,
-      detalle: getQualityState('lanzamiento').detalle, // 27: lo que aprendió el lanzamiento anterior (o el perfil del equipo)
+      // Reutilizo el nivel de detalle aprendido por el perfil adaptativo para el lanzamiento.
+      detalle: getQualityState('lanzamiento').detalle,
       escritorio: equipoEscritorio(),
       baseUrl: import.meta.env.BASE_URL,
       fovInicial,
@@ -947,8 +959,7 @@ async function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
   } catch (error) {
     console.error('No se pudo abrir el lanzamiento 3D:', error);
     if (solicitud === solicitudLanzamiento) cerrarLanzamiento3D();
-    // STAB-01: el lanzamiento usa un contexto WebGL 2 propio; si no se pudo crear, se dice por qué junto al botón que lo abre
-    // (visible) y en el estado de la fuente.
+    // Si el dispositivo no pudo crear un segundo contexto WebGL 2, muestro un aviso visible sin romper el resto del simulador.
     if (esFalloWebGL(error)) {
       estadoDatos.textContent = 'Lanzamiento 3D no disponible: este dispositivo o navegador no pudo inicializar WebGL 2 para la vista del lanzamiento. El Sistema Solar y las misiones siguen disponibles.';
       const acciones = document.querySelector('#hist-launch-cinematic-btn')?.closest('.hist-mission-quick-actions');
@@ -985,10 +996,8 @@ function actualizarDockMision(choice) {
   }
 }
 
-// STAB-01: si el navegador no puede crear el contexto WebGL 2 de la escena principal, se muestra un aviso accesible en lugar de
-// una excepción no capturada con la interfaz detenida en «Esperando datos…». Ningún modo funciona sin esta escena (y no se
-// sustituye por otra representación), así que la evaluación de este módulo se detiene aquí: la espera que nunca se resuelve
-// no lanza error ni deja a medias el registro de controles que vienen después. Con WebGL 2 disponible no cambia nada.
+// Inicializo la escena 3D principal; si el navegador no soporta WebGL 2 muestro un aviso accesible y detengo el arranque
+// de este módulo con una promesa pendiente para evitar errores encadenados en el registro de controles.
 const simulador = crearEscenaPrincipalOAvisar(() => createSolarSystem(
   document.querySelector('#solar-system'),
   nombre => {
@@ -1005,7 +1014,7 @@ const simulador = crearEscenaPrincipalOAvisar(() => createSolarSystem(
       selectorPlanetas.actualizar(null);
       actualizarPanel(controlesTemporales.obtenerFecha());
     }
-    // 17.1: la única sonda de esta escena fuera del modo histórico es la de la misión del laboratorio en reproducción.
+    // Fuera del modo histórico, la sonda visible corresponde a la misión del laboratorio en reproducción.
     hud.actualizarSeleccionSonda(activa, vistaMisionLaboratorio?.getState().probeName ?? 'Sonda');
   },
   {
@@ -1649,7 +1658,7 @@ simulador.alCambiarVista(() => {
   }
 });
 
-// 17.1: «3 · Reproducir» del laboratorio dibuja las misiones heliocéntricas en esta escena (misma conversión de ejes y escala).
+// Conecto la reproducción de misiones heliocéntricas del laboratorio con la escena principal del Sistema Solar.
 vistaMisionLaboratorio = createSolarSystemMissionView({
   scene: simulador,
   loadEphemeris: cargarEfemeridesInterplanetarias,
@@ -1661,10 +1670,12 @@ simulador.alCambiarModoEscala(() => {
 });
 
 crearControlesVisualizacion(simulador);
-bindQualityControls(document.querySelector('#quality-controls')); // 15: perfiles de calidad gráfica (solo presentación)
-crearMedidorFps({ casilla: document.querySelector('#show-fps'), calidad: () => getQualityState() }); // 26: contador de FPS opcional (también ?fps=1); 27: con la resolución
+// Vinculo el selector de perfiles de calidad gráfica y el contador opcional de FPS (activable también con ?fps=1).
+bindQualityControls(document.querySelector('#quality-controls'));
+crearMedidorFps({ casilla: document.querySelector('#show-fps'), calidad: () => getQualityState() });
 botonReintentar.addEventListener('click', iniciar);
 
+// Arranco el simulador cargando las efemérides planetarias y lunares de 2026 y aplicando el modo pedido en la URL si existe.
 async function iniciar() {
   detenerBucleHistorico();
   estadoDatos.textContent = 'Cargando efemérides de NASA/JPL Horizons…';
@@ -1695,8 +1706,7 @@ async function iniciar() {
     proveedorCientifico = null;
     let errorCientifico = null;
 
-    // 17.1: el proveedor científico solo se carga para el flujo opcional ?ephemeris=scientific; ya no hay una sonda
-    // demostrativa que propagar al arrancar.
+    // Cargo el proveedor científico completo únicamente cuando se solicita el modo opcional ?ephemeris=scientific.
     if (modoCientifico) {
       try {
         proveedorCientifico = await loadScientificPipeline({ baseUrl: import.meta.env.BASE_URL });
@@ -1747,11 +1757,10 @@ window.__SIMULADOR_DIAGNOSTICO__ = Object.freeze({
     visibles: simulador.obtenerEstadoVisualLunas() }),
   obtenerEstadoModelosHistoricos: () => simulador.obtenerEstadoModelosHistoricos(),
   obtenerEstadoModeloSondaMision: () => simulador.obtenerEstadoModeloSonda(),
-  // 17.1: estado de la reproducción de la misión del laboratorio en el Sistema Solar principal y lo que dibuja la escena.
+  // Expongo el estado de reproducción de la misión del laboratorio y controles de inspección del lanzamiento 3D.
   obtenerEstadoMisionEscenaPrincipal: () => vistaMisionLaboratorio?.getState() ?? null,
   obtenerDiagnosticoEscena: () => simulador.obtenerDiagnosticoEscena(),
   obtenerEstadoLanzamiento: () => ({ activo: lanzamientoEnCurso, cargado: Boolean(lanzamiento3D), ...(lanzamiento3D?.estado() ?? {}) }),
-  // 25: saltar a un instante de misión (s desde la ignición de los motores sólidos) y pausar, para revisiones y capturas.
   irALanzamiento: t => lanzamiento3D?.irAMision(t),
   interiorLanzamiento: () => lanzamiento3D?.interno ?? null,
   pausarLanzamiento: () => lanzamiento3D?.pausar(),
@@ -1786,13 +1795,12 @@ crearWorkspaceLayout({
     return true;
   }
 });
-// 14: mapa de áreas en la cabecera (solo navegación).
+// Inicializo la navegación entre áreas, la paleta global de búsqueda y las tarjetas de misiones destacadas.
 const navegadorAreas = createAppNavigator();
-// 14.1: búsqueda global, portada de misiones destacadas y presentación de formularios del laboratorio (solo interfaz).
 const paletaBusqueda = createCommandPalette({ navigator: navegadorAreas });
 const misionesDestacadas = createFeaturedMissions({ navigator: navegadorAreas });
-// 18: el laboratorio (≈ 1 MB de código, su CSS y un segundo contexto WebGL) se carga la primera vez que se entra en él.
-// Mientras llega, la última petición de navegación («lab:navigate») se retiene y se repite al crearlo.
+// Cargo el Laboratorio de Misiones bajo demanda la primera vez que se abre; mientras termina de descargarse,
+// retengo la última petición de navegación («lab:navigate») para ejecutarla en cuanto quede montado.
 let laboratorioExperimental = null, mejorasLaboratorio = null, promesaLaboratorio = null, navegacionLaboratorioPendiente = null;
 const retenerNavegacionLaboratorio = event => { if (!laboratorioExperimental) { navegacionLaboratorioPendiente = event.detail; event.stopImmediatePropagation(); } };
 document.addEventListener('lab:navigate', retenerNavegacionLaboratorio, true);
@@ -1812,6 +1820,7 @@ function cargarLaboratorio() {
   });
   return promesaLaboratorio;
 }
+// Pauso el bucle de renderizado del Sistema Solar cuando el panel del Laboratorio cubre por completo el lienzo principal.
 function sincronizarVisibilidadEscenaPrincipal() {
   const app = document.querySelector('#app');
   const ocultaPorLab = app?.dataset.appMode === 'experimental'
@@ -1833,6 +1842,5 @@ sincronizarVisibilidadEscenaPrincipal();
 if (import.meta.hot) import.meta.hot.dispose(() => { observadorModoLaboratorio.disconnect(); mejorasLaboratorio?.dispose(); misionesDestacadas.dispose(); paletaBusqueda.dispose(); navegadorAreas.dispose(); laboratorioExperimental?.dispose(); });
 actualizarOrientacionHistorica();
 iniciar();
-// 18: las texturas se piden al verse cada cuerpo; la Tierra (destino habitual y escenario del lanzamiento) se adelanta cuando el
-// navegador queda libre, salvo con «ahorro de datos» o conexión lenta.
+// Adelanto en segundo plano la textura de la Tierra cuando el navegador queda libre, salvo con ahorro de datos o red lenta.
 if (!conexionLimitada()) precargarEnReposo([claveTexturaPlaneta('Tierra')]);

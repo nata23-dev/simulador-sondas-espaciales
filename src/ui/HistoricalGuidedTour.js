@@ -1,10 +1,10 @@
+// En este módulo defino y controlo el recorrido histórico guiado de 12 hitos de las misiones Voyager 1 y 2 (1977–2026).
+// Aquí presento cada acontecimiento paso a paso y delego en los callbacks externos los saltos temporales, las vistas de lanzamiento y el comparador fotográfico.
 import { VOYAGER_HISTORICAL_EVENTS } from '../science/VoyagerHistoricalEvents.js';
 import { getVoyagerPhotoById } from '../science/VoyagerPhotoCatalog.js';
 import { VOYAGER_1_ID, VOYAGER_2_ID } from '../science/VoyagerHistoricalMissions.js';
 
-/**
- * 12 Hitos clave seleccionados para el Recorrido Histórico Guiado (1977–2026)
- */
+// Defino los doce hitos cronológicos principales que guían al usuario desde el lanzamiento hasta el espacio interestelar.
 export const HITOS_RECORRIDO_GUIADO = Object.freeze([
   {
     indice: 1,
@@ -130,9 +130,7 @@ export const HITOS_RECORRIDO_GUIADO = Object.freeze([
   }
 ]);
 
-/**
- * Crea el componente de interfaz para el Recorrido Histórico Guiado
- */
+// Construyo el panel flotante del recorrido guiado, enlazo sus botones de paso y expongo el control de visibilidad e índice.
 export function crearRecorridoHistoricoGuiado({
   alIrAHito,
   alVerLanzamiento,
@@ -204,6 +202,7 @@ export function crearRecorridoHistoricoGuiado({
   const btnLaunch = contenedor.querySelector('#tour-launch-btn');
   const btnClose = contenedor.querySelector('#tour-close-btn');
   const btnFold = contenedor.querySelector('#tour-fold-btn');
+  // Permito plegar o desplegar el cuerpo de la tarjeta para dejar más espacio a la escena 3D sin salir del recorrido.
   btnFold.addEventListener('click', () => {
     const collapsed = contenedor.dataset.collapsed !== 'true';
     contenedor.dataset.collapsed = String(collapsed);
@@ -211,9 +210,11 @@ export function crearRecorridoHistoricoGuiado({
     btnFold.setAttribute('aria-expanded', String(!collapsed));
   });
 
-  let indiceActual = 0; // 0..11
+  // Llevo la posición actual dentro de los 12 hitos y recuerdo si el usuario ya inició el recorrido en esta sesión.
+  let indiceActual = 0;
   let comenzado = false;
 
+  // Actualizo los textos, los botones de navegación, el acceso al lanzamiento 3D y la miniatura NASA del hito elegido.
   function renderizarHito(indice) {
     indiceActual = Math.max(0, Math.min(HITOS_RECORRIDO_GUIADO.length - 1, indice));
     const hito = HITOS_RECORRIDO_GUIADO[indiceActual];
@@ -248,6 +249,7 @@ export function crearRecorridoHistoricoGuiado({
     }
   }
 
+  // Conecto el retroceso, el avance (o cierre al llegar al último paso), la vista de lanzamiento, la foto y la salida.
   btnPrev.addEventListener('click', () => {
     if (indiceActual > 0) {
       renderizarHito(indiceActual - 1);
@@ -283,6 +285,7 @@ export function crearRecorridoHistoricoGuiado({
 
   return {
     contenedor,
+    // Muestro u oculto el panel retomando el último paso visitado si no se indica un índice inicial.
     mostrar(visible = true, indiceInicial = null) {
       contenedor.hidden = !visible;
       if (visible) {

@@ -1,6 +1,6 @@
-// Etapa 12G — Planificador «Misiones interplanetarias»: búsqueda de ventanas Tierra → planeta con efemérides
-// NASA/JPL Horizons locales, Lambert heliocéntrico de cero revoluciones y mapa de oportunidades (canvas 2D, sin
-// dependencias). La reproducción 3D se delega al Centro de Misión. Los satélites se muestran como destinos futuros.
+// En este módulo gestiono el planificador «Ventanas interplanetarias»: busco oportunidades Tierra → planeta usando efemérides locales
+// de NASA/JPL Horizons y el problema de Lambert heliocéntrico de cero revoluciones, dibujo el mapa de oportunidades y la vista orbital en canvas 2D,
+// y delego la reproducción 3D al Centro de Misión.
 import { createInterplanetaryEphemeris, UNAVAILABLE_MESSAGE, PLANET_NAMES } from '../science/InterplanetaryEphemeris.js';
 import { tdbToTimeScales } from '../science/AstrodynamicsTime.js';
 import { KM_PER_AU } from '../science/Units.js';
@@ -12,11 +12,12 @@ import { CELL, CRITERIA, DEFAULT_INTERPLANETARY_OPTIONS, MU_SUN, SUGGESTED_RANGE
   refineTransferCandidate, candidateEdgeDiagnostics } from '../lab/InterplanetaryPlan.js';
 
 const number = (n, digits = 1) => Number.isFinite(n) ? new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(n) : 'No disponible';
-// Etiquetas redondeadas al segundo (tdbToTimeScales evita 23:59:59,999 por la resolución binaria del JD).
+// Formateo etiquetas redondeadas al segundo mediante tdbToTimeScales para evitar artefactos binarios como 23:59:59,999.
 const utcLabel = jd => tdbToTimeScales(jd).labelUtc;
 const tdbLabel = jd => tdbToTimeScales(jd).labelTdb;
 const dateOnly = jd => utcLabel(jd).slice(0, 10);
 
+// Monto la interfaz de búsqueda de ventanas interplanetarias, cargo el catálogo de efemérides y coordino los lienzos y resultados.
 export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {}, onInvalidated = () => {} }) {
   host.classList.add('mission-planner', 'interplanetary-planner');
   const destinations = listMissionDestinations();
@@ -74,6 +75,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     for (const [key, selector] of Object.entries(fields)) o[key] = numeric.has(key) ? Number($(selector).value) : $(selector).value;
     return o;
   }
+  // Cargo de forma asíncrona el catálogo de efemérides heliocéntricas para informar al usuario de la cobertura real disponible.
   const base = import.meta.env?.BASE_URL ?? '/';
   fetch(`${base}data/interplanetary-ephemerides-catalog-v1.json`).then(r => { if (!r.ok) throw Error(`HTTP ${r.status}`); return r.json(); }).then(catalog => {
     ephemeris = createInterplanetaryEphemeris({ catalog, loadJson: async file => { const r = await fetch(`${base}${file}`); if (!r.ok) throw Error(`${file}: HTTP ${r.status}`); return r.json(); } });
@@ -81,12 +83,12 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     $('#ip-coverage').textContent = `Cobertura real de efemérides: ${tdbLabel(cov.startJdTdb).slice(0, 10)} → ${tdbLabel(cov.endJdTdb).slice(0, 10)} (TDB). Fuera de ella: «${UNAVAILABLE_MESSAGE}».`;
   }).catch(error => { loadError = error.message; $('#ip-coverage').textContent = `${UNAVAILABLE_MESSAGE}: ${error.message}`; });
 
+  // Si el usuario selecciona un satélite en la lista, explico qué puede calcular en este planificador y ofrezco saltar al planeta anfitrión o a «Misión completa».
   function renderSatellite() {
     const box = $('#ip-satellite'); box.replaceChildren();
     if (!destSelect.value.startsWith('sat:')) return;
     const s = destinations.satellites.find(item => `sat:${item.id}` === destSelect.value);
     const add = (tag, text) => { const el = document.createElement(tag); el.textContent = text; box.append(el); return el; };
-    // 16: qué ofrece hoy el laboratorio para cada satélite (sin descensos: la interfaz ya no los ofrece).
     const inIntegrated = Object.hasOwn(MOON_WINDOW_KEYS, s.id);
     add('strong', `${s.name}: aquí solo se buscan ventanas hacia planetas`);
     add('p', s.id === '301' ? s.heliocentricLeg
@@ -95,6 +97,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     if (s.id !== '301') { const b = add('button', `Buscar ventanas hacia ${s.hostName}`); b.type = 'button'; b.addEventListener('click', () => { destSelect.value = s.hostId; changed(); }); }
     if (inIntegrated) { const b = add('button', 'Abrir «Misión completa»'); b.type = 'button'; b.addEventListener('click', () => document.dispatchEvent(new CustomEvent('lab:navigate', { detail: { section: 'planner', plannerMode: 'integrated' } }))); }
   }
+  // Invalido la cuadrícula y la oportunidad seleccionada cada vez que cambian los criterios de búsqueda.
   function invalidate(reason) {
     const had = Boolean(search || selected);
     search = null; selected = null; ephWindow = null; refined = null; edges = null;
@@ -105,16 +108,18 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
   function changed() { renderSatellite(); invalidate('Las condiciones cambiaron: los resultados anteriores se invalidaron. Vuelve a buscar.'); }
   for (const selector of [...Object.values(fields), '#ip-destination']) $(selector).addEventListener('change', changed);
 
+  // Relleno un rango físico orientativo de fechas y tiempos de vuelo para el planeta elegido usando aritmética de calendario en UTC.
   $('#ip-suggest').addEventListener('click', () => {
     const id = destSelect.value.startsWith('sat:') ? null : destSelect.value; if (!id) return;
     const s = SUGGESTED_RANGES[id];
     $('#ip-tof-min').value = s.tofMinDays; $('#ip-tof-max').value = s.tofMaxDays; $('#ip-tof-step').value = s.tofStepDays; $('#ip-dep-step').value = s.departureStepDays;
     const start = $('#ip-dep-start').value; const [y, m, d] = start.split('-').map(Number);
-    const end = new Date(Date.UTC(y, m - 1, d) + s.spanDays * 86400000).toISOString().slice(0, 10); // aritmética de calendario, sin zona horaria
+    const end = new Date(Date.UTC(y, m - 1, d) + s.spanDays * 86400000).toISOString().slice(0, 10);
     $('#ip-dep-end').value = end; changed();
     message(`Rango sugerido para ${PLANET_NAMES[id]} (escala de tiempos de vuelo física; no son fechas óptimas). Pulsa «Buscar ventanas».`);
   });
 
+  // Ejecuto la exploración asíncrona de la cuadrícula de Lambert, descarto el resultado si el formulario cambió durante la carga y refino localmente el mejor candidato.
   async function runSearch() {
     if (busy) return;
     if (!ephemeris) { message(loadError ? `${UNAVAILABLE_MESSAGE}: ${loadError}` : 'Espera la carga del catálogo de efemérides.', true); return; }
@@ -129,9 +134,10 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
       if (startJd < covO.startJdTdb || endJd > cov.endJdTdb) message(`Parte del intervalo queda fuera de la cobertura (${tdbLabel(cov.startJdTdb).slice(0, 10)} → ${tdbLabel(cov.endJdTdb).slice(0, 10)} TDB); esas celdas se marcan «${CANDIDATE_STATUS.noCoverage}».`);
       const w = await ephemeris.loadWindow([o.originId, o.destinationId], Math.max(startJd, covO.startJdTdb), Math.min(endJd, cov.endJdTdb));
       await new Promise(resolve => setTimeout(resolve, 20));
+      // Evito publicar resultados si el usuario modificó algún parámetro mientras se cargaban las efemérides.
       if (interplanetarySignature(options()) !== interplanetarySignature(input)) { message('Las condiciones cambiaron durante la carga; vuelve a buscar.'); return; }
       search = searchLaunchWindows(w, input); ephWindow = w; selected = null; refined = null; edges = null;
-      // 13 (OBS-12G-01 y OBS-12G-03): refinamiento local del mejor candidato y diagnóstico de bordes de cuadrícula y cobertura.
+      // Refino localmente el mejor candidato de la cuadrícula y evalúo si toca algún borde del intervalo o de cobertura.
       if (search.best) {
         refined = refineTransferCandidate(w, { originId: search.options.originId, destinationId: search.options.destinationId, departureJdTdb: search.best.departureJdTdb, tofDays: search.best.tofDays,
           criterion: search.options.criterion, halfSpanDepartureDays: search.options.departureStepDays / 2, halfSpanTofDays: search.options.tofStepDays / 2 });
@@ -145,6 +151,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
   }
   $('#ip-search').addEventListener('click', runSearch);
 
+  // Evalúo una combinación concreta de salida y llegada y habilito su reproducción 3D solo si Lambert convergió.
   function select(departureJdTdb, arrivalJdTdb, isBest = false) {
     if (!search || !ephWindow) return;
     selected = evaluateTransfer(ephWindow, { originId: search.options.originId, destinationId: search.options.destinationId, departureJdTdb, arrivalJdTdb,
@@ -153,6 +160,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     renderAll();
   }
   $('#ip-execute').disabled = true;
+  // Verifico que la búsqueda siga coincidiendo con el formulario antes de enviar la oportunidad al Centro de Misión.
   $('#ip-execute').addEventListener('click', () => {
     if (!selected || !search || !isInterplanetaryResultCurrent(search, options())) { message('Selecciona una oportunidad vigente.', true); return; }
     active = true;
@@ -160,14 +168,15 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
   });
   $('#ip-sort').addEventListener('change', () => { sortKey = $('#ip-sort').value; renderTable(); });
 
-  // ---------- Mapa de oportunidades ----------
+  // ---------- Mapa de oportunidades y órbita eclíptica ----------
   const porkchop = $('#ip-porkchop'), orbit = $('#ip-orbit');
   const PAD = { l: 46, r: 10, t: 10, b: 30 };
   function metricGrid() {
     const g = search.grid, c = search.options.criterion;
     return Float64Array.from(g.c3, (v, k) => c === 'c3' ? v : c === 'arrival' ? g.vInfArrival[k] : Math.sqrt(v) + g.vInfArrival[k]);
   }
-  function color(u) { // u ∈ [0,1]: oro (bajo) → azul (alto), legible en tema oscuro
+  // Interpolo una escala de color legible en tema oscuro: dorado para valores bajos y azul oscuro para valores altos.
+  function color(u) {
     const stops = [[246, 214, 140], [214, 150, 84], [150, 92, 120], [72, 88, 150], [34, 52, 92]];
     const x = Math.min(0.9999, Math.max(0, u)) * (stops.length - 1), i = Math.floor(x), f = x - i;
     return stops[i].map((v, k) => Math.round(v + (stops[i + 1][k] - v) * f));
@@ -177,6 +186,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     canvas.width = Math.max(1, Math.round(rect.width * ratio)); canvas.height = Math.max(1, Math.round(rect.height * ratio));
     const ctx = canvas.getContext('2d'); ctx.setTransform(ratio, 0, 0, ratio, 0, 0); return { ctx, w: rect.width, h: rect.height };
   }
+  // Pinto el mapa de oportunidades (porkchop) con escala logarítmica saturada en 8× el mínimo para dar contraste a la región útil.
   function drawPorkchop() {
     if (!porkchop.getContext) return;
     const { ctx, w, h } = sizeCanvas(porkchop);
@@ -185,7 +195,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     const g = search.grid, values = metricGrid();
     let lo = Infinity, hi = -Infinity;
     for (let k = 0; k < values.length; k++) if (g.code[k] === CELL.ok) { lo = Math.min(lo, values[k]); hi = Math.max(hi, values[k]); }
-    const cap = Math.min(hi, lo * 8 + 1e-9); // satura en 8× el mínimo para que la región útil tenga contraste
+    const cap = Math.min(hi, lo * 8 + 1e-9);
     const pw = w - PAD.l - PAD.r, ph = h - PAD.t - PAD.b, cw = pw / g.nDep, chh = ph / g.nTof;
     for (let i = 0; i < g.nDep; i++) for (let j = 0; j < g.nTof; j++) {
       const k = i * g.nTof + j, code = g.code[k];
@@ -203,6 +213,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     if (selected) mark(selected.departureJdTdb, selected.tofDays, '#7fd6ef', 9);
     $('#ip-legend').textContent = `${CRITERIA[search.options.criterion]} · mínimo ${number(lo, 3)} ${search.options.criterion === 'c3' ? 'km²/s²' : 'km/s'} (dorado) · saturación en ${number(cap, 2)} · ○ blanco: mejor candidato del intervalo · ○ celeste: selección`;
   }
+  // Traduzco la posición del clic sobre el mapa a índices (salida, duración) para inspeccionar esa celda.
   porkchop.addEventListener('click', event => {
     if (!search) return;
     const rect = porkchop.getBoundingClientRect(), g = search.grid;
@@ -212,12 +223,12 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     select(g.departures[i], g.departures[i] + g.tofs[j]);
     message(selected.status === CANDIDATE_STATUS.computed || selected.status === CANDIDATE_STATUS.best ? `Seleccionada: salida ${dateOnly(selected.departureJdTdb)}, ${number(selected.tofDays, 2)} d.` : `${selected.status}: ${selected.reason ?? ''}`, !selected.lambert?.converged);
   });
+  // Dibujo la proyección polar sobre la eclíptica J2000 (vista desde el norte) con la nave y los arcos planetarios en km.
   function drawOrbit() {
     if (!orbit.getContext) return;
     const { ctx, w, h } = sizeCanvas(orbit);
     ctx.clearRect(0, 0, w, h);
     if (!selected?.lambert?.converged || !ephWindow) { ctx.fillStyle = '#9fb0c4'; ctx.font = '11px system-ui, sans-serif'; ctx.fillText('Selecciona una oportunidad calculada.', 16, 24); return; }
-    // Proyección sobre la eclíptica (x, y heliocéntricos), vista desde el norte eclíptico. Estados físicos en km.
     const n = 240, T = selected.tofDays * 86400, ship = [], earthPath = [], destPath = [];
     for (let k = 0; k <= n; k++) {
       const t = T * k / n, jd = selected.departureJdTdb + t / 86400;
@@ -234,7 +245,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     ctx.fillText(`Escala: ${number(rmax / KM_PER_AU, 2)} AU al borde · eclíptica J2000 vista desde el norte`, 8, h - 8);
     ctx.fillText(`${selected.originName} en la salida · ${selected.destinationName} en la llegada`, 8, 16);
   }
-  // ---------- Resultados ----------
+  // ---------- Panel de resultados y tabla de mínimos locales ----------
   function row(parent, label, value) { const r = document.createElement('div'); r.className = 'lab-metric'; const a = document.createElement('span'); a.textContent = label; const b = document.createElement('strong'); b.textContent = value; r.append(a, b); parent.append(r); }
   const vec = (v, d) => `[${v.map(x => number(x, d)).join(', ')}]`;
   function renderSelected() {
@@ -289,6 +300,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     b.addEventListener('click', () => { select(refined.departureJdTdb, refined.arrivalJdTdb); message(`Seleccionado el candidato refinado: ${utcLabel(refined.departureJdTdb)}, ${number(refined.tofDays, 3)} d (mejor del intervalo examinado tras refinamiento local).`); });
     box.append(b);
   }
+  // Renderizo la tabla ordenable de mínimos locales; cada fila es enfocable y activable tanto con clic como con Enter o Espacio.
   function renderTable() {
     const box = $('#ip-table'); box.replaceChildren();
     $('#ip-counts').textContent = search ? `Combinaciones: ${search.counts.total} · calculadas ${search.counts.ok} · sin cobertura ${search.counts.noCoverage} · no convergentes ${search.counts.noConvergence} · mal condicionadas ${search.counts.illConditioned}.` : '';
@@ -314,6 +326,7 @@ export function createInterplanetaryPlanner({ host, onExecuteRequest = () => {},
     $('#ip-stage-status').textContent = search ? `${search.counts.ok} soluciones · ${PLANET_NAMES[search.options.destinationId]}` : 'Sin búsqueda';
     drawPorkchop(); drawOrbit(); renderSelected(); renderRefine(); renderHangar(); renderTable();
   }
+  // Redibujo ambos lienzos cuando cambia el tamaño del panel visible.
   const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { if (!host.hidden) { drawPorkchop(); drawOrbit(); } }) : null;
   observer?.observe(porkchop);
   renderSatellite(); renderAll();

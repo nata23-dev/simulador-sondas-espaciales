@@ -1,3 +1,10 @@
+/**
+ * En este módulo conecto el proveedor científico de efemérides (catálogo
+ * NASA/JPL Horizons con interpolación cúbica de Hermite) con el formato visual
+ * que espera la escena 3D y las fichas de cuerpos celestes.
+ * Recibo estados canónicos en km y km/s (marco eclíptico J2000, tiempo TDB) y
+ * los convierto a coordenadas de escena `(x, z, -y)` y unidades AU / AU por día.
+ */
 import { createEphemerisProvider } from '../science/EphemerisProvider.js';
 import { createStaticJsonReader } from '../science/EphemerisFileReader.js';
 import { HORIZONS_PLANETS } from '../science/HorizonsEphemerides.js';
@@ -5,11 +12,12 @@ import { createScientificState } from '../science/ScientificState.js';
 import { KM_PER_AU, SECONDS_PER_DAY } from '../science/Units.js';
 import { UNIDADES_POR_AU } from '../graphics/SceneScale.js';
 
+// Compruebo si el usuario activó el flujo científico opcional mediante el parámetro URL `?ephemeris=scientific`.
 export function scientificPipelineEnabled(search) {
   return new URLSearchParams(search).get('ephemeris') === 'scientific';
 }
 
-/** Adaptador puro: estado canónico -> coordenadas gráficas y ficha existente. */
+// Convierto un estado científico canónico en coordenadas visuales de escena y datos de ficha, verificando su identidad.
 export function scientificStateToVisual(input, expectedId) {
   const state = createScientificState(input);
   if (state.identity.id !== expectedId) throw new RangeError(`Identidad inesperada: ${state.identity.id}.`);
@@ -29,13 +37,14 @@ export function scientificStateToVisual(input, expectedId) {
   });
 }
 
+// Cargo el catálogo de efemérides científicas y construyo el proveedor listo para consultas interpoladas.
 export async function loadScientificPipeline({ baseUrl, fetchImpl = globalThis.fetch }) {
   const readJson = createStaticJsonReader({ baseUrl, fetchImpl });
   const catalog = await readJson('data/ephemerides-catalog-v1.json');
   return createEphemerisProvider({ catalog, loadJson: readJson });
 }
 
-/** Consulta atómica: ningún planeta se publica si falta o se contradice otro. */
+// Consulto de forma atómica los ocho planetas en un instante JD TDB; si alguno falla o queda fuera de rango, aborto todo el lote.
 export async function queryVisualStates(provider, jdTdb) {
   const names = Object.entries(HORIZONS_PLANETS);
   const results = await Promise.all(names.map(([, id]) => provider.getInterpolated(id, jdTdb)));

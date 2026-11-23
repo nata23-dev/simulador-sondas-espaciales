@@ -1,7 +1,7 @@
-// Etapa 12G — reproducción determinista de una transferencia heliocéntrica calculada (Centro de Misión).
-// La posición de la sonda en cada instante es la PROPAGACIÓN kepleriana (variables universales, μ solar) del estado
-// inicial que entrega Lambert: no es una línea interpolada entre planetas. Los planetas se evalúan con las efemérides
-// Horizons (Hermite entre nodos) en la misma época TDB. Función pura del instante: retroceder o repetir da lo mismo.
+// En este módulo reproduzco de forma determinista una transferencia heliocéntrica preliminar en el Centro de Misión.
+// Calculo la posición y velocidad de la sonda en cada instante mediante propagación kepleriana en variables universales (μ solar)
+// desde el estado inicial que devolvió Lambert, y consulto los planetas en la misma época TDB sobre efemérides Horizons (Hermite).
+// Al ser una función pura del tiempo transcurrido, retroceder o repetir produce siempre el mismo estado.
 import { propagateKepler, conicSummary } from '../science/KeplerPropagator.js';
 import { tdbToTimeScales } from '../science/AstrodynamicsTime.js';
 import { KM_PER_AU } from '../science/Units.js';
@@ -9,7 +9,7 @@ import { INTERPLANETARY_FRAME } from '../science/InterplanetaryEphemeris.js';
 import { INTERPLANETARY_MODEL_VERSION, MU_SUN, MODEL_LIMITS, CANDIDATE_STATUS } from './InterplanetaryPlan.js';
 import { calculateEngineering } from './ProbeEngineering.js';
 
-// Frontera gráfica del Centro de Misión para escenas heliocéntricas: 32 unidades de escena por AU (misma que el Sistema Solar).
+// Mantengo la misma escala heliocéntrica del Sistema Solar en la escena 3D: 32 unidades gráficas por unidad astronómica.
 export const HELIOCENTRIC_SCENE_UNITS_PER_AU = 32;
 export const HELIOCENTRIC_SCENE_SCALE = HELIOCENTRIC_SCENE_UNITS_PER_AU / KM_PER_AU;
 export const INTERPLANETARY_MAX_RATE = 100 * 86400;
@@ -18,7 +18,7 @@ const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const norm = a => Math.hypot(a[0], a[1], a[2]);
 const PLANET_COLOR = Object.freeze({ '199': '#a39a91', '299': '#d8b979', '399': '#3f7cc0', '499': '#c46a43', '599': '#c9a77f', '699': '#d6c38f', '799': '#8fd0d8', '899': '#5b7fd6' });
 
-/** Instantes de periapsis/apoapsis de la cónica dentro de (0, T) (cambio de signo de r·v, refinado por bisección). */
+// Busco los pasos por perihelio y afelio de la cónica dentro de (0, T) detectando cambios de signo en r·v y refinándolos por bisección.
 function apsisEvents(r0, v0, durationSeconds) {
   const events = [], n = 720, radial = t => { const s = propagateKepler(r0, v0, t, MU_SUN); return s.positionKm[0] * s.velocityKmS[0] + s.positionKm[1] * s.velocityKmS[1] + s.positionKm[2] * s.velocityKmS[2]; };
   let tPrev = 0, fPrev = radial(0);
@@ -34,7 +34,7 @@ function apsisEvents(r0, v0, durationSeconds) {
   return events;
 }
 
-/** `candidate`: { result (evaluateTransfer), window (loadWindow), design, name }. */
+// Construyo el paquete inmutable de reproducción heliocéntrica muestreando la cónica y las posiciones planetarias en toda la duración.
 export function createInterplanetaryExecution({ result, window, design = null, name = null }) {
   if (!result || result.model !== INTERPLANETARY_MODEL_VERSION) throw Error('El resultado no corresponde al modelo interplanetario vigente.');
   if (![CANDIDATE_STATUS.best, CANDIDATE_STATUS.computed].includes(result.status)) throw Error(`Oportunidad no reproducible: ${result.status}.`);
@@ -69,6 +69,7 @@ export function createInterplanetaryExecution({ result, window, design = null, n
   });
 }
 
+// Propago analíticamente el estado de la sonda y evalúo los planetas de origen y destino en el instante pedido.
 export function sampleInterplanetaryExecution(execution, elapsedSeconds) {
   if (execution?.kind !== 'interplanetary' || !Number.isFinite(elapsedSeconds) || elapsedSeconds < 0 || elapsedSeconds > execution.durationSeconds) throw Error('Instante fuera de la trayectoria calculada.');
   const r = execution.result, jdTdb = r.departureJdTdb + elapsedSeconds / 86400;
@@ -81,6 +82,7 @@ export function sampleInterplanetaryExecution(execution, elapsedSeconds) {
     moonPositionKm: destination.positionKm, originPositionKm: origin.positionKm, destinationState: destination, originState: origin, segmentIndex, propagation: { chi: s.chi, iterations: s.iterations } });
 }
 
+// Derivo la telemetría heliocéntrica instantánea (distancias en km/AU, velocidad relativa al destino, escalas de tiempo y procedencia).
 export function deriveInterplanetaryTelemetry(execution, sample) {
   const r = execution.result, time = tdbToTimeScales(sample.jdTdb);
   const relDest = sub(sample.velocityKmS, sample.destinationState.velocityKmS);

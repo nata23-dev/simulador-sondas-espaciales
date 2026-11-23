@@ -1,12 +1,12 @@
+// En este módulo construyo el penacho volcánico ilustrativo de Pele sobre la malla unitaria de Ío.
+// Anclo el origen con las coordenadas del catálogo USGS (-18,71° de latitud, 255,28° de longitud oeste)
+// usando la convención del mapa sin validar la orientación absoluta IAU/CK; es un recurso ilustrativo
+// que no afirma una erupción fechada en el instante histórico seleccionado.
 import * as THREE from 'three';
 
-// Pele: USGS Gazetteer, -18.71° latitude, 255.28° west longitude.
-// https://planetarynames.wr.usgs.gov/Feature/4638
-// The map longitude convention is used for the local anchor; the globe's
-// absolute IAU/CK orientation is not validated. This plume is illustrative,
-// never an assertion of an eruption at the selected historical instant.
 const P_RADIUS = 1;
-const PLUME_HEIGHT = 160 / 1821.49; // NASA PIA00379 shows a plume above 150 miles; understated here.
+// Mantengo la altura deliberadamente discreta frente a los >240 km registrados en NASA PIA00379.
+const PLUME_HEIGHT = 160 / 1821.49;
 const latitude = THREE.MathUtils.degToRad(-18.71);
 const phi = THREE.MathUtils.degToRad(255.28);
 const normal = new THREE.Vector3(
@@ -17,6 +17,7 @@ const normal = new THREE.Vector3(
 const tangent = new THREE.Vector3().crossVectors(normal, new THREE.Vector3(0, 1, 0)).normalize();
 const bitangent = new THREE.Vector3().crossVectors(normal, tangent).normalize();
 
+/** Creo la malla instanciada del penacho de Pele y su función de animación periódica por fotograma. */
 export function crearPenachoIo() {
   const count = 20;
   const mesh = new THREE.InstancedMesh(

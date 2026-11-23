@@ -1,5 +1,8 @@
+// En este módulo conecto los controles de visualización de la escena principal: capas visuales, modo de escala,
+// cambio entre perspectiva científica y cinematográfica, enfoque de la región interior y cierre del menú de vista.
 import { MODOS_ESCALA_VISUAL, REGIONES_SISTEMA } from '../graphics/ScaleModeConfig.js';
 
+// Enlazo los botones, interruptores y menús de presentación con los comandos y avisos de estado del simulador.
 export function crearControlesVisualizacion(simulador) {
   const menu = document.querySelector('#view-menu');
   const menuDestino = document.querySelector('#destination-menu');
@@ -18,6 +21,7 @@ export function crearControlesVisualizacion(simulador) {
   const botonRegionInterior = document.querySelector('#region-inner-button');
   const botonDestinoInterior = document.querySelector('#dest-inner-button');
 
+  // Actualizo los textos, encabezados y estados ARIA cuando la cámara alterna entre vista científica, región interior o cinematográfica.
   function actualizarEncabezadoVista(modo) {
     const cine = modo === 'cinematografica';
     const esInterior = !cine && simulador.regionSistemaActual?.() === REGIONES_SISTEMA.INTERIOR;
@@ -43,6 +47,7 @@ export function crearControlesVisualizacion(simulador) {
 
   simulador.alCambiarVista(actualizarEncabezadoVista);
 
+  // Escucho los cambios de escala visual para sincronizar la insignia y el estado pulsado de los botones de escala.
   if (simulador.alCambiarModoEscala) {
     simulador.alCambiarModoEscala(modoEscala => {
       const esCientifica = modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA;
@@ -71,8 +76,8 @@ export function crearControlesVisualizacion(simulador) {
     });
   }
 
+  // Aplico las capas visibles de órbitas, etiquetas y estrellas sin alterar ninguna posición astronómica.
   function actualizar() {
-    // Las capas cambian la presentación sin alterar las posiciones astronómicas.
     simulador.configurarVisualizacion({
       orbitas: orbitas.checked,
       etiquetas: etiquetas.checked,
@@ -80,6 +85,7 @@ export function crearControlesVisualizacion(simulador) {
     });
   }
 
+  // Escucho las casillas de capas, los cambios de escala visual y los accesos rápidos a la región interior.
   for (const control of [orbitas, etiquetas, estrellas]) {
     control.addEventListener('change', actualizar);
   }
@@ -108,6 +114,7 @@ export function crearControlesVisualizacion(simulador) {
     if (menuDestino) menuDestino.open = false;
   });
 
+  // Conecto los botones de cámara (restablecer, vista general y perspectiva) junto con el cierre por teclado o clic exterior del menú.
   document.querySelector('#reset-button').addEventListener('click', simulador.restablecerCamara);
   document.querySelector('#options-overview-button').addEventListener('click', () => {
     simulador.vistaGeneral();

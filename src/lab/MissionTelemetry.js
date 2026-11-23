@@ -1,9 +1,15 @@
+// Aquí transformo una muestra instantánea de reproducción lunar en la estructura de telemetría del Centro de Misión.
+// Separo los estados propagados (km, km/s, JD TDB), las magnitudes derivadas, el presupuesto propulsivo (kg, m/s)
+// y la estimación nominal de potencia (W, Wh) declarando explícitamente la procedencia de cada grupo.
+
+// Derivo el paquete de telemetría legible para la interfaz a partir de la ejecución lunar y la muestra del instante actual.
 export function deriveMissionTelemetry(execution, sample) {
   if (!execution || !sample) throw Error('Falta un estado de misión reproducible.');
   const engineering = execution.evaluation.engineering;
   const nominalGenerationW = engineering.generationW;
   const idleConsumptionW = engineering.idlePowerW;
   const netNominalW = nominalGenerationW - idleConsumptionW;
+  // Marco el objetivo alcanzado al llegar al instante de aproximación nominal o al máximo acercamiento en un sobrevuelo resuelto.
   const objectiveTime = execution.transfer.target === 'flyby'
     ? execution.transfer.closestApproach.elapsedSeconds : execution.transfer.flightSeconds;
   const objectiveReached = sample.elapsedSeconds >= objectiveTime

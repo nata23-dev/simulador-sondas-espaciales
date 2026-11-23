@@ -1,3 +1,7 @@
+// Aquí catalogo las fotografías históricas verificadas de Voyager 1 y Voyager 2 (NASA/JPL Photojournal,
+// Ames Archive y PDS Ring-Moon Systems Node), junto con los parámetros ópticos ISS (NAC y WAC) y la evaluación
+// de disponibilidad fotográfica para cualquier instante JD TDB.
+// Unidades y escala temporal: campos de visión en grados, ventanas de búsqueda en días y fechas UTC convertidas a JD TDB.
 import { utcTimestampToTdb } from './HistoricalTime.js';
 import {
   HISTORICAL_MISSIONS_CATALOG,
@@ -5,13 +9,14 @@ import {
   VOYAGER_2_ID
 } from './VoyagerHistoricalMissions.js';
 
-export const VOYAGER_ISS_NAC_FOV_DEG = 0.424; // 7,4 mrad × 7,4 mrad (f = 1500 mm, vidicón 800×800)
-export const VOYAGER_ISS_WAC_FOV_DEG = 3.18;  // 55,6 mrad × 55,6 mrad (f = 200 mm, vidicón 800×800)
+export const VOYAGER_ISS_NAC_FOV_DEG = 0.424; // Defino el campo de visión de la cámara NAC: 7,4 mrad × 7,4 mrad (f = 1500 mm, vidicón 800×800).
+export const VOYAGER_ISS_WAC_FOV_DEG = 3.18;  // Defino el campo de visión de la cámara WAC: 55,6 mrad × 55,6 mrad (f = 200 mm, vidicón 800×800).
 
 export const RECREATION_FIDELITY_LEVELS = Object.freeze({
   GEOMETRIC_APPROXIMATION: 'geometric_approximation'
 });
 
+/** Construyo una ficha normalizada de fotografía lunar documentada por día para el comparador visual. */
 function moonPhoto({ id, nasaId, missionId, title, dayUtc, displayDateUtc, targetBody,
   targetDisplay, instrument = 'Voyager ISS · cámara de ángulo estrecho (NAC)',
   instrumentFovDeg = VOYAGER_ISS_NAC_FOV_DEG, contextFovDeg = 5,
@@ -332,6 +337,7 @@ const RAW_PHOTOS = [
   }
 ];
 
+// Convierto cada fecha UTC del archivo fotográfico a JD TDB y congelo el catálogo ordenado cronológicamente.
 export const VOYAGER_PHOTO_CATALOG = Object.freeze(
   RAW_PHOTOS.map(photo => {
     const tdb = utcTimestampToTdb(photo.dateUtc);
@@ -344,6 +350,7 @@ export const VOYAGER_PHOTO_CATALOG = Object.freeze(
   }).sort((a, b) => a.jdTdb - b.jdTdb)
 );
 
+/** Aquí devuelvo las fotografías históricas filtradas por misión (`voyager-1`, `voyager-2` o `both`). */
 export function listVoyagerPhotos({ missionFilter = 'both' } = {}) {
   if (missionFilter === VOYAGER_1_ID || missionFilter === VOYAGER_2_ID) {
     return VOYAGER_PHOTO_CATALOG.filter(p => p.missionId === missionFilter);
@@ -351,13 +358,14 @@ export function listVoyagerPhotos({ missionFilter = 'both' } = {}) {
   return VOYAGER_PHOTO_CATALOG;
 }
 
+/** Aquí busco una fotografía histórica por su identificador y devuelvo `null` si no figura en el catálogo. */
 export function getVoyagerPhotoById(photoId) {
   return VOYAGER_PHOTO_CATALOG.find(p => p.id === photoId) ?? null;
 }
 
 /**
- * Evalúa qué fotografías documentadas corresponden a la fecha actual `jdTdb`
- * y aplica con rigor la regla de ausencia de imágenes y apagado definitivo de cámaras ISS.
+ * Aquí evalúo qué fotografías documentadas corresponden a la fecha `jdTdb` dentro de `windowDays`
+ * y aplico con rigor tanto la regla de ausencia de imágenes como los avisos de apagado definitivo de las cámaras ISS.
  */
 export function evaluateHistoricalPhotoAvailability(jdTdb, {
   missionFilter = 'both',

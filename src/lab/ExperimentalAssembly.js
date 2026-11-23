@@ -1,7 +1,7 @@
-// Etapa 17 — ensamblaje experimental: combina piezas de herencia de Voyager, Cassini, Dawn y Juno sobre el bus de una de ellas.
-// Es un vehículo hipotético, separado de las configuraciones históricas (que no se pueden modificar). Reutiliza las reglas de la
-// etapa 15 (puntos de montaje, envolventes, herrajes con adaptador, propelentes) y la verificación de ProbeEngineering.
-// No incluye piezas ilustrativas, sistemas de aterrizaje ni herramientas de superficie.
+// En este módulo gestiono el ensamblaje experimental, donde combino piezas de herencia de Voyager, Cassini, Dawn y Juno
+// sobre el bus de cualquiera de ellas para construir un vehículo hipotético sin alterar las configuraciones históricas.
+// Reutilizo las reglas de puntos de montaje, envolventes, adaptadores de herraje, compatibilidad de propelentes y validación
+// estructural, excluyendo piezas ilustrativas, trenes de aterrizaje y herramientas de superficie.
 import { getComponent, slotAccepts, fitsEnvelope, needsAdapter, adapterMassKg } from './ComponentCatalog.js';
 import { HERITAGE_COMPONENTS, HISTORICAL_PROBES, getHistoricalProbe } from './HeritageCatalog.js';
 import { historicalDesign, applyPartChange, validateDesign, DESIGN_FORMAT, DESIGN_VERSION } from './ProbeDesign.js';
@@ -12,14 +12,14 @@ export const EXPERIMENTAL_PARTS = Object.freeze(HERITAGE_COMPONENTS.filter(c => 
 
 const nameFor = baseProbeId => `Ensamblaje experimental (bus de ${getHistoricalProbe(baseProbeId)?.name ?? baseProbeId})`;
 
-/** Parte de la configuración histórica de una sonda; desde ahí cada punto de montaje se puede cambiar por otra pieza de herencia. */
+// Creo un diseño experimental partiendo de la configuración histórica elegida para poder intercambiar piezas por punto de montaje.
 export function createExperimentalDesign(baseProbeId = 'cassini') {
   const base = historicalDesign(baseProbeId);
   const { basedOn, ...rest } = base;
   return { ...rest, id: `experimental-${baseProbeId}`, name: nameFor(baseProbeId), experimental: true, baseProbeId: basedOn };
 }
 
-/** Piezas que admite un punto de montaje del bus, con la indicación de si necesitan adaptador y su masa estimada. */
+// Listo las piezas de herencia compatibles con un punto de montaje concreto, indicando si exigen adaptador y su masa estimada.
 export function slotOptions(design, slotId) {
   const core = getComponent(design.coreId), slot = core?.slots.find(item => item.id === slotId);
   if (!slot) return [];
@@ -27,11 +27,8 @@ export function slotOptions(design, slotId) {
     .map(c => ({ component: c, adapter: needsAdapter(slot, c), adapterMassKg: needsAdapter(slot, c) ? adapterMassKg(c) : 0 }));
 }
 
-/**
- * Cambia la pieza de un punto. `componentId` vacío deja el punto libre. Si el herraje no coincide se instala el adaptador
- * (masa estimada declarada); si el propelente choca con otra pieza, se sustituye por la equivalente compatible cuando existe.
- * Devuelve { design, notes } o lanza un error explicativo sin modificar el diseño recibido.
- */
+// Sustituyo o libero la pieza de un punto de montaje sin mutar el diseño recibido.
+// Si los herrajes difieren instalo el adaptador estructural; si el propelente choca con otra pieza, reintento sustituyendo equivalentes compatibles.
 export function changeSlot(design, slotId, componentId) {
   const notes = [];
   if (!componentId) {
@@ -57,11 +54,12 @@ export function changeSlot(design, slotId, componentId) {
   return { design: { ...next, experimental: true, baseProbeId: design.baseProbeId, name: design.name }, notes };
 }
 
-// validateDesign no conoce los campos propios del ensamblaje experimental: se comprueban aparte.
+// Retiro los campos exclusivos del modo experimental antes de delegar en validateDesign, que solo espera el esquema base.
 function stripExperimental(design) {
   const { experimental, baseProbeId, ...rest } = design;
   return rest;
 }
+// Verifico que el diseño experimental tenga formato vigente, bus histórico válido y solo piezas permitidas de herencia.
 export function validateExperimental(value) {
   if (!value || value.experimental !== true || !HISTORICAL_PROBES.some(p => p.id === value.baseProbeId)) return ['No es un ensamblaje experimental válido.'];
   if (value.format !== DESIGN_FORMAT || value.version !== DESIGN_VERSION) return ['Formato de diseño no compatible.'];
@@ -70,7 +68,7 @@ export function validateExperimental(value) {
   return errors;
 }
 
-/** Diferencias con la configuración histórica del bus elegido (lo que hace «experimental» al vehículo). */
+// Comparo cada punto de montaje contra la configuración histórica del bus base para listar las modificaciones activas.
 export function differencesFromBase(design) {
   const base = historicalDesign(design.baseProbeId), out = [];
   const core = getComponent(design.coreId);
@@ -82,6 +80,7 @@ export function differencesFromBase(design) {
   return out;
 }
 
+// Cargo y guardo el ensamblaje experimental en almacenamiento local ignorando datos corruptos o restricciones del navegador.
 export function loadExperimental(storage = globalThis.localStorage) {
   try { const value = JSON.parse(storage?.getItem(EXPERIMENTAL_STORAGE_KEY) ?? 'null'); return value && !validateExperimental(value).length ? value : null; }
   catch { return null; }

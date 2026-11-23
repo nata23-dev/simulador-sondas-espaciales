@@ -1,6 +1,8 @@
+// En este módulo calculo diámetros angulares aparentes, semitangentes proyectadas
+// y el campo de visión vertical mínimo para encuadrar esferas y anillos planos en cámara perspectiva.
 const DEGREES_PER_RADIAN = 180 / Math.PI;
 
-/** Diámetro aparente de una esfera vista desde fuera de su superficie. */
+/** Calculo el diámetro aparente en grados de una esfera observada desde fuera de su superficie. */
 export function sphereAngularDiameterDeg(radius, distance) {
   if (!Number.isFinite(radius) || radius <= 0 || !Number.isFinite(distance) || distance <= radius) {
     return null;
@@ -8,6 +10,7 @@ export function sphereAngularDiameterDeg(radius, distance) {
   return 2 * Math.asin(Math.min(1, radius / distance)) * DEGREES_PER_RADIAN;
 }
 
+/** Calculo la semitangente angular de una esfera a partir de su radio y distancia al observador. */
 export function sphereHalfTangent(radius, distance) {
   if (sphereAngularDiameterDeg(radius, distance) === null) return null;
   return radius / Math.sqrt((distance - radius) * (distance + radius));
@@ -15,7 +18,7 @@ export function sphereHalfTangent(radius, distance) {
 
 const dot = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z;
 
-/** Proyección angular del borde exterior de un anillo plano; no lo trata como esfera. */
+/** Muestreo el borde exterior de un anillo plano para obtener sus semitangentes proyectadas sin aproximarlo como esfera. */
 export function projectedRingHalfTangents({
   observer, center, axisX, axisY, outerRadius, forward, right, up, samples = 256
 }) {
@@ -42,7 +45,7 @@ export function projectedRingHalfTangents({
   return { horizontal, vertical, fullyInFront: true };
 }
 
-/** Campo vertical requerido para una proyección central dentro del área libre. */
+/** Calculo el campo de visión vertical mínimo en grados para contener una proyección centrada dentro del área libre. */
 export function requiredVerticalFovDeg({
   halfTangentX, halfTangentY, aspect, freeFractionX = 1, freeFractionY = 1, margin = 0.9
 }) {

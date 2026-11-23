@@ -1,13 +1,13 @@
-// Etapa 15 — biblioteca de herencia: piezas y configuraciones derivadas de sondas reales (Voyager, Cassini, Dawn, Juno).
+// En este módulo reúno la biblioteca de herencia con piezas y configuraciones derivadas de sondas reales (Voyager, Cassini, Dawn y Juno).
 //
-// Regla de datos: cada cifra relevante lleva su calidad y su fuente.
-//   documentado → publicado por NASA, JPL, ESA o NSSDCA (fuente primaria consultada el 19-11-2026);
-//   secundario  → ficha de fabricante de la misma familia o compilación enciclopédica, sin contraste primario en esta etapa;
-//   derivado    → calculado a partir de valores documentados (la operación se indica en la nota);
-//   estimado    → reparto o valor del simulador para cerrar un balance; NO es una especificación histórica;
-//   desconocido → no se dispone del dato; no se usa como si existiera.
-// Las masas por pieza casi nunca se publican: se estiman y la masa del bus se obtiene por cierre con la masa seca documentada.
-// Las geometrías 3D son reconstrucciones procedimentales con las dimensiones publicadas (no modelos CAD oficiales).
+// Aplico una política estricta de trazabilidad: cada cifra relevante lleva su calidad y fuente asociada:
+//   · documentado: valor publicado por NASA, JPL, ESA o NSSDCA (fuente primaria);
+//   · secundario: ficha de fabricante de la misma familia o compilación enciclopédica sin contraste primario directo;
+//   · derivado: valor calculado a partir de cifras documentadas (explico la operación en la nota);
+//   · estimado: reparto o estimación interna del simulador para cerrar el balance de masa/potencia (no es una ficha histórica);
+//   · desconocido: dato no disponible que no invento ni utilizo como si existiera.
+// Como las masas individuales por pieza rara vez se publican, las estimo y obtengo la masa del bus cerrando con la masa seca documentada.
+// Las geometrías 3D asociadas son reconstrucciones procedimentales a partir de las dimensiones publicadas, no modelos CAD oficiales.
 
 export const DATA_QUALITY = Object.freeze({
   documented: 'documentado', secondary: 'secundario', derived: 'derivado', estimated: 'estimado', unknown: 'desconocido'
@@ -36,8 +36,7 @@ const Q = (quality, source = null, note = '') => Object.freeze({ quality, source
 const v3 = (x, y, z) => Object.freeze([x, y, z]);
 const unit = (x, y, z) => { const n = Math.hypot(x, y, z); return v3(x / n, y / n, z / n); };
 
-// Punto de montaje de un bus de herencia. `accepts`: categorías admitidas; `interface`: herraje mecánico (si no coincide con el
-// de la pieza, hace falta un adaptador); `envelopeM`: mayor dimensión admisible; `direction`: normal exterior (eje +Y local de la pieza).
+// Construyo un punto de montaje de bus de herencia indicando categorías admitidas, interfaz mecánica, envolvente máxima y normal exterior (+Y local).
 const slot = (id, name, accepts, iface, position, direction, envelopeM) => Object.freeze({
   id, name, category: accepts[0], accepts: Object.freeze(accepts), interface: iface,
   position: v3(...position), direction: direction.length === 3 ? unit(...direction) : direction, envelopeM
@@ -45,7 +44,7 @@ const slot = (id, name, accepts, iface, position, direction, envelopeM) => Objec
 const PAYLOAD = ['camera', 'instrument', 'sensor'];
 const BAY = ['avionics', 'storage', 'battery'];
 
-// Valores por defecto idénticos a los del catálogo ilustrativo; `heritage` identifica el programa de origen.
+// Creo cada pieza de herencia con los mismos campos base del catálogo ilustrativo más sus metadatos de calidad y fuentes.
 const piece = (id, name, category, heritage, dryMassKg, dimensionsM, extra = {}) => Object.freeze({
   id, name, category, heritage, dryMassKg, dimensionsM: Object.freeze(dimensionsM),
   idlePowerW: 0, activePowerW: 0, generationW: 0, batteryWh: 0, fuelCapacityKg: 0, thrustN: 0, ispS: 0,
@@ -54,15 +53,15 @@ const piece = (id, name, category, heritage, dryMassKg, dimensionsM, extra = {})
 });
 const meta = (data, sources) => ({ data: Object.freeze(data), sources: Object.freeze(sources) });
 
-// Tasa de disminución de un RTG ajustada a dos puntos documentados: P(t) = P0·e^(−λt).
+// Ajusto la constante de decaimiento exponencial de un RTG a partir de dos potencias documentadas: P(t) = P0·e^(−λt).
 const rtgDecay = (p0, p1, years) => Math.log(p0 / p1) / years;
-// Exponente de la ley de potencia solar P(r) = P1·r^(−k) ajustado a dos puntos documentados.
+// Ajusto el exponente de la ley de potencia solar P(r) = P1·r^(−k) con dos puntos documentados en unidades astronómicas.
 const solarExponent = (p1, pr, rAu) => Math.log(p1 / pr) / Math.log(rAu);
 
 // ---------------------------------------------------------------------------------------------------------------------------
-// VOYAGER — bus decagonal (NSSDCA), 3 MHW-RTG, antena de 3,66 m, propulsión de hidracina.
+// Defino el bloque de piezas y bus decagonal de Voyager (3 MHW-RTG, antena de 3,66 m y propulsión de hidracina).
 // ---------------------------------------------------------------------------------------------------------------------------
-const VOYAGER_DRY_KG = 825.5 - 100; // derivado: masa de lanzamiento del módulo de misión − hidracina (ambas fuente secundaria)
+const VOYAGER_DRY_KG = 825.5 - 100; // obtengo la masa seca restando la hidracina a la masa de lanzamiento del módulo de misión
 const VOYAGER_PARTS = [
   piece('voy-hga', 'Antena de alta ganancia de Voyager (3,66 m)', 'antenna', 'voyager', 50, [3.66, 0.75, 3.66], {
     shape: 'dish', interface: 'hga-mount', idlePowerW: 60,
@@ -128,7 +127,7 @@ const VOYAGER_BUS = piece('bus-voyager', 'Bus decagonal de Voyager', 'structure'
 });
 
 // ---------------------------------------------------------------------------------------------------------------------------
-// CASSINI — orbitador de 2125 kg secos (ESA), 3 GPHS-RTG (885 W), 2 motores de 445 N (uno de reserva), antena de 4 m.
+// Defino el bloque de piezas y estructura de Cassini (2125 kg secos, 3 GPHS-RTG, 2 motores de 445 N y antena de 4 m).
 // ---------------------------------------------------------------------------------------------------------------------------
 const CASSINI_DRY_KG = 2125;
 const CASSINI_RTG = piece('cas-rtg', 'Generador GPHS-RTG de Cassini', 'rtg', 'cassini', 56, [0.42, 1.14, 0.42], {
@@ -205,7 +204,7 @@ const CASSINI_BUS = piece('bus-cassini', 'Estructura de Cassini (módulos de equ
 });
 
 // ---------------------------------------------------------------------------------------------------------------------------
-// DAWN — bus de 1,64 × 1,27 × 1,77 m, 747,1 kg secos, 425 kg de xenón, 45,6 kg de hidracina, 10,3 kW a 1 AU (NSSDCA).
+// Defino el bloque de piezas y bus prismático de Dawn (747,1 kg secos, 425 kg de xenón, propulsión iónica y 10,3 kW a 1 AU).
 // ---------------------------------------------------------------------------------------------------------------------------
 const DAWN_DRY_KG = 747.1;
 const DAWN_WING = piece('dawn-wing', 'Ala solar de Dawn (2,3 × 8,3 m)', 'solar', 'dawn', 60, [2.3, 9.03, 0.06], {
@@ -277,10 +276,10 @@ const DAWN_BUS = piece('bus-dawn', 'Bus prismático de Dawn', 'structure', 'dawn
 });
 
 // ---------------------------------------------------------------------------------------------------------------------------
-// JUNO — bus hexagonal de 3,5 m, tres alas de 9 × 2,65 m (14 kW en la Tierra, ~400 W en Júpiter), Leros-1b de 645 N (JPL/NASA).
+// Defino el bloque de piezas y bus hexagonal de Juno (3 alas solares de 9 m, 14 kW a 1 AU y motor principal Leros-1b de 645 N).
 // ---------------------------------------------------------------------------------------------------------------------------
 const JUNO_PROPELLANT_KG = 1280 + 752;
-const JUNO_DRY_KG = 3625 - JUNO_PROPELLANT_KG; // derivado: lanzamiento − combustible − oxidante (JPL)
+const JUNO_DRY_KG = 3625 - JUNO_PROPELLANT_KG; // calculo la masa seca restando combustible y oxidante a la masa de lanzamiento
 const JUNO_WING = piece('juno-wing', 'Ala solar de Juno (9 × 2,65 m)', 'solar', 'juno', 112, [2.65, 9, 0.08], {
   shape: 'wing', panelLengthM: 9, interface: 'wing-hinge', generationW: 14000 / 3, solarExponent: solarExponent(14000, 400, 5.4), powerSource: 'solar',
   description: 'Una de las tres alas (18 698 células en total): unos 14 kW a la distancia de la Tierra y unos 400 W en Júpiter.',
@@ -353,7 +352,7 @@ export const HERITAGE_COMPONENTS = Object.freeze([
   VOYAGER_BUS, ...VOYAGER_PARTS, CASSINI_BUS, ...CASSINI_PARTS, DAWN_BUS, ...DAWN_PARTS, JUNO_BUS, ...JUNO_PARTS
 ]);
 
-// Configuraciones históricas: [punto, pieza, propelente cargado (kg) si es un depósito].
+// Ensamblo las configuraciones históricas de referencia en formato [punto de montaje, pieza, propelente cargado en kg].
 const fact = (label, value, quality, source = null) => Object.freeze({ label, value, quality, source });
 export const HISTORICAL_PROBES = Object.freeze([
   Object.freeze({

@@ -1,10 +1,12 @@
+// En este módulo cargo el catálogo estelar Hipparcos (magnitud ≤ 6,5) y proyecto
+// sus coordenadas ecuatoriales ICRS hacia el marco de la escena 3D.
 import * as THREE from 'three';
 
 const OBLICUIDAD_J2000 = THREE.MathUtils.degToRad(84381.448 / 3600);
 const COS_OBLICUIDAD = Math.cos(OBLICUIDAD_J2000);
 const SIN_OBLICUIDAD = Math.sin(OBLICUIDAD_J2000);
 
-// Convierte ICRS a la eclíptica J2000 y luego a los ejes visuales (x, z, -y).
+/** Convierto ascensión recta y declinación ICRS a eclíptica J2000 y luego a los ejes de escena (x, y, z) → (x, z, -y). */
 export function direccionICRSEscena(ascensionRecta, declinacion) {
   const ra = THREE.MathUtils.degToRad(ascensionRecta);
   const dec = THREE.MathUtils.degToRad(declinacion);
@@ -16,6 +18,7 @@ export function direccionICRSEscena(ascensionRecta, declinacion) {
   return new THREE.Vector3(x, zEcliptica, -yEcliptica);
 }
 
+/** Descargo y analizo la tabla TSV de Hipparcos devolviendo tuplas compactas [ra, dec, magnitud, B-V] en un Float32Array. */
 export async function cargarCatalogoHipparcos() {
   const ruta = `${import.meta.env.BASE_URL}data/hipparcos-vmag-6p5.tsv`;
   const respuesta = await fetch(ruta);

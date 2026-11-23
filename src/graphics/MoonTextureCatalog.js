@@ -1,4 +1,5 @@
-// Visual metadata only. Map orientation is not tied to a validated CK/IAU frame.
+// En este módulo reúno únicamente los metadatos visuales, fuentes cartográficas y limitaciones
+// documentales de las texturas lunares; no vinculo la orientación de los mapas a un marco CK/IAU validado.
 export const MOON_TEXTURES = Object.freeze({
   Luna: {
     file: 'moon-lroc-color-2k.jpg',

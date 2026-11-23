@@ -1,3 +1,5 @@
+// Aquí implemento la reproducción determinista de una misión lunar ya calculada, junto con la interpolación
+// cúbica de Hermite de estados integrados (km, km/s) y el reloj de reproducción hacia delante o hacia atrás.
 import { advanceJdTdb } from '../science/Time.js';
 import { queryMoon } from '../science/PlanetaryMoons.js';
 import { EARTH_RADIUS_KM, MOON_RADIUS_KM, TRANSFER_MODEL_VERSION } from './MissionPhysics.js';
@@ -11,6 +13,7 @@ function validVector(vector) {
   return Array.isArray(vector) && vector.length === 3 && vector.every(Number.isFinite);
 }
 
+// Verifico vigencia, viabilidad y cobertura efemérica de un plan lunar para empaquetarlo como ejecución reproducible.
 export function createMissionExecution({ result, design, dataset, name = 'Misión lunar' }) {
   if (!result || !design || !dataset?.moons?.Luna) throw Error('Falta una planificación y la efeméride lunar validada.');
   let options;
@@ -47,6 +50,7 @@ export function createMissionExecution({ result, design, dataset, name = 'Misió
     evaluation: structuredClone(result.evaluation), dataset, options, durationSeconds, events });
 }
 
+// Interpolo posición (km) y velocidad (km/s) entre dos nudos consecutivos mediante un polinomio cúbico de Hermite.
 export function sampleIntegratedState(knots, seconds) {
   if (seconds === knots[0].elapsedSeconds) return { positionKm: [...knots[0].positionKm], velocityKmS: [...knots[0].velocityKmS], segmentIndex: 0 };
   if (seconds === knots.at(-1).elapsedSeconds) return { positionKm: [...knots.at(-1).positionKm], velocityKmS: [...knots.at(-1).velocityKmS], segmentIndex: knots.length - 2 };
@@ -72,6 +76,7 @@ export function sampleIntegratedState(knots, seconds) {
   return { positionKm, velocityKmS, segmentIndex: low };
 }
 
+// Evalúo el estado completo de la misión lunar (nave, Luna, distancias, masa y fase) en un instante y lado de maniobra.
 export function sampleMissionExecution(execution, elapsedSeconds, { side = 'post' } = {}) {
   if (!execution || !Number.isFinite(elapsedSeconds) || elapsedSeconds < 0 || elapsedSeconds > execution.durationSeconds) {
     throw Error('Instante fuera de la trayectoria calculada.');
@@ -113,6 +118,7 @@ export function sampleMissionExecution(execution, elapsedSeconds, { side = 'post
   };
 }
 
+// Creo un reloj de reproducción acotado a [0, durationSeconds] con velocidad, sentido, saltos y distinción pre/post inyección.
 export function createPlaybackClock(durationSeconds, { maxRate = 86400 } = {}) {
   if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) throw Error('Duración de reproducción inválida.');
   let elapsedSeconds = 0, rate = 3600, direction = 1, playing = false, beforeManeuver = true, finished = false;

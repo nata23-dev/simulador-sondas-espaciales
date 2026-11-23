@@ -1,3 +1,9 @@
+/**
+ * En este módulo cargo y consulto las efemérides planetarias diarias de 2026
+ * provenientes de NASA/JPL Horizons para el modo de exploración.
+ * Las posiciones vienen en unidades astronómicas (AU) y las velocidades en AU/día,
+ * expresadas en el marco heliocéntrico eclíptico J2000 con fechas etiquetadas en TDB.
+ */
 
 export const PLANETAS = [
   'Mercurio',
@@ -10,6 +16,7 @@ export const PLANETAS = [
   'Neptuno'
 ];
 
+// Cargo el JSON local de efemérides diarias y valido que incluya metadatos y series no vacías para los ocho planetas.
 export async function cargarEfemerides() {
   const respuesta = await fetch(`${import.meta.env.BASE_URL}data/efemerides-2026.json`);
 
@@ -34,8 +41,9 @@ export async function cargarEfemerides() {
   return datos;
 }
 
+// Recupero el estado diario de todos los planetas para una fecha ISO dada, verificando la finitud de cada componente.
 export function obtenerEstados(datos, fechaISO) {
-  // Las muestras están ordenadas por día; usamos UTC solo para localizar el índice TDB.
+  // Como las muestras están ordenadas día a día, uso la diferencia en días UTC únicamente para calcular el índice TDB.
   const inicio = Date.parse(`${datos.metadatos.inicio}T00:00:00Z`);
   const fecha = Date.parse(`${fechaISO}T00:00:00Z`);
 
@@ -67,7 +75,7 @@ export function obtenerEstados(datos, fechaISO) {
 
     estados[nombre] = {
       ...registro,
-      // La distancia se deriva del vector original y no modifica la efeméride.
+      // Calculo la distancia heliocéntrica a partir del vector original sin alterar la muestra de efemérides.
       distanciaAU: Math.hypot(p.x, p.y, p.z)
     };
   }

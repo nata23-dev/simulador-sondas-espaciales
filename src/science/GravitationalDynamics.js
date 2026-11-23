@@ -1,3 +1,21 @@
+/**
+ * En este módulo calculo aceleraciones gravitacionales, integrales orbitales de
+ * dos cuerpos, campos síncronos de efemérides prescritas y derivadas ODE para la
+ * propagación de sondas espaciales.
+ *
+ * - Unidades: posiciones y distancias en km, velocidades en km/s, aceleraciones
+ *   en `km/s^2`, parámetros gravitacionales GM en `km^3/s^2`, energía específica
+ *   en `km^2/s^2`, momento angular específico en `km^2/s`, tiempos relativos en
+ *   segundos (s) y épocas absolutas en JD TDB.
+ * - Marco de referencia: en el modelo heliocéntrico exijo `SUN_CENTER` /
+ *   `ICRF_ECLIPTIC_J2000` (incluyendo términos indirectos solares evaluados con
+ *   la identidad de Battin contra cancelación numérica); en el modelo mutuo de
+ *   N cuerpos exijo origen inercial/baricéntrico (`SOLAR_SYSTEM_BARYCENTER` o
+ *   `INERTIAL_ORIGIN`) y rechazo coordenadas heliocéntricas.
+ * - Límites: nunca extrapolo efemérides fuera de cobertura, impongo distancias
+ *   mínimas de seguridad para evitar singularidades gravitacionales y rechazo
+ *   vectores no finitos, conflictos o huecos de efemérides.
+ */
 import { HORIZONS_FRAME } from './Frames.js';
 import { SUN_BODY_ID } from './GravitationalParameters.js';
 import { requireJdTdb, secondsBetweenJdTdb } from './Time.js';
@@ -20,6 +38,7 @@ export class DynamicsError extends Error {
   }
 }
 
+/** Valido que un parámetro físico o umbral sea un número finito estrictamente positivo. */
 function requirePositiveParam(value, name) {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
     throw new DynamicsError(
@@ -31,6 +50,7 @@ function requirePositiveParam(value, name) {
   return value;
 }
 
+/** Compruebo que un vector tridimensional tenga componentes `x`, `y`, `z` numéricas y finitas. */
 function requireFiniteVectorComponents(vector, name) {
   if (vector === null || typeof vector !== 'object' || Array.isArray(vector)) {
     throw new DynamicsError(
@@ -51,6 +71,7 @@ function requireFiniteVectorComponents(vector, name) {
   return vector;
 }
 
+/** Rechazo distancias no finitas, nulas (singularidad) o inferiores al umbral mínimo de seguridad del cuerpo. */
 function checkDistanceSafety(distanceKm, minDistanceKm, bodyId, context) {
   if (!Number.isFinite(distanceKm)) {
     throw new DynamicsError(
@@ -76,9 +97,10 @@ function checkDistanceSafety(distanceKm, minDistanceKm, bodyId, context) {
 }
 
 /**
- * Aceleración gravitacional del problema aislado de dos cuerpos:
- *   a = -mu * r / |r|^3
- * Posición en km, velocidad opcional validada en km/s, aceleración en km/s^2.
+ * Aquí calculo la aceleración gravitacional del problema aislado de dos cuerpos:
+ *   `a = −mu · r / |r|^3`
+ * Recibo posición en km (y velocidad opcional validada en km/s) y devuelvo la
+ * aceleración en `km/s^2`.
  */
 export function computeTwoBodyAcceleration({
   positionKm,
@@ -117,8 +139,8 @@ export function computeTwoBodyAcceleration({
 }
 
 /**
- * Energía mecánica específica del problema aislado de dos cuerpos:
- *   epsilon = |v|^2 / 2 - mu / |r|   [km^2 / s^2]
+ * Aquí calculo la energía mecánica específica del problema aislado de dos cuerpos:
+ *   `epsilon = |v|^2 / 2 − mu / |r|` en `km^2/s^2`.
  */
 export function computeSpecificMechanicalEnergy({ positionKm, velocityKmPerS, muKm3PerS2 }) {
   requireFiniteVectorComponents(positionKm, 'positionKm');
@@ -133,8 +155,8 @@ export function computeSpecificMechanicalEnergy({ positionKm, velocityKmPerS, mu
 }
 
 /**
- * Momento angular específico del problema aislado de dos cuerpos:
- *   h = r x v   [km^2 / s]
+ * Aquí calculo el momento angular específico del problema aislado de dos cuerpos:
+ *   `h = r × v` en `km^2/s`.
  */
 export function computeSpecificAngularMomentum({ positionKm, velocityKmPerS }) {
   requireFiniteVectorComponents(positionKm, 'positionKm');
@@ -152,8 +174,8 @@ export function computeSpecificAngularMomentum({ positionKm, velocityKmPerS }) {
 }
 
 /**
- * Crea la función derivada de estado de 6 componentes `[x, y, z, vx, vy, vz]`
- * para el problema de dos cuerpos usando `Float64Array`.
+ * Aquí creo la derivada ODE de 6 componentes `[x, y, z, vx, vy, vz]` sobre
+ * `Float64Array` para integrar el problema de dos cuerpos.
  */
 export function createTwoBodyDerivative({
   muKm3PerS2,
@@ -198,9 +220,8 @@ export function createTwoBodyDerivative({
 }
 
 /**
- * Identidad exacta de Battin f(q) = ((1 + q)^(3/2) - 1) para evitar cancelación
- * catastrófica entre el término directo y el término indirecto cuando |q| <= 0.5:
- *   (1 + q)^(3/2) - 1 = q * (3 + 3q + q^2) / (1 + (1 + q)^(3/2))
+ * Evalúo la identidad exacta de Battin `f(q) = (1 + q)^(3/2) − 1 = q·(3 + 3q + q^2) / (1 + (1 + q)^(3/2))`
+ * para evitar la cancelación catastrófica entre el término directo y el indirecto cuando `|q| <= 0.5`.
  */
 function battinDeltaFactor(q) {
   const onePlusQ = 1 + q;
@@ -209,9 +230,9 @@ function battinDeltaFactor(q) {
 }
 
 /**
- * Valida que un estado u opciones sean coherentes con el marco heliocéntrico
- * `SUN_CENTER` / `ICRF_ECLIPTIC_J2000`. Impide usar coordenadas baricéntricas o
- * desconocidas haciéndolas pasar por heliocéntricas.
+ * Aquí valido que un estado o configuración pertenezca al marco heliocéntrico
+ * `SUN_CENTER` / `ICRF_ECLIPTIC_J2000`, impidiendo evaluar coordenadas baricéntricas
+ * o desconocidas como si fueran heliocéntricas.
  */
 export function assertHeliocentricFrameCompatibility({
   origin = HORIZONS_FRAME.origin,
@@ -227,15 +248,14 @@ export function assertHeliocentricFrameCompatibility({
 }
 
 /**
- * Modelo A: Aceleración gravitacional sobre una sonda de masa despreciable en el
- * marco heliocéntrico no rotante (`SUN_CENTER`, `ICRF_ECLIPTIC_J2000`) bajo el Sol
- * y perturbadores con efemérides prescritas:
+ * Aquí evalúo la aceleración gravitacional del Modelo A sobre una sonda de masa
+ * despreciable en el marco heliocéntrico no rotante (`SUN_CENTER`, `ICRF_ECLIPTIC_J2000`)
+ * bajo la atracción solar y los cuerpos perturbadores con efemérides prescritas:
  *
- *   r'' = -mu_sun * r / |r|^3 + sum_j mu_j * [ (r_j - r) / |r_j - r|^3 - r_j / |r_j|^3 ]
+ *   `r'' = −mu_sun·r / |r|^3 + sum_j mu_j · [ (r_j − r) / |r_j − r|^3 − r_j / |r_j|^3 ]`
  *
- * El segundo término dentro de la suma (`-mu_j * r_j / |r_j|^3`) es la aceleración
- * indirecta debida a la aceleración gravitacional del origen solar provocada por los
- * cuerpos perturbadores.
+ * Incluyo el término indirecto `−mu_j·r_j / |r_j|^3` que compensa la aceleración
+ * gravitacional del origen solar provocada por cada cuerpo perturbador.
  */
 export function evaluateHeliocentricProbeAcceleration({
   positionKm,
@@ -360,7 +380,7 @@ export function evaluateHeliocentricProbeAcceleration({
     const rj = Math.hypot(rjx, rjy, rjz);
     checkDistanceSafety(rj, minSunKm, bodyId, 'distancia heliocéntrica del cuerpo perturbador');
 
-    // Vector desde el planeta j hacia la sonda: d_j = r - r_j
+    // Calculo el vector desde el planeta j hacia la sonda: d_j = r − r_j.
     const dx = rx - rjx;
     const dy = ry - rjy;
     const dz = rz - rjz;
@@ -445,10 +465,10 @@ export function evaluateHeliocentricProbeAcceleration({
 }
 
 /**
- * Modelo B (extensibilidad arquitectónica): evaluación de aceleraciones mutuas
- * para un sistema de N cuerpos masivos en un marco INERCIAL / BARICÉNTRICO (`SSB`).
- * Rechaza explícitamente vectores heliocéntricos (`SUN_CENTER`) para impedir que
- * un estado con origen acelerado se evalúe con una ecuación baricéntrica.
+ * Aquí evalúo el Modelo B de aceleraciones gravitacionales mutuas para un sistema
+ * de N cuerpos masivos en un marco inercial/baricéntrico (`SOLAR_SYSTEM_BARYCENTER`
+ * o `INERTIAL_ORIGIN`). Rechazo explícitamente coordenadas heliocéntricas (`SUN_CENTER`)
+ * para impedir que un origen acelerado se trate con ecuaciones baricéntricas.
  */
 export function evaluateInertialMutualAccelerations({
   origin,
@@ -527,6 +547,7 @@ export function evaluateInertialMutualAccelerations({
   })));
 }
 
+/** Localizo el segmento temporal `[times[i], times[i+1]]` aprovechando `hintIndex` en O(1) antes de recurrir a búsqueda binaria. */
 function binarySearchInterval(times, t, hintIndex) {
   const last = times.length - 1;
   if (hintIndex >= 0 && hintIndex < last && t >= times[hintIndex] && t <= times[hintIndex + 1]) {
@@ -543,13 +564,12 @@ function binarySearchInterval(times, t, hintIndex) {
 }
 
 /**
- * Construye una ventana síncrona e inmutable de efemérides prescritas en
- * `Float64Array` indexada por segundos relativos a `epochJdTdb`.
- *
- * - Verifica cobertura, conflictos, huecos, origen (`SUN_CENTER`) y marco (`ICRF_ECLIPTIC_J2000`).
- * - Utiliza exactamente la misma formulación cúbica de Hermite que `HermiteInterpolation.js`.
- * - No extrapola jamás: cualquier consulta fuera de cobertura lanza `OUTSIDE_EPHEMERIS_COVERAGE`.
- * - No muta los estados del proveedor.
+ * Aquí preparo una ventana síncrona e inmutable de efemérides prescritas en
+ * arreglos `Float64Array` indexados en segundos relativos a `epochJdTdb`:
+ * - Verifico cobertura, conflictos, huecos, origen (`SUN_CENTER`) y marco (`ICRF_ECLIPTIC_J2000`).
+ * - Interpolo con los mismos polinomios cúbicos de Hermite que `HermiteInterpolation.js`,
+ *   cacheando el último segmento consultado (`lastHintIndex`) por cuerpo.
+ * - Rechazo cualquier consulta fuera de cobertura con `OUTSIDE_EPHEMERIS_COVERAGE` sin extrapolar jamás.
  */
 export async function preparePrescribedEphemerisField({
   provider,
@@ -866,8 +886,9 @@ export async function preparePrescribedEphemerisField({
 }
 
 /**
- * Crea la derivada ODE rápida de 6 componentes (`Float64Array`, cero asignaciones
- * en el bucle interno) para propagar una sonda heliocéntrica con efemérides prescritas.
+ * Aquí construyo la derivada ODE rápida de 6 componentes sobre `Float64Array`
+ * (sin asignaciones en el bucle interno) para propagar una sonda heliocéntrica
+ * bajo la atracción solar y cuerpos perturbadores con efemérides prescritas.
  */
 export function createHeliocentricProbeDerivative({
   catalog,

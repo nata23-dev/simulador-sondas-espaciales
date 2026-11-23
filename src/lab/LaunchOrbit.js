@@ -1,30 +1,32 @@
-// Etapa 12E — elementos orbitales osculadores y clasificación del resultado de un lanzamiento.
-// Entrada en el marco inercial terrestre ECI-L (km, km/s). Dos cuerpos con GM terrestre; sin arrastre
-// ni J2 en los elementos: son osculadores en el instante evaluado.
+// Aquí calculo los elementos orbitales osculadores y clasifico el resultado final de un lanzamiento terrestre.
+// Trabajo en el marco inercial ECI-L (km, km/s) bajo el problema de dos cuerpos con el GM de la Tierra,
+// sin arrastre ni perturbación J2 en los elementos: representan la órbita instantánea en el instante evaluado.
 import { EARTH_GM_KM3_S2, cross3, dot3, ellipsoidRadiusKm, geodeticFromPosition, norm3 } from './LaunchEarth.js';
 
 const DEG = 180 / Math.PI;
+// Defino las categorías principales con las que clasifico el desenlace orbital del lanzamiento.
 export const ORBIT_CLASSES = Object.freeze({
   orbit: 'ÓRBITA TERRESTRE ALCANZADA SEGÚN EL MODELO', suborbital: 'SUBORBITAL',
   notReached: 'OBJETIVO NO ALCANZADO', unverifiable: 'NO VERIFICABLE'
 });
-// 12E.1: resultado fino dentro de la familia SUBORBITAL (campo `outcome`). `classification` conserva la familia.
+// Distingo los subresultados específicos dentro de la familia SUBORBITAL (campo `outcome`) manteniendo `classification`.
 export const SUBORBITAL_OUTCOMES = Object.freeze({ impactConfirmed: 'IMPACTO CONFIRMADO', descending: 'SUBORBITAL DESCENDENTE', ellipseIntersects: 'SUBORBITAL' });
 export const DEFAULT_TARGET_ORBIT = Object.freeze({
-  // Perigeo mínimo para considerar la órbita operativamente sostenible en este modelo (no es una garantía de vida orbital).
+  // Fijo un perigeo mínimo de 160 km para considerar la órbita operativamente sostenible en este modelo (sin garantizar vida orbital real).
   minPerigeeAltitudeKm: 160, maxApogeeAltitudeKm: 2000, inclinationDeg: null, inclinationToleranceDeg: 1, targetAltitudeKm: 200
 });
 
+// Calculo los elementos orbitales osculadores clásicos (energía, momento angular, excentricidad, inclinación, ápsides y periodo).
 export function orbitalElements(position, velocity, mu = EARTH_GM_KM3_S2) {
   const r = norm3(position), v2 = dot3(velocity, velocity);
   if (![r, v2].every(Number.isFinite) || r <= 0) throw Error('Estado orbital no finito.');
   const h = cross3(position, velocity), hn = norm3(h);
-  const energy = v2 / 2 - mu / r; // energía orbital específica, km²/s²
+  const energy = v2 / 2 - mu / r; // Energía orbital específica en km²/s².
   const rv = dot3(position, velocity);
   const evec = [0, 1, 2].map(i => ((v2 - mu / r) * position[i] - rv * velocity[i]) / mu);
   const e = norm3(evec);
   const bound = energy < 0;
-  const semiMajorAxisKm = Math.abs(energy) > 1e-12 ? -mu / (2 * energy) : null; // parábola: indefinido
+  const semiMajorAxisKm = Math.abs(energy) > 1e-12 ? -mu / (2 * energy) : null; // En una parábola exacta el semieje mayor no está definido.
   const periapsisRadiusKm = hn * hn / (mu * (1 + e));
   const apoapsisRadiusKm = bound ? hn * hn / (mu * (1 - e)) : null;
   return {
@@ -36,14 +38,14 @@ export function orbitalElements(position, velocity, mu = EARTH_GM_KM3_S2) {
   };
 }
 
-// Altitud mínima de la órbita (perigeo) sobre el elipsoide WGS84, comparando r(ν) con el radio del elipsoide
-// a la latitud geocéntrica de cada punto de la órbita (muestreo de la anomalía verdadera).
+// Estimo la altitud mínima (km) de toda la órbita elíptica sobre el elipsoide WGS84 muestreando la anomalía verdadera
+// y comparando el radio orbital r(ν) con el radio del elipsoide a cada latitud geocéntrica.
 export function minimumOrbitAltitudeKm(position, velocity, mu = EARTH_GM_KM3_S2, samples = 720) {
   const el = orbitalElements(position, velocity, mu);
   if (!el.bound) return null;
   const hhat = el.angularMomentumVectorKm2S.map(x => x / el.angularMomentumKm2S);
   const p = el.angularMomentumKm2S ** 2 / mu;
-  // Base perifocal: P̂ hacia el perigeo (si e≈0 se usa la posición actual), Q̂ = ĥ × P̂.
+  // Construyo la base perifocal: P̂ apunta al perigeo (o a la posición actual si e ≈ 0) y Q̂ = ĥ × P̂.
   const pHat = el.eccentricity > 1e-9 ? el.eccentricityVector.map(x => x / el.eccentricity) : position.map(x => x / el.radiusKm);
   const qHat = cross3(hhat, pHat);
   let minimum = Infinity;
@@ -56,18 +58,18 @@ export function minimumOrbitAltitudeKm(position, velocity, mu = EARTH_GM_KM3_S2,
   return minimum;
 }
 
-// Altitud osculante del perigeo (para detener un encendido cuando se alcanza el perigeo objetivo).
+// Calculo rápidamente la altitud osculadora del perigeo (km) para cortar el encendido de circularización al llegar al objetivo.
 export function osculatingPerigeeAltitudeKm(position, velocity, mu = EARTH_GM_KM3_S2) {
   const el = orbitalElements(position, velocity, mu);
   const dir = el.eccentricity > 1e-9 ? el.eccentricityVector.map(x => x / el.eccentricity) : position.map(x => x / el.radiusKm);
   return el.periapsisRadiusKm - ellipsoidRadiusKm(Math.asin(dir[2]));
 }
 
-// Clasificación explícita. Criterios (documentados en docs/STAGE12E_EARTH_LAUNCH.md):
-//  - NO VERIFICABLE: estado no finito o dentro de la atmósfera densa sin impacto (el arrastre invalida los elementos).
-//  - SUBORBITAL: ligada, pero la elipse intersecta el elipsoide terrestre (o hubo impacto).
-//  - OBJETIVO NO ALCANZADO: no ligada, o ligada con perigeo por debajo del mínimo sostenible, o fuera de los límites de la órbita objetivo.
-//  - ÓRBITA ALCANZADA SEGÚN EL MODELO: ligada, sin intersección, perigeo >= mínimo, apogeo <= máximo, inclinación en tolerancia si se pidió.
+// Clasifico el estado final según criterios explícitos:
+//  - NO VERIFICABLE: estado no finito o aún dentro de la atmósfera densa (< 100 km) sin descenso suborbital concluyente.
+//  - SUBORBITAL: hubo impacto o la elipse ligada intersecta el elipsoide WGS84.
+//  - OBJETIVO NO ALCANZADO: trayectoria no ligada, perigeo bajo el mínimo sostenible o parámetros fuera de tolerancia.
+//  - ÓRBITA ALCANZADA SEGÚN EL MODELO: ligada, sin intersección terrestre y dentro de los límites de perigeo, apogeo e inclinación.
 export function classifyOrbit(position, velocity, target = DEFAULT_TARGET_ORBIT, { impact = false, mu = EARTH_GM_KM3_S2 } = {}) {
   const criteria = { ...DEFAULT_TARGET_ORBIT, ...target };
   const reasons = [];
@@ -77,8 +79,8 @@ export function classifyOrbit(position, velocity, target = DEFAULT_TARGET_ORBIT,
     const altitudeKm = geodeticFromPosition(position).altitudeKm;
     if (impact) return { classification: ORBIT_CLASSES.suborbital, outcome: SUBORBITAL_OUTCOMES.impactConfirmed, reasons: ['Impacto con la superficie localizado por el detector de eventos (altitud 0).'], elements, minimumAltitudeKm: null, altitudeKm, criteria };
     if (altitudeKm < 100) {
-      // 12E.1: bajo 100 km no se verifica una órbita, pero sí puede establecerse una trayectoria suborbital descendente:
-      // ligada, con radial negativa y la elipse osculadora intersectando el elipsoide.
+      // Por debajo de 100 km no certifico una órbita, pero sí identifico una trayectoria suborbital descendente
+      // cuando la órbita osculadora es ligada, la velocidad radial es negativa y la elipse corta el elipsoide.
       const descending = dot3(position, velocity) < 0 && elements.bound && minimumOrbitAltitudeKm(position, velocity, mu) < 0;
       if (descending) return { classification: ORBIT_CLASSES.suborbital, outcome: SUBORBITAL_OUTCOMES.descending, reasons: [`Trayectoria descendente a ${altitudeKm.toFixed(1)} km cuya elipse osculadora intersecta la Tierra; el contacto aún no se detectó en la propagación.`], elements, minimumAltitudeKm: minimumOrbitAltitudeKm(position, velocity, mu), altitudeKm, criteria };
     }

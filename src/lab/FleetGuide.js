@@ -1,12 +1,11 @@
-// Etapa 16 — guía de la flota: qué consigue cada sonda en cada herramienta del laboratorio según el modelo.
-// No son datos históricos ni estimaciones: son resultados del propio motor con los valores por defecto de cada herramienta,
-// y tests/Stage16Coherence.test.mjs los recalcula. Si el motor cambia, la prueba falla antes de que la interfaz prometa algo
-// que ya no ocurre. Sin DOM ni Three.js.
+// En este módulo resumo qué logra cada sonda de la flota histórica en cada herramienta del laboratorio según el modelo físico vigente.
+// No presento datos históricos ni promesas manuales: recojo los resultados que produce el motor con la configuración por defecto
+// para que las pruebas de coherencia verifiquen que la guía sigue alineada con la simulación real. Módulo puro sin DOM ni Three.js.
 
 export const FLEET_PROBE_IDS = Object.freeze(['voyager', 'cassini', 'dawn', 'juno']);
 const OK = 'ok', FAIL = 'fail';
 
-// «Misión completa»: resultado de cada escenario de demostración con cada sonda (mismo perfil que el Planificador).
+// Registro el resultado que obtiene cada sonda histórica en los escenarios de demostración de «Misión completa».
 export const SCENARIO_OUTCOMES = Object.freeze({
   A1: Object.freeze({
     voyager: [FAIL, 'agota sus 100 kg de hidracina en la captura y sigue de largo'],
@@ -31,16 +30,15 @@ export const SCENARIO_OUTCOMES = Object.freeze({
     juno: [FAIL, 'se queda sin propelente para frenar en Europa'] })
 });
 
-/** Resultado esperado de un escenario con una sonda: { ok, text } o null si no hay dato. */
+// Consulto el resultado esperado ({ ok, text }) de un escenario con una sonda dada, o devuelvo null si no figura en la guía.
 export function scenarioOutcome(scenarioId, probeId) {
   const entry = SCENARIO_OUTCOMES[scenarioId]?.[probeId];
   return entry ? Object.freeze({ ok: entry[0] === OK, text: entry[1] }) : null;
 }
-/** Sondas con las que un escenario termina completo según el modelo. */
+// Filtro las sondas históricas que completan íntegramente un escenario según el modelo actual.
 export const probesCompleting = scenarioId => FLEET_PROBE_IDS.filter(id => scenarioOutcome(scenarioId, id)?.ok);
 
-// «Tierra–Luna»: condiciones por defecto del Planificador y altitud inicial recomendada para cada sonda.
-// minimumAltitudeKm: primera altitud de la exploración (200, 1000, 5000, 20 000, 35 786, 50 000… km) en que el plan es viable.
+// Defino las condiciones por defecto del planificador Tierra–Luna y la altitud inicial mínima recomendada para cada sonda.
 export const LUNAR_DEFAULTS = Object.freeze({ departureTdb: '2026-10-15T12:00', objective: 'approach', targetDistanceKm: 50000, defaultAltitudeKm: 100000 });
 export const LUNAR_GUIDE = Object.freeze({
   voyager: Object.freeze({ altitudeKm: 150000, status: 'VIABLE SEGÚN EL MODELO', minimumAltitudeKm: 150000,
@@ -53,5 +51,5 @@ export const LUNAR_GUIDE = Object.freeze({
     text: 'Desde 200 km a Juno le falta Δv; según el modelo, el plan es viable a partir de la órbita geoestacionaria (unos 36 000 km).' })
 });
 
-// Misión guiada para quien llega por primera vez: un caso que el motor completa de principio a fin.
+// Propongo una misión guiada de primer contacto que el simulador resuelve de principio a fin.
 export const GUIDED_MISSION = Object.freeze({ probeId: 'cassini', scenarioId: 'A1', destinationName: 'Marte' });

@@ -1,8 +1,19 @@
-// Etapa 12G — cadena explícita de escalas de tiempo para la planificación interplanetaria.
-//   UTC --(TAI−UTC, segundos intercalares)--> TAI --(+32,184 s exactos)--> TT --(TDB−TT periódico)--> TDB
-// Reutiliza la tabla de segundos intercalares y la conversión de `HistoricalTime.js` (Fairhead & Bretagnon 1990,
-// dos términos, error < 30 µs en 1970–2100). Añade el algoritmo DELTET de NAIF/SPICE (time.req) como formulación
-// independiente para contrastar TDB − TT. Módulo puro: sin Date del navegador, sin DOM.
+/**
+ * En este módulo gestiono la cadena explícita de escalas de tiempo para la
+ * planificación interplanetaria:
+ *   UTC --(TAI − UTC, segundos intercalares IERS)--> TAI --(+32,184 s exactos)--> TT --(TDB − TT periódico)--> TDB
+ *
+ * - Unidades: fechas julianas en días (JD UTC pseudo, JD TAI, JD TT, JD TDB, MJD)
+ *   y desplazamientos temporales en segundos (s).
+ * - Marco de referencia: independiente del marco espacial; TDB sirve como argumento
+ *   temporal de las efemérides NASA/JPL.
+ * - Límites y alcance: reutilizo la tabla IERS Bulletin C y la aproximación periódica
+ *   de Fairhead & Bretagnon (1990) implementada en `HistoricalTime.js` (dos términos,
+ *   error < 30 µs entre 1970 y 2100). Incorporo además el algoritmo DELTET de NAIF/SPICE
+ *   (time.req) como formulación independiente de contraste para TDB − TT. Opero como
+ *   módulo puro sin `Date` del navegador ni acceso al DOM, y considero predicción toda
+ *   etiqueta UTC posterior en más de 6 meses al último segundo intercalar tabulado.
+ */
 import { IERS_LEAP_SECONDS_TABLE, J2000_JD, TT_MINUS_TAI_SECONDS, jdTdbToHistoricalLabels, roundedUtcLabelFromJdTai, taiMinusUtcAtPseudoJd, tdbMinusTtSeconds, utcTimestampToTdb } from './HistoricalTime.js';
 import { jdToGregorianComponents, requireJdTdb } from './Time.js';
 import { SECONDS_PER_DAY, requireFiniteNumber } from './Units.js';
@@ -18,7 +29,10 @@ export const LEAP_SECONDS_SOURCE = Object.freeze({
 
 export const TIME_SCALE_NOTE = 'UTC: tiempo civil con segundos intercalares. TAI: atómico continuo. TT = TAI + 32,184 s. TDB: tiempo dinámico baricéntrico (argumento de las efemérides JPL); TDB − TT oscila ±1,66 ms.';
 
-/** TDB − TT según el algoritmo DELTET de SPICE (time.req): K·sin(E), E = M + EB·sin(M), M = M0 + M1·t. */
+/**
+ * Aquí calculo TDB − TT en segundos mediante el algoritmo DELTET de NAIF/SPICE
+ * (`time.req`): `K·sin(E)` con `E = M + EB·sin(M)` y `M = M0 + M1·t`.
+ */
 export function naifDeltetTdbMinusTt(jdTt) {
   requireFiniteNumber(jdTt, 'jdTt');
   const K = 1.657e-3, EB = 1.671e-2, M0 = 6.239996, M1 = 1.99096871e-7;
@@ -27,7 +41,11 @@ export function naifDeltetTdbMinusTt(jdTt) {
   return K * Math.sin(M + EB * Math.sin(M));
 }
 
-/** Descompone una marca UTC (`YYYY-MM-DD[ HH:MM[:SS]]`) en JD UTC (pseudo), TAI, TT y TDB, con cada diferencia. */
+/**
+ * Aquí descompongo una marca UTC (`YYYY-MM-DD[ HH:MM[:SS]]`) en sus equivalentes
+ * JD UTC (pseudo), JD TAI, JD TT y JD TDB, devolviendo cada salto en segundos
+ * y señalando si la etiqueta UTC cae en horizonte de predicción.
+ */
 export function utcToTimeScales(utcText) {
   const tdb = utcTimestampToTdb(utcText);
   const jdTdb = tdb.jdTdb;
@@ -40,8 +58,10 @@ export function utcToTimeScales(utcText) {
 }
 
 /**
- * Inversa: a partir de un JD TDB devuelve las cuatro escalas y etiquetas legibles. Durante un segundo intercalar `labelUtc`
- * muestra `23:59:60` (SCI-01); `jdUtcPseudo`, como todo pseudo-JD de días de 86 400 s, no lo distingue de las 00:00:00 siguientes.
+ * Aquí aplico la conversión inversa: parto de un JD TDB y devuelvo las cuatro
+ * escalas temporales junto con sus etiquetas legibles. Durante un segundo
+ * intercalar muestro `23:59:60` en `labelUtc`; en `jdUtcPseudo`, como en todo
+ * pseudo-JD de días fijos de 86 400 s, ese segundo no se distingue de las 00:00:00 siguientes.
  */
 export function tdbToTimeScales(jdTdb) {
   requireJdTdb(jdTdb);
@@ -55,7 +75,10 @@ export function tdbToTimeScales(jdTdb) {
     labelTdbTruncated: labels.labelTdb, labelUtcTruncated: labels.labelUtc, utcPredicted: isUtcPrediction(jdUtcPseudo) });
 }
 
-/** Etiqueta «YYYY-MM-DD · HH:MM:SS escala» redondeada al segundo más próximo (el JD en doble precisión resuelve ~40 µs). */
+/**
+ * Formateo una fecha juliana como «YYYY-MM-DD · HH:MM:SS escala» redondeando al
+ * segundo más próximo (en doble precisión el JD resuelve alrededor de 40 µs).
+ */
 export function roundedLabel(jd, scale) {
   const day = Math.floor(jd + 0.5);
   let seconds = Math.round((jd + 0.5 - day) * SECONDS_PER_DAY), dayNumber = day;
@@ -64,18 +87,24 @@ export function roundedLabel(jd, scale) {
   return `${c.dateIso} · ${c.timeHms} ${scale}`;
 }
 
-/** Verdadero si la fecha UTC es posterior al último segundo intercalar tabulado más 6 meses (horizonte de anuncio de IERS). */
+/**
+ * Determino si una fecha UTC sobrepasa en más de 6 meses el último segundo
+ * intercalar tabulado por el IERS (horizonte habitual de anuncio del boletín C).
+ */
 export function isUtcPrediction(jdUtcPseudo) {
   return jdUtcPseudo > IERS_LEAP_SECONDS_TABLE.at(-1).effectiveJdUtcPseudo + 183;
 }
 
-/** `YYYY-MM-DDTHH:MM` (campo datetime-local) interpretado como UTC → JD TDB. */
+/**
+ * Convierto una cadena `YYYY-MM-DDTHH:MM` (propia de campos datetime-local)
+ * interpretada estrictamente como UTC a su fecha juliana JD TDB.
+ */
 export function datetimeLocalUtcToJdTdb(value) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?)?$/.test(value)) throw new TypeError('Fecha UTC con formato YYYY-MM-DDTHH:MM.');
   return utcTimestampToTdb(value.replace('T', ' ')).jdTdb;
 }
 
-/** Fecha juliana modificada (MJD = JD − 2 400 000,5) en la misma escala. */
+/** Calculo la fecha juliana modificada (MJD = JD − 2 400 000,5) conservando la escala original. */
 export const jdToMjd = jd => requireFiniteNumber(jd, 'jd') - 2400000.5;
 
 export { J2000_JD, TT_MINUS_TAI_SECONDS, taiMinusUtcAtPseudoJd, tdbMinusTtSeconds };

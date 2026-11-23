@@ -1,17 +1,22 @@
+// Aquí creo la vista 3D interactiva en Three.js para inspeccionar la trayectoria planificada Tierra–Luna.
+// Convierto posiciones geocéntricas en km a unidades de escena (1 u = 10 000 km), dibujo la curva transferida,
+// el arco lunar y los marcadores seleccionables de salida, llegada y paso mínimo.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { registerRenderer, opcionesRenderizador } from '../graphics/QualityProfile.js';
 import { crearRenderizadorWebGL } from '../graphics/WebGLSupport.js';
 
 const SCALE = 1 / 10000;
+// Convierto un vector físico geocéntrico [x, y, z] en km al sistema de coordenadas Y-arriba de Three.js.
 const toScene = position => new THREE.Vector3(position[0] * SCALE, position[2] * SCALE, -position[1] * SCALE);
 
+// Monto el renderizador WebGL, la Tierra de referencia, los controles orbitales y la selección por raycasting.
 export function createMissionTrajectoryView(host, onSelect) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#070c17');
   const camera = new THREE.PerspectiveCamera(46, 1, 0.01, 300);
   camera.position.set(0, 21, 55);
-  const renderer = crearRenderizadorWebGL(opcionesRenderizador({ antialias: true, alpha: false }), 'trayectoria Tierra–Luna'); // STAB-01
+  const renderer = crearRenderizadorWebGL(opcionesRenderizador({ antialias: true, alpha: false }), 'trayectoria Tierra–Luna');
   const unregisterQuality = registerRenderer(renderer);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.append(renderer.domElement);
@@ -37,6 +42,7 @@ export function createMissionTrajectoryView(host, onSelect) {
   let frame = 0;
   let disposed = false;
 
+  // Renderizo bajo demanda cuando cambia la cámara, el tamaño del contenedor o la transferencia cargada.
   function render() {
     if (disposed || !visible || frame) return;
     frame = requestAnimationFrame(() => { frame = 0; controls.update(); renderer.render(scene, camera); });
@@ -48,6 +54,7 @@ export function createMissionTrajectoryView(host, onSelect) {
     camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height, false); render();
   }
   const observer = new ResizeObserver(resize); observer.observe(host);
+  // Elimino y libero todas las líneas, flechas y marcadores de la transferencia anterior.
   function clearTrajectory() {
     for (const object of [...trajectoryGroup.children]) {
       trajectoryGroup.remove(object);
@@ -59,11 +66,13 @@ export function createMissionTrajectoryView(host, onSelect) {
     }
     markers.length = 0; moonPosition = null; render();
   }
+  // Añado un marcador esférico clicable etiquetado con el identificador de fase correspondiente.
   function marker(id, position, color, radius) {
     const mesh = new THREE.Mesh(new THREE.SphereGeometry(radius, 16, 12), new THREE.MeshBasicMaterial({ color }));
     mesh.position.copy(toScene(position)); mesh.userData.phaseId = id;
     trajectoryGroup.add(mesh); markers.push(mesh);
   }
+  // Dibujo la transferencia calculada, el desplazamiento lunar, las flechas de sentido y encuadro el punto medio.
   function setTransfer(result) {
     clearTrajectory();
     if (!result) return;
@@ -91,6 +100,7 @@ export function createMissionTrajectoryView(host, onSelect) {
     camera.position.copy(controls.target).add(new THREE.Vector3(0, 22, 52));
     controls.update(); render();
   }
+  // Enfoco la cámara sobre la Tierra o sobre la Luna de llegada.
   function focus(which) {
     if (which === 'earth') controls.target.set(0, 0, 0);
     else if (which === 'moon' && moonPosition) controls.target.copy(moonPosition);
@@ -98,11 +108,13 @@ export function createMissionTrajectoryView(host, onSelect) {
     camera.position.copy(controls.target).add(new THREE.Vector3(0, 3, which === 'earth' ? 8 : 5));
     controls.update(); render();
   }
+  // Restauro la vista panorámica del sistema Tierra–Luna.
   function resetCamera() {
     controls.target.copy(moonPosition ? moonPosition.clone().multiplyScalar(0.5) : new THREE.Vector3(15, 0, 0));
     camera.position.copy(controls.target).add(new THREE.Vector3(0, 22, 52));
     controls.update(); render();
   }
+  // Detecto clics sobre los marcadores de fase mediante raycasting y notifico la selección a la interfaz.
   function onPointerUp(event) {
     if (!interaction || event.button !== 0) return;
     const bounds = renderer.domElement.getBoundingClientRect();
@@ -123,6 +135,7 @@ export function createMissionTrajectoryView(host, onSelect) {
     setTransfer, focus, resetCamera,
     setVisible(value) { visible = value; if (value) resize(); },
     setTouchInteraction,
+    // Libero geometrías, materiales, escuchadores y contexto WebGL al destruir la vista.
     dispose() {
       disposed = true; if (frame) cancelAnimationFrame(frame);
       observer.disconnect(); controls.removeEventListener('change', onControlChange);

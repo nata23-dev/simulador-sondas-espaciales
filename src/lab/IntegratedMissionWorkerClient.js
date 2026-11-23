@@ -1,9 +1,9 @@
-// PERF-03 — Cliente del Web Worker de cálculos astrodinámicos con cancelación y respaldo síncrono transparente.
-// Si `Worker` está disponible en el entorno (navegador), delega el cálculo pesado al hilo secundario y permite
-// interrumpirlo al instante cuando cambian las condiciones (GEN-02). En entornos sin `Worker` (p. ej. pruebas en Node),
-// ejecuta exactamente la misma tarea de forma local.
+// En este módulo gestiono el cliente del Web Worker de cálculos astrodinámicos con cancelación inmediata y respaldo local transparente.
+// Cuando el entorno soporta `Worker` (navegador), delego los cálculos pesados al hilo secundario y permito abortarlos al instante
+// terminando el Worker si el usuario cambia parámetros. Si `Worker` no existe (por ejemplo en Node), ejecuto la misma tarea localmente.
 import { executeIntegratedMissionWorkerTask } from './IntegratedMissionWorker.js';
 
+// Creo un cliente reutilizable que mantiene un único Worker perezoso y asocia cada petición a su promesa mediante un id incremental.
 export function createIntegratedMissionWorkerClient({
   createWorker = () => (typeof Worker === 'function'
     ? new Worker(new URL('./IntegratedMissionWorker.js', import.meta.url), { type: 'module' })
@@ -13,6 +13,7 @@ export function createIntegratedMissionWorkerClient({
   let nextId = 1;
   const pending = new Map();
 
+  // Instancio el Worker bajo demanda y conecto los manejadores de respuesta y de fallo irrecuperable.
   function ensureWorker() {
     if (worker) return worker;
     try {
@@ -33,12 +34,13 @@ export function createIntegratedMissionWorkerClient({
       const err = new Error(event?.message || 'Fallo en el Web Worker de cálculo.');
       for (const entry of pending.values()) entry.reject(err);
       pending.clear();
-      try { worker.terminate(); } catch { /* ignorar */ }
+      try { worker.terminate(); } catch { /* ignoro errores al cerrar un Worker ya fallido */ }
       worker = null;
     });
     return worker;
   }
 
+  // Envío una tarea al Worker o, si no hay hilo secundario disponible, la ejecuto en microtareas locales con idéntica interfaz de promesa.
   function runTask(payload) {
     const instance = ensureWorker();
     if (!instance) {
@@ -51,12 +53,13 @@ export function createIntegratedMissionWorkerClient({
         instance.postMessage({ id, payload });
       } catch (error) {
         pending.delete(id);
-        // Si falla la clonación o el envío al Worker, respalda con ejecución local sin perder el cálculo.
+        // Si falla la clonación estructurada o el envío al Worker, recurro al cálculo local para no perder la operación.
         Promise.resolve().then(() => executeIntegratedMissionWorkerTask(payload)).then(resolve, reject);
       }
     });
   }
 
+  // Cancelo todas las tareas pendientes marcando el error con `cancelled = true` y termino el Worker activo para cortar cómputo obsoleto.
   function cancelAll(reason = 'Cálculo cancelado por nuevas condiciones.') {
     if (pending.size > 0) {
       const err = new Error(reason);
@@ -65,7 +68,7 @@ export function createIntegratedMissionWorkerClient({
       pending.clear();
     }
     if (worker) {
-      try { worker.terminate(); } catch { /* ignorar */ }
+      try { worker.terminate(); } catch { /* ignoro fallos al terminar el Worker */ }
       worker = null;
     }
   }

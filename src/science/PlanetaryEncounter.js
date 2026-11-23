@@ -1,15 +1,16 @@
-// Etapa 13 — geometría de encuentros con cónicas parcheadas. Módulo puro: sin DOM ni Three.js.
-// Unidades: km, km/s, s; μ en km³/s². Referencias: Bate, Mueller & White (1971) cap. 4 y 8; Curtis, «Orbital Mechanics for
-// Engineering Students», cap. 8 (esfera de influencia, hipérbolas de llegada); Kizner (1961) y Vallado (2013) §12 para el
-// plano B (vectores S, T, R).
+// Aquí calculo la geometría de encuentros planetarios con cónicas parcheadas y plano B.
+// Mantengo este módulo completamente puro, sin DOM ni Three.js.
+// Unidades: km, km/s, s y μ en km³/s², en el marco común ICRF eclíptico J2000.
+// Referencias: Bate, Mueller & White (1971) cap. 4 y 8; Curtis, «Orbital Mechanics for Engineering Students», cap. 8
+// (esfera de influencia e hipérbolas de llegada); Kizner (1961) y Vallado (2013) §12 para el plano B (vectores S, T, R).
 //
-// Convenciones:
-//  · v∞ (vector) es la velocidad relativa ASINTÓTICA de llegada (planeta → nave), en los ejes del marco común (ICRF eclíptico J2000).
-//  · Plano B: Ŝ = v∞/|v∞|, T̂ = (Ŝ × k̂)/|Ŝ × k̂| con k̂ = polo de referencia declarado, R̂ = Ŝ × T̂. B = b(cos θ T̂ + sin θ R̂).
-//  · Momento angular: h = r × v = v∞ (B × Ŝ) ⇒ ĥ = B̂ × Ŝ; |h| = b·v∞; b = √(rp² + 2 μ rp / v∞²).
-//  · Hipérbola: e = 1 + rp v∞²/μ, a = −μ/v∞², P̂ = (Ŝ + √(e²−1) B̂)/e (periapsis), Q̂ = ĥ × P̂.
-// Una solución de Lambert que termina en el centro del planeta NO define la hipérbola: el periapsis y la orientación salen
-// de un apuntado explícito (B, θ) que el planificador debe imponer y verificar propagando el estado real.
+// Convenciones que sigo en todas las funciones:
+//  · Defino v∞ (vector) como la velocidad relativa ASINTÓTICA de llegada (planeta → nave) en los ejes del marco común.
+//  · Construyo el plano B con Ŝ = v∞/|v∞|, T̂ = (Ŝ × k̂)/|Ŝ × k̂| (k̂ = polo de referencia declarado), R̂ = Ŝ × T̂ y B = b(cos θ T̂ + sin θ R̂).
+//  · Relaciono el momento angular como h = r × v = v∞ (B × Ŝ) ⇒ ĥ = B̂ × Ŝ, |h| = b·v∞ y b = √(rp² + 2 μ rp / v∞²).
+//  · Parametrizo la hipérbola con e = 1 + rp v∞²/μ, a = −μ/v∞², P̂ = (Ŝ + √(e²−1) B̂)/e (hacia el periapsis) y Q̂ = ĥ × P̂.
+// Una solución de Lambert que termina en el centro del planeta no fija la hipérbola: debo imponer explícitamente
+// el apuntado (B, θ) y verificarlo después propagando el estado real.
 import { propagateKepler, conicSummary } from './KeplerPropagator.js';
 
 export const PLANETARY_ENCOUNTER_VERSION = '13-patched-conic-encounter-1';
@@ -28,7 +29,7 @@ const DEG = 180 / Math.PI;
 const finiteVector = v => Array.isArray(v) && v.length === 3 && v.every(Number.isFinite);
 function requirePositive(value, name) { if (!Number.isFinite(value) || value <= 0) throw new RangeError(`${name} debe ser finito y positivo.`); return value; }
 
-/** Radio de la esfera de influencia (km) según el modelo elegido. `semiMajorAxisKm` es el semieje del secundario respecto al primario. */
+/** Aquí calculo el radio de la esfera de influencia (km) según el modelo elegido (Laplace o Hill), usando el semieje mayor del secundario respecto al primario. */
 export function sphereOfInfluenceRadiusKm({ model = 'laplace', semiMajorAxisKm, eccentricity = 0, muBody, muPrimary }) {
   requirePositive(semiMajorAxisKm, 'semiMajorAxisKm'); requirePositive(muBody, 'muBody'); requirePositive(muPrimary, 'muPrimary');
   if (model === 'laplace') return semiMajorAxisKm * Math.pow(muBody / muPrimary, 0.4);
@@ -39,14 +40,14 @@ export function sphereOfInfluenceRadiusKm({ model = 'laplace', semiMajorAxisKm, 
   throw new RangeError(`Modelo de esfera de influencia desconocido: ${model}.`);
 }
 
-/** Elementos osculantes del secundario respecto al primario (a, e) a partir de su estado relativo, con μ = μ_primario + μ_secundario. */
+/** Aquí extraigo el semieje mayor y la excentricidad osculantes del cuerpo secundario respecto al primario con μ = μ_primario + μ_secundario. */
 export function osculatingOrbitOfBody(relativePositionKm, relativeVelocityKmS, muSum) {
   const c = conicSummary(relativePositionKm, relativeVelocityKmS, muSum);
   if (!(c.eccentricity < 1)) throw new RangeError('El cuerpo no tiene una órbita ligada respecto a su primario.');
   return { semiMajorAxisKm: c.semiMajorAxisKm, eccentricity: c.eccentricity };
 }
 
-/** Marco del plano B (Ŝ, T̂, R̂) para una velocidad de exceso y un polo de referencia. */
+/** Aquí construyo la base ortonormal del plano B (Ŝ, T̂, R̂) para una velocidad de exceso asintótica y un polo de referencia. */
 export function bPlaneFrame(vInfVectorKmS, poleVector = [0, 0, 1]) {
   if (!finiteVector(vInfVectorKmS) || !finiteVector(poleVector)) throw new TypeError('v∞ y el polo deben ser vectores finitos.');
   const S = unit(vInfVectorKmS), k = unit(poleVector), sk = cross(S, k);
@@ -55,7 +56,7 @@ export function bPlaneFrame(vInfVectorKmS, poleVector = [0, 0, 1]) {
   return { S, T, R };
 }
 
-/** Hipérbola de llegada definida por v∞ (vector), μ, radio de periapsis y ángulo θ del vector B (desde T̂ hacia R̂). */
+/** Aquí construyo la hipérbola de llegada a partir de v∞ (vector), μ, el radio de periapsis y el ángulo θ del vector B medido desde T̂ hacia R̂. */
 export function hyperbolaFromBPlane({ vInfVectorKmS, muKm3S2, periapsisRadiusKm, bAngleDeg = 0, poleVector = [0, 0, 1] }) {
   requirePositive(muKm3S2, 'μ'); requirePositive(periapsisRadiusKm, 'radio de periapsis');
   if (!Number.isFinite(bAngleDeg)) throw new RangeError('El ángulo del plano B debe ser finito.');
@@ -80,7 +81,7 @@ export function hyperbolaFromBPlane({ vInfVectorKmS, muKm3S2, periapsisRadiusKm,
     inclinationToPoleDeg: Math.acos(Math.max(-1, Math.min(1, dot(hHat, unit(poleVector))))) * DEG });
 }
 
-/** Estado sobre la cónica (hipérbola o elipse) a partir de P̂, Q̂, p, e y la anomalía verdadera ν (rad). */
+/** Aquí evalúo la posición y velocidad sobre la cónica (hipérbola o elipse) a partir de P̂, Q̂, p, e y la anomalía verdadera ν (rad). */
 export function stateOnConic(conic, trueAnomalyRad) {
   const { P, Q, semiLatusRectumKm: p, eccentricity: e, mu } = conic;
   const c = Math.cos(trueAnomalyRad), s = Math.sin(trueAnomalyRad), denom = 1 + e * c;
@@ -89,7 +90,7 @@ export function stateOnConic(conic, trueAnomalyRad) {
   return { positionKm: add(scale(P, r * c), scale(Q, r * s)), velocityKmS: add(scale(P, -w * s), scale(Q, w * (e + c))) };
 }
 
-/** Anomalía verdadera (rad) a la que la hipérbola alcanza un radio dado; negativa en la rama de llegada. */
+/** Aquí obtengo la anomalía verdadera (rad) donde la hipérbola cruza un radio dado; devuelvo signo negativo en la rama de llegada. */
 export function trueAnomalyAtRadius(conic, radiusKm, branch = 'incoming') {
   requirePositive(radiusKm, 'radio');
   if (radiusKm < conic.periapsisRadiusKm * (1 - 1e-12)) throw new RangeError('El radio pedido es menor que el periapsis.');
@@ -98,7 +99,7 @@ export function trueAnomalyAtRadius(conic, radiusKm, branch = 'incoming') {
   return branch === 'incoming' ? -nu : nu;
 }
 
-/** Tiempo (s) desde el periapsis hasta la anomalía ν sobre una hipérbola (negativo antes del periapsis). */
+/** Aquí calculo el tiempo (s) desde el periapsis hasta la anomalía verdadera ν sobre una hipérbola (negativo antes del paso por periapsis). */
 export function hyperbolicTimeFromPeriapsis(conic, trueAnomalyRad) {
   const e = conic.eccentricity;
   if (!(e > 1)) throw new RangeError('La cónica no es hiperbólica.');
@@ -106,7 +107,7 @@ export function hyperbolicTimeFromPeriapsis(conic, trueAnomalyRad) {
   return Math.sqrt(Math.pow(-conic.semiMajorAxisKm, 3) / conic.mu) * (e * Math.sinh(F) - F);
 }
 
-/** Exceso hiperbólico asintótico de un estado relativo (rama de llegada o de salida). Devuelve null si la órbita es ligada. */
+/** Aquí calculo el exceso hiperbólico asintótico de un estado relativo (rama de llegada o de salida) y devuelvo null si la órbita es ligada. */
 export function asymptoticExcess(positionKm, velocityKmS, muKm3S2, branch = 'incoming') {
   const c = conicSummary(positionKm, velocityKmS, muKm3S2);
   if (!(c.specificEnergyKm2S2 > 0) || !(c.eccentricity > 1)) return null;
@@ -116,7 +117,7 @@ export function asymptoticExcess(positionKm, velocityKmS, muKm3S2, branch = 'inc
   return { vInfKmS: vInf, vInfVectorKmS: scale(direction, vInf), eccentricity: e, periapsisRadiusKm: c.periapsisKm, P, Q, angularMomentumUnit: hHat };
 }
 
-/** Parámetros del plano B calculados a partir de un estado relativo real (verificación inversa del apuntado). */
+/** Aquí reconstruyo los parámetros del plano B a partir de un estado relativo real para verificar de forma inversa el apuntado. */
 export function bPlaneFromState(positionKm, velocityKmS, muKm3S2, poleVector = [0, 0, 1]) {
   const ex = asymptoticExcess(positionKm, velocityKmS, muKm3S2, 'incoming');
   if (!ex) return null;
@@ -128,9 +129,9 @@ export function bPlaneFromState(positionKm, velocityKmS, muKm3S2, poleVector = [
 }
 
 /**
- * Ángulo θ del plano B que minimiza la inclinación de la hipérbola respecto a una normal de referencia (p. ej., el plano orbital
- * de un satélite). Con ĥ(θ) = −cos θ R̂ + sin θ T̂, el máximo de ĥ·n̂ se da en θ* = atan2(T̂·n̂, −R̂·n̂); la inclinación mínima
- * alcanzable es asin(|Ŝ·n̂|): ninguna elección de B la reduce más (depende solo de la dirección de llegada).
+ * Aquí determino el ángulo θ del plano B que minimiza la inclinación de la hipérbola respecto a una normal de referencia
+ * (por ejemplo, el plano orbital de un satélite). Como ĥ(θ) = −cos θ R̂ + sin θ T̂, maximizo ĥ·n̂ en θ* = atan2(T̂·n̂, −R̂·n̂);
+ * la inclinación mínima alcanzable es asin(|Ŝ·n̂|) y solo depende de la dirección de llegada.
  */
 export function bAngleForReferenceNormal(vInfVectorKmS, poleVector, referenceNormal) {
   const { S, T, R } = bPlaneFrame(vInfVectorKmS, poleVector), n = unit(referenceNormal);
@@ -138,7 +139,7 @@ export function bAngleForReferenceNormal(vInfVectorKmS, poleVector, referenceNor
   return { bAngleDeg: theta * DEG, minimumInclinationDeg: Math.asin(Math.min(1, Math.abs(dot(S, n)))) * DEG };
 }
 
-/** Δv impulsivo ideal en el periapsis para pasar de la hipérbola (v∞, rp) a una elipse de apoapsis ra (ra ≥ rp). */
+/** Aquí calculo el Δv impulsivo ideal en el periapsis para capturar una hipérbola (v∞, rp) en una elipse de apoapsis ra ≥ rp. */
 export function impulsiveCaptureDeltaV({ vInfKmS, muKm3S2, periapsisRadiusKm, apoapsisRadiusKm }) {
   requirePositive(muKm3S2, 'μ'); requirePositive(periapsisRadiusKm, 'radio de periapsis');
   if (!Number.isFinite(vInfKmS) || vInfKmS < 0) throw new RangeError('v∞ debe ser finita y no negativa.');
@@ -149,7 +150,7 @@ export function impulsiveCaptureDeltaV({ vInfKmS, muKm3S2, periapsisRadiusKm, ap
     eccentricity: (ra - rp) / (ra + rp), periodSeconds: 2 * Math.PI * Math.sqrt(a ** 3 / muKm3S2) };
 }
 
-/** Estado en el periapsis siguiente (propagación kepleriana) y tiempo hasta él, para un estado hiperbólico o elíptico. */
+/** Aquí calculo el tiempo hasta el siguiente periapsis y propago el estado kepleriano hasta él para una cónica hiperbólica o elíptica. */
 export function timeToNextPeriapsis(positionKm, velocityKmS, muKm3S2) {
   const c = conicSummary(positionKm, velocityKmS, muKm3S2), e = c.eccentricity;
   const r = norm(positionKm), rv = dot(positionKm, velocityKmS);
@@ -159,7 +160,7 @@ export function timeToNextPeriapsis(positionKm, velocityKmS, muKm3S2) {
   if (e > 1) {
     const conic = { eccentricity: e, semiMajorAxisKm: c.semiMajorAxisKm, mu: muKm3S2 };
     dt = -hyperbolicTimeFromPeriapsis(conic, nu);
-    if (dt < 0) return { seconds: null, passed: true, conic: c }; // ya en la rama de salida
+    if (dt < 0) return { seconds: null, passed: true, conic: c }; // Señalo que la nave ya transita la rama de salida.
   } else {
     const E = 2 * Math.atan(Math.sqrt((1 - e) / (1 + e)) * Math.tan(nu / 2));
     const M = E - e * Math.sin(E), n = Math.sqrt(muKm3S2 / Math.pow(c.semiMajorAxisKm, 3));
@@ -172,9 +173,10 @@ export function timeToNextPeriapsis(positionKm, velocityKmS, muKm3S2) {
 }
 
 /**
- * Elementos clásicos (rv → coe) respecto al plano xy del marco del estado: altitudes con el radio dado, ángulos en grados.
- * Casos degenerados explícitos: órbita circular (e < 1e-10 ⇒ ω = 0 y ν = argumento de latitud) y ecuatorial (i < 1e-10 ⇒
- * Ω = 0 y ω medido desde +X). Son los elementos que consume `initialOrbitState` de 12F (mismas convenciones de rotación).
+ * Aquí convierto un estado elíptico (r, v) a elementos orbitales clásicos respecto al plano xy del marco del estado,
+ * con altitudes referidas a `radiusKm` y ángulos en grados.
+ * Trato explícitamente los casos degenerados: en órbitas circulares (e < 1e-10) fijo ω = 0 y ν igual al argumento de latitud;
+ * en órbitas ecuatoriales (i < 1e-10) fijo Ω = 0 y mido ω desde +X, coherente con `initialOrbitState`.
  */
 export function classicalElements(positionKm, velocityKmS, mu, radiusKm = 0) {
   const r = norm(positionKm), v2 = dot(velocityKmS, velocityKmS), h = cross(positionKm, velocityKmS), hn = norm(h);

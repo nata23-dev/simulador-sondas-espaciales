@@ -1,3 +1,5 @@
+// Aquí gestiono las firmas de diseño, la validación de opciones y la persistencia local de planes de misión lunar.
+// Me aseguro de que cada plan guardado conserve una instantánea coherente de la sonda y de la versión del modelo físico.
 import { parseDesign, validateDesign } from './ProbeDesign.js';
 import { gregorianTimestampToJdTdb } from '../science/Time.js';
 import { LUNAR_COVERAGE, TRANSFER_MODEL_VERSION } from './MissionPhysics.js';
@@ -13,13 +15,15 @@ export const DESTINATIONS = Object.freeze([
   { id: 'titan', name: 'Titán', available: false }
 ]);
 
+// Genero una firma determinista del bus, las piezas montadas y su carga de propelente para detectar cambios en la sonda.
 export function designSignature(design) {
   const signature = { coreId: design.coreId, parts: design.parts.map(p => [p.socketId, p.componentId, p.fuelKg ?? null]).sort((a, b) => a[0].localeCompare(b[0])) };
-  // 17: un ensamblaje experimental es otro vehículo aunque todavía tenga las mismas piezas que la sonda de la que parte; así un
-  // cálculo hecho con la configuración histórica nunca se reproduce en su nombre. Las firmas históricas no cambian.
+  // Distingo cualquier ensamblaje experimental como un vehículo aparte aunque conserve todavía las mismas piezas,
+  // evitando reutilizar cálculos de la sonda histórica de origen sin alterar las firmas históricas.
   return JSON.stringify(design.experimental ? { ...signature, experimental: true } : signature);
 }
 
+// Compruebo si un resultado lunar calculado sigue vigente para la sonda, las opciones y la versión del modelo actuales.
 export function isMissionResultCurrent(result, design, options) {
   return Boolean(result && design && result.designId === design.id
     && result.designSignature === designSignature(design)
@@ -27,6 +31,7 @@ export function isMissionResultCurrent(result, design, options) {
     && result.modelVersion === TRANSFER_MODEL_VERSION);
 }
 
+// Valido el destino, el objetivo, la altitud inicial (km), la distancia lunar nominal (km) y la fecha TDB de salida.
 export function validatePlanOptions(options) {
   const errors = [];
   if (!options || typeof options !== 'object' || Array.isArray(options)) return ['Opciones de misión inválidas.'];
@@ -42,6 +47,7 @@ export function validatePlanOptions(options) {
   return errors;
 }
 
+// Creo un plan de misión validado con copia inmutable del diseño y la versión actual del modelo de transferencia.
 export function createMissionPlan(design, options, name = 'Plan lunar') {
   const issues = [...validateDesign(design), ...validatePlanOptions(options)];
   if (issues.length) throw Error(issues.join(' '));
@@ -53,6 +59,7 @@ export function createMissionPlan(design, options, name = 'Plan lunar') {
     modelVersion: TRANSFER_MODEL_VERSION };
 }
 
+// Parseo y valido estrictamente un plan serializado en JSON comprobando formato, opciones y firma de diseño.
 export function parseMissionPlan(text) {
   if (typeof text !== 'string' || text.length > 150000) throw Error('Archivo de plan demasiado grande.');
   let raw;
@@ -72,6 +79,7 @@ export function parseMissionPlan(text) {
     modelVersion: raw.modelVersion };
 }
 
+// Recupero hasta 30 planes válidos guardados en localStorage descartando entradas corruptas.
 export function loadSavedPlans() {
   try {
     const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -81,6 +89,7 @@ export function loadSavedPlans() {
   } catch { return []; }
 }
 
+// Valido y guardo un plan al principio del historial local manteniendo un máximo de 30 entradas.
 export function saveMissionPlan(plan) {
   const clean = parseMissionPlan(JSON.stringify(plan));
   const plans = [clean, ...loadSavedPlans().filter(item => item.id !== clean.id)].slice(0, 30);

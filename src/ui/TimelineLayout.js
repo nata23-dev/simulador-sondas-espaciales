@@ -1,9 +1,12 @@
+// En este módulo reorganizo en el DOM los paneles temporales del Sistema Solar y del modo histórico para ofrecer
+// controles compactos y menús avanzados sin alterar sus listeners ni su semántica de tiempo científico.
 import './timeline-layout.css';
 
-// Reparent existing controls: their listeners, values and scientific time semantics stay intact.
+// Reubico los controles temporales existentes en una distribución unificada manteniendo intactos sus eventos y valores.
 export function crearLayoutTemporal() {
   if (document.querySelector('.temporal-main')) return;
   const pick = selector => document.querySelector(selector);
+  // Creo un desplegable de opciones temporales avanzadas con cierre mediante Escape o clic fuera del menú.
   function advanced(panel, id, label) {
     const details = document.createElement('details');
     details.id = id;
@@ -28,6 +31,7 @@ export function crearLayoutTemporal() {
     return { details, body };
   }
 
+  // Reordeno la barra temporal del Sistema Solar y agrupo la explicación TDB dentro del desplegable de opciones.
   const solar = pick('#timeline-panel');
   solar.classList.add('temporal-layout');
   const solarMain = document.createElement('div');
@@ -45,6 +49,7 @@ export function crearLayoutTemporal() {
   solarStatus.setAttribute('aria-live', 'polite');
   solar.append(pick('#timeline-range').closest('.range-row'));
 
+  // Reordeno la barra temporal histórica separando el transporte principal de los ajustes de tiempo y selección de fecha.
   const historical = pick('#historical-timeline-panel');
   historical.classList.add('temporal-layout');
   const historicalMain = document.createElement('div');
@@ -86,7 +91,7 @@ export function crearLayoutTemporal() {
   }
   historical.append(pick('.hist-range-row'));
   pick('.hist-transport-row').remove();
-  // Do not auto-open an overlay when a hito pauses the engine; announce it in the trigger.
+  // Evito abrir automáticamente un panel superpuesto cuando un hito pausa la reproducción; en su lugar lo indico en el disparador.
   const toast = pick('#hist-event-pause-toast');
   const updatePause = () => {
     historyAdvanced.details.querySelector('summary').textContent = toast.hidden ? 'Tiempo' : 'Tiempo · pausa en hito';
@@ -94,7 +99,7 @@ export function crearLayoutTemporal() {
   new MutationObserver(updatePause).observe(toast, { attributes: true, attributeFilter: ['hidden'] });
   updatePause();
 
-  // 14.1: indicador de estado del tiempo (reproduciendo / en pausa). Solo lee la etiqueta ya mantenida por cada control.
+  // Añado un indicador visual del estado del tiempo (en curso o en pausa) observando las etiquetas mantenidas por cada control.
   function stateChip(main, readPlaying, sources) {
     const chip = document.createElement('span');
     chip.className = 'temporal-state'; chip.setAttribute('aria-hidden', 'true');

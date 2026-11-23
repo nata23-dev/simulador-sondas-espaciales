@@ -1,3 +1,6 @@
+// En este módulo construyo la representación conceptual asimétrica de la heliosfera exterior
+// (choque de terminación, heliopausa y cruces documentados de Voyager) y los satélites de
+// encuentros históricos locales a escala física 1:1 con soporte de LOD geométrico.
 import * as THREE from 'three';
 import { UNIDADES_POR_AU } from './SceneScale.js';
 import { KM_PER_AU } from '../science/Units.js';
@@ -8,9 +11,9 @@ import { crearPenachoIo } from './IoVolcanism.js';
 import { GEOMETRIAS_ESFERA_LOD, resolverNivelLodEsfera } from './PlanetFactory.js';
 
 /**
- * Dirección aproximada de proa del viento interestelar local en coordenadas eclípticas J2000:
- * longitud eclíptica ~255,4°, latitud eclíptica ~+5,2° (observaciones IBEX / Voyager).
- * Convertida a ejes de escena Three.js: (x_ecl, z_ecl, -y_ecl).
+ * Convierto la dirección aproximada de proa del viento interestelar local en eclípticas J2000
+ * (longitud ~255,4°, latitud ~+5,2° según IBEX / Voyager) a los ejes de la escena Three.js:
+ * (x, y, z) → (x, z, -y).
  */
 function direccionProaInterestelarEscena() {
   const lon = THREE.MathUtils.degToRad(255.4);
@@ -22,10 +25,9 @@ function direccionProaInterestelarEscena() {
 }
 
 /**
- * Superficie paramétrica asimétrica conceptual (NO esférica) para representar
- * de forma ilustrativa el choque de terminación (~84–94 AU en proa) y la heliopausa
- * (~119–122 AU en proa, elongada hacia la cola heliosférica y ligeramente comprimida
- * en el flanco austral por el campo magnético interestelar local).
+ * Evalúo una superficie paramétrica asimétrica ilustrativa (no esférica) para modelar
+ * el choque de terminación (~84–94 AU en proa) y la heliopausa (~119–122 AU en proa),
+ * con elongación hacia la cola heliosférica y compresión en el flanco austral.
  */
 function radioHeliosfericoAsimetricoAU(dirUnit, {
   radioProaAU,
@@ -33,7 +35,8 @@ function radioHeliosfericoAsimetricoAU(dirUnit, {
   elongacionColaFactor
 }) {
   const proa = direccionProaInterestelarEscena();
-  const cosenoProa = dirUnit.dot(proa); // +1 hacia proa interestelar, -1 hacia cola heliosférica
+  // Uso +1 hacia la proa interestelar y -1 hacia la cola heliosférica.
+  const cosenoProa = dirUnit.dot(proa);
   const factorCola = cosenoProa >= 0
     ? 1 - 0.08 * cosenoProa
     : 1 + elongacionColaFactor * Math.pow(-cosenoProa, 1.35);
@@ -41,6 +44,7 @@ function radioHeliosfericoAsimetricoAU(dirUnit, {
   return Math.max(40, radioProaAU * factorCola - asimetriaSur);
 }
 
+// Genero una retícula de paralelos y meridianos escalada a 32 unidades por AU para trazar cada frontera.
 function construirMallaContornosAsimetricos(opciones, colorHex, opacidad) {
   const grupo = new THREE.Group();
   const material = new THREE.LineBasicMaterial({
@@ -87,9 +91,9 @@ function construirMallaContornosAsimetricos(opciones, colorHex, opacidad) {
 }
 
 /**
- * Capa visual conceptual de la heliosfera exterior (Onda de choque de terminación,
- * Heliovaina y Heliopausa asimétrica) + marcadores discretos en las coordenadas reales
- * donde Voyager 1 y Voyager 2 cruzaron dichas fronteras.
+ * Construyo la capa visual conceptual de la heliosfera exterior (onda de choque de terminación
+ * y heliopausa asimétrica) junto con marcadores discretos en las coordenadas documentadas
+ * de los cruces de Voyager 1 y Voyager 2.
  */
 export function crearHeliosferaConceptual() {
   const grupo = new THREE.Group();
@@ -151,9 +155,8 @@ export function crearHeliosferaConceptual() {
 }
 
 /**
- * Representación 3D de las lunas con cobertura histórica local
- * posicionados estrictamente cuando el instante histórico dispone de vectores
- * verificados de JPL Horizons en ventanas de sobrevuelo.
+ * Construyo las mallas 3D de las lunas con cobertura histórica local en ventanas de sobrevuelo;
+ * solo las muestro cuando el instante actual dispone de vectores verificados de JPL Horizons.
  */
 export function crearSatelitesEncuentroVisual() {
   const grupo = new THREE.Group();
@@ -196,6 +199,7 @@ export function crearSatelitesEncuentroVisual() {
     });
   }
 
+  // Actualizo el nivel de detalle geométrico (LOD) y la visibilidad de la neblina de Titán según la distancia en pantalla.
   function actualizarNivelDetalle(resolverOpciones) {
     for (const [key, item] of mapaSatelites) {
       if (!item.posicion.visible) continue;

@@ -1,8 +1,10 @@
+// En este módulo lleno y controlo el selector de planetas y satélites junto con los botones de exploración y vista general.
 import { PLANETAS } from '../astronomy/Ephemerides.js';
 import { MOONS } from '../science/PlanetaryMoons.js';
 
 const ETIQUETAS = { Jupiter: 'Júpiter' };
 
+// Inicializo las opciones de planetas y lunas en el selector y enlazo las acciones de selección y cámara.
 export function crearSelectorPlanetas({ alElegir, alExplorar, alVistaGeneral }) {
   const selector = document.querySelector('#planet-select');
   const seleccionado = document.querySelector('#selected-planet');
@@ -29,13 +31,14 @@ export function crearSelectorPlanetas({ alElegir, alExplorar, alVistaGeneral }) 
     }
   }
 
-  // Elegir un destino y comenzar a explorarlo son acciones separadas.
+  // Mantengo separadas la acción de elegir un destino y la de iniciar la exploración cercana con la cámara.
   selector.addEventListener('change', () => {
     if (selector.value) alElegir(selector.value);
   });
   explorar.addEventListener('click', alExplorar);
   general.addEventListener('click', alVistaGeneral);
 
+  // Reflejo en la interfaz el cuerpo seleccionado actualmente y habilito el botón de exploración solo si hay destino.
   function actualizar(nombre) {
     selector.value = nombre ?? '';
     seleccionado.textContent = nombre
@@ -44,6 +47,7 @@ export function crearSelectorPlanetas({ alElegir, alExplorar, alVistaGeneral }) 
     explorar.disabled = !nombre;
   }
 
+  // Habilito o deshabilito el selector según la disponibilidad de las efemérides.
   function habilitar(valor) {
     selector.disabled = !valor;
   }

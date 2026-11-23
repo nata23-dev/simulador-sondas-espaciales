@@ -1,3 +1,10 @@
+/**
+ * En este módulo adapto los estados físicos de sondas, trayectorias propagadas y
+ * campos de efemérides prescritas a las coordenadas gráficas de Three.js y a la
+ * telemetría que muestran los paneles del HUD.
+ * Marco físico de entrada: heliocéntrico eclíptico J2000/ICRF en km y km/s (TDB).
+ * Marco visual de salida: ejes de escena `(x, z, -y)` escalados por `UNIDADES_POR_AU / KM_PER_AU`.
+ */
 import { UNIDADES_POR_AU } from '../graphics/SceneScale.js';
 import { eclipticToSceneAxes, requireVector3 } from '../science/Frames.js';
 import { DYNAMICAL_MODELS } from '../science/GravitationalDynamics.js';
@@ -8,10 +15,7 @@ import { KM_PER_AU, SECONDS_PER_DAY } from '../science/Units.js';
 
 export const SCENE_UNITS_PER_KM = UNIDADES_POR_AU / KM_PER_AU;
 
-/**
- * Convierte un vector físico en km (marco eclíptico J2000/ICRF) a coordenadas
- * visuales de la escena Three.js sin modificar el vector original.
- */
+// Convierto un vector físico en km (eclíptico J2000/ICRF) a coordenadas de escena Three.js sin mutar el vector original.
 export function physicalPositionKmToScene(positionKm) {
   requireVector3(positionKm, 'positionKm');
   const rotated = eclipticToSceneAxes(positionKm);
@@ -22,6 +26,7 @@ export function physicalPositionKmToScene(positionKm) {
   });
 }
 
+// Formateo una etiqueta corta que resume el modelo gravitacional y el integrador usados en la propagación.
 function formatDynamicalModelSummary(model) {
   const integratorLabel = model.integratorMethod === 'dopri54' ? 'DOPRI54 (RK45)' : 'RK4';
   if (model.kind === DYNAMICAL_MODELS.TWO_BODY_CENTRAL) {
@@ -32,10 +37,7 @@ function formatDynamicalModelSummary(model) {
   return `Sol + ${count} planetas (efem. prescritas${indirect}) · ${integratorLabel}`;
 }
 
-/**
- * Adaptador puro de `ProbeDynamicState` a coordenadas gráficas y telemetría de HUD.
- * Conserva intacto el estado físico original.
- */
+// Traduzco de forma pura un `ProbeDynamicState` a coordenadas de escena y métricas de HUD, dejando intacto el estado físico.
 export function probeStateToVisual(probeDynamicState) {
   const state = createProbeDynamicState(probeDynamicState);
   const p = state.position;
@@ -76,10 +78,7 @@ export function probeStateToVisual(probeDynamicState) {
   });
 }
 
-/**
- * Convierte las muestras de posición física en km de una trayectoria propagada
- * a un `Float32Array` de vértices en coordenadas de escena Three.js `(x, z, -y) * escala`.
- */
+// Transformo el arreglo compacto de muestras físicas en km (`Float64Array`) en vértices `Float32Array` listos para Three.js.
 export function trajectoryRenderSamplesToScenePositions(renderSamples) {
   if (!renderSamples || typeof renderSamples !== 'object'
     || !(renderSamples.positionsKm instanceof Float64Array)
@@ -102,11 +101,7 @@ export function trajectoryRenderSamplesToScenePositions(renderSamples) {
   return out;
 }
 
-/**
- * Evalúa de forma síncrona las posiciones visuales de los ocho planetas en un
- * instante `elapsedSeconds` usando el `PrescribedEphemerisField` validado.
- * Compatible con `simulador.actualizarPosiciones` y `PlanetInfoPanel`.
- */
+// Evalúo de forma síncrona el estado visual de los ocho planetas en `elapsedSeconds` usando el campo de efemérides prescritas.
 export function evaluateVisualPlanetsFromField(ephemerisField, elapsedSeconds) {
   const calendar = decomposeJdTdbCalendar(ephemerisField.epochJdTdb, elapsedSeconds);
   const states = {};

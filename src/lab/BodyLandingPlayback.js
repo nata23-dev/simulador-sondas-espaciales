@@ -1,7 +1,7 @@
-// Etapa 12F — reproducción y telemetría de un descenso ya calculado sobre un cuerpo cualquiera.
-// Función pura del instante: no integra, no consume propelente adicional y no repite eventos al retroceder. Posición y velocidad por
-// Hermite entre nudos DOPRI54; la masa se interpola linealmente entre nudos (la integración registra ~1 nudo/s en el descenso);
-// el empuje y el acelerador se reevalúan con la misma función de guiado que usó la integración.
+// En este módulo reproduzco y genero la telemetría instantánea de un descenso propulsado ya calculado.
+// Trabajo como una función pura del tiempo transcurrido: no reintegro ecuaciones, no altero el consumo de propelente
+// y permito avanzar o retroceder libremente sin duplicar eventos. Interpolo posición y velocidad con Hermite entre
+// nudos DOPRI54, interpolo masa y Δv acumulado de forma lineal y reevalúo el empuje con la misma ley de guiado.
 import { calculateEngineering } from './ProbeEngineering.js';
 import { designSignature } from './MissionPlanStore.js';
 import { sampleIntegratedState } from './MissionPlayback.js';
@@ -11,17 +11,21 @@ import { getBodyProfile } from './CelestialBodyMissionRegistry.js';
 import { STANDARD_GRAVITY_M_S2 } from './BodyLandingVehicle.js';
 
 export const LANDING_VIEW_OVERVIEW_MIN_DISTANCE = 2.4;
-export const CENTRAL_BODY_SCENE_RADIUS = 0.63710084; // igual que MissionExecutionView: radio de la esfera central en unidades de escena
+// Uso el mismo radio de esfera central en unidades de escena que la vista de ejecución orbital para mantener escala visual coherente.
+export const CENTRAL_BODY_SCENE_RADIUS = 0.63710084;
 const BODY_COLOR = Object.freeze({ 'rocky-moon': '#9c9fa4', 'icy-moon': '#b9c9d6', 'rocky-planet': '#9a8878' });
 
+// Busco por bisección el tramo de nudos que envuelve el instante t e interpolo linealmente la magnitud escalar pedida.
 const interpolate = (knots, t, key) => {
   let low = 0, high = knots.length - 1;
   while (high - low > 1) { const mid = (low + high) >> 1; if (knots[mid].elapsedSeconds <= t) low = mid; else high = mid; }
   const a = knots[low], b = knots[high], u = (t - a.elapsedSeconds) / (b.elapsedSeconds - a.elapsedSeconds || 1);
   return a[key] + (b[key] - a[key]) * Math.min(1, Math.max(0, u));
 };
+// Localizo el segmento activo del descenso correspondiente al instante t.
 const segmentAt = (segments, t) => { for (let i = segments.length - 1; i >= 0; i--) if (t >= segments[i].startSeconds && segments[i].endSeconds > segments[i].startSeconds) return segments[i]; return segments[0]; };
 
+// Construyo el paquete inmutable de ejecución reproducible validando que el cálculo corresponda a la sonda y modelo vigentes.
 export function createLandingExecution({ result, design, name = null }) {
   if (result?.kind !== 'landing') throw Error('El resultado no corresponde a un descenso.');
   const sim = result.simulation;
@@ -42,12 +46,13 @@ export function createLandingExecution({ result, design, name = null }) {
     kind: 'landing', name: name ?? `Descenso en ${sim.bodyName}`, design: structuredClone(design), options: sim.options, durationSeconds, events, result, simulation: sim, profile, environment: env,
     transfer: { model: LANDING_MODEL_VERSION, target: 'landing', departureJd: null, flightSeconds: durationSeconds, trajectory, initialPositionKm: knots[0].positionKm, circularVelocityKmS: knots[0].velocityKmS,
       arrivalPositionKm: knots.at(-1).positionKm, moonArrivalPositionKm: knots.at(-1).positionKm, overviewMinDistance: LANDING_VIEW_OVERVIEW_MIN_DISTANCE,
-      // Escena local: el cuerpo central ocupa el radio de la Tierra de la vista (0,6371 u); 1 u = R_cuerpo/0,6371 km. No es una escena del Sistema Solar.
+      // Adapto la escena local al cuerpo central normalizando su radio a 0,6371 u (1 u = R_cuerpo / 0,6371 km); no representa el Sistema Solar completo.
       bodyRadiusKm: env.radiusKm, sceneScale: CENTRAL_BODY_SCENE_RADIUS / env.radiusKm, centralBody: { id: profile.id, name: profile.name, color: BODY_COLOR[profile.type] ?? '#9a9a9a' }, hideMoon: true },
     evaluation: { status: sim.status, engineering: calculateEngineering(design) }
   });
 }
 
+// Muestreo el estado físico completo del vehículo en el instante solicitado sin ejecutar nueva integración numérica.
 export function sampleLandingExecution(execution, elapsedSeconds) {
   if (execution?.kind !== 'landing' || !Number.isFinite(elapsedSeconds) || elapsedSeconds < 0 || elapsedSeconds > execution.durationSeconds) throw Error('Instante fuera de la trayectoria calculada.');
   const sim = execution.simulation, env = execution.environment, t = elapsedSeconds, guidance = sim.options.guidance;
@@ -74,6 +79,7 @@ export function sampleLandingExecution(execution, elapsedSeconds) {
   };
 }
 
+// Derivo la telemetría estructurada que consume la interfaz (vuelo, propulsión, órbita osculadora y dictamen de contacto).
 export function deriveLandingTelemetry(execution, sample) {
   if (!execution || !sample) throw Error('Falta un estado de misión reproducible.');
   const sim = execution.simulation, env = execution.environment;

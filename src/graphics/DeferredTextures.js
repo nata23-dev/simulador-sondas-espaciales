@@ -1,26 +1,27 @@
-// Etapa 18 — texturas bajo demanda. Solo presentación: decide CUÁNDO se descargan las texturas, no cuáles ni cómo se dibujan.
-//
-// Cada cuerpo registra su carga diferida (una función que pide sus archivos) y las mallas que la muestran. El bucle de la escena
-// llama a solicitarTexturasVisibles() en cada fotograma: cuando una de esas mallas está visible y su disco mide al menos
-// UMBRAL_TEXTURA_PX de radio en pantalla, se lanza la carga (una sola vez). Mientras tanto la malla conserva su color de respaldo,
-// indistinguible a ese tamaño. precargarEnReposo() permite adelantar alguna textura cuando el navegador está libre.
+// En este módulo coordino la descarga diferida de texturas bajo demanda para planetas y lunas.
+// Solo gestiono cuándo se piden los archivos: cada cuerpo registra su cargador y sus mallas,
+// y disparo la descarga una única vez cuando su disco alcanza al menos UMBRAL_TEXTURA_PX de radio
+// en pantalla (o de forma escalonada en tiempo inactivo del navegador).
 import * as THREE from 'three';
 import { getQualityState } from './QualityProfile.js';
 
 export const UMBRAL_TEXTURA_PX = 2;
-const pendientes = new Map(); // clave → { cargar, mallas: Set }
+// Guardo en este registro de caché diferida cada clave pendiente junto con su función de carga y sus mallas asociadas.
+const pendientes = new Map();
 const solicitadas = new Set();
 
-/** Registra la carga diferida de `clave` (idempotente: la primera función registrada es la que vale). */
+/** Registro de forma idempotente la función de carga diferida asociada a `clave`. */
 export function registrarTexturaDiferida(clave, cargar) {
   if (solicitadas.has(clave)) return;
   if (!pendientes.has(clave)) pendientes.set(clave, { cargar, mallas: new Set() });
 }
-/** Asocia una malla (esfera de radio 1 escalada) a la carga de `clave`. */
+
+/** Vinculo una malla esférica de radio unitario escalado a la clave de textura pendiente. */
 export function vincularMallaTextura(clave, malla) {
   pendientes.get(clave)?.mallas.add(malla);
 }
-/** Lanza la carga de `clave` si sigue pendiente. Devuelve true si la lanzó. */
+
+/** Disparo una sola vez la carga de `clave` si aún está pendiente y devuelvo si la lancé. */
 export function solicitarTextura(clave) {
   const entrada = pendientes.get(clave);
   if (!entrada) return false;
@@ -32,7 +33,7 @@ export function solicitarTextura(clave) {
 export const texturasPendientes = () => [...pendientes.keys()];
 export const texturasSolicitadas = () => [...solicitadas];
 
-/** Radio aparente (px) de una esfera de radio `radio` a `distancia` con una cámara perspectiva (función pura, probada). */
+/** Calculo el radio aparente en píxeles de una esfera observada por una cámara perspectiva. */
 export function radioAparentePx(radio, distancia, fovGrados, alturaPx, zoom = 1) {
   if (!(radio > 0) || !(alturaPx > 0)) return 0;
   if (!(distancia > radio)) return Infinity;
@@ -44,7 +45,8 @@ function visibleEnEscena(malla) {
   for (let nodo = malla; nodo; nodo = nodo.parent) if (!nodo.visible) return false;
   return true;
 }
-/** Pide las texturas de los cuerpos visibles cuyo disco mide ya UMBRAL_TEXTURA_PX o más. Barato: solo recorre lo pendiente. */
+
+/** Recorro únicamente las claves pendientes y solicito la textura de las mallas visibles que ya superan el umbral en píxeles. */
 export function solicitarTexturasVisibles(camera, alturaPx) {
   if (!pendientes.size || !camera?.isPerspectiveCamera) return;
   for (const [clave, { mallas }] of [...pendientes]) {
@@ -57,7 +59,7 @@ export function solicitarTexturasVisibles(camera, alturaPx) {
   }
 }
 
-/** Adelanta las cargas de `claves` de una en una cuando el navegador está libre (requestIdleCallback; si no existe, un retardo). */
+/** Adelanto de una en una las cargas de `claves` cuando el navegador está en reposo mediante requestIdleCallback o retardo. */
 export function precargarEnReposo(claves, { retardoMs = 2500 } = {}) {
   const cola = [...claves];
   const siguiente = () => {
@@ -73,14 +75,16 @@ export function precargarEnReposo(claves, { retardoMs = 2500 } = {}) {
   setTimeout(programar, retardoMs);
 }
 
-/** ¿Conviene ahorrar datos? (modo «ahorro de datos» del navegador o conexión 2G/3G). */
+/** Compruebo si el navegador declara modo de ahorro de datos o una conexión lenta 2G/3G. */
 export function conexionLimitada(nav = globalThis.navigator) {
   const c = nav?.connection;
   return Boolean(c?.saveData) || /(^|-)(2g|3g)$/.test(c?.effectiveType ?? '');
 }
 
-/** Perfil de texturas ligero (móvil o conexión lenta): con calidad «Baja» o ahorro de datos se omiten los mapas que solo
- *  matizan la luz (relieve y rugosidad de la Tierra, 0,7 MB). Los mapas de color, que muestran la superficie, se conservan. */
+/**
+ * Decido si debo usar el perfil ligero de texturas: con calidad «Baja» o conexión limitada
+ * omito mapas secundarios de relieve y rugosidad, pero mantengo siempre los mapas de color superficial.
+ */
 export function texturasLigeras({ calidad = getQualityState().profile, nav = globalThis.navigator } = {}) {
   return calidad === 'bajo' || conexionLimitada(nav);
 }

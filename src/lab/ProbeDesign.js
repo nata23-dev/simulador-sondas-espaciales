@@ -1,9 +1,13 @@
+// Aquí defino el modelo de datos y las operaciones inmutables sobre el diseño de una sonda del Hangar:
+// preajustes ilustrativos e históricos, validación estructural/dimensional/propulsiva (m, kg), sustitución
+// segura de piezas con resolución de conflictos de propelente y persistencia validada en JSON o localStorage.
 import { ALL_COMPONENTS, getComponent, slotAccepts, needsAdapter, fitsEnvelope, adapterMassKg, maxDimensionM, interfaceOf } from './ComponentCatalog.js';
 import { HISTORICAL_PROBES } from './HeritageCatalog.js';
 
 export const DESIGN_FORMAT = 'simulador-sondas-probe-design';
 export const DESIGN_VERSION = 1;
 
+// Creo un diseño vacío con identificador único listo para asignar estructura y componentes.
 export function newDesign(name = 'Nueva sonda', coreId = null) {
   return { format: DESIGN_FORMAT, version: DESIGN_VERSION, id: crypto.randomUUID(), name, coreId, parts: [] };
 }
@@ -17,6 +21,7 @@ function preset(name, coreId, entries) {
   return design;
 }
 
+// Expongo las configuraciones iniciales ilustrativas disponibles para pruebas rápidas en el Hangar.
 export const PRESETS = Object.freeze([
   { id: 'empty', name: 'Estructura vacía', create: () => newDesign('Nueva sonda') },
   { id: 'interplanetary', name: 'Exploración interplanetaria', create: () => preset('Exploración interplanetaria', 'bus-interplanetary', [
@@ -37,11 +42,11 @@ export const PRESETS = Object.freeze([
   ]) }
 ]);
 
-// 15: configuraciones históricas, separadas de las iniciales ilustrativas (que conservan su lista y sus índices).
+// Mantengo las configuraciones históricas separadas de las ilustrativas para preservar el orden de ambas listas.
 export const HISTORICAL_PRESETS = Object.freeze(HISTORICAL_PROBES.map(probe => Object.freeze({
   id: `hist-${probe.id}`, name: `${probe.name} (configuración histórica)`, historical: probe.id, create: () => historicalDesign(probe.id) })));
 
-/** Diseño editable que reproduce la configuración histórica documentada (piezas de herencia, propelente de lanzamiento). */
+/** Construyo un diseño editable a partir de una sonda histórica documentada con sus piezas de herencia y propelente de lanzamiento. */
 export function historicalDesign(probeId) {
   const probe = HISTORICAL_PROBES.find(item => item.id === probeId);
   if (!probe) throw Error('Sonda histórica desconocida.');
@@ -57,6 +62,7 @@ export function historicalDesign(probeId) {
 
 const HISTORICAL_IDS = new Set(HISTORICAL_PROBES.map(item => item.id));
 
+// Valido estructura, anclajes, envolventes (m), adaptadores, capacidad de carga (kg), tanques y compatibilidad de propelentes.
 export function validateDesign(value) {
   const errors = [];
   if (!value || typeof value !== 'object' || Array.isArray(value)) return ['El archivo no contiene un diseño válido.'];
@@ -81,7 +87,7 @@ export function validateDesign(value) {
     if (!component || component.category === 'structure') { errors.push('Componente desconocido.'); continue; }
     if (!socket || !slotAccepts(socket, component)) errors.push(`${component.name}: conexión incompatible (${entry.socketId ?? 'sin punto'}).`);
     else {
-      // 15: compatibilidad dimensional (envolvente del punto) y mecánica (herraje; el adaptador es una decisión explícita).
+      // Compruebo la envolvente geométrica del punto (m) y la compatibilidad mecánica de herrajes (el adaptador debe aprobarse explícitamente).
       if (!fitsEnvelope(socket, component)) errors.push(`${component.name}: ${maxDimensionM(component)} m exceden la envolvente de ${socket.envelopeM} m del punto «${socket.name}».`);
       if (needsAdapter(socket, component) && entry.adapter !== true) errors.push(`${component.name}: el herraje «${interfaceOf(component)}» no coincide con «${interfaceOf(socket)}» del punto «${socket.name}»; requiere adaptador estructural.`);
     }
@@ -101,6 +107,7 @@ export function validateDesign(value) {
   return errors;
 }
 
+// Devuelvo una nueva copia del diseño tras instalar la estructura o pieza solicitada si supera la validación.
 export function addPart(design, componentId, socketId, { adapter = false } = {}) {
   const component = getComponent(componentId);
   if (!component) throw Error('Componente desconocido.');
@@ -120,8 +127,7 @@ export function addPart(design, componentId, socketId, { adapter = false } = {})
   return next;
 }
 
-// Prepara una sustitución sin modificar el diseño. La interfaz debe mostrar
-// los conflictos y solicitar una decisión explícita antes de llamar a apply.
+// Preparo una propuesta de cambio sin mutar el diseño para que la interfaz muestre conflictos de propelente o adaptadores antes de aplicar.
 export function planPartChange(design, componentId, socketId) {
   const previousIssues = validateDesign(design);
   if (previousIssues.length) throw Error(previousIssues.join(' '));
@@ -132,7 +138,7 @@ export function planPartChange(design, componentId, socketId) {
   const socket = core?.slots.find(item => item.id === socketId);
   if (!socket || !slotAccepts(socket, component)) throw Error(`${component.name}: conexión incompatible (${socketId ?? 'sin punto'}).`);
   if (!fitsEnvelope(socket, component)) throw Error(`${component.name}: ${maxDimensionM(component)} m exceden la envolvente de ${socket.envelopeM} m del punto «${socket.name}».`);
-  // 15: si el herraje no coincide, la interfaz debe ofrecer el adaptador con su masa estimada antes de instalar.
+  // Si los herrajes difieren, informo la necesidad del adaptador estructural y su masa estimada antes de instalarlo.
   const adapter = needsAdapter(socket, component) ? { required: true, massKg: adapterMassKg(component), from: interfaceOf(component), to: interfaceOf(socket) } : null;
   const conflicts = component.propellant ? design.parts
     .filter(entry => entry.socketId !== socketId)
@@ -147,8 +153,7 @@ export function planPartChange(design, componentId, socketId) {
   return { component, socketId, conflicts, adapter };
 }
 
-// Pieza de la misma categoría con el propelente requerido que cabe en el punto. Prioridad: mismo programa que la pieza
-// elegida, después el de la pieza en conflicto y, por último, sin adaptador.
+// Busco la mejor pieza sustituta compatible con el nuevo propelente y la envolvente del punto, priorizando herencia y ausencia de adaptador.
 function replacementFor(core, socketId, current, selected) {
   const socket = core.slots.find(item => item.id === socketId);
   const candidates = ALL_COMPONENTS.filter(candidate => candidate.category === current.category && candidate.propellant === selected.propellant
@@ -157,8 +162,7 @@ function replacementFor(core, socketId, current, selected) {
   return candidates.sort((a, b) => rank(a) - rank(b))[0] ?? null;
 }
 
-// Construye una única propuesta y la valida antes de devolverla. Si falla,
-// la referencia y el contenido del diseño original permanecen intactos.
+// Aplico una sustitución atómica y valido el diseño resultante; si falla, mantengo intacto el diseño original.
 export function applyPartChange(design, componentId, socketId, resolution = 'none', { adapter = false } = {}) {
   const plan = planPartChange(design, componentId, socketId);
   if (plan.component.category === 'structure') return addPart(design, componentId);
@@ -188,13 +192,14 @@ export function applyPartChange(design, componentId, socketId, resolution = 'non
   return next;
 }
 
+// Parseo y depuro un diseño JSON conservando únicamente los campos reconocidos y validados.
 export function parseDesign(text) {
   if (typeof text !== 'string' || text.length > 100_000) throw Error('Archivo demasiado grande o inválido.');
   let parsed;
   try { parsed = JSON.parse(text); } catch { throw Error('El archivo no contiene JSON válido.'); }
   const errors = validateDesign(parsed);
   if (errors.length) throw Error(errors.join(' '));
-  // Limita la representación persistida a campos conocidos.
+  // Acoto la representación persistida a los campos conocidos del esquema de diseño.
   return { format: DESIGN_FORMAT, version: DESIGN_VERSION, id: parsed.id, name: parsed.name.trim(), coreId: parsed.coreId,
     ...(parsed.basedOn !== undefined ? { basedOn: parsed.basedOn } : {}),
     parts: parsed.parts.map(p => ({ id: p.id, componentId: p.componentId, socketId: p.socketId,
@@ -202,6 +207,7 @@ export function parseDesign(text) {
 }
 
 const STORAGE_KEY = 'probe-laboratory-designs-v1';
+// Cargo desde localStorage hasta 30 diseños guardados que superen la validación vigente.
 export function loadSavedDesigns() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');

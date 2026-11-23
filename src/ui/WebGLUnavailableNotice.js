@@ -1,14 +1,11 @@
-// Auditoría final, fase 1 — STAB-01: avisos cuando una escena 3D no puede crear su contexto WebGL 2.
-// Solo informa: no sustituye la escena científica por una imagen aproximada ni simula el dibujo.
+// En este módulo muestro avisos claros cuando el navegador no soporta WebGL 2 o falla la creación de una escena 3D.
+// Solo informo del problema y ofrezco alternativas: nunca sustituyo la escena científica por una imagen aproximada.
 import { WEBGL2_UNAVAILABLE_HINTS, WEBGL2_UNAVAILABLE_MESSAGE, WEBGL2_UNAVAILABLE_TITLE, esFalloWebGL } from '../graphics/WebGLSupport.js';
 
 const texto = error => String(error?.message ?? error ?? 'error desconocido');
 
-/**
- * Escena principal: sin ella no funciona ningún modo, así que el aviso ocupa la pantalla (diálogo de alerta accesible),
- * sustituye «Esperando datos…» en el estado de la fuente, deja inerte la interfaz cuyos controles ya no responderían y ofrece
- * volver a cargar (por ejemplo, después de activar la aceleración gráfica). Devuelve el elemento del aviso.
- */
+// Muestro un diálogo modal accesible cuando falla la escena principal, actualizo el estado de datos, dejo inerte
+// la interfaz subyacente que no podría operar y ofrezco un botón para volver a cargar la página.
 export function mostrarFalloEscenaPrincipal(error, { documento = globalThis.document, recargar = () => globalThis.location?.reload() } = {}) {
   const webgl = esFalloWebGL(error);
   const titulo = webgl ? WEBGL2_UNAVAILABLE_TITLE : 'No se pudo iniciar la escena 3D';
@@ -52,15 +49,13 @@ export function mostrarFalloEscenaPrincipal(error, { documento = globalThis.docu
   return aviso;
 }
 
-/**
- * Vista 3D secundaria (laboratorio): reemplaza el contenido de su contenedor por un aviso de estado. El resto del panel sigue
- * funcionando (`sigue` dice qué). Devuelve el párrafo del aviso.
- */
+// Redacto el texto de error para una vista 3D secundaria indicando el motivo del fallo y qué partes del panel siguen funcionando.
 function textoVistaNoDisponible(error, vista, sigue) {
   const motivo = esFalloWebGL(error) ? 'este dispositivo o navegador no pudo inicializar WebGL 2' : texto(error);
   return `${vista} no está disponible: ${motivo}.${sigue ? ` ${sigue}` : ''}`;
 }
 
+// Reemplazo el contenido del lienzo secundario por un aviso de estado accesible sin interrumpir el resto del panel.
 export function mostrarVista3DNoDisponible(host, error, { vista, sigue = '' }) {
   const documento = host.ownerDocument ?? globalThis.document;
   const aviso = documento.createElement('p');
@@ -71,8 +66,7 @@ export function mostrarVista3DNoDisponible(host, error, { vista, sigue = '' }) {
   return aviso;
 }
 
-// Para una vista que se abre desde un botón (el lanzamiento 3D): el aviso queda visible justo después de `referencia`, sin
-// sustituir nada. Con el mismo `id` se reutiliza el aviso anterior en lugar de acumular otro.
+// Inserto o actualizo un aviso en línea junto a un botón disparador para vistas bajo demanda, evitando duplicar mensajes con el mismo id.
 export function mostrarAvisoJunto(referencia, error, { id, vista, sigue = '' }) {
   const documento = referencia.ownerDocument ?? globalThis.document;
   let aviso = documento.getElementById?.(id) ?? null;

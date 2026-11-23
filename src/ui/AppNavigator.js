@@ -1,12 +1,12 @@
-// Etapas 14 y 14.1 — mapa de áreas del simulador y ruta de navegación de la cabecera. Solo navegación: reutiliza los
-// botones de modo existentes y el evento «lab:navigate» del laboratorio; no crea estados de misión ni modifica cálculos.
+// En este módulo defino el mapa de áreas del simulador y controlo el menú y la ruta de navegación de la cabecera.
+// Solo gestiono navegación: reutilizo los botones de modo existentes y el evento «lab:navigate» del laboratorio, sin crear estados de misión ni alterar cálculos.
 export const AREAS = Object.freeze([
   { group: 'Explorar', items: [
     { id: 'solar', title: 'Sistema Solar', desc: 'Planetas, lunas y efemérides NASA/JPL 2026', mode: 'exploracion', icon: 'icon-orbit' },
     { id: 'voyager', title: 'Misiones históricas Voyager', desc: 'Voyager 1 y 2, 1977–2026: trayectorias, eventos y fotografías', mode: 'historico', icon: 'icon-probe' }
   ] },
-  // 16: el laboratorio en tres pasos (elegir sonda → planificar → reproducir) y la misión guiada para empezar.
-  // 17: cada entrada lleva además la etapa y la pestaña del panel lateral del laboratorio.
+  // Organizo el laboratorio en tres etapas (elegir sonda, planificar y reproducir) más la misión guiada,
+  // indicando en cada entrada su etapa y la pestaña correspondiente del panel lateral.
   { group: 'Laboratorio · 1 Elegir sonda', items: [
     { id: 'guide', title: 'Misión guiada', desc: 'Primeros pasos: Cassini a Marte en cinco pasos', mode: 'experimental', section: 'hangar', stage: 'probe', tab: 'overview', guide: true, icon: 'icon-target' },
     { id: 'hangar', title: 'Elegir sonda', desc: 'Voyager, Cassini, Dawn y Juno: vista general, arquitectura, planos e ingeniería', mode: 'experimental', section: 'hangar', stage: 'probe', tab: 'overview', icon: 'icon-settings' },
@@ -26,6 +26,7 @@ export const AREAS = Object.freeze([
 const AREA_BY_ID = new Map(AREAS.flatMap(group => group.items).map(area => [area.id, area]));
 const CRUMB_ROOT = { exploracion: 'Sistema Solar', historico: 'Voyager', experimental: 'Laboratorio' };
 
+// Construyo el menú desplegable de navegación y la miga de pan en la cabecera.
 export function createAppNavigator() {
   const app = document.querySelector('#app');
   const header = document.querySelector('.app-header');
@@ -33,7 +34,7 @@ export function createAppNavigator() {
   if (!app || !header || !switcher) return { dispose() {}, go() {}, areas: AREAS };
   const wrap = document.createElement('div');
   wrap.className = 'app-navigator hud-secondary';
-  // 29: un solo «Menú» en la cabecera: áreas del simulador, herramientas y ayuda (antes «Áreas» y «Menú» por separado).
+  // Reúno en un único botón «Menú» de la cabecera las áreas del simulador, las herramientas y la ayuda.
   wrap.innerHTML = `<button type="button" id="app-nav-toggle" class="app-nav-toggle header-action" aria-expanded="false" aria-controls="app-nav-panel" aria-label="Menú: áreas del simulador, herramientas y ayuda" title="Menú: áreas del simulador, herramientas y ayuda">
       <svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg><span>Menú</span></button>
     <div id="app-nav-panel" class="app-nav-panel" role="dialog" aria-label="Menú del simulador" hidden>
@@ -41,16 +42,16 @@ export function createAppNavigator() {
       <div class="app-nav-groups"></div>
       <p class="app-nav-foot">Las áreas del laboratorio comparten la sonda activa y la misión preparada para el Centro de Misión.</p>
     </div>`;
-  header.append(wrap); // a la derecha de «Buscar», en el extremo de la cabecera
+  // Coloco el botón en el extremo derecho de la cabecera, después de «Buscar».
+  header.append(wrap);
   const toggle = wrap.querySelector('#app-nav-toggle'), panel = wrap.querySelector('#app-nav-panel');
-  // El panel vive en #app (no en la cabecera) para quedar por encima del laboratorio y de la escena en cualquier modo.
+  // Inserto el panel directamente en #app (y no dentro de la cabecera) para que quede sobre el laboratorio y la escena en cualquier modo.
   app.append(panel);
   const groups = panel.querySelector('.app-nav-groups');
-  // 29: herramientas y ayuda (creadas por WorkspaceLayout) van en el mismo panel, debajo de las áreas.
+  // Integro las herramientas y ayudas creadas por WorkspaceLayout dentro del mismo panel, justo debajo de las áreas.
   const tools = document.querySelector('#main-tools');
   if (tools) { tools.hidden = false; groups.after(tools); }
-  // Al desplegar una herramienta o una ayuda (con un clic o desde «Buscar»), se lleva a la vista dentro del panel desplazable.
-  // «toggle» no burbujea: se escucha en la fase de captura.
+  // Al desplegar una herramienta o ayuda dentro del panel, la desplazo a la vista; escucho «toggle» en captura porque no burbujea.
   tools?.addEventListener('toggle', e => { if (e.target.open && !panel.hidden) e.target.scrollIntoView?.({ block: 'start', behavior: 'smooth' }); }, true);
   for (const { group, items } of AREAS) {
     const section = document.createElement('section'); section.className = 'app-nav-group';
@@ -65,13 +66,14 @@ export function createAppNavigator() {
     groups.append(section);
   }
 
-  // Ruta de la cabecera: «Simulador › área › objeto o herramienta». Lee títulos ya presentes en la interfaz.
+  // Construyo la ruta de ubicación en la cabecera leyendo los títulos que ya muestra la interfaz.
   const brandText = header.querySelector('.brand > div');
   const crumb = document.createElement('nav');
   crumb.className = 'app-crumb'; crumb.setAttribute('aria-label', 'Ubicación actual');
   crumb.innerHTML = '<span class="app-crumb-root"></span><span class="app-crumb-leaf"></span>';
   brandText?.append(crumb);
   const crumbRoot = crumb.querySelector('.app-crumb-root'), crumbLeaf = crumb.querySelector('.app-crumb-leaf');
+  // Actualizo la raíz y la hoja de la ruta según el modo activo y el título visible en pantalla.
   function updateCrumb() {
     const mode = app.dataset.appMode;
     const lab = document.querySelector('#experimental-lab');
@@ -83,7 +85,7 @@ export function createAppNavigator() {
   }
   const crumbObserver = new MutationObserver(updateCrumb);
   crumbObserver.observe(app, { attributes: true, attributeFilter: ['data-app-mode'] });
-  // 18: el laboratorio se carga bajo demanda; attachLab() vincula la ruta a sus nodos cuando ya existen.
+  // Como el laboratorio se monta bajo demanda, engancho sus nodos al observador en cuanto existen.
   const observed = new Set();
   function attachLab() {
     for (const selector of ['#context-title', '#lab-tool-title']) {
@@ -96,12 +98,14 @@ export function createAppNavigator() {
   }
   attachLab();
 
+  // Abro o cierro el panel del menú, ajusto su posición bajo la cabecera, actualizo aria-expanded y llevo el foco al interior.
   function setOpen(open) {
     if (open) panel.style.setProperty('--app-nav-top', `${Math.ceil(header.getBoundingClientRect().bottom + 6)}px`);
     panel.hidden = !open; toggle.setAttribute('aria-expanded', String(open));
     if (open) document.dispatchEvent(new CustomEvent('app:menu-open'));
     if (open) { markCurrent(); panel.querySelector('[aria-current="page"], button')?.focus({ preventScroll: true }); }
   }
+  // Deduzco qué área está activa a partir del modo global y de los atributos de estado del laboratorio.
   function currentArea() {
     const mode = app.dataset.appMode;
     if (mode === 'exploracion') return 'solar';
@@ -113,18 +117,21 @@ export function createAppNavigator() {
     if (section === 'planner') return labNode.dataset.plannerMode === 'lunar' ? 'lunar' : labNode.dataset.plannerMode;
     return section;
   }
+  // Marco con aria-current="page" el botón del menú que corresponde a la ubicación actual.
   function markCurrent() {
     const id = currentArea();
     for (const button of groups.querySelectorAll('button')) {
       if (button.dataset.area === id) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current');
     }
   }
+  // Espero de forma asíncrona hasta que el atributo data-app-mode refleje el cambio de modo o venza el límite de espera.
   function waitForMode(mode, timeoutMs = 4000) {
     return new Promise(resolve => {
       const started = performance.now();
       (function poll() { if (app.dataset.appMode === mode || performance.now() - started > timeoutMs) resolve(); else requestAnimationFrame(poll); })();
     });
   }
+  // Navego a un área concreta: cambio el modo si hace falta y, si pertenece al laboratorio, disparo «lab:navigate» tras activarlo.
   async function go(areaOrId) {
     const area = typeof areaOrId === 'string' ? AREA_BY_ID.get(areaOrId) : areaOrId;
     if (!area) return;
@@ -134,6 +141,7 @@ export function createAppNavigator() {
     await waitForMode('experimental');
     document.dispatchEvent(new CustomEvent('lab:navigate', { detail: { section: area.section, plannerMode: area.plannerMode, stage: area.stage, tab: area.tab, focus: area.focus, guide: area.guide } }));
   }
+  // Cierro el menú con Escape devolviendo el foco al botón, con clic exterior o cuando otro componente lo solicita.
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   const onKey = event => { if (event.key === 'Escape' && !panel.hidden) { setOpen(false); toggle.focus(); } };
   const onPointer = event => { if (!panel.hidden && !wrap.contains(event.target) && !panel.contains(event.target)) setOpen(false); };

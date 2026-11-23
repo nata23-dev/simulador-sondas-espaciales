@@ -1,8 +1,12 @@
+// Aquí construyo y valido el contrato canónico e inmutable `ScientificState` para cualquier cuerpo o sonda del simulador.
+// Unidades: posición en km, velocidad en km/s e instante en JD TDB.
+// Marco de referencia: heliocéntrico eclíptico J2000/ICRF (estándar NASA/JPL Horizons), totalmente libre de Three.js o escalas de escena.
 import { requireVector3, HORIZONS_FRAME } from './Frames.js';
 import { requireJdTdb } from './Time.js';
 
 const TYPES = new Set(['planet', 'probe', 'moon', 'star', 'sun']);
 
+/** Verifico que la entrada sea un registro plano no nulo. */
 function record(value, name) {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     throw new TypeError(`${name} debe ser un objeto.`);
@@ -10,6 +14,7 @@ function record(value, name) {
   return value;
 }
 
+/** Verifico que una cadena requerida no esté vacía. */
 function nonempty(value, name) {
   if (typeof value !== 'string' || value.trim() === '') {
     throw new TypeError(`${name} debe ser una cadena no vacía.`);
@@ -17,6 +22,7 @@ function nonempty(value, name) {
   return value;
 }
 
+/** Verifico un campo textual opcional (cadena no vacía o `null`). */
 function optionalString(value, name) {
   if (value !== null && (typeof value !== 'string' || value.trim() === '')) {
     throw new TypeError(`${name} debe ser una cadena no vacía o null.`);
@@ -24,6 +30,7 @@ function optionalString(value, name) {
   return value;
 }
 
+/** Valido un descriptor opcional de precisión o incertidumbre con descripción y fuente. */
 function optionalDetail(value, name) {
   if (value === null) return null;
   record(value, name);
@@ -31,6 +38,7 @@ function optionalDetail(value, name) {
     source: nonempty(value.source, `${name}.source`) });
 }
 
+/** Valido y congelo los metadatos primitivos de procedencia sin permitir valores no finitos ni objetos anidados. */
 function sourceMetadata(value) {
   record(value, 'provenance.sourceMetadata');
   const copy = {};
@@ -45,9 +53,8 @@ function sourceMetadata(value) {
 }
 
 /**
- * Crea un estado científico inmutable para el contrato inicial. Las magnitudes
- * son km y km/s, el instante es JD TDB y el marco es heliocéntrico eclíptico
- * J2000/ICRF. No incluye unidades de escena ni objetos de Three.js.
+ * Aquí creo un estado científico inmutable con posición en km, velocidad en km/s, instante en JD TDB
+ * y marco heliocéntrico eclíptico J2000/ICRF, garantizando la ausencia de unidades de escena u objetos de Three.js.
  */
 export function createScientificState(input) {
   record(input, 'state');

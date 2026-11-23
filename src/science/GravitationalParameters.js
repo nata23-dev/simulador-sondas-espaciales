@@ -1,3 +1,17 @@
+/**
+ * En este módulo centralizo y valido los catálogos inmutables de parámetros
+ * gravitacionales estándar (GM) y radios de referencia del Sistema Solar.
+ *
+ * - Unidades: parámetros gravitacionales `muKm3PerS2` en `km^3/s^2`, radios de
+ *   referencia y distancias mínimas de seguridad en km.
+ * - Marco de referencia: constantes físicas independientes de orientación espacial;
+ *   identifico cada cuerpo mediante su código NAIF/Horizons (`10` para el Sol,
+ *   `199`–`899` para los planetas y `301` para la Luna).
+ * - Fuentes y límites: tomo los valores físicos de NASA/JPL Solar System Dynamics
+ *   basados en DE440 (Park et al. 2021) y radios de IAU 2015 Res. B3 / IAU WGCCRE.
+ *   Rechazo entradas sintéticas dentro de catálogos físicos reales y exijo distancias
+ *   mínimas estrictamente positivas para prevenir singularidades en la propagación.
+ */
 import { requireFiniteNumber } from './Units.js';
 
 export const GM_UNIT = 'km^3/s^2';
@@ -34,6 +48,7 @@ const VALID_MASS_SCOPES = new Set([
   'synthetic'
 ]);
 
+/** Normalizo y valido una entrada de parámetro gravitacional antes de congelarla en el catálogo. */
 function normalizeParameterEntry(raw, index, isSyntheticCatalog) {
   const path = `entries[${index}]`;
   if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
@@ -85,6 +100,10 @@ function normalizeParameterEntry(raw, index, isSyntheticCatalog) {
   });
 }
 
+/**
+ * Construyo el objeto de catálogo inmutable indexado por `bodyId`, impidiendo
+ * duplicados y ofreciendo acceso seguro a `GM` y a instantáneas congeladas.
+ */
 function buildCatalog({ id, entries, isSynthetic, description }) {
   const catalogId = requireNonEmptyString(id, 'catalog.id');
   const catalogDescription = requireNonEmptyString(description, 'catalog.description');
@@ -148,15 +167,16 @@ function buildCatalog({ id, entries, isSynthetic, description }) {
 }
 
 /**
- * Crea un catálogo físico validado e inmutable. Rechaza entradas sintéticas.
+ * Aquí creo un catálogo físico validado e inmutable; rechazo cualquier entrada
+ * marcada con alcance sintético.
  */
 export function createPhysicalGravitationalCatalog({ id, description, entries }) {
   return buildCatalog({ id, description, entries, isSynthetic: false });
 }
 
 /**
- * Crea un catálogo explícitamente etiquetado como sintético para pruebas controladas.
- * No debe utilizarse como sustituto de constantes astronómicas reales.
+ * Aquí creo un catálogo etiquetado explícitamente como sintético para pruebas
+ * numéricas controladas; nunca lo empleo como sustituto de constantes reales.
  */
 export function createSyntheticGravitationalCatalog({
   id = 'synthetic-test-catalog',
@@ -178,17 +198,13 @@ export function createSyntheticGravitationalCatalog({
 }
 
 /**
- * Catálogo físico autoritativo del Sistema Solar (JPL DE440).
- *
- * Notas científicas importantes:
- * - Sol ('10'), Mercurio ('199'), Venus ('299'), Tierra ('399') y Luna ('301')
- *   corresponden a parámetros GM del cuerpo individual en DE440.
- * - Para Marte ('499') y los planetas gigantes ('599', '699', '799', '899'),
- *   NASA/JPL SSD astro_par.html (DE440) publica el GM del sistema planetario
- *   (planeta + satélites naturales). Mientras las efemérides locales no incluyan
- *   satélites naturales por separado, asignar el GM del sistema al centro
- *   planetario constituye la aproximación monopolar estándar para cruceros
- *   interplanetarios lejanos a dichos sistemas de satélites.
+ * En este catálogo físico autoritativo reúno los parámetros GM de NASA/JPL DE440:
+ * - Para el Sol ('10'), Mercurio ('199'), Venus ('299'), Tierra ('399') y Luna ('301')
+ *   cargo el parámetro GM del cuerpo individual publicado en DE440.
+ * - Para Marte ('499') y los gigantes ('599', '699', '799', '899') adopto el GM del
+ *   sistema planetario completo (planeta + satélites) de NASA/JPL SSD `astro_par.html`,
+ *   concentrado en el centro planetario como aproximación monopolar estándar para
+ *   cruceros interplanetarios cuando no incluyo efemérides de sus lunas por separado.
  */
 export const SOLAR_SYSTEM_GM_CATALOG = createPhysicalGravitationalCatalog({
   id: DE440_ASTRODYNAMIC_SOURCE.id,

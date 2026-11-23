@@ -1,7 +1,7 @@
-// Etapa 12E — reproducción y telemetría de un lanzamiento ya calculado.
-// La reproducción es una función pura del instante: no integra, no consume propelente ni repite la separación.
-// Posición y velocidad: Hermite entre nudos integrados. Masa y consumo: lineales dentro de cada tramo (flujo constante).
-// La separación es el salto de masa entre dos tramos consecutivos; al retroceder se recupera el tramo anterior.
+// Aquí implemento la reproducción determinista y la telemetría de un lanzamiento ya calculado.
+// Reproduzco cada instante como una función pura del tiempo sin reintegrar ecuaciones ni mutar combustible:
+// interpolo posición y velocidad con Hermite entre los nudos integrados, evalúo masa y consumo linealmente
+// dentro de cada tramo (flujo másico constante) y reflejo la separación como el salto discreto entre tramos.
 import { calculateEngineering } from './ProbeEngineering.js';
 import { sampleIntegratedState } from './MissionPlayback.js';
 import { designSignature } from './MissionPlanStore.js';
@@ -10,8 +10,9 @@ import { createEnvironment, evaluateForces } from './LaunchDynamics.js';
 import { orbitalElements } from './LaunchOrbit.js';
 import { LAUNCH_MODEL_VERSION } from './LaunchSimulation.js';
 
-export const LAUNCH_VIEW_OVERVIEW_MIN_DISTANCE = 2.4; // unidades de escena (1 u = 10 000 km): encuadre de la Tierra completa
+export const LAUNCH_VIEW_OVERVIEW_MIN_DISTANCE = 2.4; // Fijo la distancia mínima de cámara (en unidades de escena, 1 u = 10 000 km) para encuadrar la Tierra completa.
 
+// Empaqueto una simulación de lanzamiento verificada en un objeto de ejecución listo para reproducir y consultar en la vista 3D.
 export function createLaunchExecution({ result, design, name = 'Lanzamiento terrestre' }) {
   if (result?.kind !== 'launch') throw Error('El resultado no corresponde a un lanzamiento.');
   const sim = result.simulation;
@@ -39,10 +40,12 @@ export function createLaunchExecution({ result, design, name = 'Lanzamiento terr
   });
 }
 
+// Localizo el tramo de vuelo activo para el instante t (en segundos desde el lanzamiento).
 const segmentAt = (segments, t) => {
   for (let i = segments.length - 1; i >= 0; i--) if (t >= segments[i].startSeconds && segments[i].endSeconds > segments[i].startSeconds) return segments[i];
   return segments[0];
 };
+// Interpolo linealmente un campo escalar de los nudos integrados (como el Δv acumulado) por búsqueda binaria.
 const interpolate = (knots, t, key) => {
   let low = 0, high = knots.length - 1;
   while (high - low > 1) { const mid = (low + high) >> 1; if (knots[mid].elapsedSeconds <= t) low = mid; else high = mid; }
@@ -50,12 +53,13 @@ const interpolate = (knots, t, key) => {
   return a[key] + (b[key] - a[key]) * Math.min(1, Math.max(0, u));
 };
 
-// Propelente consumido por una etapa hasta el instante t (suma de sus tramos encendidos, flujo constante).
+// Calculo el propelente (kg) consumido por una etapa hasta el instante t sumando sus tramos de encendido.
 function stageConsumedKg(sim, stageIndex, t) {
   const stage = sim.stages[stageIndex], id = stage.stageId;
   return sim.segments.filter(s => s.kind === 'burn' && s.stageId === id).reduce((n, s) => n + s.massFlowKgS * Math.max(0, Math.min(t, s.endSeconds) - s.startSeconds), 0);
 }
 
+// Muestreo el estado completo del vehículo (cinemática, masa, propelente, fuerzas y fase) en un instante dado.
 export function sampleLaunchExecution(execution, elapsedSeconds) {
   if (execution?.kind !== 'launch' || !Number.isFinite(elapsedSeconds) || elapsedSeconds < 0 || elapsedSeconds > execution.durationSeconds) throw Error('Instante fuera de la trayectoria calculada.');
   const sim = execution.simulation, t = elapsedSeconds;
@@ -69,7 +73,7 @@ export function sampleLaunchExecution(execution, elapsedSeconds) {
   const stage1Left = separated ? 0 : Math.max(0, sim.stages[0].propellantLoadedKg - stageConsumedKg(sim, 0, t));
   const stage2Left = Math.max(0, sim.stages[1]?.propellantLoadedKg - stageConsumedKg(sim, 1, t) || 0);
   const forces = evaluateForces(execution.environment, { stage: null, aero: segment.aero }, t, [...integrated.positionKm, ...integrated.velocityKmS, massKg, 0]);
-  // Empuje y dirección reales de esa etapa en ese instante (misma función que la integración).
+  // Reevalúo el empuje y su dirección con la misma función de fuerzas que empleó la integración.
   let thrustN = 0, direction = null;
   if (burning) {
     const stageSpec = execution.simulation.launcherStages[stageIndex];
@@ -96,12 +100,13 @@ export function sampleLaunchExecution(execution, elapsedSeconds) {
   };
 }
 
+// Construyo el resumen de telemetría instantánea (vuelo, propulsión, órbita osculadora y resultado final) para el panel.
 export function deriveLaunchTelemetry(execution, sample) {
   if (!execution || !sample) throw Error('Falta un estado de misión reproducible.');
   const sim = execution.simulation;
   let elements = null;
   try { if (sample.altitudeKm > 0) elements = orbitalElements(sample.positionKm, sample.velocityKmS); } catch { elements = null; }
-  const finished = sample.remainingSeconds <= 0.01; // el control deslizante redondea; el resultado se muestra en el último centésimo de segundo
+  const finished = sample.remainingSeconds <= 0.01; // Como el deslizador redondea el instante final, muestro el veredicto en la última centésima de segundo.
   return {
     missionName: execution.name, probeName: execution.design.name, launcherName: sim.launcherName,
     propagated: { positionKm: sample.positionKm, velocityKmS: sample.velocityKmS },

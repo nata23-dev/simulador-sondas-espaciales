@@ -1,7 +1,6 @@
-// Etapa 12D — ingeniería y planificación de la maniobra de empuje finito.
-// Une el diseño del Hangar (motor, tanque, potencia) con la dinámica pura de
-// FiniteThrustDynamics.js y el modelo gravitacional restringido Tierra–Luna ya
-// validado en MissionPhysics.js. No altera el planificador impulsivo.
+// En este módulo planifico y evalúo maniobras orbitales de empuje finito en el sistema restringido Tierra–Luna.
+// Conecto la ingeniería real de la sonda del Hangar (motor, depósito, masas y potencia) con el propagador de empuje finito
+// y el campo gravitatorio validado en MissionPhysics.js, manteniendo intacto el planificador impulsivo.
 import { getComponent } from './ComponentCatalog.js';
 import { calculateEngineering } from './ProbeEngineering.js';
 import { designSignature } from './MissionPlanStore.js';
@@ -18,9 +17,8 @@ const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a
 const norm = v => Math.hypot(...v);
 const subtract = (a, b) => a.map((x, i) => x - b[i]);
 
-// ---- Hangar → sistema propulsivo ------------------------------------------------
-// Lee el diseño sin modificarlo. Cada diseño del Hangar tiene un único alojamiento
-// de motor y uno de depósito; la lógica rechaza cualquier otra combinación.
+// ---- Lectura del sistema propulsivo del Hangar ----------------------------------
+// Inspecciono el diseño sin mutarlo y compruebo que disponga de un motor válido, tanque compatible, propelente cargado y potencia suficiente.
 export function getPropulsionSystem(design) {
   const engineering = calculateEngineering(design);
   const issues = [...engineering.structuralIssues];
@@ -50,11 +48,11 @@ export function getPropulsionSystem(design) {
   };
 }
 
-// ---- Opciones ----------------------------------------------------------------------
+// ---- Normalización y validación de opciones ----------------------------------------
 function canonicalDirection(direction) {
   return direction?.type === 'inertial' ? { type: 'inertial', vector: [...direction.vector] } : { type: direction?.type };
 }
-// Forma canónica (orden de claves fijo) para comparar y detectar resultados obsoletos.
+// Normalizo el orden de claves de las opciones para comparar configuraciones e invalidar cálculos obsoletos.
 export function normalizeFiniteThrustOptions(options) {
   return {
     altitudeKm: options.altitudeKm, departureTdb: options.departureTdb, phaseDeg: options.phaseDeg, horizonSeconds: options.horizonSeconds,
@@ -77,7 +75,7 @@ export function validateFiniteThrustOptions(options) {
   return issues;
 }
 
-// Órbita circular directa en el plano orbital instantáneo de la Luna; fase medida desde la dirección lunar.
+// Construyo el estado inicial en una órbita circular directa situada en el plano orbital instantáneo de la Luna, midiendo la fase desde la dirección lunar.
 export function circularParkingState({ dataset, departureJd, altitudeKm, phaseDeg = 0 }) {
   const moon = queryMoon(dataset, 'Luna', departureJd);
   if (!moon) throw new FiniteThrustError('COVERAGE', 'La salida no está cubierta por las efemérides lunares locales.');
@@ -96,17 +94,16 @@ export function circularParkingState({ dataset, departureJd, altitudeKm, phaseDe
   };
 }
 
-// ---- Referencias de comparación ------------------------------------------------
-// Propagación gravitacional sin ninguna maniobra, con el mismo modelo y marco.
+// ---- Trayectorias de referencia para comparación -------------------------------
+// Propago el vuelo puramente balístico bajo el mismo campo gravitatorio Tierra–Luna para medir el efecto neto de los encendidos.
 function ballisticTo(gravityDerivative, position, velocity, startSeconds, targetSeconds) {
   const result = integrateDopri54({ derivative: gravityDerivative, initialState: [...position, ...velocity], startSeconds, targetSeconds,
     initialStepSeconds: 300, maxStepSeconds: 3600, absTol: [1e-5, 1e-5, 1e-5, 1e-8, 1e-8, 1e-8], relTol: 1e-11 });
   if (result.aborted) throw new FiniteThrustError('INTEGRATION_FAILED', `Referencia balística incompleta: ${result.abortReason}.`);
   return { positionKm: Array.from(result.finalState.slice(0, 3)), velocityKmS: Array.from(result.finalState.slice(3, 6)) };
 }
-// Referencia impulsiva: cada encendido ejecutado se sustituye por un impulso instantáneo con el
-// mismo Δv de Tsiolkovsky, aplicado al inicio del encendido en la dirección evaluada en ese instante.
-// No es físicamente equivalente al empuje finito; solo cuantifica la aproximación impulsiva.
+// Genero una referencia impulsiva aplicando el Δv de Tsiolkovsky de forma instantánea al inicio de cada encendido;
+// no equivale físicamente al empuje finito, pero me permite cuantificar la diferencia entre ambos modelos.
 function impulsiveEquivalent(gravityDerivative, initial, burns, engine, endSeconds) {
   let t = 0, position = [...initial.positionKm], velocity = [...initial.velocityKmS];
   const u = new Float64Array(3);
@@ -118,7 +115,8 @@ function impulsiveEquivalent(gravityDerivative, initial, burns, engine, endSecon
   return ballisticTo(gravityDerivative, position, velocity, t, endSeconds);
 }
 
-// ---- Cálculo completo ------------------------------------------------------------------
+// ---- Cálculo completo de la maniobra ---------------------------------------------------
+// Valido ingeniería, opciones y cobertura lunar, propago con empuje finito y calculo las referencias balística e impulsiva.
 export function calculateFiniteThrustManeuver({ dataset, design, options }) {
   if (!dataset?.moons?.Luna) throw new FiniteThrustError('COVERAGE', 'Falta la efeméride lunar local validada.');
   const system = getPropulsionSystem(design);
@@ -136,7 +134,7 @@ export function calculateFiniteThrustManeuver({ dataset, design, options }) {
   const gravityDerivative = restrictedDerivative(dataset, departureJd);
   const propagation = propagateFiniteThrust({ gravityDerivative, initialPositionKm: initial.positionKm, initialVelocityKmS: initial.velocityKmS,
     initialMassKg: system.wetMassKg, dryMassKg: system.dryMassKg, engine: system.engine, burns, endSeconds: normalized.horizonSeconds });
-  // Comparaciones (mismo modelo gravitacional y mismo horizonte).
+  // Calculo las referencias balística e impulsiva en el mismo horizonte para contrastar posición y velocidad finales.
   const executed = propagation.burns.filter(burn => burn.status !== 'skipped');
   const lastBurnEnd = executed.length ? Math.max(...executed.map(burn => burn.effectiveEndSeconds)) : 0;
   const ballisticAtEnd = ballisticTo(gravityDerivative, initial.positionKm, initial.velocityKmS, 0, normalized.horizonSeconds);
@@ -144,7 +142,7 @@ export function calculateFiniteThrustManeuver({ dataset, design, options }) {
   const lastBurnKnot = lastBurnEnd > 0 ? propagation.knots.find(knot => Math.abs(knot.elapsedSeconds - lastBurnEnd) < 1e-6) : null;
   const impulsive = executed.length ? impulsiveEquivalent(gravityDerivative, initial, propagation.burns, system.engine, normalized.horizonSeconds) : ballisticAtEnd;
   const finalState = propagation.final;
-  // Presupuesto de Tsiolkovsky de lo programado (masas secuenciales, sin tope de propelente).
+  // Calculo el presupuesto ideal de Tsiolkovsky de los encendidos programados con masas secuenciales y sin tope de depósito.
   let plannedMassKg = system.wetMassKg, plannedDeltaVMS = 0;
   for (const burn of burns) {
     const after = plannedMassKg - massFlowKgS(system.engine.thrustN * burn.throttle, system.engine.ispS) * burn.durationSeconds;
@@ -152,7 +150,7 @@ export function calculateFiniteThrustManeuver({ dataset, design, options }) {
     plannedDeltaVMS += tsiolkovskyDeltaVMS(system.engine.ispS, plannedMassKg, after); plannedMassKg = after;
   }
   const comparison = {
-    plannedDeltaVMS, // presupuesto de Tsiolkovsky con la masa inicial del diseño, antes de limitaciones de propelente
+    plannedDeltaVMS, // presupuesto ideal de Tsiolkovsky antes de aplicar límites de propelente
     accumulatedDeltaVMS: propagation.totals.propulsiveDeltaVMS, integratedDeltaVMS: propagation.totals.integratedDeltaVMS,
     burnSeconds: propagation.totals.burnSeconds, fuelConsumedKg: propagation.totals.fuelConsumedKg, finalMassKg: finalState.massKg,
     observedVelocityChangeMS: lastBurnKnot && ballisticAtLastBurn ? norm(subtract(lastBurnKnot.velocityKmS, ballisticAtLastBurn.velocityKmS)) * 1000 : null,

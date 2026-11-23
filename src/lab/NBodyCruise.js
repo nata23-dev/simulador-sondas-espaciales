@@ -1,17 +1,14 @@
-// Etapa 22 — crucero realista: propagación de n cuerpos EN PARALELO a la cónica heliocéntrica del crucero, con su diferencia y la
-// corrección de trayectoria (TCM) que devuelve la nave al punto de llegada de la cónica.
+// Aquí propago la nave durante el crucero heliocéntrico bajo la gravedad de los ocho planetas como comparación
+// paralela frente a la cónica parcheada, y diseño la maniobra de corrección de trayectoria (TCM-1) para regresar
+// al punto de llegada nominal. No altero los tramos ni la reproducción de la misión: solo mido la desviación y su coste.
 //
-// Sin DOM ni Three.js. La cadena de la misión (tramos, masas, reproducción) NO cambia: sigue siendo la de cónicas parcheadas.
-// Este módulo mide cuánto se aparta un modelo más completo y cuánto costaría corregirlo.
-//
-// Ecuación del movimiento heliocéntrica (las efemérides de Horizons están centradas en el Sol, que no es un marco inercial):
+// Integro con DOPRI54 la ecuación de movimiento heliocéntrica (marco centrado en el Sol, no inercial; km, km/s, s, JD TDB):
 //   a = −μ☉ r/|r|³ + Σ_k μ_k [ (r_k − r)/|r_k − r|³ − r_k/|r_k|³ ]
-// El segundo término de la suma es la aceleración indirecta (la que los planetas imprimen al Sol). Integración con DOPRI54.
-// Perturbadores: los ocho planetas de las efemérides cargadas, con los GM del catálogo del proyecto. Los gigantes usan el baricentro
-// de su sistema (NAIF 5–8) con el GM del sistema; Marte, su GM de sistema en el centro del planeta. La Luna no está en estas
-// efemérides heliocéntricas: su GM se suma al de la Tierra en el centro de la Tierra (aproximación declarada). Si el crucero empieza
-// en el centro de un planeta (salida sin «Empezar en la plataforma»), ese planeta se excluye: su potencial es singular ahí.
-// Sin presión de radiación, relatividad, asteroides ni empujes residuales.
+// donde el segundo término representa la aceleración indirecta que los planetas imprimen al Sol.
+// Uso los GM del catálogo gravitacional: baricentro y GM de sistema para los planetas gigantes (NAIF 5–8), GM de sistema
+// en el centro de Marte y GM de Tierra+Luna sumado en el centro terrestre (aproximación declarada al no tener la Luna
+// en las efemérides heliocéntricas). Si el crucero parte del centro de un planeta excluyo ese cuerpo para evitar singularidad.
+// Omito presión de radiación solar, correcciones relativistas, asteroides y empujes residuales.
 import { integrateDopri54, IntegrationError } from '../science/NumericalIntegrator.js';
 import { SOLAR_SYSTEM_GM_CATALOG } from '../science/GravitationalParameters.js';
 import { propagateKepler } from '../science/KeplerPropagator.js';
@@ -20,6 +17,7 @@ export const NBODY_CRUISE_VERSION = '28-nbody-cruise-2';
 const gm = id => SOLAR_SYSTEM_GM_CATALOG.getMu(id);
 export const MU_SUN_NBODY = gm('10');
 const perturber = (id, ephemerisId, name, mu, note) => Object.freeze({ id, ephemerisId, name, muKm3S2: mu, note });
+// Defino la lista de los ocho perturbadores planetarios con su identificador efemérico y su GM en km³/s².
 export const NBODY_PERTURBERS = Object.freeze([
   perturber('199', '199', 'Mercurio', gm('199'), 'centro del planeta'),
   perturber('299', '299', 'Venus', gm('299'), 'centro del planeta'),
@@ -32,7 +30,7 @@ export const NBODY_PERTURBERS = Object.freeze([
 ]);
 export const NBODY_EPHEMERIS_IDS = Object.freeze(NBODY_PERTURBERS.map(p => p.ephemerisId));
 export const NBODY_STATUS = Object.freeze({ computed: 'calculada', noData: 'sin efemérides', noConvergence: 'corrección sin convergencia', integration: 'fallo de integración' });
-// Tolerancias: posiciones ~10⁸ km → relTol 10⁻¹² ≈ 0,1 m por paso. La corrección se da por buena con 0,1 km en la llegada.
+// Fijo tolerancias estrictas (para posiciones ~10⁸ km, relTol 10⁻¹² equivale a ~0,1 m por paso) y un umbral de 0,1 km para la TCM.
 export const NBODY_SETTINGS = Object.freeze({ absTol: 1e-9, relTol: 1e-12, maxStepSeconds: 2 * 86400, tcmDaysAfterStart: 10, tcmMaxFraction: 0.25,
   tcmToleranceKm: 0.1, tcmMaxIterations: 8, jacobianStepKmS: 1e-5, maxSamples: 120 });
 
@@ -43,7 +41,7 @@ export class NBodyDataError extends Error {
   constructor(bodyId, jdTdb) { super(`Efemérides de ${bodyId} no disponibles en JD ${jdTdb.toFixed(4)} TDB: no se extrapola.`); this.name = 'NBodyDataError'; this.bodyId = bodyId; this.jdTdb = jdTdb; }
 }
 
-/** Aceleración heliocéntrica (km/s²) en `r` con los perturbadores en sus posiciones `rk` (exportada para las pruebas). */
+/** Calculo la aceleración heliocéntrica total (km/s²) en `r` sumando el Sol y las contribuciones directa e indirecta de cada perturbador. */
 export function heliocentricAcceleration(r, bodies, muSun = MU_SUN_NBODY) {
   const r2 = r[0] * r[0] + r[1] * r[1] + r[2] * r[2], k0 = -muSun / (r2 * Math.sqrt(r2));
   const a = [k0 * r[0], k0 * r[1], k0 * r[2]];
@@ -56,8 +54,8 @@ export function heliocentricAcceleration(r, bodies, muSun = MU_SUN_NBODY) {
 }
 
 /**
- * Propaga un estado heliocéntrico con el Sol y los perturbadores entre dos épocas TDB.
- * `stateAt(ephemerisId, jdTdb)` → { positionKm } | null (sin extrapolar: null lanza NBodyDataError).
+ * Propago un estado heliocéntrico [r, v] (km, km/s) bajo el Sol y los perturbadores entre dos épocas JD TDB.
+ * Si `stateAt(ephemerisId, jdTdb)` devuelve null, lanzo NBodyDataError en lugar de extrapolar efemérides.
  */
 export function propagateNBody({ stateAt, positionKm, velocityKmS, startJdTdb, endJdTdb, perturbers = NBODY_PERTURBERS, record = false, settings = NBODY_SETTINGS }) {
   const bodies = perturbers.map(p => ({ ...p, positionKm: null }));
@@ -75,6 +73,7 @@ export function propagateNBody({ stateAt, positionKm, velocityKmS, startJdTdb, e
     knots: record ? result.knots : null };
 }
 
+// Resuelvo el sistema lineal 3×3 del paso de cuasi-Newton aplicando la regla de Cramer.
 function solve3(J, b) {
   const det = m => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
   const D = det(J); if (!(Math.abs(D) > 0)) return null;
@@ -82,22 +81,16 @@ function solve3(J, b) {
 }
 
 /**
- * Compara el crucero cónico con el de n cuerpos y diseña una corrección de trayectoria (TCM-1).
- * input = { stateAt, initial: { positionKm, velocityKmS }, startJdTdb, arrivalJdTdb, muSun, exclude: [{ id, reason }],
- *   isolate: [{ id, reason }], massKg (en la TCM), ispS (motor de la sonda), boundaryState? }
- * 28: `boundaryState` = { bodyId, positionKm, velocityKmS }: estado REAL de la nave en la frontera de la SOI de `bodyId` cuando el
- *   empalme no es continuo (asíntota, etapa 28). Las propagaciones en las que ese cuerpo actúa parten de él; las demás, de `initial`
- *   (el de la cónica, que ya contiene lo que ese cuerpo quita fuera de su SOI).
- * La cónica de referencia es Kepler con μ☉ desde el mismo estado inicial; la llegada es su punto en `arrivalJdTdb` (entrada en la SOI).
+ * Comparo el crucero kepleriano de referencia con la propagación de n cuerpos y calculo la corrección TCM-1.
+ * Cuando existe `boundaryState` = { bodyId, positionKm, velocityKmS } (el estado real en la frontera de la SOI
+ * en un empalme por asíntota), parto desde ese estado en las propagaciones donde actúa `bodyId` y desde `initial` en las demás.
  *
- * Tres resultados:
- * 1. Modelo completo (todos los perturbadores no excluidos): desviación en la llegada y a lo largo del crucero.
- * 2. Efecto de cada perturbador de `isolate` (la Tierra o el destino FUERA de su esfera de influencia): la misma propagación sin él.
- *    No es una perturbación que una misión real «corrija»: es la aproximación de las cónicas parcheadas, que tratan la frontera de
- *    la SOI como si la gravedad del planeta acabara allí. Un diseño real la incluiría desde el principio.
- * 3. Solo los otros planetas (sin los de `isolate`): la perturbación del crucero propiamente dicha. La TCM-1 corrige ESTA: Δv en
- *    `tcmJdTdb` para llegar al punto de la cónica en el mismo instante. Newton con el jacobiano de la cónica (∂r_llegada/∂v por
- *    diferencias finitas sobre Kepler, barato) y el residuo de n cuerpos (cuasi-Newton: vale mientras la perturbación sea pequeña).
+ * Devuelvo tres análisis complementarios:
+ * 1. Modelo completo (todos los perturbadores activos): desviación máxima y en la llegada respecto a la cónica.
+ * 2. Efecto aislado de cada cuerpo en `isolate` (gravedad de Tierra o destino fuera de su SOI), que cuantifica el corte
+ *    propio de la aproximación de cónicas parcheadas.
+ * 3. Perturbación del resto de planetas y corrección TCM-1 en `tcmJdTdb` resuelta por cuasi-Newton (jacobiano kepleriano
+ *    por diferencias finitas y residuo evaluado con el propagador de n cuerpos).
  */
 export function compareNBodyCruise({ stateAt, initial, startJdTdb, arrivalJdTdb, muSun = MU_SUN_NBODY, exclude = [], isolate = [], massKg, ispS, boundaryState = null, settings = NBODY_SETTINGS }) {
   const t0 = typeof performance !== 'undefined' ? performance.now() : 0;
@@ -121,10 +114,10 @@ export function compareNBodyCruise({ stateAt, initial, startJdTdb, arrivalJdTdb,
   const errorsAt = s => ({ arrivalPositionErrorKm: norm(sub(s.positionKm, conicArrival.positionKm)), arrivalVelocityErrorKmS: norm(sub(s.velocityKmS, conicArrival.velocityKmS)) });
   const tcmJdTdb = startJdTdb + Math.min(settings.tcmDaysAfterStart, settings.tcmMaxFraction * cruiseSeconds / 86400);
   const run = (set, from, jd0, jd1, record = false) => propagateNBody({ stateAt, positionKm: from.positionKm, velocityKmS: from.velocityKmS, startJdTdb: jd0, endJdTdb: jd1, perturbers: set, record, settings });
-  // Estado de partida de una propagación desde el principio del crucero según qué cuerpos actúan en ella.
+  // Elijo el estado inicial apropiado según si el cuerpo de frontera interviene en este conjunto de perturbadores.
   const startFor = set => (boundaryState && set.some(p => p.id === boundaryState.bodyId) ? boundaryState : initial);
 
-  // 1. Modelo completo, con la desviación frente a la cónica en los nudos del integrador.
+  // 1. Propago el modelo completo y registro la desviación respecto a la cónica en los nudos del integrador.
   let full;
   try { full = run(perturbers, startFor(perturbers), startJdTdb, arrivalJdTdb, true); } catch (error) { return fail(error); }
   let maxDev = 0, maxJd = startJdTdb;
@@ -138,7 +131,7 @@ export function compareNBodyCruise({ stateAt, initial, startJdTdb, arrivalJdTdb,
   const samples = deviations.filter((_, i) => i % stride === 0 || i === deviations.length - 1);
   const uncorrected = { ...errorsAt(full), maxDeviationKm: maxDev, maxDeviationJdTdb: maxJd, steps: full.steps };
 
-  // 2 y 3. Efectos aislados y modelo «solo otros planetas» (partido en la TCM para tener su estado allí).
+  // 2 y 3. Separo los efectos aislados y propago el modelo con el resto de planetas dividiendo en el instante de TCM-1.
   const isolated = [];
   let third, atTcm;
   try {
@@ -154,7 +147,7 @@ export function compareNBodyCruise({ stateAt, initial, startJdTdb, arrivalJdTdb,
   } catch (error) { return fail(error, { uncorrected, samples }); }
   const thirdBodies = { without: activeIds, perturbers: thirdPerturbers.map(p => p.name), ...errorsAt(third) };
 
-  // TCM-1 sobre la perturbación de los otros planetas.
+  // Resuelvo la maniobra TCM-1 por cuasi-Newton para compensar la perturbación de los otros planetas.
   const shoot = dv => run(thirdPerturbers, { positionKm: atTcm.positionKm, velocityKmS: atTcm.velocityKmS.map((v, i) => v + dv[i]) }, tcmJdTdb, arrivalJdTdb);
   const dtArr = (arrivalJdTdb - tcmJdTdb) * 86400, h = settings.jacobianStepKmS;
   const keplerEnd = v => propagateKepler(atTcm.positionKm, v, dtArr, muSun).positionKm;
@@ -182,17 +175,15 @@ export function compareNBodyCruise({ stateAt, initial, startJdTdb, arrivalJdTdb,
 }
 
 /**
- * Prepara la comparación para una misión integrada calculada (13–21): tramo `cruise`, salida con o sin plataforma y destino.
- * Sin la plataforma, el crucero empieza en el centro de la Tierra y la Tierra se excluye. Se aíslan el destino fuera de su SOI y,
- * con la plataforma, la Tierra fuera de la suya. 28: con el empalme por la asíntota, las propagaciones con la Tierra parten de la
- * velocidad real de la nave en la frontera (la de la hipérbola), no de la del crucero.
+ * Configuro automáticamente la comparación de n cuerpos para una misión integrada ya calculada:
+ * sin lanzamiento desde plataforma excluyo la Tierra porque el crucero nace en su centro; con plataforma
+ * uso el estado real en la frontera de la SOI y solo aíslo la Tierra si no fue incluida al apuntar la salida.
  */
 export function compareMissionCruise(mission, stateAt, settings = NBODY_SETTINGS) {
   const cruise = mission?.segments?.find(s => s.id === 'cruise');
   if (!cruise) return Object.freeze({ model: NBODY_CRUISE_VERSION, status: 'sin crucero', ok: false, reason: 'La misión calculada no tiene tramo de crucero heliocéntrico.' });
   const fromPad = Boolean(mission.launch?.ok), dest = NBODY_PERTURBERS.find(p => p.id === mission.destinationId);
-  // 28: si la salida ya se apuntó con la gravedad terrestre fuera de la SOI, la Tierra no se aísla: es parte del diseño y la TCM-1
-  // corrige también lo que quede de ella (con el Sol, la Tierra y los otros planetas).
+  // Si la salida ya incorporó la gravedad terrestre más allá de la SOI, dejo la Tierra dentro del diseño y de la TCM-1.
   const earthDesigned = fromPad && mission.launch.earthBeyondSoi?.applied === true;
   const exclude = fromPad ? [] : [{ id: '399', reason: 'el crucero empieza en el centro de la Tierra (salida sin «Empezar en la plataforma»)' }];
   const isolate = [...(dest ? [{ id: dest.id, reason: `gravedad de ${dest.name} fuera de su esfera de influencia` }] : []),

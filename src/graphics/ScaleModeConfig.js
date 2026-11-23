@@ -1,3 +1,5 @@
+// En este módulo defino la configuración de escalas visuales (científica 1:1 y exploratoria),
+// los radios físicos de referencia en km y su conversión a unidades lineales de la escena (32 unidades/AU).
 import { KM_PER_AU } from '../science/Units.js';
 import { UNIDADES_POR_AU } from './SceneScale.js';
 
@@ -14,9 +16,9 @@ export const REGIONES_SISTEMA = Object.freeze({
 export const UNIDADES_ESCENA_POR_KM = UNIDADES_POR_AU / KM_PER_AU;
 
 /**
- * Radios volumétricos medios de referencia (NASA/JPL SSD & UAI 2015 Res. B3 para el Sol) en km.
- * Se utilizan exclusivamente para calcular la proporción geométrica 1:1 en Escala Científica,
- * sin modificar nunca las posiciones heliocéntricas ni los parámetros del motor gravitacional.
+ * Reúno los radios volumétricos medios de referencia (NASA/JPL SSD y UAI 2015 Res. B3 para el Sol) en km.
+ * Los empleo exclusivamente para calcular la proporción geométrica 1:1 en Escala Científica sin alterar
+ * las posiciones heliocéntricas ni los parámetros del motor gravitacional.
  */
 export const RADIOS_FISICOS_KM = Object.freeze({
   Sol: 695700,
@@ -42,9 +44,7 @@ export const RADIOS_ILUSTRATIVOS_BASE = Object.freeze({
   Neptuno: 2.1
 });
 
-/**
- * Devuelve el radio físico auténtico expresado en unidades lineales de la escena (32 unidades = 1 AU).
- */
+/** Convierto el radio físico auténtico de un cuerpo a unidades lineales de la escena (32 unidades = 1 AU). */
 export function obtenerRadioFisicoEscena(nombre) {
   const radioKm = RADIOS_FISICOS_KM[nombre];
   if (!Number.isFinite(radioKm)) {
@@ -54,7 +54,7 @@ export function obtenerRadioFisicoEscena(nombre) {
 }
 
 /**
- * Factor multiplicativo sobre la malla base (de radio `radioBaseEscena`) para representar
+ * Calculo el factor multiplicativo sobre la malla base (`radioBaseEscena`) para representar
  * el tamaño físico real 1:1 respecto a las distancias en AU.
  */
 export function factorEscalaCientificaCuerpo(nombre, radioBaseEscena = RADIOS_ILUSTRATIVOS_BASE[nombre]) {
@@ -62,13 +62,10 @@ export function factorEscalaCientificaCuerpo(nombre, radioBaseEscena = RADIOS_IL
 }
 
 /**
- * Calcula la escala objetivo del nodo visual de un planeta según el modo de escala activo,
- * la distancia de la cámara y si el cuerpo es el protagonista observado.
- *
- * - En `cientifica`: mantiene estrictamente la relación física 1:1 (`R_km / AU`), de modo que
- *   los planetas lejanos son genuinamente puntuales y al acercarse revelan su globo completo.
- * - En `exploratoria`: conserva la escala cinematográfica `1.0` en primer plano, pero limita
- *   el diámetro angular aparente cuando están lejos para evitar esferas gigantes en el fondo.
+ * Calculo la escala visual objetivo de un planeta según el modo activo, la distancia de la cámara
+ * y si el cuerpo es el protagonista seleccionado.
+ * - En `cientifica`: mantengo estrictamente la proporción física 1:1 (`R_km / AU`).
+ * - En `exploratoria`: converjo a 1,0 en primer plano y acoto el diámetro angular aparente a distancia.
  */
 export function calcularEscalaObjetivoPlaneta({
   nombre,
@@ -82,10 +79,8 @@ export function calcularEscalaObjetivoPlaneta({
     return factorEscalaCientificaCuerpo(nombre, radioBaseEscena);
   }
 
-  // Modo Exploratorio: en observación cercana del planeta seleccionado converge a 1.0
-  // (preservando exactamente los encuadres cinematográficos de Tierra, Saturno y Júpiter).
-  // A distancias interplanetarias limita el tamaño angular aparente para que ningún
-  // planeta parezca una esfera desproporcionada en el fondo.
+  // En modo exploratorio preservo el encuadre cercano (escala 1,0) pero limito el tamaño angular
+  // a distancias interplanetarias para evitar esferas desproporcionadas en el fondo.
   const maxRadioAngularRad = nombre === 'Saturno' || nombre === 'Jupiter' ? 0.0052 : 0.0042;
   const radioMaximoPorDistancia = Math.max(0.08, distanciaCamaraCuerpo * maxRadioAngularRad);
   const escalaAcotadaLejana = Math.min(0.56, Math.max(0.14, radioMaximoPorDistancia / radioBaseEscena));
@@ -97,15 +92,14 @@ export function calcularEscalaObjetivoPlaneta({
   return Math.max(0.12, escalaAcotadaLejana * (1 - 0.65 * cercaniaSeleccionado));
 }
 
-/**
- * Calcula el factor de escala visual de la fotosfera solar (radio base = 5 unidades).
- */
+/** Calculo el factor de escala visual de la fotosfera solar (malla base de radio 5 unidades). */
 export function calcularEscalaObjetivoSol({ modoEscala, distanciaCamaraSol }) {
   if (modoEscala === MODOS_ESCALA_VISUAL.CIENTIFICA) {
     return factorEscalaCientificaCuerpo('Sol', RADIOS_ILUSTRATIVOS_BASE.Sol);
   }
-  // En modo exploratorio mantiene un disco solar moderado y bien proporcionado dentro de la órbita de Mercurio (12.4 u).
+  // En modo exploratorio interpolo el disco solar entre 1,60 u en el sistema interior y 0,95 u en vista completa
+  // para mantenerlo bien proporcionado dentro de la órbita de Mercurio (12,4 u).
   const t = Math.min(1, Math.max(0, (distanciaCamaraSol - 35) / 240));
   const suave = t * t * (3 - 2 * t);
-  return 0.32 - 0.13 * suave; // radio 1.60 u en sistema interior -> 0.95 u en sistema completo
+  return 0.32 - 0.13 * suave;
 }

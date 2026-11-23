@@ -1,16 +1,17 @@
-// Etapa 13 — estados de satélites respecto a su centro (planeta o baricentro) en VENTANAS de llegada concretas.
-// Formato `planetocentric-window-v1` (scripts/acquire-stage13-encounters.mjs): filas [JD TDB, x, y, z, vx, vy, vz] en km y km/s,
-// ejes ICRF eclíptico J2000, vectores geométricos, cadencia constante por satélite. Interpolación cúbica de Hermite entre los
-// dos nodos que rodean el instante (posición + velocidad). Nunca extrapola: fuera de la ventana devuelve «no disponible».
-// Módulo puro: sin DOM ni Three.js.
+// Aquí gestiono y evalúo estados planetocéntricos de satélites respecto a su cuerpo central (planeta o baricentro)
+// en ventanas de llegada concretas adquiridas desde NASA/JPL Horizons (`planetocentric-window-v1`).
+// Mantengo este módulo completamente puro, sin DOM ni Three.js.
+// Unidades: filas [JD TDB, x, y, z, vx, vy, vz] en km y km/s, con cadencia constante por satélite en el marco ICRF eclíptico J2000.
+// Interpolo posición y velocidad con Hermite cúbico entre los dos nodos adyacentes y nunca extrapolo fuera de la ventana cubierta.
 export const PLANETOCENTRIC_WINDOW_SCHEMA = 'planetocentric-window-v1';
 export const MOON_UNAVAILABLE_MESSAGE = 'Efemérides de satélites no disponibles para el intervalo solicitado';
-// Error máximo de la interpolación medido contra estados de Horizons fuera de los nodos (tests/fixtures/stage13-galilean-holdout-v1.json).
+// Registro aquí el error máximo de interpolación que medí frente a estados independientes de NASA/JPL Horizons fuera de los nodos.
 export const MEASURED_MOON_INTERPOLATION_ERROR = Object.freeze({
   Europa: Object.freeze({ positionKm: 0.056, velocityKmS: 4.1e-5, cadenceHours: 1 }), Io: Object.freeze({ positionKm: 6.96, velocityKmS: 3.7e-3, cadenceHours: 2 }),
   Ganymede: Object.freeze({ positionKm: 6.44, velocityKmS: 7.4e-4, cadenceHours: 6 }), Callisto: Object.freeze({ positionKm: 0.40, velocityKmS: 4.7e-5, cadenceHours: 6 })
 });
 
+/** Aquí interpolo posición (km) y velocidad (km/s) entre dos nodos consecutivos mediante Hermite cúbico. */
 function hermite(a, b, jd) {
   const dt = (b[0] - a[0]) * 86400, t = (jd - a[0]) * 86400 / dt, t2 = t * t, t3 = t2 * t;
   const h00 = 2 * t3 - 3 * t2 + 1, h10 = t3 - 2 * t2 + t, h01 = -2 * t3 + 3 * t2, h11 = t3 - t2;
@@ -20,7 +21,7 @@ function hermite(a, b, jd) {
   return { positionKm: p, velocityKmS: v };
 }
 
-/** Valida el conjunto y devuelve un evaluador síncrono `stateAt(key, jdTdb)`. */
+/** Aquí valido el conjunto de efemérides planetocéntricas y devuelvo un evaluador síncrono `stateAt(key, jdTdb)` sin extrapolación. */
 export function createPlanetocentricWindow(data) {
   if (data?.schema !== PLANETOCENTRIC_WINDOW_SCHEMA || data.frame !== 'ICRF_ECLIPTIC_J2000' || data.timeScale !== 'TDB'
     || data.units?.position !== 'km' || data.units?.velocity !== 'km/s' || typeof data.centerId !== 'string') throw new TypeError('Conjunto planetocéntrico con metadatos inválidos.');

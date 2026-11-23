@@ -1,4 +1,6 @@
-// 18: su hoja (experimental-laboratory.css) la importa main.js para conservar el orden de la cascada.
+// En este módulo coordino el Laboratorio de Misiones del simulador: selección de la flota histórica y del ensamblaje experimental,
+// vista 3D de la sonda, planos y verificación de ingeniería, planificadores de misión, glosario, misión guiada y Centro de Misión.
+// La hoja de estilos experimental-laboratory.css se importa desde main.js para preservar el orden de la cascada CSS.
 import { getComponent } from '../lab/ComponentCatalog.js';
 import { historicalDesign } from '../lab/ProbeDesign.js';
 import { calculateEngineering, ENGINEERING_STATUS } from '../lab/ProbeEngineering.js';
@@ -21,9 +23,8 @@ import { mostrarVista3DNoDisponible } from './WebGLUnavailableNotice.js';
 const number = (value, digits = 1) => new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(value);
 const valueOrNA = (value, unit, digits = 1) => value == null ? 'No disponible' : `${number(value, digits)} ${unit}`;
 
-// PERF-01: la escena principal (#solar-system) queda completamente cubierta por #experimental-lab cuando el modo experimental
-// muestra el constructor (data-lab-view="builder") y el Centro de Misión no está proyectando una misión heliocéntrica en ella
-// (data-lab-scene !== "main"). Coincide exactamente con la regla CSS de experimental-laboratory.css y lab-shell.css.
+// Determino si el panel del laboratorio cubre por completo la escena principal (#solar-system) para poder pausar su renderizado:
+// ocurre cuando estoy en modo experimental con la vista de constructor abierta y el Centro de Misión no proyecta sobre la escena principal.
 export function isMainSceneOccludedByLab(app) {
   return app?.dataset?.appMode === 'experimental'
     && app?.dataset?.labView === 'builder'
@@ -37,7 +38,7 @@ const tabMeta = (stageId, tabId) => STAGE_BY_ID.get(stageId)?.tabs.find(item => 
 const PLANNER_TABS = new Set(['integrated', 'interplanetary', 'lunar']);
 const EXECUTE_BY_TAB = Object.freeze({ integrated: '#im-execute', interplanetary: '#ip-execute', lunar: '#mission-execute', launch: '#ln-execute' });
 
-// 15: rótulos de la calidad de cada cifra de herencia y de los campos del catálogo.
+// Defino los rótulos legibles de calidad de datos, campos técnicos, programas de herencia y propelentes.
 const QUALITY_LABELS = Object.freeze({ [DATA_QUALITY.documented]: 'Documentado', [DATA_QUALITY.secondary]: 'Fuente secundaria',
   [DATA_QUALITY.derived]: 'Derivado', [DATA_QUALITY.estimated]: 'Estimado', [DATA_QUALITY.unknown]: 'Desconocido' });
 const FIELD_LABELS = Object.freeze({ dryMassKg: 'Masa seca', dimensionsM: 'Dimensiones', idlePowerW: 'Consumo', activePowerW: 'Consumo en encendido',
@@ -71,8 +72,7 @@ const el = (tag, className, text) => { const node = document.createElement(tag);
 const MISSION_KIND_LABELS = Object.freeze({ integrated: 'Misión completa', interplanetary: 'Transferencia interplanetaria', landing: 'Descenso y aterrizaje',
   launch: 'Lanzamiento terrestre', 'finite-thrust': 'Maniobra de empuje finito' });
 
-// 15.1: flota fija. Cada sonda tiene un único diseño (configuración histórica) con identificador estable.
-// 17: además, un ensamblaje experimental opcional (piezas de herencia combinadas), separado de la flota histórica.
+// Guardo las preferencias del vehículo activo (sonda histórica fija o ensamblaje experimental separado) y del panel lateral de etapas.
 const ACTIVE_PROBE_KEY = 'simulador:sonda-activa';
 const VEHICLE_MODE_KEY = 'simulador:vehiculo-activo';
 const RAIL_KEY = 'simulador:panel-etapas';
@@ -81,10 +81,10 @@ const MODEL_STATE_TEXT = Object.freeze({ nasa: 'Modelo 3D oficial de NASA', carg
   procedural: 'Reconstrucción procedimental de respaldo (no se pudo cargar el modelo de NASA)',
   esquema: 'Esquema técnico: reconstrucción del simulador, con la pieza elegida resaltada' });
 const readStored = (key, fallback) => { try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; } };
-const store = (key, value) => { try { localStorage.setItem(key, value); } catch { /* preferencia opcional */ } };
+const store = (key, value) => { try { localStorage.setItem(key, value); } catch { /* Ignoro errores si no puedo persistir la preferencia. */ } };
 function readActiveProbe() { const id = readStored(ACTIVE_PROBE_KEY, DEFAULT_PROBE_ID); return HISTORICAL_PROBES.some(p => p.id === id) ? id : DEFAULT_PROBE_ID; }
 
-// 17.1: `missionScene` (SolarSystemMissionView) permite reproducir las misiones heliocéntricas en el Sistema Solar principal.
+// Monto el espacio completo del laboratorio; recibo opcionalmente `missionScene` para proyectar misiones heliocéntricas en la escena principal del Sistema Solar.
 export function createExperimentalLaboratory({ missionScene = null } = {}) {
   const app = document.querySelector('#app');
   const scene = document.querySelector('.scene-panel');
@@ -177,23 +177,25 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   let engineering = null;
   let modelState = { source: 'procedural', entry: null };
   const $ = selector => lab.querySelector(selector);
+  // Inicializo el visor 3D de la sonda; si WebGL falla, dejo un sustituto seguro y muestro el aviso sin bloquear el resto del laboratorio.
   let view;
   try { view = createProbeAssemblyView($('#lab-canvas'), id => { selectedPartId = id; if (stage === 'probe' && tabByStage.probe !== 'architecture') go('probe', 'architecture'); render(); }, { onModelState: state => { modelState = state; renderModelState(); } }); }
   catch (error) {
     view = { setDesign() {}, setVisible() {}, setTouchInteraction() {}, getLandingClearance: () => null, resetCamera() {}, dispose() {} };
-    mostrarVista3DNoDisponible($('#lab-canvas'), error, { vista: 'El modelo 3D de la sonda', sigue: 'Las fichas, la ingeniería y la planificación siguen disponibles.' }); // STAB-01
+    mostrarVista3DNoDisponible($('#lab-canvas'), error, { vista: 'El modelo 3D de la sonda', sigue: 'Las fichas, la ingeniería y la planificación siguen disponibles.' });
     console.error('Laboratorio 3D no disponible:', error);
   }
   let center, launchActive = false;
   const toCenter = candidate => { center.setPlan(candidate); go('play', 'playback'); center.start(); };
+  // Conecto el planificador lunar, el de lanzamiento, el interplanetario y el de misión completa con el Centro de Misión.
   const planner = createMissionPlanner($('#lab-mission-planner'), next => {
-    // Un plan guardado solo puede restaurar una sonda de la flota (misma configuración que la histórica).
+    // Al cargar un plan guardado solo restauro la sonda si coincide exactamente con una de las cuatro configuraciones históricas.
     const signature = designSignature(next);
     const match = [...fleet.entries()].find(([, item]) => designSignature(item) === signature);
     if (!match) { message('El plan guardado usa una sonda que ya no está en la flota (Voyager, Cassini, Dawn o Juno). Recalcula con la sonda activa.', true); return; }
     selectProbe(match[0]); message(`Sonda del plan restaurada: ${fleet.get(match[0]).name}.`);
   }, {
-    // Mientras un lanzamiento está en reproducción, los cambios del Planificador no deben reemplazarlo.
+    // Evito que los cambios del planificador lunar pisen otra misión ya activa en el Centro de Misión.
     onPlanChange: candidate => { if (!launchActive) center?.setPlan(candidate); },
     onExecuteRequest: candidate => { launchActive = false; launch.deactivate(); interplanetary.deactivate(); integrated?.deactivate(); toCenter(candidate); }
   });
@@ -202,7 +204,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     onExecuteRequest: candidate => { interplanetary.deactivate(); integrated.deactivate(); launchActive = true; toCenter(candidate); },
     onInvalidated: () => { if (launchActive) { launchActive = false; center.setPlan({ ready: false, reason: 'El lanzamiento quedó obsoleto. Recalcula en Lanzamiento.' }); } }
   });
-  // 12G: la marca de ejecución activa impide que el plan lunar reemplace una ejecución en el Centro de Misión.
+  // Uso `launchActive` como guardia compartida para impedir que el planificador lunar sobrescriba ejecuciones de lanzamiento, interplanetarias o integradas.
   const interplanetary = createInterplanetaryPlanner({
     host: $('#lab-interplanetary'),
     onExecuteRequest: candidate => { launch.deactivate(); integrated.deactivate(); launchActive = true; toCenter(candidate); },
@@ -216,16 +218,18 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   });
   center = createMissionControlCenter($('#lab-mission-center'), () => go('plan', tabByStage.plan), {
     onImmersive: value => { lab.dataset.immersive = String(value); },
-    // 24: las pestañas de la hoja inferior (móvil, vista inmersiva) cambian la pestaña del laboratorio.
+    // Sincronizo las pestañas de la hoja inferior móvil en vista inmersiva con la pestaña activa del laboratorio.
     onPane: id => go('play', id),
-    // 17.1: con una misión heliocéntrica, «3 · Reproducir» deja ver el Sistema Solar principal en el área de la escena.
+    // Cuando reproduzco una misión heliocéntrica, dejo visible la escena principal del Sistema Solar.
     sceneView: missionScene,
     onSceneMode: mode => { if (mode) app.dataset.labScene = mode; else delete app.dataset.labScene; syncMainSceneVisibility(); },
     onOpenResults: () => go('plan', centerPlan?.kind === 'launch' ? 'launch' : centerPlan?.kind === 'interplanetary' ? 'interplanetary' : centerPlan?.kind === 'integrated' ? 'integrated' : 'lunar')
   });
+  // Comunico a la escena principal si el laboratorio la está tapando por completo para ahorrar trabajo gráfico.
   function syncMainSceneVisibility() {
     missionScene?.setMainSceneOccluded?.(isMainSceneOccludedByLab(app));
   }
+  // Envuelvo center.setPlan para conservar el motivo de invalidación y reflejar al instante el estado de la misión en la barra superior.
   const centerSetPlan = center.setPlan;
   let centerPlan = null, invalidated = null;
   center.setPlan = candidate => {
@@ -240,6 +244,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     node.textContent = typeof candidate.name === 'string' && candidate.name ? `${kind} · ${candidate.name}` : kind;
     node.dataset.ready = 'true'; node.title = node.textContent;
   }
+  // Actualizo el resumen de masa y Δv de la sonda activa en la barra contextual de la cabecera del laboratorio.
   function updateDesignContext() {
     const node = $('#lab-ctx-design');
     try {
@@ -256,7 +261,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     select.addEventListener('change', () => select.value === 'experimental' ? setVehicleMode('experimental') : selectProbe(select.value));
   }
   $('#lab-ctx-open-center').addEventListener('click', () => go('play', 'playback'));
-  // 14: navegación directa desde el mapa de áreas de la cabecera (AppNavigator). Admite los nombres antiguos de sección.
+  // Atiendo la navegación directa disparada desde el menú principal o la búsqueda, manteniendo compatibilidad con los nombres de sección previos.
   document.addEventListener('lab:navigate', event => {
     const target = event.detail ?? {};
     if (target.stage && STAGE_BY_ID.has(target.stage)) setLocation(target.stage, target.tab);
@@ -274,6 +279,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     $('#lab-message').textContent = text;
     $('#lab-message').dataset.error = String(error);
   }
+  // Muestro u oculto la vista completa del laboratorio cuando el simulador entra o sale del modo experimental.
   function setBuilder(active) {
     const enabled = app.dataset.appMode === 'experimental';
     if (enabled && active) app.dataset.labView = 'builder'; else delete app.dataset.labView;
@@ -281,7 +287,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     setTouchMode(false);
     updateSection();
   }
-  // Ubicación: etapa + pestaña. `section`/`plannerMode` se derivan para la misión guiada y los enlaces antiguos.
+  // Registro la etapa y pestaña activas, derivando section y plannerMode para la misión guiada y los enlaces existentes.
   function setLocation(stageId, tabId) {
     if (!STAGE_BY_ID.has(stageId)) return;
     stage = stageId;
@@ -290,6 +296,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   }
   function go(stageId, tabId) { setLocation(stageId, tabId); updateSection(); }
   const sectionOf = () => stage === 'probe' ? 'hangar' : stage === 'play' ? 'center' : tabByStage.plan === 'launch' ? 'launch' : 'planner';
+  // Sincronizo la visibilidad de paneles, las migas de pan, aria-current y los visores 3D con la etapa y pestaña actuales.
   function updateSection() {
     const enabled = app.dataset.appMode === 'experimental' && !lab.hidden;
     const current = tabByStage[stage], meta = tabMeta(stage, current), stageMeta = STAGE_BY_ID.get(stage);
@@ -326,8 +333,9 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     updateStatus();
   }
 
-  // ---------- Estado de la misión (barra de contexto y panel lateral) ----------
+  // ---------- Estado global de la misión (barra de contexto y panel de etapas) ----------
   const selectedText = selector => { const select = $(selector); return select?.selectedOptions?.[0]?.textContent?.replace(/\s*\(.*\)$/, '') ?? ''; };
+  // Obtengo la etiqueta del destino actual según el planificador abierto o la misión cargada en reproducción.
   function destinationText() {
     const status = center.getStatus();
     if (stage === 'play' && status.ready) return status.name ?? '—';
@@ -337,6 +345,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     if (current === 'lunar') return 'Luna';
     return 'Órbita baja terrestre';
   }
+  // Traduzco el estado del planificador activo en un texto y tono homogéneos para la barra superior y los pasos laterales.
   function planState() {
     const current = tabByStage.plan;
     if (current === 'integrated') {
@@ -362,6 +371,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     if (status.finished) return { text: 'Simulación finalizada', tone: 'ok' };
     return { text: status.elapsedSeconds > 0 ? 'Reproducción en pausa' : 'Lista para reproducir', tone: 'ok' };
   }
+  // Refresco la barra de contexto y los indicadores de progreso de las tres etapas del laboratorio.
   function updateStatus() {
     if (!center) return;
     const status = center.getStatus(), plan = planState(), play = playState(status);
@@ -385,6 +395,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   }
   const statusTimer = setInterval(() => { if (!lab.hidden) updateStatus(); }, 500);
 
+  // En pantallas táctiles dejo inactivo el control 3D por defecto para permitir el desplazamiento vertical y ofrezco un botón explícito para activarlo.
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   $('#lab-touch-toggle').hidden = !coarsePointer;
   function setTouchMode(active) {
@@ -399,7 +410,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   }
   $('#lab-touch-toggle').addEventListener('click', () => setTouchMode($('#lab-touch-toggle').getAttribute('aria-pressed') !== 'true'));
 
-  // 15.1: cambiar de sonda sustituye el diseño en todo el laboratorio (los planificadores invalidan los cálculos de otra sonda).
+  // Al cambiar de sonda histórica sustituyo el vehículo activo en todo el laboratorio para que los planificadores invaliden cálculos de otra nave.
   function selectProbe(probeId) {
     if (!fleet.has(probeId)) return;
     const changed = probeId !== activeProbeId || vehicleMode !== 'historic';
@@ -409,7 +420,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     render();
     if (changed) message(`${design.name} es ahora la sonda activa de todas las misiones.`);
   }
-  // 17: el ensamblaje experimental es un vehículo aparte; al activarlo pasa a ser el de todas las herramientas.
+  // Alterno entre la configuración histórica fija y el ensamblaje experimental, propagando el cambio a todas las herramientas.
   function setVehicleMode(mode) {
     if (mode === vehicleMode) { render(); return; }
     vehicleMode = mode === 'experimental' ? 'experimental' : 'historic'; store(VEHICLE_MODE_KEY, vehicleMode);
@@ -421,7 +432,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   }
   for (const button of lab.querySelectorAll('[data-vehicle-mode]')) button.addEventListener('click', () => setVehicleMode(button.dataset.vehicleMode));
 
-  // ---------- Vista general: flota y ficha técnica ----------
+  // ---------- Vista general: flota histórica y ficha técnica ----------
   function renderFleet() {
     for (const button of lab.querySelectorAll('[data-vehicle-mode]')) button.setAttribute('aria-pressed', String(button.dataset.vehicleMode === vehicleMode));
     $('#lab-historic').hidden = vehicleMode !== 'historic';
@@ -565,6 +576,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   }
 
   // ---------- Arquitectura y componentes ----------
+  // Actualizo los indicadores del modelo 3D y explico cuándo conviene pasar al esquema técnico para localizar subsistemas.
   function renderModelState() {
     const entry = modelState.entry ?? NASA_PROBE_MODELS[activeProbeId];
     const experimental = vehicleMode === 'experimental';
@@ -574,7 +586,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     status.dataset.state = modelState.source;
     status.title = modelState.error ? `Error de carga: ${modelState.error}` : '';
     for (const button of lab.querySelectorAll('[data-arch-view]')) { button.setAttribute('aria-pressed', String(button.dataset.archView === archView)); button.disabled = experimental; }
-    // 16/17: el modelo de NASA es una malla única; para localizar una pieza se usa el esquema técnico (reconstrucción).
+    // Como el modelo oficial de NASA es una malla única, indico el uso del esquema técnico cuando hace falta resaltar una pieza concreta.
     $('#lab-assembly-note').textContent = experimental
       ? 'Elige un subsistema para ver sus cifras: en la reconstrucción técnica se resalta su posición.'
       : archView === 'schematic' ? 'Esquema técnico del simulador: al elegir un subsistema se resalta su posición. No es un plano de NASA.'
@@ -606,7 +618,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     }
     container.append(list);
   }
-  // Subsistemas agrupados por función (solo lectura en la configuración histórica).
+  // Agrupo los subsistemas por función (de solo lectura en la configuración histórica) y sincronizo la pieza resaltada en el visor 3D.
   function renderAssembly() {
     const list = $('#lab-assembly-list'); list.replaceChildren();
     const core = getComponent(design.coreId);
@@ -707,7 +719,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     const container = $('#lab-metrics'); container.replaceChildren();
     metricRows(container, metrics);
 
-    // Energía frente a la distancia al Sol (al lanzamiento) y límites de la propulsión eléctrica.
+    // Muestro la evolución de potencia según la distancia al Sol y los límites de operación eléctrica.
     const power = $('#lab-power'); power.replaceChildren();
     if (has && result.power) {
       const table = el('table', 'lab-power-table');
@@ -729,7 +741,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
       metricRows(power, rows);
     }
 
-    // Veredicto de ingeniería y restricciones agrupadas por tipo.
+    // Construyo el veredicto de ingeniería y agrupo las comprobaciones de compatibilidad por disciplina.
     const assessment = $('#lab-assessment'); assessment.replaceChildren();
     const status = result.assessment?.status ?? (result.structuralIssues.length ? ENGINEERING_STATUS.modify : ENGINEERING_STATUS.coherent);
     assessment.dataset.valid = String(has && status !== ENGINEERING_STATUS.modify && status !== ENGINEERING_STATUS.incomplete);
@@ -752,7 +764,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     } else compatibility.append(el('p', 'lab-helper', 'Sin errores ni advertencias de compatibilidad.'));
     for (const note of result.notes) compatibility.append(el('p', 'lab-helper', note));
 
-    // Calidad de los datos y referencias de la sonda.
+    // Expongo el recuento de calidad de datos y las fuentes documentales que respaldan el diseño.
     const quality = $('#lab-data-quality'); quality.replaceChildren();
     const dq = result.dataQuality;
     if (has && dq) {
@@ -770,12 +782,13 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
       ? 'Ensamblaje experimental: las cifras de cada pieza conservan su calidad y su fuente, pero la combinación no existió. El reparto de masas, los adaptadores y los consumos sin fuente son estimaciones del simulador. El Δv es ideal (Tsiolkovski). No modifica DOPRI54.'
       : 'Configuración histórica fija: las piezas no se pueden cambiar. Las cifras de la ficha llevan su calidad y su fuente; el reparto de masa por subsistema y los consumos sin fuente son estimaciones del simulador. El Δv es ideal (Tsiolkovski). El modelo 3D es solo presentación: no interviene en ningún cálculo. No modifica DOPRI54.';
   }
+  // Recalculo la ingeniería de la sonda activa, actualizo todas las vistas e invalido cualquier misión preparada con otro vehículo.
   function render() {
     try { engineering = calculateEngineering(design); } catch { engineering = null; }
     updateDesignContext();
     renderFleet(); renderDocs();
     renderAssembly(); renderEngineering();
-    // 17: nunca se reproduce en silencio una misión calculada con otro vehículo.
+    // Evito reproducir en silencio una misión que fue calculada con una sonda distinta a la activa.
     if (centerPlan?.ready && centerPlan.design && designSignature(centerPlan.design) !== designSignature(design)) {
       launchActive = false;
       invalidated = `Cambiaste de vehículo después de preparar la misión (calculada con ${centerPlan.design.name}). Para no reproducir estados de otro vehículo, recalcula en «2 · Planificar».`;
@@ -788,7 +801,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   $('[data-lab-action="glossary"]').addEventListener('click', () => { const dialog = $('#lab-glossary'); if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', ''); });
   $('[data-lab-action="reset-camera"]').addEventListener('click', () => stage === 'plan' ? planner.resetCamera() : stage === 'play' ? center.resetCamera() : view.resetCamera());
   for (const button of lab.querySelectorAll('[data-lab-stage]')) button.addEventListener('click', () => go(button.dataset.labStage));
-  // En pantallas estrechas el contenido de la pestaña queda debajo de la escena: se lleva a la vista al elegirla.
+  // En pantallas estrechas llevo el panel de la pestaña elegida a la vista porque queda apilado debajo de la escena.
   const narrow = window.matchMedia('(max-width: 820px)');
   const TAB_FOCUS = { probe: '.lab-probe-panel', play: '#mc-drawer' };
   for (const button of lab.querySelectorAll('[data-lab-tab]')) button.addEventListener('click', () => {
@@ -796,7 +809,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     const focus = TAB_FOCUS[button.dataset.tabStage];
     if (narrow.matches && focus && button.dataset.labTab !== 'playback') requestAnimationFrame(() => revealInScrollAreas(lab.querySelector(focus), { block: 'start' }));
   });
-  // Panel de etapas plegable (preferencia de este navegador).
+  // Controlo el plegado del panel lateral de etapas y guardo la preferencia en este navegador.
   function setRail(open) {
     lab.dataset.rail = open ? 'open' : 'closed';
     const toggle = $('#lab-rail-toggle');
@@ -807,7 +820,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   const onKey = event => { if (!event.defaultPrevented && event.key === 'Escape' && lab.dataset.immersive === 'true') center.setImmersive(false); };
   document.addEventListener('keydown', onKey);
 
-  // 16: misión guiada. Solo usa los mismos controles y estados que el usuario.
+  // Conecto la misión guiada exponiendo exactamente las mismas operaciones y estados que maneja el usuario.
   const guide = createLabGuidedMission({ host: lab, api: {
     activeProbeId: () => vehicleMode === 'experimental' ? 'experimental' : activeProbeId,
     selectProbe,
@@ -826,6 +839,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     centerKind: () => centerPlan?.ready ? centerPlan.kind ?? 'mission' : null
   } });
   const glossary = createLabGlossary(lab);
+  // Observo los cambios de modo global para activar, actualizar o retirar el laboratorio según corresponda.
   const modeObserver = new MutationObserver(() => {
     if (app.dataset.appMode === 'experimental') { setBuilder(true); render(); }
     else { setBuilder(false); delete app.dataset.labView; }
@@ -834,6 +848,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   modeObserver.observe(app, { attributes: true, attributeFilter: ['data-app-mode'] });
   const header = document.querySelector('.app-header');
   const modeNavigation = document.querySelector('#app-mode-switcher');
+  // Mido la altura efectiva de la cabecera para posicionar el contenedor del laboratorio justo debajo sin solaparlo.
   function measureHeader() {
     const bottom = Math.max(header.getBoundingClientRect().bottom,
       modeNavigation.getBoundingClientRect().bottom,

@@ -1,6 +1,6 @@
-// Etapa 24 · Lo que hicieron las sondas reales de la flota, para no confundir una simulación del laboratorio con la historia.
-// Solo hechos documentados con su fuente (consultadas el 21-11-2026). Fechas en UTC salvo que se indique otra cosa.
-// No alimenta ningún cálculo: el laboratorio no reproduce estas trayectorias.
+// Aquí reúno los hitos documentados de las sondas reales de la flota (Voyager, Cassini, Dawn y Juno)
+// para contextualizar las simulaciones del laboratorio sin confundirlas con reconstrucciones históricas.
+// Registro únicamente hechos con fuente oficial y fechas UTC; estos datos nunca intervienen en los cálculos físicos.
 
 export const REAL_MISSION_SOURCES = Object.freeze({
   'nssdca-voyager1': Object.freeze({ title: 'NSSDCA Master Catalog — Voyager 1 (1977-084A)', publisher: 'NASA GSFC', url: 'https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1977-084A' }),
@@ -10,7 +10,7 @@ export const REAL_MISSION_SOURCES = Object.freeze({
   'nssdca-juno': Object.freeze({ title: 'NSSDCA Master Catalog — Juno (2011-040A)', publisher: 'NASA GSFC', url: 'https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2011-040A' })
 });
 
-// `cuerpo`: cuerpo visitado en ese hito (para comparar con el destino simulado); `destino`: objetivo final de la misión real.
+// Etiqueto cada hito con el `cuerpo` visitado para cruzarlo con el destino simulado y con `destino` como meta histórica.
 const hito = (fecha, texto, cuerpo = null) => Object.freeze({ fecha, texto, cuerpo });
 const mision = (nombre, lanzador, destino, hitos, fuente) => Object.freeze({ nombre, lanzador, destino, hitos: Object.freeze(hitos), fuente });
 
@@ -43,21 +43,21 @@ export const REAL_MISSIONS = Object.freeze({
   ])
 });
 
-/** Misiones reales de la sonda de la flota `probeId` (voyager, cassini, dawn o juno), o lista vacía. */
+/** Devuelvo las misiones reales asociadas a `probeId` (voyager, cassini, dawn o juno), o una lista vacía si no pertenece a la flota. */
 export const realMissionsFor = probeId => REAL_MISSIONS[probeId] ?? [];
 
 const normalizar = texto => String(texto ?? '').normalize('NFD').replace(/\p{M}/gu, '').trim().toLowerCase();
 
 /**
- * Compara el destino de una simulación con lo que hizo la sonda real. `destinos`: nombres del destino simulado (planeta y,
- * si lo hay, satélite). Devuelve null si la sonda no es de la flota; si no, las misiones reales, los hitos que coinciden con
- * algún destino y un resumen en una frase. No dice nada sobre la trayectoria: el laboratorio no reproduce la histórica.
+ * Comparo el destino simulado (`destinos`: planeta y, si aplica, satélite) con el historial real de la sonda.
+ * Devuelvo null si la sonda no pertenece a la flota o no hay destino; en caso contrario devuelvo sus misiones reales,
+ * las coincidencias encontradas y un resumen breve que aclara que la ruta simulada es un ejercicio del laboratorio.
  */
 export function compararConMisionReal(probeId, destinos = []) {
   const misiones = realMissionsFor(probeId);
   if (!misiones.length) return null;
   const buscados = destinos.filter(Boolean), claves = new Set(buscados.map(normalizar));
-  if (!buscados.length) return null; // sin destino (p. ej. un lanzamiento a órbita terrestre) no hay nada que comparar
+  if (!buscados.length) return null; // Si no hay destino planetario (por ejemplo un lanzamiento orbital), no hago comparación.
   const coincidencias = misiones.flatMap(m => m.hitos.filter(h => h.cuerpo && claves.has(normalizar(h.cuerpo))).map(h => ({ mision: m.nombre, ...h })));
   const destinoTexto = buscados.map(n => /^(Luna|Tierra)$/.test(n) ? `la ${n}` : n).join(' / ');
   const resumen = coincidencias.length

@@ -1,7 +1,9 @@
+// En este módulo construyo y actualizo la ficha informativa de satélites naturales con datos del catálogo y estado de efemérides.
 import { MOON_RADIUS_SOURCE } from '../science/PlanetaryMoons.js';
 import { MOON_CATALOG as MOONS } from '../science/MoonCatalog.js';
 
 const km = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 1 });
+// Inserto el panel desplegable del satélite justo después de la ficha planetaria y enlazo las acciones de cámara.
 export function crearPanelInfoLuna({ alPlaneta, alVistaGeneral }) {
   const panel = document.createElement('details');
   panel.id = 'moon-info';
@@ -24,9 +26,11 @@ export function crearPanelInfoLuna({ alPlaneta, alVistaGeneral }) {
       <div class="moon-info-actions"><button id="moon-return-parent" type="button">Volver al planeta</button><button id="moon-return-overview" type="button">Vista general</button></div>
     </div>`;
   document.querySelector('#planet-info').after(panel);
+  // Conecto los botones para regresar al planeta central o a la vista general del Sistema Solar.
   panel.querySelector('#moon-return-parent').addEventListener('click', () => alPlaneta?.());
   panel.querySelector('#moon-return-overview').addEventListener('click', () => alVistaGeneral?.());
 
+  // Relleno la ficha con los metadatos del satélite seleccionado y su estado actual, o la oculto si no hay ninguno activo.
   function actualizar(key, state) {
     panel.hidden = !key;
     if (!key) return;

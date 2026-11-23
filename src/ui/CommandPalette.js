@@ -1,7 +1,8 @@
-// Etapa 14.1 — paleta de búsqueda y comandos. Reúne cuerpos y sondas (los mismos destinos del panel Explorar), las áreas
-// del simulador y acciones de vista. Cada elección pulsa el control existente: no duplica lógica ni altera cálculos.
+// En este módulo controlo la paleta de búsqueda y comandos del simulador.
+// Reúno cuerpos celestes, sondas, áreas de navegación y acciones de vista; cada elección pulsa el control existente para no duplicar lógica ni alterar cálculos.
 import { destinoFocoAlCerrar, moverFocoConTab } from './DialogFocus.js';
 
+// Normalizo acentos y mayúsculas para que la búsqueda coincida sin exigir tildes exactas.
 const normalize = value => value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 const ACTIONS = Object.freeze([
@@ -15,10 +16,8 @@ const ACTIONS = Object.freeze([
   { id: 'panel', title: 'Panel de datos', desc: 'Ficha, telemetría y fuentes del objetivo', selector: '#inspector-toggle', icon: 'icon-info' }
 ]);
 
-/**
- * Agrupa y ordena los resultados. `sources`: [[rótulo, elementos]] en el orden de la paleta. Solo devuelve grupos con algún
- * resultado (UX-01: no hay cabeceras vacías). Sin consulta se muestran solo los 10 primeros cuerpos y sondas.
- */
+// Agrupo y ordeno los resultados según relevancia; solo devuelvo grupos con coincidencias para evitar cabeceras vacías,
+// y cuando no hay consulta muestro únicamente los diez primeros cuerpos y sondas.
 export function groupCommandResults(sources, query) {
   const q = normalize(String(query ?? '').trim());
   const score = item => {
@@ -38,13 +37,13 @@ export function groupCommandResults(sources, query) {
   return out;
 }
 
+// Monto el diálogo modal de búsqueda con patrón combobox/listbox, atajos globales de teclado y gestión accesible del foco.
 export function createCommandPalette({ navigator } = {}) {
   const app = document.querySelector('#app');
   if (!app) return { open() {}, dispose() {} };
   const root = document.createElement('div');
   root.id = 'command-palette'; root.className = 'command-palette'; root.hidden = true;
-  // UX-01: el campo es un combobox con su lista siempre desplegada mientras el diálogo está abierto; el número de resultados se
-  // anuncia en #cp-status (visualmente oculto).
+  // Configuro el campo como un combobox con la lista siempre expandida mientras el diálogo está abierto y anuncio el conteo en #cp-status.
   root.innerHTML = `<div class="cp-backdrop" data-cp-close></div>
     <div class="cp-dialog" role="dialog" aria-modal="true" aria-label="Buscar en el simulador">
       <div class="cp-input-row"><svg class="icon" aria-hidden="true"><use href="#icon-search"></use></svg>
@@ -58,12 +57,13 @@ export function createCommandPalette({ navigator } = {}) {
   const input = root.querySelector('#cp-input'), list = root.querySelector('#cp-results'), dialog = root.querySelector('.cp-dialog');
   const status = root.querySelector('#cp-status');
   let items = [], active = 0, lastFocus = null;
-  // UX-01: «Buscar» abre este diálogo (no el panel Explorar): su estado accesible lo lleva la paleta.
+  // Vinculo el botón «Buscar» de la cabecera con este diálogo para que los lectores de pantalla conozcan su estado expandido.
   const searchButton = document.querySelector('#header-search');
   searchButton?.setAttribute('aria-controls', 'command-palette');
   searchButton?.setAttribute('aria-haspopup', 'dialog');
   searchButton?.setAttribute('aria-expanded', 'false');
 
+  // Recojo los cuerpos y sondas directamente de los destinos ya generados en el panel de búsqueda contextual.
   function destinationItems() {
     return [...document.querySelectorAll('#context-search-results button[data-destination]')].map(button => {
       const id = button.dataset.destination, mode = button.dataset.destinationMode;
@@ -71,9 +71,11 @@ export function createCommandPalette({ navigator } = {}) {
       return { type: 'body', id, title: button.textContent.trim(), desc: kind, mode, button, icon: mode === 'historico' || mode === 'experimental' ? 'icon-probe' : 'icon-planet' };
     });
   }
+  // Convierto el mapa de áreas del navegador en opciones navegables dentro de la paleta.
   function areaItems() {
     return (navigator?.areas ?? []).flatMap(group => group.items.map(area => ({ type: 'area', id: area.id, title: area.title, desc: `${group.group} · ${area.desc}`, icon: area.icon, area })));
   }
+  // Filtro las acciones de cámara y herramientas para ofrecer solo las que están disponibles en la vista actual.
   function actionItems() {
     const lab = document.querySelector('#experimental-lab');
     if (app.dataset.appMode === 'experimental' && lab && !lab.hidden) return [];
@@ -83,6 +85,7 @@ export function createCommandPalette({ navigator } = {}) {
   function build(query) {
     return groupCommandResults([['Cuerpos y sondas', destinationItems()], ['Áreas del simulador', areaItems()], ['Vista y herramientas', actionItems()]], query);
   }
+  // Renderizo los grupos de resultados con role="group" y anuncio el total accesible en la región viva.
   function render() {
     const groups = build(input.value);
     items = groups.flatMap(group => group.items);
@@ -95,8 +98,7 @@ export function createCommandPalette({ navigator } = {}) {
     status.textContent = items.length === 1 ? '1 resultado.' : `${items.length} resultados.`;
     let index = 0;
     for (const [groupIndex, group] of groups.entries()) {
-      // Solo se dibujan grupos con resultados (build). Cada grupo es un role="group" con su rótulo: el lector anuncia a qué grupo
-      // pertenece la opción activa. El contenedor no tiene estilo propio: el aspecto no cambia.
+      // Envuelvo cada grupo no vacío con role="group" y su rótulo para que el lector anuncie a qué categoría pertenece la opción activa.
       const box = document.createElement('div'); box.setAttribute('role', 'group'); box.setAttribute('aria-labelledby', `cp-group-${groupIndex}`);
       const heading = document.createElement('div'); heading.className = 'cp-group'; heading.id = `cp-group-${groupIndex}`; heading.textContent = group.label; heading.setAttribute('role', 'presentation');
       box.append(heading);
@@ -118,19 +120,22 @@ export function createCommandPalette({ navigator } = {}) {
     }
     setActive(active, false);
   }
+  // Marco la opción activa actualizando aria-selected y aria-activedescendant en el campo de texto.
   function setActive(index, scroll = true) {
     active = index;
     for (const option of list.querySelectorAll('.cp-option')) option.setAttribute('aria-selected', String(Number(option.dataset.index) === index));
     const current = list.querySelector(`#cp-option-${index}`);
     if (current) { input.setAttribute('aria-activedescendant', current.id); if (scroll) current.scrollIntoView({ block: 'nearest' }); }
   }
+  // Ejecuto la opción elegida cerrando antes la paleta y delegando el cambio de modo o clic al control real.
   async function choose(item) {
     close(false);
     if (item.type === 'area') { await navigator?.go(item.area); return; }
     if (item.type === 'action') {
       const el = document.querySelector(item.selector);
       if (!el) return;
-      if (item.open) { navigator?.open?.(); el.open = true; el.querySelector('summary')?.focus(); } // 29: la herramienta vive en el «Menú»
+      // Si la herramienta vive dentro del menú desplegable, primero abro el menú y despliego su sección.
+      if (item.open) { navigator?.open?.(); el.open = true; el.querySelector('summary')?.focus(); }
       else el.click();
       return;
     }
@@ -141,19 +146,20 @@ export function createCommandPalette({ navigator } = {}) {
     else if (item.mode === 'planet' && labOpen) await navigator?.go('solar');
     requestAnimationFrame(() => item.button.click());
   }
-  // UX-01: tras elegir, si la acción no movió el foco a otro control (quedó en el campo ya oculto o en <body>), vuelve a quien abrió.
+  // Tras elegir una opción, compruebo si la acción movió el foco a otro control; si quedó en <body> o en el diálogo oculto, lo devuelvo a quien me abrió.
   function restoreFocusAfterChoice() {
     requestAnimationFrame(() => requestAnimationFrame(() => {
       const current = document.activeElement;
       if (root.hidden && (!current || current === document.body || root.contains(current))) restoreFocus();
     }));
   }
-  // UX-01: el foco vuelve al control que abrió la búsqueda; si ya no está (o se abrió con Ctrl+K sin foco), al botón «Buscar».
+  // Devuelvo el foco al control que abrió la búsqueda o, si ya no está visible, al botón «Buscar» de la cabecera.
   function restoreFocus() {
     const target = destinoFocoAlCerrar(lastFocus, root, document.querySelector('#header-search'));
     if (target) target.focus({ preventScroll: true });
     else if (root.contains(document.activeElement)) document.activeElement.blur();
   }
+  // Abro la paleta recordando el foco previo y enfocando de inmediato el campo de búsqueda.
   function open(query = '') {
     if (!root.hidden) { input.focus(); return; }
     lastFocus = document.activeElement;
@@ -162,6 +168,7 @@ export function createCommandPalette({ navigator } = {}) {
     requestAnimationFrame(() => { if (!root.hidden) input.focus({ preventScroll: true }); });
     searchButton?.setAttribute('aria-expanded', 'true');
   }
+  // Cierro la paleta, actualizo aria-expanded y restauro el foco según si se canceló o se ejecutó una elección.
   function close(restore = true) {
     if (root.hidden) return;
     root.hidden = true;
@@ -170,18 +177,17 @@ export function createCommandPalette({ navigator } = {}) {
     else restoreFocusAfterChoice();
   }
   input.addEventListener('input', () => { active = 0; render(); });
-  // UX-01: el teclado se atiende a nivel de documento (fase de captura) mientras el diálogo está abierto, esté donde esté el foco
-  // (antes solo en el campo: tras Tab, Escape dejaba de cerrar). Escape cierra solo la paleta (otros diálogos debajo no lo reciben).
+  // Atiendo el teclado en fase de captura mientras la paleta está abierta para atrapar Tab, cerrar solo este diálogo con Escape y recorrer opciones con las flechas.
   const onDialogKey = event => {
     if (root.hidden || event.defaultPrevented) return;
     if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); return; }
-    // Tab y Mayús+Tab recorren solo los controles del diálogo (hoy, el campo: las opciones se eligen con las flechas, patrón
-    // combobox con aria-activedescendant).
+    // Mantengo Tab y Mayús+Tab dentro del diálogo; las opciones de la lista se eligen con flechas según el patrón combobox.
     if (event.key === 'Tab') { event.preventDefault(); event.stopPropagation(); moverFocoConTab(dialog, event.shiftKey); return; }
     if (event.isComposing || event.ctrlKey || event.metaKey || event.altKey) return;
     const navigation = event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter';
     if (!dialog.contains(event.target)) {
-      input.focus({ preventScroll: true }); // p. ej. tras un clic en una zona sin controles de la lista
+      // Si el foco se perdió al pulsar una zona sin controles, lo recupero en el campo de búsqueda.
+      input.focus({ preventScroll: true });
       if (!navigation) return;
     } else if (event.target !== input) return;
     if (!navigation) return;
@@ -190,12 +196,14 @@ export function createCommandPalette({ navigator } = {}) {
     else if (event.key === 'ArrowUp') { if (items.length) setActive((active - 1 + items.length) % items.length); }
     else if (items[active]) choose(items[active]);
   };
-  // UX-01: si otro código mueve el foco fuera del diálogo mientras está abierto, vuelve al campo (aria-modal).
+  // Si otro código intenta mover el foco fuera del diálogo modal mientras sigo abierto, lo devuelvo al campo de búsqueda.
   const onFocusIn = event => { if (!root.hidden && !root.contains(event.target)) input.focus({ preventScroll: true }); };
   root.addEventListener('click', event => {
     if (event.target.closest('[data-cp-close]')) { close(); return; }
-    if (!root.hidden && event.target !== input) input.focus({ preventScroll: true }); // clic en zona sin controles: el teclado sigue
+    // Al pulsar en un área vacía del diálogo, devuelvo el foco al campo para que el teclado siga respondiendo.
+    if (!root.hidden && event.target !== input) input.focus({ preventScroll: true });
   });
+  // Escucho la petición explícita de apertura y los atajos globales Ctrl/Cmd+K y «/».
   const onOpenRequest = event => { event.preventDefault(); open(); };
   const onKey = event => {
     const typing = event.target.closest?.('input, textarea, select, [contenteditable="true"]');

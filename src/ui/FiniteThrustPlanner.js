@@ -1,5 +1,5 @@
-// Etapa 12D — controles mínimos de «Maniobra de empuje finito» dentro del Planificador.
-// Solo configura, calcula y muestra resultados; la física vive en src/lab/FiniteThrust*.js.
+// En este módulo gestiono los controles y resultados de la herramienta «Maniobra de empuje finito» dentro del planificador lunar.
+// Aquí solo configuro parámetros, lanzo la propagación, invalido resultados obsoletos y presento métricas; toda la física reside en src/lab/FiniteThrust*.js.
 import { calculateFiniteThrustManeuver, getPropulsionSystem, isFiniteThrustResultCurrent, validateFiniteThrustOptions } from '../lab/FiniteThrustPlan.js';
 import { createFiniteThrustExecution } from '../lab/FiniteThrustPlayback.js';
 import { THRUST_DIRECTIONS, THRUST_DIRECTION_LABELS, MAX_BURNS } from '../lab/FiniteThrustDynamics.js';
@@ -7,6 +7,7 @@ import { THRUST_DIRECTIONS, THRUST_DIRECTION_LABELS, MAX_BURNS } from '../lab/Fi
 const number = (n, digits = 1) => Number.isFinite(n) ? new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(n) : 'No disponible';
 const STATUS_LABELS = { completed: 'completado', depleted: 'propelente agotado', skipped: 'omitido · sin propelente' };
 
+// Genero el bloque HTML de cada fila de encendido para que el usuario pueda añadir o quitar maniobras.
 function burnRowTemplate(index) {
   return `<div class="ft-burn" data-burn><strong class="ft-burn-title">Encendido ${index + 1}</strong>
     <label class="lab-field">Inicio (h tras la salida)<input data-f="start" type="number" min="0" step="0.01" value="1"></label>
@@ -21,6 +22,7 @@ function burnRowTemplate(index) {
     <button type="button" data-f="remove">Quitar</button></div>`;
 }
 
+// Monto el formulario de empuje finito, conecto sus eventos de invalidación y coordino el envío al Centro de Misión.
 export function createFiniteThrustPlanner({ controlsHost, resultsHost, getDataset, getDataError, onExecuteRequest, onInvalidated, onViewChange }) {
   controlsHost.innerHTML = `
     <details class="ft-section" open><summary>Maniobra de empuje finito</summary>
@@ -41,7 +43,9 @@ export function createFiniteThrustPlanner({ controlsHost, resultsHost, getDatase
 
   function message(text, error = false) { $('#ft-message').textContent = text; $('#ft-message').dataset.error = String(error); }
   function rows() { return [...controlsHost.querySelectorAll('[data-burn]')]; }
+  // Renumero los encendidos visibles y bloqueo borrar el último o superar el máximo permitido.
   function renumber() { rows().forEach((row, index) => { row.querySelector('.ft-burn-title').textContent = `Encendido ${index + 1}`; row.querySelector('[data-f="remove"]').disabled = rows().length === 1; }); $('#ft-add').disabled = rows().length >= MAX_BURNS; }
+  // Añado una nueva fila de encendido y conecto su selector de dirección inercial y su botón de borrado.
   function addBurn(values) {
     const holder = document.createElement('div'); holder.innerHTML = burnRowTemplate(rows().length);
     const row = holder.firstElementChild; $('#ft-burns').append(row);
@@ -50,6 +54,7 @@ export function createFiniteThrustPlanner({ controlsHost, resultsHost, getDatase
     row.querySelector('[data-f="remove"]').addEventListener('click', () => { row.remove(); renumber(); invalidate('Programa modificado. Recalcula la propagación.'); });
     renumber();
   }
+  // Leo todos los campos del formulario y los convierto a las unidades físicas que espera el integrador.
   function options() {
     const burns = rows().map(row => {
       const field = name => row.querySelector(`[data-f="${name}"]`);
@@ -68,6 +73,7 @@ export function createFiniteThrustPlanner({ controlsHost, resultsHost, getDatase
     row.append(term, strong); parent.append(row);
   }
   function paragraph(parent, text, className = 'mission-hint') { const p = document.createElement('p'); p.className = className; p.textContent = text; parent.append(p); }
+  // Descarto cualquier propagación anterior cuando cambian parámetros o sonda, y aviso al Centro de Misión si estaba activa.
   function invalidate(text) {
     const had = Boolean(result);
     result = null; viewTransfer = null; results.replaceChildren();
@@ -76,10 +82,12 @@ export function createFiniteThrustPlanner({ controlsHost, resultsHost, getDatase
     if (active) { active = false; onInvalidated?.(); }
     updateButtons();
   }
+  // Habilito la ejecución solo si existe un resultado vigente para la sonda y los parámetros actuales.
   function updateButtons() {
     $('#ft-calculate').disabled = !design;
     $('#ft-execute').disabled = !(result && design && isFiniteThrustResultCurrent(result, design, options()));
   }
+  // Muestro en el panel de resultados el resumen propulsivo, el desglose por encendido y los diagnósticos numéricos.
   function render() {
     results.replaceChildren();
     if (!result) return;
@@ -111,6 +119,7 @@ export function createFiniteThrustPlanner({ controlsHost, resultsHost, getDatase
     for (const note of result.limitations) paragraph(details, note);
     results.append(details);
   }
+  // Valido efemérides y parámetros, calculo la propagación de empuje finito y actualizo la vista de transferencia.
   function calculate() {
     try {
       if (!design) throw Error('No hay una sonda seleccionada.');
@@ -129,6 +138,7 @@ export function createFiniteThrustPlanner({ controlsHost, resultsHost, getDatase
   }
   $('#ft-calculate').addEventListener('click', calculate);
   $('#ft-add').addEventListener('click', () => { addBurn(); invalidate('Programa modificado. Recalcula la propagación.'); });
+  // Compruebo la vigencia del cálculo justo antes de enviarlo al Centro de Misión.
   $('#ft-execute').addEventListener('click', () => {
     try {
       const dataset = getDataset();
@@ -136,10 +146,12 @@ export function createFiniteThrustPlanner({ controlsHost, resultsHost, getDatase
       active = true; onExecuteRequest({ kind: 'finite-thrust', ready: true, result, design, dataset, name: 'Maniobra de empuje finito' });
     } catch (error) { message(error.message, true); }
   });
+  // Cualquier edición en parámetros orbitales o encendidos invalida inmediatamente la propagación calculada.
   for (const id of ['ft-altitude', 'ft-departure', 'ft-phase', 'ft-horizon']) $(`#${id}`).addEventListener('input', () => invalidate('Parámetros modificados. Recalcula la propagación.'));
   controlsHost.addEventListener('input', event => { if (event.target.closest?.('[data-burn]') && event.target.dataset.f !== 'direction') invalidate('Parámetros modificados. Recalcula la propagación.'); });
   addBurn(); updateButtons();
   return {
+    // Recibo el cambio de sonda activa, reviso su sistema propulsivo e invalido el cálculo previo si dejó de coincidir.
     setDesign(next) {
       const changed = result && !isFiniteThrustResultCurrent(result, next, options());
       design = next;

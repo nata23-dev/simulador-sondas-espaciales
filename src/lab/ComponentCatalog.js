@@ -1,6 +1,7 @@
-// Dos familias de piezas:
-// · Ilustrativas (12A): equipos ficticios de entrenamiento con parámetros de diseño en SI, no especificaciones de hardware NASA.
-// · De herencia (15): derivadas de Voyager, Cassini, Dawn y Juno, con calidad y fuente de cada cifra (HeritageCatalog.js).
+// En este módulo reúno el catálogo unificado de componentes disponibles para ensamblar sondas en el Hangar.
+// Combino dos familias de piezas:
+// · Piezas ilustrativas de entrenamiento con parámetros de diseño en unidades del SI (no son hardware real de NASA).
+// · Piezas de herencia derivadas de Voyager, Cassini, Dawn y Juno, importadas desde HeritageCatalog.js con su trazabilidad.
 import { HERITAGE_COMPONENTS } from './HeritageCatalog.js';
 
 export const COMPONENT_CATEGORIES = Object.freeze([
@@ -40,7 +41,7 @@ export const COMPONENTS = Object.freeze([
   part('bus-lander', 'Plataforma de descenso', 'structure', 205, [2.0, 1.55, 2.0], { maxAttachedMassKg: 900, slots: slots(1.05), description: 'Base de aterrizaje conceptual; sin dinámica de descenso.' }),
   part('engine-chemical', 'Motor químico de maniobra', 'engine', 38, [0.7, 0.9, 0.7], { thrustN: 650, ispS: 310, propellant: 'chemical', activePowerW: 80, description: 'Motor ilustrativo de propelente químico.' }),
   part('engine-ion', 'Motor eléctrico iónico', 'engine', 29, [0.55, 0.75, 0.55], { thrustN: 0.04, ispS: 2500, propellant: 'xenon', activePowerW: 900, propulsionType: 'electric',
-    // 15: modelo eléctrico coherente con sus cifras ilustrativas (0,04 N a 900 W → η = T·g₀·Isp/2P); umbral de encendido ilustrativo.
+    // Aquí calculo una eficiencia coherente con las cifras ilustrativas (0,04 N a 900 W: η = T·g0·Isp / (2·P)) y un umbral mínimo de encendido.
     electric: Object.freeze({ maxInputPowerW: 900, minInputPowerW: 200, efficiency: 0.04 * 9.80665 * 2500 / (2 * 900) }),
     description: 'Propulsión eléctrica conceptual; requiere potencia durante operación.' }),
   part('tank-chemical', 'Tanque químico', 'tank', 26, [0.95, 1.0, 0.95], { fuelCapacityKg: 190, propellant: 'chemical', description: 'Capacidad y masa de combustible configurables.' }),
@@ -62,15 +63,15 @@ export const ALL_COMPONENTS = Object.freeze([...ILLUSTRATIVE_COMPONENTS, ...HERI
 export const COMPONENT_BY_ID = Object.freeze(Object.fromEntries(ALL_COMPONENTS.map(item => [item.id, item])));
 export const getComponent = id => typeof id === 'string' && Object.hasOwn(COMPONENT_BY_ID, id) ? COMPONENT_BY_ID[id] : null;
 
-// Un punto de montaje acepta las categorías de `accepts` (piezas de herencia) o solo su `category` (buses ilustrativos).
+// Compruebo si un punto de montaje admite una pieza según su lista `accepts` (en buses de herencia) o su categoría directa.
 export const slotAccepts = (slot, component) => Boolean(slot && component && (slot.accepts ?? [slot.category]).includes(component.category));
-// Herraje mecánico: los buses y piezas ilustrativos no declaran interfaz («genérica»). Si difieren, hace falta un adaptador.
+// Asigno una interfaz mecánica genérica a las piezas ilustrativas; si difiere entre punto y pieza, exijo un adaptador.
 export const GENERIC_INTERFACE = 'genérica-ilustrativa';
 export const interfaceOf = item => item?.interface ?? GENERIC_INTERFACE;
 export const needsAdapter = (slot, component) => interfaceOf(slot) !== interfaceOf(component);
-// Masa del adaptador estructural: ESTIMACIÓN de diseño del simulador (herrajes, soporte y cableado), no un dato histórico.
+// Estimo la masa del adaptador estructural (herrajes, soporte y cableado) con una regla propia de diseño del simulador.
 export const ADAPTER_MASS_RULE = 'máx(2 kg; 8 % de la masa seca de la pieza)';
 export const adapterMassKg = component => Math.round(Math.max(2, 0.08 * component.dryMassKg) * 10) / 10;
 export const maxDimensionM = component => Math.max(...component.dimensionsM);
-// Una pieza cabe en un punto si su mayor dimensión no supera la envolvente declarada (los buses ilustrativos no la declaran).
+// Verifico que la mayor dimensión de la pieza no supere la envolvente del punto de montaje cuando esta viene declarada.
 export const fitsEnvelope = (slot, component) => !Number.isFinite(slot?.envelopeM) || maxDimensionM(component) <= slot.envelopeM + 1e-9;

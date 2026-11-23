@@ -1,3 +1,6 @@
+// En este módulo gestiono todos los controles de interfaz del Modo Histórico Voyager 1 y 2 (1977–2026):
+// cambio entre modos de la aplicación, barra superior, cámara en primera persona, tarjeta de lanzamiento, catálogo de hitos,
+// galería y comparador A/B de fotografías NASA, ficha científica de cada sonda y línea temporal histórica.
 import {
   HISTORICAL_PLAYBACK_SPEEDS
 } from '../science/HistoricalTime.js';
@@ -45,6 +48,7 @@ const fmtUnit3 = new Intl.NumberFormat('es-MX', {
   signDisplay: 'always'
 });
 
+// Utilidades de calendario, rutas públicas y tamaño angular físico para la telemetría del comparador y de primera persona.
 function esBisiesto(anio) {
   return (anio % 4 === 0 && anio % 100 !== 0) || (anio % 400 === 0);
 }
@@ -81,6 +85,7 @@ function formatearDiametroAngular(distanciaKm, radioKm) {
   return `${arcsec.toFixed(2).replace('.', ',')}″`;
 }
 
+// Conecto todos los nodos del DOM del modo histórico con los callbacks del motor temporal y de cámara.
 export function crearControlesModoHistorico({
   baseUrl = import.meta.env?.BASE_URL ?? '/',
   alCambiarModoApp,
@@ -129,7 +134,7 @@ export function crearControlesModoHistorico({
   const btnToggleTraj = document.querySelector('#hist-toggle-traj-btn');
   const btnToggleHelio = document.querySelector('#hist-toggle-helio-btn');
 
-  // Primera persona
+  // Controles de cámara en primera persona
   const barraPrimeraPersona = document.querySelector('#first-person-bar');
   const botonesFpSonda = [...document.querySelectorAll('[data-fp-probe]')];
   const botonesFpTarget = [...document.querySelectorAll('[data-fp-target]')];
@@ -139,7 +144,7 @@ export function crearControlesModoHistorico({
   const lecturaFpFov = document.querySelector('#fp-fov-readout');
   const insigniaFpFidelidad = document.querySelector('#fp-fidelity-badge');
 
-  // Tarjeta de lanzamiento 1977
+  // Tarjeta informativa de lanzamiento 1977
   const tarjetaLanzamiento = document.querySelector('#historical-launch-card');
   const lanzamientoEyebrow = document.querySelector('#launch-card-eyebrow');
   const lanzamientoTitulo = document.querySelector('#launch-card-title');
@@ -148,7 +153,7 @@ export function crearControlesModoHistorico({
   const btnCerrarLanzamiento = document.querySelector('#launch-card-close');
   const btnSaltarPrimerSpk = document.querySelector('#launch-jump-first-spk-btn');
 
-  // Columna izquierda: Eventos + Fotografías
+  // Columna izquierda: catálogo de eventos y galería de fotografías
   const columnaIzquierda = document.querySelector('#historical-left-stack');
   const panelEventos = document.querySelector('#historical-events-panel');
   const selectorEvento = document.querySelector('#historical-event-select');
@@ -168,7 +173,7 @@ export function crearControlesModoHistorico({
   const notaApagadoFoto = document.querySelector('#hist-photo-shutdown-note');
   const contenedorListaFotos = document.querySelector('#hist-photo-list');
 
-  // Panel derecho: Ficha científica Voyager
+  // Panel derecho: ficha científica de Voyager 1 y 2
   const panelFichaVoyager = document.querySelector('#voyager-science-panel');
   const encabezadoFicha = document.querySelector('#voyager-card-heading');
   const pestanasFicha = [...document.querySelectorAll('[data-voyager-tab]')];
@@ -199,7 +204,7 @@ export function crearControlesModoHistorico({
   const campoStaticCameras = document.querySelector('#v-static-cameras');
   const campoStaticSource = document.querySelector('#v-static-source');
 
-  // Comparador A/B y Lightbox
+  // Panel comparador A/B y visor ampliado (lightbox)
   const panelComparador = document.querySelector('#photo-comparator-panel');
   const compTitulo = document.querySelector('#comp-photo-title');
   const compImg = document.querySelector('#comp-photo-img');
@@ -237,7 +242,7 @@ export function crearControlesModoHistorico({
   const btnLbCompare = document.querySelector('#lightbox-compare-btn');
   const btnLbClose = document.querySelector('#lightbox-close-btn');
 
-  // Línea temporal histórica (1977–2026)
+  // Controles de la línea temporal histórica (1977–2026)
   const panelTimelineHist = document.querySelector('#historical-timeline-panel');
   const toastEventoPausa = document.querySelector('#hist-event-pause-toast');
   const toastTexto = document.querySelector('#hist-toast-text');
@@ -264,7 +269,7 @@ export function crearControlesModoHistorico({
   const checkAutoSlow = document.querySelector('#hist-auto-slow');
   const checkAutoPause = document.querySelector('#hist-auto-pause');
 
-  // Estado UI interno
+  // Guardo aquí el estado local de la interfaz para evitar actualizaciones redundantes y bucles con los selectores.
   let modoAppActual = 'exploracion';
   let pestanaFichaActiva = VOYAGER_1_ID;
   let ultimoSnapshot = null;
@@ -280,7 +285,7 @@ export function crearControlesModoHistorico({
   let fotoLightboxActiva = null;
   let sincronizandoSelectoresFecha = false;
 
-  // Inicializar selectores de fecha directa (1977..2026)
+  // Relleno los selectores de fecha directa UTC entre 1977 y 2026.
   for (let y = 1977; y <= 2026; y++) {
     selectAnio.add(new Option(String(y), String(y)));
   }
@@ -293,6 +298,7 @@ export function crearControlesModoHistorico({
     selectHora.add(new Option(`${val}:00Z`, val));
   }
 
+  // Ajusto los días disponibles según el mes y año elegidos para no ofrecer fechas imposibles.
   function repoblarDiasSelector(anio, mes1a12, diaDeseado) {
     const total = diasEnMes(anio, mes1a12);
     if (selectDia.options.length !== total) {
@@ -307,6 +313,7 @@ export function crearControlesModoHistorico({
   }
   repoblarDiasSelector(1977, 8, 20);
 
+  // Construyo la fecha ISO UTC cuando el usuario modifica los selectores, ignorando mis propias sincronizaciones internas.
   function emitirCambioFechaDirecta() {
     if (sincronizandoSelectoresFecha) return;
     const anio = Number(selectAnio.value);
@@ -321,7 +328,7 @@ export function crearControlesModoHistorico({
     sel.addEventListener('change', emitirCambioFechaDirecta);
   }
 
-  // Inicializar velocidades históricas
+  // Cargo el selector de velocidades históricas predefinidas.
   for (const sp of HISTORICAL_PLAYBACK_SPEEDS) {
     const opt = new Option(`${sp.label}`, sp.id);
     opt.title = `${sp.longLabel} (${fmtKm0.format(sp.tdbSecondsPerRealSecond)} s TDB / s real)`;
@@ -329,8 +336,7 @@ export function crearControlesModoHistorico({
   }
   selectVelocidad.value = '1d_s';
 
-  // El campo oculto conserva el id seleccionado para los demás controladores.
-  // La lista es la única presentación y única fuente de selección del catálogo.
+  // Mantengo el selector oculto como referencia compartida para otros controladores y presento la lista interactiva de acontecimientos como interfaz visible.
   const listaEventos = document.createElement('div');
   listaEventos.className = 'historical-event-list';
   listaEventos.setAttribute('role', 'group');
@@ -356,6 +362,7 @@ export function crearControlesModoHistorico({
   }
   selectorEvento.before(listaEventos);
 
+  // Pinto la ficha del acontecimiento activo, actualizo aria-pressed en la lista y muestro el botón de fotografía si existe una asociada.
   function renderizarTarjetaEvento(ev) {
     if (!ev) return;
     if (selectorEvento.value !== ev.id) selectorEvento.value = ev.id;
@@ -411,7 +418,7 @@ export function crearControlesModoHistorico({
     if (photo) abrirComparadorAB(photo);
   });
 
-  // Inicializar galería "Fotografías de la misión" con miniaturas de carga diferida
+  // Construyo la galería de fotografías NASA con carga diferida de miniaturas y paginación de una tarjeta a la vez.
   const nodosFotoPorId = new Map();
   function construirGaleriaFotos() {
     contenedorListaFotos.innerHTML = '';
@@ -486,6 +493,7 @@ export function crearControlesModoHistorico({
   });
   actualizarNavegacionFotos();
 
+  // Abro la fotografía a tamaño completo en el lightbox manteniendo sus créditos y acceso directo al comparador A/B.
   function abrirLightbox(photo) {
     if (!photo) return;
     fotoLightboxActiva = photo;
@@ -514,6 +522,7 @@ export function crearControlesModoHistorico({
     if (photo) abrirComparadorAB(photo);
   });
 
+  // Abro el comparador A/B entre la fotografía NASA y la recreación 3D, plegando los paneles laterales para dar espacio al lienzo.
   function abrirComparadorAB(photo) {
     if (!photo) return;
     establecerInspeccionIo(false);
@@ -542,7 +551,7 @@ export function crearControlesModoHistorico({
     btnCompFovZoom.setAttribute('aria-pressed', 'false');
     resumenDetallesComparador.textContent = 'B · Recreación WebGL · campo ISS';
 
-    // Despeja paneles laterales mientras el comparador A/B está abierto para dar máxima visibilidad al lienzo 3D
+    // Despejo los paneles laterales mientras el comparador A/B está abierto para dar la máxima visibilidad al lienzo 3D.
     panelEventos.open = false;
     panelFotos.open = false;
     panelFichaVoyager.open = false;
@@ -595,12 +604,10 @@ export function crearControlesModoHistorico({
     alCambiarInspeccionVisualIo?.(inspeccionIoActiva);
   }
   btnCompIoInspection.addEventListener('click', () => establecerInspeccionIo(!inspeccionIoActiva));
-  // Al minimizar, la línea temporal vuelve a estar disponible. Navegar por ella
-  // termina la comparación antes de calcular la nueva escena para no mezclar épocas.
+  // Cuando el comparador está minimizado y el usuario toca la línea temporal, cierro la comparación en captura antes de procesar el salto para no mezclar épocas.
   const cerrarComparadorAlNavegar = event => {
     if (!panelComparador.hidden && panelComparador.dataset.view === 'minimizado') {
-      // La restauración sincroniza el range; conservar la nueva elección del
-      // usuario antes de que el listener normal procese este mismo evento.
+      // Preservo el valor elegido por el usuario porque cerrar el comparador restaura el deslizador antes de que corra el listener normal.
       const control = event.target;
       const value = control instanceof HTMLInputElement || control instanceof HTMLSelectElement
         ? control.value : null;
@@ -653,6 +660,7 @@ export function crearControlesModoHistorico({
     if (window.matchMedia('(max-width:760px)').matches) detallesComparador.open = false;
   });
 
+  // Cierro con Escape el lightbox o, si no está abierto, el comparador fotográfico A/B.
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
       if (!modalLightbox.hidden) {
@@ -663,7 +671,7 @@ export function crearControlesModoHistorico({
     }
   });
 
-  // Cambio entre modos de aplicación: exploracion | historico | experimental
+  // Alterno la visibilidad de los paneles globales al cambiar entre los modos exploracion, historico y experimental.
   function establecerModoVisualApp(modo) {
     modoAppActual = modo;
     appEl.dataset.appMode = modo;
@@ -705,8 +713,7 @@ export function crearControlesModoHistorico({
       alCambiarModoApp?.(destino);
     });
   }
-  // El laboratorio y los enlaces profundos también observan data-app-mode.
-  // Si otra ruta lo cambia, sincroniza la navegación y activa el modo real.
+  // Observo data-app-mode por si el laboratorio o un enlace externo cambia el modo, para mantener sincronizados los botones y el motor.
   new MutationObserver(() => {
     const modo = appEl.dataset.appMode;
     if (!botonesModo.some(btn => btn.dataset.modeBtn === modo)) return;
@@ -717,7 +724,7 @@ export function crearControlesModoHistorico({
     for (const btn of botonesModo) btn.setAttribute('aria-pressed', String(btn.dataset.modeBtn === modo));
   }).observe(appEl, { attributes: true, attributeFilter: ['data-app-mode'] });
 
-  // Controles de barra superior histórica
+  // Conecto los controles de la barra superior histórica (visibilidad, cámara, seguimiento, trayectorias y heliosfera).
   for (const btn of botonesVisibilidad) {
     btn.addEventListener('click', () => {
       alCambiarVisibilidadSondas?.(btn.dataset.histVis);
@@ -750,7 +757,7 @@ export function crearControlesModoHistorico({
     alAlternarHeliosfera?.(heliosferaActiva);
   });
 
-  // Controles de primera persona
+  // Conecto los botones y selectores de la cámara en primera persona (sonda observadora, objetivo y campo visual).
   for (const btn of botonesFpSonda) {
     btn.addEventListener('click', () => {
       alCambiarSondaPrimeraPersona?.(btn.dataset.fpProbe);
@@ -773,7 +780,7 @@ export function crearControlesModoHistorico({
     });
   }
 
-  // Tarjeta de lanzamiento
+  // Conecto el cierre de la tarjeta de lanzamiento y el salto directo al primer vector heliocéntrico verificado.
   btnCerrarLanzamiento.addEventListener('click', () => {
     lanzamientoDescartadoClave = misionLanzamientoActiva;
     tarjetaLanzamiento.hidden = true;
@@ -786,7 +793,7 @@ export function crearControlesModoHistorico({
     }
   });
 
-  // Pestañas de ficha científica Voyager 1 / Voyager 2
+  // Relleno los metadatos fijos de Voyager 1 o Voyager 2 al cambiar de pestaña en la ficha científica.
   function renderizarMetadatosEstaticosFicha(missionId) {
     const m = HISTORICAL_MISSIONS_CATALOG[missionId];
     if (!m) return;
@@ -816,7 +823,7 @@ export function crearControlesModoHistorico({
   }
   renderizarMetadatosEstaticosFicha(pestanaFichaActiva);
 
-  // Transporte de línea temporal histórica
+  // Conecto los controles de transporte, saltos por década, deslizador, velocidad y asistencias en hitos.
   barraHitos.addEventListener('click', event => {
     const chip = event.target.closest('[data-hist-jump]');
     if (!chip || !barraHitos.contains(chip)) return;
@@ -854,6 +861,7 @@ export function crearControlesModoHistorico({
     });
   });
 
+  // Actualizo la telemetría, el estado de veracidad del dato y la procedencia de muestras en la ficha científica de la sonda seleccionada.
   function actualizarFichaCientifica(snapshot) {
     const probe = snapshot.probes[pestanaFichaActiva];
     if (!probe) return;
@@ -938,6 +946,7 @@ export function crearControlesModoHistorico({
     }
   }
 
+  // Actualizo el estado fotográfico para la fecha actual, filtro las tarjetas según la sonda visible y refresco la paginación.
   function actualizarDisponibilidadFotos(snapshot, visibilityMode) {
     const evalFotos = evaluateHistoricalPhotoAvailability(snapshot.jdTdb, {
       missionFilter: visibilityMode,
@@ -971,6 +980,7 @@ export function crearControlesModoHistorico({
     actualizarNavegacionFotos();
   }
 
+  // Muestro la tarjeta contextual de lanzamiento 1977 cuando la época se sitúa en la ventana de ascenso previa al primer vector SPK.
   function actualizarTarjetaLanzamiento(snapshot, visibilityMode) {
     if (modoAppActual !== 'historico' || !panelComparador.hidden) {
       tarjetaLanzamiento.hidden = true;
@@ -1018,6 +1028,7 @@ export function crearControlesModoHistorico({
     tarjetaLanzamiento.hidden = false;
   }
 
+  // Recalculo la distancia, el tiempo luz, el diámetro angular y los avisos de encuadre mientras el comparador A/B está abierto.
   function actualizarTelemetriaComparador(snapshot) {
     if (!fotoComparadorActiva || panelComparador.hidden) return;
     actualizarFechaRecreacionComparador(snapshot.timeLabels.labelUtc);
@@ -1081,6 +1092,7 @@ export function crearControlesModoHistorico({
     if (ultimoEstadoCamara?.modo === 'photo_recreation') actualizarEstadoCamaraHistorica(ultimoEstadoCamara);
   }
 
+  // Sincronizo todos los controles del modo histórico con el estado actual emitido por el motor temporal.
   function actualizarDesdeMotor({
     snapshot,
     engineState
@@ -1099,12 +1111,12 @@ export function crearControlesModoHistorico({
       autoPauseAtEvents
     } = engineState;
 
-    // Visibilidad de sondas
+    // Actualizo los botones de visibilidad de Voyager 1 y Voyager 2.
     for (const btn of botonesVisibilidad) {
       btn.setAttribute('aria-pressed', String(btn.dataset.histVis === visibilityMode));
     }
 
-    // Reloj y deslizador
+    // Actualizo el deslizador, los relojes UTC/TDB y los botones de reproducción.
     rangoHist.value = String(Math.round(progress * Number(rangoHist.max)));
     relojUtc.textContent = snapshot.timeLabels.labelUtc;
 
@@ -1123,7 +1135,7 @@ export function crearControlesModoHistorico({
     checkAutoSlow.checked = autoSlowNearEvents;
     checkAutoPause.checked = autoPauseAtEvents;
 
-    // Sincronizar selectores directos Año / Mes / Día / Hora UTC sin disparar eventos
+    // Sincronizo los selectores directos Año / Mes / Día / Hora UTC bajo una bandera para no reemitir eventos de cambio.
     sincronizandoSelectoresFecha = true;
     const u = snapshot.timeLabels.utc;
     selectAnio.value = String(u.year);
@@ -1132,7 +1144,7 @@ export function crearControlesModoHistorico({
     selectHora.value = String(u.hour).padStart(2, '0');
     sincronizandoSelectoresFecha = false;
 
-    // Habilitar/deshabilitar lunas de encuentro y sondas en el selector de 1.ª persona
+    // Habilito o deshabilito lunas de sobrevuelo y sondas en la barra de primera persona según su disponibilidad en la fecha actual.
     for (const opt of selectFpExtra.options) {
       if (HISTORICAL_ENCOUNTER_MOONS[opt.value]) {
         const activa = Boolean(snapshot.moons?.[opt.value]?.state);
@@ -1150,7 +1162,7 @@ export function crearControlesModoHistorico({
     btnSeguirV1.disabled = !snapshot.probes?.[VOYAGER_1_ID]?.state;
     btnSeguirV2.disabled = !snapshot.probes?.[VOYAGER_2_ID]?.state;
 
-    // Evento disparado por parada automática o salto
+    // Muestro el aviso de parada en hito y marco con aria-current="step" el último hito alcanzado en la barra cronológica.
     if (triggeredEvent) {
       renderizarTarjetaEvento(triggeredEvent);
       toastEventoPausa.hidden = playing;
@@ -1164,7 +1176,7 @@ export function crearControlesModoHistorico({
       else chip.removeAttribute('aria-current');
     }
 
-    // Si la visibilidad fuerza una sola sonda, sincroniza la ficha con esa sonda
+    // Si el filtro muestra una sola sonda, alineo automáticamente la pestaña de la ficha científica con esa nave.
     if ((visibilityMode === VOYAGER_1_ID || visibilityMode === VOYAGER_2_ID) && pestanaFichaActiva !== visibilityMode) {
       seleccionarPestanaFicha(visibilityMode);
     } else if (selectedProbeId && (visibilityMode === 'both') && !snapshot.probes[pestanaFichaActiva]?.state && snapshot.probes[selectedProbeId]?.state) {
@@ -1177,6 +1189,7 @@ export function crearControlesModoHistorico({
     actualizarTelemetriaComparador(snapshot);
   }
 
+  // Sincronizo los botones de cámara exterior y primera persona, el FOV activo y la insignia de fidelidad geométrica.
   function actualizarEstadoCamaraHistorica(estadoCam) {
     ultimoEstadoCamara = estadoCam;
     if (!estadoCam) return;

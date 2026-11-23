@@ -1,13 +1,16 @@
+// En este módulo construyo las mallas 3D de los ocho planetas, sus capas secundarias
+// (nubes, atmósferas y anillos con sombra mutua), el registro de descarga diferida de texturas
+// y la gestión del nivel de detalle geométrico (LOD) compartido con las lunas.
 import * as THREE from 'three';
 import { aplicarMapaColor, cargarTextura } from './TextureLoader.js';
 import { crearAtmosferaTierra, crearAtmosferaUrano } from './Atmosphere.js';
 import { registrarTexturaDiferida, vincularMallaTextura, texturasLigeras } from './DeferredTextures.js';
 
-// 18: clave de la carga diferida de las texturas de un planeta (superficie y, en la Tierra y Venus, capas; 0,08–2,1 MB).
+// Genero la clave de carga diferida para las texturas superficiales y capas atmosféricas de cada planeta.
 export const claveTexturaPlaneta = nombre => `planeta:${nombre}`;
 
-// Oblicuidad aproximada en grados, según la ficha de datos planetarios de la NASA.
-// El giro es visual; no modifica las efemérides ni modela la orientación a una fecha dada.
+// Defino la oblicuidad axial aproximada y el periodo de rotación ilustrativo según fichas planetarias de NASA;
+// este giro es solo visual y no altera las efemérides ni modela la orientación sideral en una fecha concreta.
 const ASPECTO = {
   Mercurio: { textura: 'mercury.jpg', inclinacion: 0.034, horas: 1407.6 },
   Venus: { textura: 'venus_surface.jpg', inclinacion: 177.4, horas: -5832.5 },
@@ -19,6 +22,7 @@ const ASPECTO = {
   Neptuno: { textura: 'neptune.jpg', inclinacion: 28.3, horas: 16.1 }
 };
 
+// Comparto tres esferas unitarias entre planetas y lunas para reducir vértices según el nivel de detalle (LOD).
 export const GEOMETRIAS_ESFERA_LOD = Object.freeze({
   alto: new THREE.SphereGeometry(1, 48, 32),
   medio: new THREE.SphereGeometry(1, 32, 24),
@@ -27,9 +31,9 @@ export const GEOMETRIAS_ESFERA_LOD = Object.freeze({
 const sphereGeometry = GEOMETRIAS_ESFERA_LOD.alto;
 
 /**
- * PERF-02: selecciona el nivel geométrico ('alto' = 48×32, 'medio' = 32×24, 'bajo' = 16×12) y la visibilidad de capas secundarias
- * (nubes y atmósfera de limbo) según el detalle activo del perfil de calidad, el radio aparente en píxeles y si el cuerpo está
- * seleccionado o en inspección cercana. En perfil 'alto' (GPU dedicada) devuelve siempre 'alto' con todas las capas activas.
+ * Decido el nivel de detalle geométrico ('alto' = 48×32, 'medio' = 32×24, 'bajo' = 16×12)
+ * y si muestro las capas secundarias (nubes y atmósfera de limbo) a partir del perfil de calidad,
+ * el radio aparente en píxeles y si el cuerpo está enfocado o seleccionado.
  */
 export function resolverNivelLodEsfera({ detalle = 'alto', radioPx = Infinity, seleccionado = false } = {}) {
   if (detalle === 'alto') return { nivel: 'alto', mostrarCapas: true };
@@ -37,17 +41,16 @@ export function resolverNivelLodEsfera({ detalle = 'alto', radioPx = Infinity, s
   if (detalle === 'medio') {
     return { nivel: radioPx >= 6 ? 'alto' : 'medio', mostrarCapas: radioPx >= 3 };
   }
-  // detalle 'bajo' o 'minimo' (p. ej. renderizado por software o GPU modesta):
-  // cuando el disco mide < 5 px en pantalla es un punto lejano; 16×12 evita miles de triángulos subpíxel por cuerpo.
+  // Con detalle bajo o mínimo evito miles de triángulos subpíxel cuando el disco lejano mide menos de 7 px.
   if (radioPx >= 7) return { nivel: 'medio', mostrarCapas: true };
   return { nivel: 'bajo', mostrarCapas: false };
 }
 
+// Construyo una geometría anular remapeando la coordenada U a lo largo del radio porque la textura es una tira radial.
 function crearGeometriaAnillos(interior, exterior, divisiones) {
   const geometria = new THREE.RingGeometry(interior, exterior, divisiones, 1);
   const posicion = geometria.getAttribute('position');
   const uv = geometria.getAttribute('uv');
-  // La textura original es una tira radial, no una imagen de un disco.
   for (let i = 0; i < posicion.count; i++) {
     const r = Math.hypot(posicion.getX(i), posicion.getY(i));
     uv.setXY(i, (r - interior) / (exterior - interior), 0.5);
@@ -55,6 +58,7 @@ function crearGeometriaAnillos(interior, exterior, divisiones) {
   return geometria;
 }
 
+// Agrego una capa esférica translúcida de nubes que permanece oculta hasta que su textura termina de cargar.
 function agregarCapaNubes(grupo, radio, nombre, opacidad, cargas) {
   const material = new THREE.MeshStandardMaterial({
     color: 0xffffff,
@@ -74,7 +78,7 @@ function agregarCapaNubes(grupo, radio, nombre, opacidad, cargas) {
 
   cargas.push(() => cargarTextura(nombre, texture => {
     if (nombre === 'earth_clouds.jpg') {
-      // El mapa es blanco y negro: su luminancia controla la cobertura.
+      // Uso la luminancia del mapa en escala de grises de la Tierra como máscara alfa de cobertura nubosa.
       material.alphaMap = texture;
     } else {
       material.map = texture;
@@ -87,6 +91,7 @@ function agregarCapaNubes(grupo, radio, nombre, opacidad, cargas) {
   return capa;
 }
 
+// Construyo los anillos de Saturno con tres niveles de subdivisión LOD y proyección de sombra del planeta.
 function agregarAnillos(grupo, radio, centroPlaneta, uniformeMapaSombra, cargas) {
   const interior = radio * 1.32;
   const exterior = radio * 2.02;
@@ -105,9 +110,8 @@ function agregarAnillos(grupo, radio, centroPlaneta, uniformeMapaSombra, cargas)
     opacity: 0.75,
     depthWrite: false
   });
-  // Sombra geométrica aproximada del planeta sobre el anillo. Evalúa el desplazamiento
-  // local respecto al centro de Saturno y escala el radio con modelMatrix para conservar
-  // precisión completa tanto en Escala Científica 1:1 como en Escala Exploratoria.
+  // Proyecto una sombra geométrica aproximada de Saturno sobre el plano del anillo evaluando el vector local
+  // respecto al centro y escalando el radio con modelMatrix para conservar precisión tanto en escala 1:1 como exploratoria.
   material.onBeforeCompile = shader => {
     shader.uniforms.centroPlaneta = { value: centroPlaneta };
     shader.uniforms.radioPlaneta = { value: radio };
@@ -141,8 +145,8 @@ function agregarAnillos(grupo, radio, centroPlaneta, uniformeMapaSombra, cargas)
   return anillos;
 }
 
+// Proyecto sobre la superficie de Saturno la sombra radial de sus anillos usando la misma textura alfa radial.
 function agregarSombraAnillosSobreSaturno(material, centroPlaneta) {
-  // The same observed radial alpha strip as the visible ring controls attenuation.
   const empty = new THREE.DataTexture(new Uint8Array([255, 255, 255, 0]), 1, 1,
     THREE.RGBAFormat);
   empty.needsUpdate = true;
@@ -183,6 +187,7 @@ function agregarSombraAnillosSobreSaturno(material, centroPlaneta) {
   return ringMap;
 }
 
+/** Construyo el nodo 3D completo de un planeta con su inclinación axial, capas, LOD y utilidades de giro geográfico. */
 export function crearPlaneta(planeta) {
   const aspecto = ASPECTO[planeta.nombre];
   const posicion = new THREE.Group();
@@ -200,8 +205,7 @@ export function crearPlaneta(planeta) {
     ...(planeta.nombre === 'Tierra' ? { specularIntensity: 0.42 } : {})
   });
   if (planeta.nombre === 'Tierra') {
-    // El mapa original deja el océano casi negro (muy especular). Conservamos
-    // la textura y limitamos solo la rugosidad mínima en el sombreador.
+    // Acoto la rugosidad mínima en el sombreador para evitar que el mapa original vuelva los océanos excesivamente especulares.
     material.onBeforeCompile = shader => {
       shader.fragmentShader = shader.fragmentShader.replace(
         '#include <roughnessmap_fragment>',
@@ -213,10 +217,8 @@ export function crearPlaneta(planeta) {
   const superficie = new THREE.Mesh(sphereGeometry, material);
   superficie.scale.setScalar(planeta.radio);
   eje.add(superficie);
-  // The Mercury map is display-normalized and otherwise becomes nearly white
-  // under the stronger sunlight at 0.4 AU. Retain a subdued gray tint after
-  // texture loading; this is a visual albedo cue, not calibrated photometry.
-  // 18: las texturas se piden cuando el disco del planeta ya mide unos píxeles en pantalla (DeferredTextures).
+  // Aplico un tinte gris atenuado en Mercurio para compensar su mapa normalizado bajo la fuerte insolación a 0,4 AU;
+  // encolo todas las texturas en el registro diferido para descargarlas solo cuando el disco es visible en pantalla.
   const cargas = [() => aplicarMapaColor(material, aspecto.textura,
     planeta.nombre === 'Mercurio' ? 0xaaaaaa : 0xffffff)];
 
@@ -225,7 +227,7 @@ export function crearPlaneta(planeta) {
   let anillos = null;
 
   if (planeta.nombre === 'Tierra') {
-    // 18: perfil ligero (calidad «Baja» guardada o ahorro de datos): sin mapas de relieve ni rugosidad; se decide al arrancar.
+    // En perfil ligero (calidad baja o ahorro de datos) omito los mapas secundarios de relieve y rugosidad.
     if (!texturasLigeras()) cargas.push(() => cargarTextura('earth_normal_map.png', texture => {
       material.normalMap = texture;
       material.normalScale.set(0.22, 0.22);
@@ -286,14 +288,14 @@ export function crearPlaneta(planeta) {
   registrarTexturaDiferida(claveTexturaPlaneta(planeta.nombre), () => { for (const cargar of cargas) cargar(); });
   vincularMallaTextura(claveTexturaPlaneta(planeta.nombre), superficie);
 
-  // El eje > 90° ya representa el sentido retrógrado de Venus y Urano.
-  // Un día terrestre se muestra en unos 140 s; la proporción entre planetas se conserva.
+  // Uso la inclinación >90° para el sentido retrógrado de Venus y Urano y escalo un día terrestre a ~140 s.
   const velocidad = 2 * Math.PI / 140 * (23.9 / Math.abs(aspecto.horas));
   let nivelDetalleActual = 'alto';
   return {
     planeta,
     posicion,
     obtenerNivelDetalle: () => nivelDetalleActual,
+    // Actualizo la geometría LOD de superficie, nubes, atmósfera y anillos sin recrear materiales.
     actualizarNivelDetalle({ detalle = 'alto', radioPx = Infinity, seleccionado = false } = {}) {
       const { nivel, mostrarCapas } = resolverNivelLodEsfera({ detalle, radioPx, seleccionado });
       nivelDetalleActual = nivel;
@@ -319,8 +321,8 @@ export function crearPlaneta(planeta) {
         eje.userData.nubes.rotation.y += velocidad * segundos * 1.04;
       }
     },
-    // 25: el giro de la escena es ilustrativo; antes del lanzamiento 3D se coloca el meridiano `lonDeg` (textura equirectangular,
-    // u = 0 en 180° O) frente a `dirMundo` (proyectada en el ecuador del planeta). Las nubes giran lo mismo. Solo presentación.
+    // Alineo el meridiano `lonDeg` (textura equirectangular con u = 0 en 180° O) con `dirMundo` proyectada en el ecuador
+    // para preparar visualmente el encuadre previo a un lanzamiento 3D, arrastrando las nubes con el mismo giro.
     orientarMeridiano(lonDeg, dirMundo) {
       const a = THREE.MathUtils.degToRad(lonDeg + 180);
       const angulo = (x, z) => Math.atan2(-z, x);
@@ -329,7 +331,7 @@ export function crearPlaneta(planeta) {
       if (eje.userData.nubes) eje.userData.nubes.rotation.y += nuevo - superficie.rotation.y;
       superficie.rotation.y = nuevo;
     },
-    /** 25: dirección (mundo) del punto de latitud y longitud dadas sobre la superficie del planeta. */
+    /** Calculo en coordenadas de mundo la dirección radial correspondiente a una latitud y longitud sobre el planeta. */
     direccionGeografica(latDeg, lonDeg, destino = new THREE.Vector3()) {
       const a = THREE.MathUtils.degToRad(lonDeg + 180), f = THREE.MathUtils.degToRad(latDeg);
       return destino.set(-Math.cos(a) * Math.cos(f), Math.sin(f), Math.sin(a) * Math.cos(f)).applyQuaternion(superficie.getWorldQuaternion(new THREE.Quaternion()));

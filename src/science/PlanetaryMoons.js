@@ -1,3 +1,6 @@
+// Aquí defino los parámetros físicos básicos de los satélites planetarios (NASA/JPL Planetary Satellite Physical Parameters)
+// junto con la validación e interpolación cúbica de Hermite de sus tablas planetocéntricas obtenidas de NASA/JPL Horizons.
+// Unidades: km, km/s y fechas en JD TDB, en el marco planetocéntrico con ejes ICRF eclíptico J2000.
 import { KM_PER_AU } from './Units.js';
 
 export const MOONS = Object.freeze({
@@ -14,6 +17,7 @@ export const MOONS = Object.freeze({
 });
 export const MOON_RADIUS_SOURCE = 'https://ssd.jpl.nasa.gov/sats/phys_par/';
 
+/** Aquí interpolo posición (km) y velocidad (km/s) entre dos muestras consecutivas mediante polinomios cúbicos de Hermite (C1). */
 function hermite(a, b, jd) {
   const dt = (b[0] - a[0]) * 86400;
   const t = (jd - a[0]) * 86400 / dt;
@@ -30,6 +34,7 @@ function hermite(a, b, jd) {
   return { positionKm: p, velocityKmS: v };
 }
 
+/** Aquí valido los metadatos, cabeceras de Horizons, cobertura temporal y cadencia horaria del conjunto planetocéntrico de satélites. */
 export function validateMoonDataset(data, { isolate = false } = {}) {
   if (data?.schema !== 'planetocentric-moons-v1' || data.frame !== 'ICRF_ECLIPTIC_J2000'
     || data.timeScale !== 'TDB' || data.stepHours !== 1) throw Error('Invalid moon dataset metadata');
@@ -54,6 +59,7 @@ export function validateMoonDataset(data, { isolate = false } = {}) {
   return isolate ? { data: { ...data, moons: valid }, invalid } : true;
 }
 
+/** Aquí consulto el estado planetocéntrico de un satélite en `jdTdb`, devolviendo el nodo exacto o la interpolación Hermite C1 sin extrapolar. */
 export function queryMoon(data, key, jdTdb) {
   const body = data?.moons?.[key];
   if (!body || !Number.isFinite(jdTdb)) return null;

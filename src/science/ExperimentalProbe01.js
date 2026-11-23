@@ -1,3 +1,17 @@
+/**
+ * En este módulo defino la misión ficticia «Sonda Experimental 01» junto con su
+ * estado inicial de crucero interplanetario y su rutina de propagación numérica.
+ *
+ * - Unidades: posiciones en km, velocidades en km/s, masa nominal en kg (tratada
+ *   como partícula de prueba sin masa gravitatoria propia), pasos e intervalos de
+ *   muestreo en segundos (s) y épocas en JD TDB.
+ * - Marco de referencia: trabajo en el marco heliocéntrico `SUN_CENTER` /
+ *   `ICRF_ECLIPTIC_J2000` bajo la atracción central del Sol y las perturbaciones
+ *   de los ocho planetas (incluidos los términos de aceleración indirecta solar).
+ * - Límites: esta sonda es sintética y no representa ninguna misión histórica de
+ *   NASA; por defecto acoto la propagación a la cobertura disponible en el proveedor
+ *   de efemérides (`clamp_to_coverage`) y nunca extrapolo fuera de ella.
+ */
 import { HORIZONS_FRAME } from './Frames.js';
 import { DYNAMICAL_MODELS } from './GravitationalDynamics.js';
 import { SOLAR_SYSTEM_GM_CATALOG, SUN_BODY_ID } from './GravitationalParameters.js';
@@ -51,7 +65,9 @@ export const EXPERIMENTAL_PROBE_01_PROVENANCE = createInitialConditionProvenance
 });
 
 /**
- * Construye el estado inicial explícito e inmutable de la Sonda Experimental 01.
+ * Aquí construyo el estado dinámico inicial, explícito e inmutable, de la
+ * Sonda Experimental 01 en el instante JD TDB de inyección interplanetaria,
+ * fijando la instantánea de parámetros GM usada para reproducibilidad.
  */
 export function createExperimentalProbe01InitialState(catalog = SOLAR_SYSTEM_GM_CATALOG) {
   const gmSnapshot = catalog.snapshotForBodies([
@@ -84,8 +100,9 @@ export function createExperimentalProbe01InitialState(catalog = SOLAR_SYSTEM_GM_
 }
 
 /**
- * Propaga la trayectoria de la Sonda Experimental 01 dentro de la cobertura
- * disponible del proveedor de efemérides.
+ * Aquí propago la trayectoria de la Sonda Experimental 01 con Dormand–Prince 5(4)
+ * dentro de la cobertura del proveedor de efemérides, aplicando tolerancias
+ * absolutas y relativas estrictas en km y km/s.
  */
 export async function propagateExperimentalProbe01({
   ephemerisProvider,

@@ -1,7 +1,6 @@
-// Etapa 17 — documentación visual de la flota: diagramas y fotografías oficiales de NASA/JPL servidos desde public/images/fleet
-// (copias reducidas a tamaño web; procedencia, fecha de descarga y SHA-256 de cada original en public/images/fleet/README.md).
-// Solo presentación: ningún cálculo usa estas imágenes. Se distingue lo que es un diagrama rotulado, una fotografía real
-// y la reconstrucción técnica del simulador; no se incluyen planos de fabricación.
+// En este módulo catálogo la documentación visual de la flota histórica (diagramas rotulados y fotografías oficiales de NASA/JPL)
+// servida desde public/images/fleet. Uso estos recursos únicamente para presentación: ningún cálculo físico depende de ellos,
+// y distingo siempre entre diagramas oficiales, fotografías reales y reconstrucciones procedimentales del simulador.
 import { HISTORICAL_PROBES, HERITAGE_SOURCES } from './HeritageCatalog.js';
 
 export const DOCUMENT_KINDS = Object.freeze({
@@ -42,9 +41,10 @@ export const FLEET_DOCUMENTS = Object.freeze([
     'NASA/JPL-Caltech/Lockheed Martin', 'Fotografía del 29 jun 2010 (según el pie)', 'https://www.jpl.nasa.gov/images/pia13923-junos-fuel-tanks/')
 ]);
 
+// Devuelvo los documentos visuales asociados a una sonda histórica concreta.
 export const documentsFor = probeId => FLEET_DOCUMENTS.filter(item => item.probeId === probeId);
 
-/** Fuentes técnicas citadas por la ficha de la sonda (las mismas que muestran la calidad de cada cifra). */
+// Reúno las fuentes técnicas citadas en la ficha de la sonda para enlazarlas desde la interfaz.
 export function probeSources(probeId) {
   const probe = HISTORICAL_PROBES.find(item => item.id === probeId);
   if (!probe) return [];
@@ -52,7 +52,7 @@ export function probeSources(probeId) {
   return ids.map(id => ({ id, ...HERITAGE_SOURCES[id] })).filter(item => item.url);
 }
 
-// Grupos de la pestaña «Arquitectura y componentes»: reparten las categorías del catálogo de piezas.
+// Agrupo las categorías del catálogo de componentes para organizar la pestaña de arquitectura y subsistemas.
 export const ARCHITECTURE_GROUPS = Object.freeze([
   Object.freeze({ id: 'structure', label: 'Estructura', categories: Object.freeze(['structure', 'boom']) }),
   Object.freeze({ id: 'propulsion', label: 'Propulsión', categories: Object.freeze(['engine']) }),

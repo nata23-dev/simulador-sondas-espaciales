@@ -151,7 +151,7 @@
               <label class="switch-row"><input id="show-orbits" type="checkbox" checked /><span>Órbitas ilustrativas<small>No son trayectorias calculadas</small></span></label>
               <label class="switch-row"><input id="show-labels" type="checkbox" checked /><span>Etiquetas planetarias</span></label>
               <label class="switch-row"><input id="show-stars" type="checkbox" checked /><span>Campo estelar</span></label>
-              <!-- 29: la escala se cambia con el botón «Escala 1:1 / Exploratoria» del mismo dock (que además la indica siempre); aquí se repetía. -->
+              <!-- La escala científica/exploratoria se controla directamente desde el botón superior del panel. -->
               <div class="menu-section">
                 <span class="menu-heading">Encuadre</span>
                 <div class="menu-actions menu-actions-grid">
@@ -169,7 +169,7 @@
                   <button type="button" data-quality="minimo" aria-pressed="false" title="Para equipos sin aceleración gráfica: menos resolución, sin sombras ni entorno">Mínima</button>
                 </div>
                 <small class="menu-note" data-quality-status>Resolución de render ×1</small>
-                <!-- 27: procesador gráfico. El navegador decide si dibuja con la GPU o con la CPU; aquí se informa y, en equipos con dos GPU, se elige cuál pedir. -->
+                <!-- Aquí muestro el procesador gráfico activo y permito elegir la GPU preferida en equipos híbridos. -->
                 <span class="menu-heading menu-heading--sub">Procesador gráfico</span>
                 <div class="menu-pill-group" role="group" aria-label="Procesador gráfico preferido">
                   <button type="button" data-gpu="rendimiento" aria-pressed="true" title="En equipos con dos GPU, pide la más potente">Alto rendimiento</button>

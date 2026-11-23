@@ -1,3 +1,6 @@
+// Aquí creo la vista 3D en Three.js del Centro de Misión para reproducir lanzamientos, transferencias lunares,
+// cruceros heliocéntricos y descensos locales. Recibo estados físicos ya calculados en km y km/s y solo gestiono
+// su representación visual, las cámaras, las estelas y el modelo 3D de la sonda sin alterar ningún dato científico.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createProbeAssemblyModel, disposeProbeAssemblyModel } from './ProbeAssemblyView.js';
@@ -6,24 +9,20 @@ import { crearRenderizadorWebGL } from '../graphics/WebGLSupport.js';
 import { attachNasaModel, localBounds } from '../graphics/NasaProbeModels.js';
 
 const SCENE_SCALE = 1 / 10000;
-export const CENTRAL_BODY_SCENE_RADIUS = 0.63710084; // radio de la esfera central en unidades de escena (Tierra a 1 u = 10 000 km)
-// La escala (unidades por km) es parte de la ejecución: Tierra y Luna 1/10 000; un descenso local usa R_cuerpo -> 0,6371 u.
+export const CENTRAL_BODY_SCENE_RADIUS = 0.63710084; // Radio de la esfera central en unidades de escena (Tierra con 1 u = 10 000 km).
+// Ajusto la escala (unidades de escena por km) según cada ejecución: 1/10 000 para Tierra–Luna o la escala propia de un descenso local.
 let sceneScale = SCENE_SCALE;
 const scenePoint = position => new THREE.Vector3(position[0] * sceneScale, position[2] * sceneScale, -position[1] * sceneScale);
 const scaleOf = execution => execution?.transfer?.sceneScale ?? SCENE_SCALE;
 const sceneVelocity = velocity => new THREE.Vector3(velocity[0], velocity[2], -velocity[1]).normalize();
 export const MISSION_CAMERA_MODES = Object.freeze(['overview', 'exterior', 'onboard', 'destination', 'cinematic', 'local']);
-// 12G: factor ILUSTRATIVO de tamaño de marcadores en escenas heliocéntricas (≈1/10 del radio abarcado, en unidades de escena).
-// Solo cambia tamaños dibujados; los centros siguen a 32 unidades/AU.
-// 13: un contexto puede declarar su propio factor (`transfer.markerScale`, p. ej. < 1 en la escena de Europa).
+// Calculo un factor puramente ilustrativo para escalar marcadores en escenas heliocéntricas (≈1/10 del radio encuadrado)
+// o respetar un `markerScale` personalizado del contexto; los centros geométricos mantienen intacta su posición científica.
 export const heliocentricMarkerScale = execution => execution?.transfer?.markerScale ?? (execution?.transfer?.heliocentric ? Math.max(1, (execution.transfer.overviewRadiusScene ?? 40) / 10) : 1);
 
-// Encuadre puramente visual: recibe estados científicos y nunca los modifica.
-// Cámara local (12E.1): encuadre ilustrativo cerca del vehículo. Solo la cámara y la escala del modelo cambian;
-// las posiciones científicas (km) no se alteran. Distancia = 0,0002·R + 0,45·altitud (unidades de escena).
-// 12F.1: la cámara local se orienta con la vertical local (horizonte horizontal), mira EXACTAMENTE al vehículo (sin
-// retardo de suavizado, que tras un salto temporal dejaba el encuadre apuntando al suelo) y apunta a la mitad del
-// modelo ampliado, que en esta vista se apoya por su base sobre el punto material calculado (ver `localModelPlacement`).
+// Calculo la geometría de encuadre de la cámara local cercana al vehículo sin modificar las posiciones científicas en km.
+// Mantengo el horizonte alineado con la vertical local (`up`) y calculo una distancia proporcional a 0,0002·R + 0,45·altitud
+// para enfocar exactamente la sonda y evitar retardos de suavizado tras saltos temporales.
 export function localCameraGeometry(sample, execution) {
   sceneScale = scaleOf(execution);
   const radiusScene = execution?.transfer?.bodyRadiusKm ? execution.transfer.bodyRadiusKm * scaleOf(execution) : CENTRAL_BODY_SCENE_RADIUS;
@@ -37,14 +36,14 @@ export function localCameraGeometry(sample, execution) {
   side.normalize();
   return { position, up, side, distance, radiusScene, altitude, modelScale: distance / 15 };
 }
-// Altura visual del modelo en la cámara local (unidades de escena) para encuadrar su centro; 6 m es la altura típica
-// del modelo del Hangar y solo afecta al punto de mira, no a ningún estado.
+// Uso 6 m como altura visual típica de referencia del modelo del Hangar solo para centrar el punto de mira en cámara local.
 const LOCAL_MODEL_HEIGHT_M = 6;
-/** Punto del suelo bajo el vehículo, a radio R EXACTO (no la esfera facetada), para el parche de superficie local. */
+/** Calculo el punto exacto sobre el radio R bajo el vehículo (sin error de teselado) para apoyar el parche de suelo local. */
 export function localGroundPoint(sample, execution) {
   const g = localCameraGeometry(sample, execution);
   return g.up.clone().multiplyScalar(g.radiusScene);
 }
+// Determino la posición, el objetivo y el vector vertical de la cámara según el modo activo y el instante muestreado.
 export function missionCameraPose(cameraMode, sample, execution, { lookTarget = 'moon', aspect = 1, fov = 46 } = {}) {
   if (!MISSION_CAMERA_MODES.includes(cameraMode)) throw Error('Cámara de misión desconocida.');
   sceneScale = scaleOf(execution);
@@ -57,7 +56,7 @@ export function missionCameraPose(cameraMode, sample, execution, { lookTarget = 
   const moonPosition = sample ? scenePoint(sample.moonPositionKm) : new THREE.Vector3(36, 0, 0);
   const direction = sample ? sceneVelocity(sample.velocityKmS) : new THREE.Vector3(1, 0, 0);
   if (cameraMode === 'overview' && execution?.transfer?.heliocentric) {
-    // 12G: vista heliocéntrica centrada en el Sol que abarca la trayectoria y las órbitas recorridas por ambos planetas.
+    // En escenas heliocéntricas centro la vista general en el Sol para abarcar la transferencia y las órbitas planetarias.
     const radius = execution.transfer.overviewRadiusScene ?? 40;
     const distance = radius * 1.15 / (Math.tan(THREE.MathUtils.degToRad(fov / 2)) * Math.min(1, Math.max(0.1, aspect)));
     return { position: new THREE.Vector3(0, 0.93 * distance, 0.38 * distance), target: new THREE.Vector3() };
@@ -71,7 +70,7 @@ export function missionCameraPose(cameraMode, sample, execution, { lookTarget = 
   }
   if (cameraMode === 'exterior') return { position: position.clone().add(new THREE.Vector3(0, 1.7, 3.4)), target: position };
   if (cameraMode === 'onboard') {
-    // En una ejecución heliocéntrica el origen es el Sol: «Tierra» apunta a la posición efemérica del planeta de origen.
+    // En escenas heliocéntricas el origen es el Sol, así que al mirar a la Tierra apunto a la posición efemérica de origen.
     const target = lookTarget === 'earth' ? (sample?.originPositionKm ? scenePoint(sample.originPositionKm) : new THREE.Vector3(0, 0, 0))
       : lookTarget === 'velocity' ? position.clone().add(direction) : moonPosition;
     return { position, target };
@@ -84,6 +83,7 @@ export function missionCameraPose(cameraMode, sample, execution, { lookTarget = 
     target: position.clone().add(direction.multiplyScalar(1.3)) };
 }
 
+// Genero un fondo estelar determinista sobre una esfera lejana para dar referencia espacial al rotar la cámara.
 function stars() {
   const values = new Float32Array(600 * 3);
   let seed = 0x12c2026;
@@ -96,11 +96,12 @@ function stars() {
   return new THREE.Points(geometry, new THREE.PointsMaterial({ color: '#9eb4d4', size: 0.08, sizeAttenuation: true, transparent: true, opacity: 0.55 }));
 }
 
+// Creo y gestiono la escena Three.js interactiva del Centro de Misión dentro del contenedor DOM indicado.
 export function createMissionExecutionView(host, { onModel = null } = {}) {
   const scene = new THREE.Scene(); scene.background = new THREE.Color('#050a13');
   const camera = new THREE.PerspectiveCamera(46, 1, 0.005, 300);
   camera.position.set(0, 22, 53);
-  const renderer = crearRenderizadorWebGL(opcionesRenderizador({ antialias: true }), 'Centro de Misión'); // STAB-01
+  const renderer = crearRenderizadorWebGL(opcionesRenderizador({ antialias: true }), 'Centro de Misión');
   const unregisterQuality = registerRenderer(renderer);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.append(renderer.domElement);
@@ -115,12 +116,11 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
   scene.add(earth);
   const moon = new THREE.Mesh(new THREE.SphereGeometry(0.17374, 30, 22), new THREE.MeshStandardMaterial({ color: '#bfc4c9', roughness: 1 }));
   scene.add(moon);
-  // 12G: marcador del planeta de origen en escenas heliocéntricas (posición efemérica; tamaño ilustrativo).
+  // Preparo el marcador visual del planeta de origen para escenas heliocéntricas (centro efemérico, tamaño ilustrativo).
   const originMarker = new THREE.Mesh(new THREE.SphereGeometry(0.17374, 24, 18), new THREE.MeshStandardMaterial({ color: '#3f7cc0', roughness: 0.9 }));
   originMarker.visible = false; scene.add(originMarker);
-  // 12F.1: parche de suelo tangente a radio R exacto bajo el vehículo (solo cámara local). La esfera central es un
-  // poliedro cuyas caras quedan por DEBAJO del radio real (hasta ~0,05 % de R); a la escala de la cámara local eso
-  // separaba visualmente el vehículo del suelo. El parche no altera ninguna posición: marca la superficie |r| = R.
+  // Añado un parche de suelo tangente en |r| = R exacto para la cámara local, evitando que el teselado de la esfera
+  // central deje un hueco visual entre el vehículo y la superficie durante un aterrizaje.
   const groundPatch = new THREE.Mesh(new THREE.CircleGeometry(1, 72), new THREE.MeshStandardMaterial({ color: '#9c9fa4', roughness: 1, side: THREE.DoubleSide,
     polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
   groundPatch.visible = false; scene.add(groundPatch);
@@ -128,11 +128,10 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
     polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }));
   contactRing.visible = false; scene.add(contactRing);
   let modelBaseOffset = 0, markerScale = 1, visualFactor = 1;
-  // 15: las sondas de herencia (hasta ~20 m de envergadura) se reducen a la envolvente de la sonda ilustrativa (~3,6 m de radio).
-  // Base del modelo (m, eje +Y del modelo) para apoyarlo sobre el punto material en la cámara local.
+  // Normalizo la escala visual del modelo 3D a una envolvente manejable (~3,6 m) y mido su base (+Y) para apoyarlo al aterrizar.
   function fitProbeModel(model) {
     visualFactor = Math.min(1, 3.6 / (model.userData.boundingRadiusM || 3.6));
-    model.scale.setScalar(0.25 * visualFactor); // metros del Hangar -> unidades ilustrativas, solo visuales.
+    model.scale.setScalar(0.25 * visualFactor); // Convierto metros del Hangar a unidades ilustrativas solo para visualización.
     const box = localBounds(model);
     modelBaseOffset = box.isEmpty() ? 0 : -box.min.y;
     if (!Number.isFinite(modelBaseOffset) || modelBaseOffset < 0) modelBaseOffset = 0;
@@ -148,6 +147,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
   let frame = null, transition = null, framingPending = false;
   const coarse = window.matchMedia('(pointer: coarse)').matches;
 
+  // Libero geometrías y materiales de un subárbol Three.js y lo retiro de la escena.
   function disposeObject(object) {
     const geometries = new Set(), materials = new Set();
     object.traverse(node => {
@@ -158,6 +158,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
     for (const material of materials) material.dispose();
     object.parent?.remove(object);
   }
+  // Limpio la trayectoria, el modelo de sonda y los parámetros de escala previos antes de cargar otra ejecución.
   function clearPlan() {
     for (const child of [...pathGroup.children]) disposeObject(child);
     if (probeAssembly) disposeProbeAssemblyModel(probeAssembly);
@@ -166,17 +167,18 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
     camera.far = 300; camera.updateProjectionMatrix(); controls.maxDistance = 160; controls.minDistance = 1.4; starField.scale.setScalar(1);
     markerScale = 1; for (const item of [moon, marker, arrow, originMarker]) item.scale.setScalar(1);
   }
+  // Adapto el tamaño, color y emisividad de la esfera central (Tierra, Sol, Luna o cuerpo local) a la ejecución activa.
   function applyBody(next) {
     sceneScale = scaleOf(next);
     const body = next?.transfer?.centralBody;
     const visual = next?.transfer?.centralBodyVisualRadius;
-    // Un radio visual explícito (Sol en la escena heliocéntrica) es ilustrativo y se declara en el pie de la vista.
+    // Si la escena define un radio visual explícito (como el Sol heliocéntrico), lo aplico solo con fines ilustrativos.
     earth.scale.setScalar(visual ? visual * markerScale / CENTRAL_BODY_SCENE_RADIUS : next?.transfer?.bodyRadiusKm ? next.transfer.bodyRadiusKm * sceneScale / CENTRAL_BODY_SCENE_RADIUS : 1);
     earth.material.color.set(body?.color ?? '#245c92');
     earth.material.emissive.set(body?.emissive ? body.color : '#000000'); earth.material.emissiveIntensity = body?.emissive ? 0.9 : 1;
     groundPatch.material.color.set(body?.color ?? '#9c9fa4');
   }
-  // 13: `keepCamera` conserva el modo de cámara al cambiar de contexto (misión integrada); por defecto vuelve a la vista general.
+  // Cargo una nueva ejecución en la vista 3D; si `keepCamera` es cierto, conservo el modo de cámara compatible.
   function setExecution(next, { keepCamera = false } = {}) {
     const previousMode = mode;
     clearPlan();
@@ -196,7 +198,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
       new THREE.LineDashedMaterial({ color: '#849ab6', dashSize: 0.5 * markerScale, gapSize: 0.3 * markerScale, transparent: true, opacity: 0.5 }));
     moonTrack.computeLineDistances(); pathGroup.add(moonTrack);
     if (next.transfer.showOrigin) {
-      // Recorrido efemérico del planeta de origen durante la transferencia (no es la trayectoria de la sonda).
+      // Trazo la trayectoria efemérica del planeta de origen durante la transferencia para contextualizar el despegue.
       const originTrack = new THREE.Line(new THREE.BufferGeometry().setFromPoints(next.transfer.trajectory.map(point => scenePoint(point.originPositionKm))),
         new THREE.LineDashedMaterial({ color: '#6f95c4', dashSize: 0.5 * markerScale, gapSize: 0.3 * markerScale, transparent: true, opacity: 0.45 }));
       originTrack.computeLineDistances(); pathGroup.add(originTrack);
@@ -223,9 +225,9 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
     probeAssembly = createProbeAssemblyModel(next.design);
     fitProbeModel(probeAssembly);
     scene.add(probeAssembly);
-    // 15.1: el modelo oficial de NASA sustituye a la geometría procedimental cuando termina de cargarse (misma orientación: +Y = antena).
+    // Monto primero el ensamblaje procedimental y, para sondas históricas no experimentales, lo sustituyo por el modelo oficial de NASA al cargarse.
     const mounted = probeAssembly;
-    // 17: un ensamblaje experimental no usa el modelo de NASA de su bus (no lo representaría); se queda con la reconstrucción.
+    // Para un ensamblaje experimental mantengo la reconstrucción modular porque el modelo cerrado de NASA no refleja los cambios.
     const modelCore = next.design?.experimental ? null : next.design?.coreId;
     const report = status => onModel?.({ status, designName: next.design?.name ?? null, coreId: next.design?.coreId ?? null,
       probeId: next.design?.basedOn ?? null, experimental: Boolean(next.design?.experimental) });
@@ -235,7 +237,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
       if (modelCore) report(result.status === 'nasa' ? 'nasa' : 'procedural');
       if (result.status !== 'nasa') return;
       fitProbeModel(mounted);
-      if (lastPlacement) placeProbe(...lastPlacement); // recoloca con la nueva escala aunque la reproducción esté en pausa
+      if (lastPlacement) placeProbe(...lastPlacement); // Recoloco la sonda con su nueva escala incluso si la reproducción está pausada.
       else mounted.scale.setScalar(0.25 * visualFactor);
     });
     marker.visible = true; moon.visible = !next.transfer.hideMoon;
@@ -243,6 +245,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
     setCameraMode(keepCamera && (previousMode !== 'local' || next.kind === 'landing') ? previousMode : 'overview', { instant: true });
     framingPending = true;
   }
+  // Relleno un buffer de vértices de línea con un rango de nudos y el punto exacto de la sonda en el instante actual.
   function refillLine(attribute, first, last, current, insertIndex) {
     const array = attribute.array;
     for (let i = first; i <= last; i++) {
@@ -256,6 +259,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
     }
     attribute.needsUpdate = true;
   }
+  // Separo visualmente la estela en tramo ya recorrido (dorado) y tramo pendiente (azulado) alrededor de la posición actual.
   function updateTrail(current, segmentIndex, beforeManeuver) {
     if (!visited || !pending) return;
     const last = points.length - 1;
@@ -273,10 +277,8 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
   }
   function desiredPose(cameraMode) { return missionCameraPose(cameraMode, sample, execution,
     { lookTarget, aspect: camera.aspect, fov: camera.fov }); }
-  // Colocación puramente visual del modelo. En la cámara local de un DESCENSO (12F.1) el modelo ampliado se orienta con
-  // la vertical local y se apoya por su base en el punto material calculado: el contacto |r| = R coincide así con el
-  // suelo visible. En el resto de vistas (y en el lanzamiento) se conserva la convención previa: centro en el estado y
-  // eje +Y alineado con la velocidad. Ningún estado científico cambia.
+  // Coloco y oriento el modelo 3D de la sonda de forma puramente visual: en la cámara local de un descenso
+  // lo alineo con la vertical y lo apoyo por su base sobre |r| = R; en el resto de vistas alineo +Y con la velocidad.
   let lastPlacement = null;
   function placeProbe(shipPosition, direction) {
     if (!probeAssembly) return;
@@ -306,6 +308,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
       if (anchored) { contactRing.position.copy(ground); contactRing.quaternion.copy(normalRotation); contactRing.scale.setScalar(0.5 * LOCAL_MODEL_HEIGHT_M * g.modelScale); contactRing.visible = true; }
     }
   }
+  // Actualizo posiciones de nave, cuerpos y estela con la muestra correspondiente al instante actual de reproducción.
   function setSample(next, { beforeManeuver = false } = {}) {
     if (!execution || !next) return;
     sample = next;
@@ -323,12 +326,13 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
     if (!['moon', 'earth', 'velocity'].includes(target)) throw Error('Objetivo de cámara desconocido.');
     lookTarget = target;
   }
+  // Cambio el modo de cámara, ajusto planos de recorte y lanzo una transición suave (salvo en modo local o inmediato).
   function setCameraMode(nextMode, { instant = false } = {}) {
     if (!MISSION_CAMERA_MODES.includes(nextMode)) throw Error('Cámara de misión desconocida.');
     mode = nextMode;
     controls.enabled = mode === 'overview' && (!coarse || touchEnabled);
     renderer.domElement.style.touchAction = controls.enabled ? 'none' : 'pan-y';
-    // El plano cercano de la cámara local se fija YA (antes de la transición): con 0,005 u el vehículo, a ~1e-4 u, quedaba recortado.
+    // Ajusto el plano cercano de inmediato para cámara local, ya que 0,005 u recortaría el vehículo cuando está a ~1e-4 u.
     camera.near = mode === 'local' && sample ? Math.max(1e-6, localCameraGeometry(sample, execution).distance * 0.02) : 0.005; camera.updateProjectionMatrix();
     camera.up.set(0, 1, 0);
     if (probeAssembly && sample) {
@@ -338,7 +342,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
     }
     const pose = desiredPose(mode);
     if (pose.up) camera.up.copy(pose.up);
-    // La cámara local se coloca sin transición: interpolar desde una vista lejana atraviesa el cuerpo central.
+    // Coloco la cámara local de forma instantánea porque interpolar desde lejos atravesaría el cuerpo central.
     if (instant || mode === 'local') { camera.position.copy(pose.position); controls.target.copy(pose.target); camera.lookAt(pose.target); transition = null; }
     else transition = { start: performance.now(), fromPosition: camera.position.clone(), fromTarget: controls.target.clone(),
       toPosition: pose.position, toTarget: pose.target };
@@ -353,6 +357,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
     camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height, false);
   }
   const observer = new ResizeObserver(resize); observer.observe(host);
+  // Ejecuto el bucle de renderizado aplicando transiciones de cámara, seguimiento y actualización de controles orbitales.
   function draw(now) {
     if (disposed || !visible) return;
     if (transition) {
@@ -368,8 +373,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
       if (mode === 'local') { const near = Math.max(1e-6, localCameraGeometry(sample, execution).distance * 0.02); if (camera.near !== near) { camera.near = near; camera.updateProjectionMatrix(); } }
       if (mode === 'onboard' || mode === 'local') camera.position.copy(pose.position);
       else camera.position.lerp(pose.position, 0.18);
-      // 12F.1: en la cámara local el objetivo se fija exactamente (el suavizado dejaba el encuadre apuntando al suelo
-      // tras un salto temporal, porque la distancia de cámara es de cientos de metros y el retardo de kilómetros).
+      // En cámara local fijo el punto de mira exactamente sobre el vehículo para evitar que un suavizado apunte al suelo tras un salto temporal.
       if (mode === 'local') { controls.target.copy(pose.target); camera.up.copy(pose.up); }
       else controls.target.lerp(pose.target, 0.18);
       camera.lookAt(controls.target);
@@ -386,6 +390,7 @@ export function createMissionExecutionView(host, { onModel = null } = {}) {
       frame = requestAnimationFrame(draw); }
     else { setTouchInteraction(false); controls.enabled = false; renderer.domElement.style.touchAction = 'pan-y'; }
   }
+  // Libero todos los recursos WebGL, observadores y mallas al desmontar la vista.
   function dispose() {
     if (disposed) return;
     setVisible(false); disposed = true; observer.disconnect(); controls.dispose();

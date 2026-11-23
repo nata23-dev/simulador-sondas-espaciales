@@ -1,10 +1,8 @@
-// 15.1: modelos 3D oficiales de NASA para las cuatro sondas de la flota (Voyager, Cassini, Dawn y Juno).
-//
-// Los archivos se sirven sin modificar desde public/models (procedencia, commit y SHA-256 en public/models/nasa/README.md).
-// Solo son presentación: masas, potencia, propulsión y centro de masas salen del catálogo de herencia (HeritageCatalog.js),
-// nunca de la malla. Cassini, Dawn y Juno usan compresión Draco obligatoria (KHR_draco_mesh_compression); el decodificador
-// es el que trae three 0.186.1 (DRACO_GLTF_CONFIG: Vite lo publica una sola vez, con su huella en el nombre). 18: antes había
-// además una copia en public/libs/draco/gltf/, retirada.
+// En este módulo catalogo y cargo los modelos 3D oficiales de NASA en formato GLB para
+// las cuatro sondas de la flota (Voyager, Cassini, Dawn y Juno). Solo gestiono su presentación
+// visual: masas, potencia, propulsión y centro de masas proceden siempre de HeritageCatalog.js.
+// Para Cassini, Dawn y Juno configuro la descompresión Draco (KHR_draco_mesh_compression)
+// usando el decodificador empaquetado con Three.js mediante DRACO_GLTF_CONFIG.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader, DRACO_GLTF_CONFIG } from 'three/addons/loaders/DRACOLoader.js';
@@ -12,7 +10,7 @@ import { DRACOLoader, DRACO_GLTF_CONFIG } from 'three/addons/loaders/DRACOLoader
 const NASA_REPOSITORY = 'https://github.com/nasa/NASA-3D-Resources';
 const USAGE_GUIDELINES = 'https://www.nasa.gov/nasa-brand-center/images-and-media';
 
-// measured: medidas de la malla en el espacio del archivo (m), comprobadas en tests/NasaProbeModels.test.mjs.
+// Registro la ficha documental y hashes SHA-256 de los archivos GLB oficiales servidos sin modificar.
 export const NASA_PROBE_MODELS = Object.freeze({
   voyager: Object.freeze({
     probeId: 'voyager', coreId: 'bus-voyager', name: 'Voyager',
@@ -58,6 +56,7 @@ function baseUrl() {
 }
 export const nasaModelUrl = entry => `${baseUrl()}${entry.file}`;
 
+// Inicializo una única instancia de GLTFLoader acoplada al decodificador Draco empaquetado con Three.js.
 let gltfLoader = null;
 function loader() {
   if (gltfLoader) return gltfLoader;
@@ -67,8 +66,8 @@ function loader() {
   return gltfLoader;
 }
 
-// Cubo auxiliar de exportación de Blender (nodo «_root», 24 vértices, sin material o con material «clear»): no forma parte de la sonda.
-// Ese nodo es el padre de toda la nave, así que se oculta su material, nunca el nodo (igual que SpaceProbeVisual con Voyager.glb).
+// Detecto el cubo auxiliar de exportación de Blender (nodo «_root», ≤36 vértices y material vacío o «clear»);
+// como suele ser el padre de toda la nave, oculto su material sin ocultar el nodo entero.
 export function isExportHelper(node) {
   if (!node.isMesh) return false;
   const materials = Array.isArray(node.material) ? node.material : [node.material];
@@ -81,8 +80,8 @@ function hideExportHelper(node) {
   node.userData.exportHelper = true;
 }
 
-// Caja envolvente en coordenadas locales de root (m), solo con las mallas visibles (todos sus ascendientes visibles) y sin el
-// cubo auxiliar. No depende de la posición, giro o escala que la vista haya dado a root.
+// Calculo la caja envolvente en coordenadas locales de `root` (en metros) considerando únicamente las mallas
+// visibles y excluyendo el cubo auxiliar, de forma independiente de la pose aplicada por la vista.
 export function localBounds(root) {
   root.updateMatrixWorld(true);
   const inverse = root.matrixWorld.clone().invert(), box = new THREE.Box3(), part = new THREE.Box3(), m = new THREE.Matrix4();
@@ -96,7 +95,8 @@ export function localBounds(root) {
   return box;
 }
 
-// Una plantilla por archivo; cada vista recibe un clon que comparte geometría y materiales (marcados como compartidos para no liberarlos).
+// Guardo en caché una única plantilla GLB por archivo para que cada vista clone la jerarquía
+// compartiendo geometrías y materiales marcados como compartidos.
 const templates = new Map();
 export function loadNasaProbeTemplate(entry) {
   if (!templates.has(entry.file)) {
@@ -109,14 +109,15 @@ export function loadNasaProbeTemplate(entry) {
         sceneRoot.updateMatrixWorld(true);
         return sceneRoot;
       });
-    promise.catch(() => templates.delete(entry.file)); // un fallo de red permite reintentar más tarde
+    // Elimino la entrada fallida de la caché para permitir reintentar la descarga ante un error de red.
+    promise.catch(() => templates.delete(entry.file));
     templates.set(entry.file, promise);
   }
   return templates.get(entry.file);
 }
 
-// Sustituye la geometría procedimental de un ensamblaje de herencia por el modelo oficial, conservando el objeto contenedor
-// (la vista lo sigue orientando con +Y local = eje de la antena de alta ganancia, igual que en los modelos de NASA).
+// Reemplazo la geometría procedimental de un ensamblaje por el modelo GLB oficial conservando
+// el contenedor padre (+Y local alineado con la antena de alta ganancia).
 export async function attachNasaModel(assembly, coreId, { isCurrent = () => true } = {}) {
   const entry = nasaModelForCore(coreId);
   if (!entry) return { status: 'sin-modelo' };

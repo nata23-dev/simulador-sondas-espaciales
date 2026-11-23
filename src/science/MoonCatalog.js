@@ -1,6 +1,10 @@
+// Aquí ensamblo el catálogo descriptivo y de procedencia de los satélites naturales del simulador.
+// Combino los parámetros físicos en km procedentes de `PlanetaryMoons.js` con sus ventanas calendáricas en escala TDB,
+// las rutas a los archivos de efemérides planetocéntricas (NASA/JPL Horizons, marco ICRF eclíptico J2000) y las texturas.
 import { MOONS } from './PlanetaryMoons.js';
 import { MOON_TEXTURES } from '../graphics/MoonTextureCatalog.js';
 
+// Defino las ventanas históricas aproximadas (en fechas calendáricas TDB) donde existen muestras de sobrevuelo por satélite.
 const HISTORICAL_WINDOWS_TDB = Object.freeze({
   Luna: [['1977-08-20', '1977-08-29'], ['1977-09-05', '1977-09-14']],
   Io: [['1979-03-01', '1979-03-10'], ['1979-07-05', '1979-07-14']],
@@ -14,8 +18,8 @@ const HISTORICAL_WINDOWS_TDB = Object.freeze({
   Triton: [['1989-08-21', '1989-08-29']]
 });
 
-// Display/provenance index; numerical coverage is always enforced by the data
-// provider's catalog and never inferred from these rounded calendar labels.
+// Expongo este índice únicamente para presentación y procedencia; la cobertura numérica exacta siempre la hago
+// cumplir mediante el catálogo del proveedor de efemérides y nunca la infiero desde estas etiquetas redondeadas.
 export const MOON_CATALOG = Object.freeze(Object.fromEntries(
   Object.entries(MOONS).map(([key, moon]) => [key, Object.freeze({
     ...moon,

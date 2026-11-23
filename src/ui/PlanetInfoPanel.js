@@ -1,6 +1,7 @@
+// En este módulo derivo las magnitudes visibles y actualizo la ficha informativa del planeta seleccionado.
 import { KM_PER_AU as KILOMETROS_POR_AU, SECONDS_PER_DAY as SEGUNDOS_POR_DIA } from '../science/Units.js';
 
-// Conserva las exportaciones anteriores de la ficha y usa una sola fuente de constantes.
+// Mantengo estas reexportaciones desde la fuente única de constantes para conservar compatibilidad con otros módulos.
 export { KM_PER_AU as KILOMETROS_POR_AU, SECONDS_PER_DAY as SEGUNDOS_POR_DIA } from '../science/Units.js';
 
 const ETIQUETAS = { Jupiter: 'Júpiter' };
@@ -8,8 +9,8 @@ const formatoAU = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 4, max
 const formatoKm = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 0 });
 const formatoVelocidad = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
 
+// Calculo distancias y rapidez a partir de los vectores heliocéntricos sin redondear los datos originales.
 export function derivarDatos(estado) {
-  // Las unidades de la ficha se calculan a partir de los vectores, sin redondear los datos fuente.
   const p = estado.posicionAU;
   const v = estado.velocidadAUporDia;
   const distanciaAU = Math.hypot(p.x, p.y, p.z);
@@ -22,8 +23,10 @@ export function derivarDatos(estado) {
   };
 }
 
+// Conecto el panel desplegable del planeta y gestiono el plegado por teclado y su actualización con cada selección o cambio de fecha.
 export function crearPanelInfoPlaneta() {
   const panel = document.querySelector('#planet-info');
+  // Permito desplegar o contraer la ficha al pulsar Enter sobre el encabezado.
   panel.querySelector('summary').addEventListener('keydown', event => {
     if (event.key === 'Enter') {
       event.preventDefault();
@@ -35,6 +38,7 @@ export function crearPanelInfoPlaneta() {
     'speed', 'speed-au', 'date', 'reference'
   ].map(nombre => [nombre, document.querySelector(`#info-${nombre}`)]));
 
+  // Vuelco los datos derivados y los metadatos de referencia en la ficha, contrayéndola al aparecer en pantallas estrechas.
   function actualizar(nombre, estado, metadatos, fechaISO) {
     if (!nombre || !estado) {
       panel.hidden = true;

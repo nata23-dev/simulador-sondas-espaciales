@@ -1,3 +1,4 @@
+/* Aquí defino los estilos del Laboratorio de Misiones: Hangar, planificación, Centro de Misión y paneles de telemetría. */
 #app[data-app-mode="experimental"][data-lab-view="builder"] .scene-panel > :not(#experimental-lab) {
   visibility: hidden;
   pointer-events: none;

@@ -1,16 +1,20 @@
+// En este módulo calculo la posición y el objetivo de cámara necesarios para encuadrar
+// un conjunto de cuerpos celestes dentro del área libre del lienzo entre paneles, sin
+// modificar jamás sus posiciones físicas ni la escala astronómica.
 import * as THREE from 'three';
 import { REGIONES_SISTEMA } from './ScaleModeConfig.js';
 
-// La vista general conserva un ángulo oblicuo; la cinematográfica viaja al planeta.
+// Mantengo un ángulo oblicuo fijo para la vista general científica; la vista cinematográfica viaja al cuerpo.
 const DIRECCION_CIENTIFICA = new THREE.Vector3(-0.32, 0.45, 0.83).normalize();
 const HOLGURA_RADIO = 1.18;
 const DISTANCIA_MAXIMA_ENCUADRE = 6000;
 const PLANETAS_INTERIORES = new Set(['Mercurio', 'Venus', 'Tierra', 'Marte']);
 
+// Reúno la lista de discos (posición y radio en unidades de escena) que debo abarcar en el encuadre actual.
 function cuerposEnVista(objetos, { region = REGIONES_SISTEMA.COMPLETO, usarRadiosActuales = false, sonda = null, cuerpos = null } = {}) {
   const radioSol = usarRadiosActuales || cuerpos ? 0.5 : 5.8;
   const lista = [{ posicion: new THREE.Vector3(), radio: radioSol }];
-  // 17.1: conjunto explícito (vista general de una misión del laboratorio): el Sol y los discos indicados.
+  // Cuando recibo un conjunto explícito de cuerpos de misión, combino el Sol con esos discos.
   if (cuerpos) return lista.concat(cuerpos);
 
   for (const [nombre, objeto] of objetos.entries()) {
@@ -38,9 +42,8 @@ function cuerposEnVista(objetos, { region = REGIONES_SISTEMA.COMPLETO, usarRadio
 }
 
 /**
- * Encuadra discos visuales dentro del área que queda libre entre los paneles.
- * Resuelve la distancia mínima y los desplazamientos lateral y vertical del
- * objetivo con el campo de visión real; nunca modifica posiciones ni escala astronómica.
+ * Resuelvo la distancia mínima y el desplazamiento lateral y vertical del objetivo para encuadrar
+ * todos los discos seleccionados dentro del área libre `zona` usando el FOV efectivo de la cámara.
  */
 export function calcularEncuadreVista(camera, objetos, zona, opciones = null) {
   const direccion = DIRECCION_CIENTIFICA;
@@ -85,14 +88,14 @@ export function calcularEncuadreVista(camera, objetos, zona, opciones = null) {
   if (!limites(superiorDistancia)) {
     throw new Error('No se pudo encuadrar la vista con el tamaño actual del lienzo.');
   }
-  // La búsqueda binaria encuentra la distancia mínima que deja visibles todos los discos.
+  // Busco por bisección la distancia mínima que mantiene todos los discos dentro del área libre.
   for (let i = 0; i < 42; i++) {
     const medio = (inferiorDistancia + superiorDistancia) / 2;
     if (limites(medio)) superiorDistancia = medio;
     else inferiorDistancia = medio;
   }
 
-  // Reserva espacio adicional para etiquetas, movimiento orbital y perspectiva.
+  // Reservo holgura adicional para las etiquetas en pantalla, el movimiento orbital y la perspectiva.
   const usarOpcionesRegion = Boolean(opciones);
   const margenMultiplicador = ajustado ? 1.24 : 1.10;
   const radioSolarMaximo = 75;

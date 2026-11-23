@@ -1,3 +1,18 @@
+/**
+ * En este módulo implemento el motor de reproducción temporal del Modo Histórico
+ * de las misiones Voyager 1 y Voyager 2.
+ *
+ * - Unidades: instantes y cotas en JD TDB, pasos de reloj y ventanas de
+ *   desaceleración en segundos (s) y velocidades de reproducción en segundos
+ *   TDB por segundo real (`tdbSecondsPerRealSecond`).
+ * - Marco de referencia: este módulo gestiona únicamente el estado temporal y
+ *   de eventos (es independiente de coordenadas espaciales; las efemérides
+ *   consultadas después operan en `SUN_CENTER` / `ICRF_ECLIPTIC_J2000`).
+ * - Límites: confino siempre el reloj dentro de `[minJdTdb, maxJdTdb]` mediante
+ *   representación dividida (`createSplitHistoricalTime`), freno automáticamente
+ *   al aproximarme a hitos históricos y detengo el reloj exactamente sobre cada
+ *   evento sin sobrepasarlo cuando la autopausa está activa.
+ */
 import { SECONDS_PER_DAY } from './Units.js';
 import {
   HISTORICAL_PLAYBACK_SPEEDS,
@@ -22,10 +37,12 @@ export const PROBE_VISIBILITY_MODES = Object.freeze({
   VOYAGER_2: VOYAGER_2_ID
 });
 
+/** Busco un perfil de velocidad por identificador y, si no existe, uso `1d_s` (1 día/s) como valor por defecto. */
 function findSpeedById(speedId) {
-  return HISTORICAL_PLAYBACK_SPEEDS.find(s => s.id === speedId) ?? HISTORICAL_PLAYBACK_SPEEDS[2]; // 1d_s
+  return HISTORICAL_PLAYBACK_SPEEDS.find(s => s.id === speedId) ?? HISTORICAL_PLAYBACK_SPEEDS[2];
 }
 
+/** Determino el radio de la ventana temporal (en s) dentro del cual reduzco velocidad al acercarme a un hito. */
 function eventSlowdownWindowSeconds(event) {
   if (event.kind === EVENT_KINDS.RETROSPECTIVE_BOUNDARY_CROSSING) {
     return 20 * SECONDS_PER_DAY;
@@ -33,6 +50,11 @@ function eventSlowdownWindowSeconds(event) {
   return 2.5 * SECONDS_PER_DAY;
 }
 
+/**
+ * Aquí instancio el motor de estado de la línea temporal histórica de Voyager,
+ * controlando reproducción, sentido, velocidad, visibilidad de sondas y saltos
+ * entre eventos sin exceder los límites de cobertura.
+ */
 export function createHistoricalMissionEngine({
   minJdTdb,
   maxJdTdb,
@@ -48,7 +70,8 @@ export function createHistoricalMissionEngine({
   });
 
   let playing = false;
-  let direction = 1; // +1 avance, -1 retroceso
+  // Uso +1 para avance cronológico y -1 para retroceso.
+  let direction = 1;
   let speed = findSpeedById(initialSpeedId);
   let effectiveSpeed = speed;
   let visibilityMode = initialVisibility;
@@ -64,6 +87,7 @@ export function createHistoricalMissionEngine({
     });
   }
 
+  /** Posiciono el reloj histórico en `targetJdTdb` limpiando opcionalmente el evento disparado. */
   function setTimeJdTdb(targetJdTdb, { clearTriggered = true } = {}) {
     if (clearTriggered) {
       triggeredEvent = null;
@@ -72,11 +96,13 @@ export function createHistoricalMissionEngine({
     return splitTime.setJdTdb(targetJdTdb);
   }
 
+  /** Convierto una marca UTC documentada a JD TDB y muevo el reloj a ese instante. */
   function setUtcTimestamp(utcIso) {
     const jd = utcTimestampToJdTdb(utcIso);
     return setTimeJdTdb(jd);
   }
 
+  /** Salto al instante de lanzamiento oficial de la sonda elegida y ajusto la velocidad inicial a 1 h/s. */
   function jumpToLaunch(missionId = null) {
     const targetMissionId = missionId
       ?? (visibilityMode === PROBE_VISIBILITY_MODES.VOYAGER_1 ? VOYAGER_1_ID : VOYAGER_2_ID);
@@ -89,11 +115,13 @@ export function createHistoricalMissionEngine({
     return setTimeJdTdb(mission.launchJdTdb);
   }
 
+  /** Salto al último instante disponible dentro de la cobertura histórica verificada. */
   function jumpToLatestAvailable() {
     playing = false;
     return setTimeJdTdb(splitTime.maxJdTdb);
   }
 
+  /** Me posiciono exactamente en un hito histórico del catálogo, ajusto su velocidad sugerida y lo marco como disparado. */
   function jumpToEvent(eventId) {
     const ev = getHistoricalEventById(eventId);
     if (!ev) return null;
@@ -145,9 +173,9 @@ export function createHistoricalMissionEngine({
   }
 
   /**
-   * Avanza o retrocede el reloj histórico en función de `realDeltaSeconds`,
-   * aplicando desaceleración automática de proximidad y parada exacta sin sobrepaso
-   * en acontecimientos históricos.
+   * Aquí avanzo o retrocedo el reloj histórico según `realDeltaSeconds`,
+   * aplicando desaceleración automática de proximidad y detención exacta sin
+   * sobrepaso cuando cruzo un acontecimiento histórico relevante.
    */
   function step(realDeltaSeconds) {
     if (!playing || !Number.isFinite(realDeltaSeconds) || realDeltaSeconds <= 0) {

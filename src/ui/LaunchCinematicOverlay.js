@@ -1,11 +1,10 @@
-// Panel del lanzamiento 3D (etapa 25): reloj de misión, factor de aceleración, altitud y velocidad del modelo, fase,
-// acontecimientos con su fuente, controles y avisos de fidelidad. Los anuncios para lector de pantalla van a una región
-// «polite» y solo cuando cambia el acontecimiento.
+// En este módulo gestiono la interfaz superpuesta del lanzamiento 3D: muestro el reloj de misión, el factor de aceleración,
+// la altitud y velocidad del modelo, la fase activa, los acontecimientos con su fuente, los controles de reproducción y los avisos accesibles.
 import { LANZAMIENTOS_VOYAGER, FUENTES_LANZAMIENTO } from '../science/VoyagerLaunchProfile.js';
 
 const FECHA = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 const HORA = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' });
-// 26: formateadores reutilizados (se usan en cada fotograma del lanzamiento); mismo resultado que toLocaleString('es-ES', …).
+// Reutilizo un formateador numérico por cantidad de decimales porque actualizo estos datos en cada fotograma del lanzamiento.
 const formatosNum = new Map();
 const NUM = (v, d) => {
   let formato = formatosNum.get(d);
@@ -13,9 +12,10 @@ const NUM = (v, d) => {
   return formato.format(v);
 };
 const FUENTE_TEXTO = { tc6: 'informe de vuelo TC-6', prensa: 'dossier de prensa de NASA', reconstruido: 'reconstruido' };
-// Acontecimientos con marca en la barra (los demás se ven en el panel cuando ocurren).
+// Defino los acontecimientos principales que marco sobre la barra de progreso; los demás los muestro en el panel al producirse.
 const MARCAS = ['despegue', 'srm-separacion', 'cofia', 'meco1', 'mes2', 'separacion-nave', 'pm-apagado', 'mastiles'];
 
+// Extraigo los metadatos legibles del lanzamiento histórico (nombre, vehículo, fecha y hora UTC de despegue).
 export function metadatosLanzamiento(misionId) {
   const m = LANZAMIENTOS_VOYAGER[misionId];
   if (!m) return null;
@@ -23,6 +23,7 @@ export function metadatosLanzamiento(misionId) {
   return { misionId, nombreMision: m.nombre, vehiculo: m.vehiculo, fecha: FECHA.format(despegue), horaUtc: HORA.format(despegue) };
 }
 
+// Construyo la capa visual del lanzamiento cinematográfico sobre la escena y conecto todos sus controles de reproducción.
 export function crearSuperficieLanzamientoCinematografico({ alPausar, alSiguiente, alAnterior, alVelocidad, alSaltar, alReiniciar, alIrAEvento }) {
   const overlay = document.createElement('div');
   overlay.id = 'launch-cinematic-overlay';
@@ -94,6 +95,7 @@ export function crearSuperficieLanzamientoCinematografico({ alPausar, alSiguient
     alt: $('#launch-alt'), vel: $('#launch-vel'), velSuelo: $('#launch-vel-ground'), carga: $('#launch-loading'), fase: $('#launch-phase-tag'), faseTexto: $('#launch-phase-desc'),
     evento: $('#launch-event'), barra: $('#launch-progress-bar'), marcas: $('#launch-ticks'), vivo: $('#launch-live'), pausa: $('#launch-pause-btn')
   };
+  // Conecto los botones de pausa, salto entre acontecimientos, repetición, salida y cambio de velocidad de reproducción.
   $('#launch-pause-btn').addEventListener('click', () => alPausar?.());
   $('#launch-next-btn').addEventListener('click', () => alSiguiente?.());
   $('#launch-prev-btn').addEventListener('click', () => alAnterior?.());
@@ -109,6 +111,7 @@ export function crearSuperficieLanzamientoCinematografico({ alPausar, alSiguient
 
   return {
     overlay,
+    // Muestro u oculto la capa del lanzamiento y restablezco el encabezado y el estado visual de los controles.
     mostrar(visible = true, meta = null) {
       overlay.hidden = !visible;
       if (!visible) return;
@@ -122,7 +125,7 @@ export function crearSuperficieLanzamientoCinematografico({ alPausar, alSiguient
     },
     esVisible: () => !overlay.hidden,
     establecerCargando(texto) { el.carga.hidden = !texto; el.carga.textContent = texto ?? ''; overlay.classList.toggle('is-loading', Boolean(texto)); },
-    /** Marcas de acontecimientos en la barra de progreso (`eventos` con p; `duracion` en segundos de presentación). */
+    // Coloco los botones de los hitos principales a lo largo de la barra de progreso según su instante de presentación.
     configurarLinea(eventos, duracion) {
       el.marcas.replaceChildren(...eventos.filter(e => MARCAS.includes(e.id)).map(e => {
         const b = document.createElement('button');
@@ -132,6 +135,7 @@ export function crearSuperficieLanzamientoCinematografico({ alPausar, alSiguient
         return b;
       }));
     },
+    // Actualizo en cada fotograma el reloj, las lecturas del ascenso, la barra de avance y los anuncios accesibles cuando cambia el evento.
     actualizar(estado) {
       el.reloj.textContent = estado.reloj;
       const f = estado.factor * estado.velocidad;

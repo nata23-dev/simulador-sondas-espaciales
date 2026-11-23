@@ -1,14 +1,14 @@
-// Etapa 13 — misiones interplanetarias integradas por tramos físicamente conectados (cónicas parcheadas + empuje finito).
+// En este módulo calculo la misión interplanetaria integrada de principio a fin conectando físicamente todos los tramos
+// (cónicas parcheadas y encendidos de empuje finito).
 //
-// Cadena: inyección (condición inicial) → crucero heliocéntrico → entrada en la esfera de influencia (SOI) → aproximación
-// hiperbólica → captura con empuje finito (o sobrevuelo) → órbita planetaria → [transferencia planetocéntrica → SOI del satélite
-// → captura → órbita del satélite → descenso 12F]. Cada tramo empieza EXACTAMENTE en el estado final del anterior; los cambios
-// de cuerpo central son traslaciones con la posición y velocidad de la efeméride en la misma época TDB (mismos ejes ICRF
-// eclíptico J2000). Solo los encendidos (integrados) cambian la velocidad; la separación del módulo de propulsión cambia la masa.
-// Nada se fuerza: si una fase no es viable, la cadena se detiene ahí o continúa en sobrevuelo, y el resultado lo registra.
+// Encadeno la secuencia completa: salida terrestre opcional desde plataforma (o inyección inicial en la Tierra) → crucero
+// heliocéntrico → entrada en la esfera de influencia (SOI) planetaria → aproximación hiperbólica → captura con empuje finito
+// (o sobrevuelo) → órbita planetaria → [transferencia planetocéntrica → SOI del satélite → captura o sobrevuelo → descenso].
+// Hago que cada tramo empiece exactamente en el estado final del anterior: cambio de cuerpo central mediante traslaciones con
+// efemérides en la misma época TDB (ejes ICRF eclíptico J2000), altero velocidad solo con encendidos integrados (salvo el salto
+// de empalme declarado en la SOI terrestre) y altero masa solo en separaciones declaradas. Si una fase falla, no la fuerzo.
 //
-// Datos: `helio.stateAt(id, jdTdb)` (InterplanetaryEphemeris.loadWindow, planetas y baricentros respecto al centro del Sol) y,
-// para fases con satélites, `moons.stateAt(key, jdTdb)` (PlanetocentricWindow, satélites respecto al centro de su sistema).
+// Consumo `helio.stateAt(id, jdTdb)` (planetas y baricentros respecto al Sol) y `moons.stateAt(key, jdTdb)` (satélites en su sistema).
 import { SOLAR_SYSTEM_GM_CATALOG } from '../science/GravitationalParameters.js';
 import { propagateKepler, conicSummary } from '../science/KeplerPropagator.js';
 import { sphereOfInfluenceRadiusKm, osculatingOrbitOfBody, classicalElements, SOI_MODELS, impulsiveCaptureDeltaV, timeToNextPeriapsis } from '../science/PlanetaryEncounter.js';
@@ -28,17 +28,15 @@ import { AU_KM, JULIAN_YEAR_DAYS, generationAt, electricThrust } from './Spacecr
 import { designEarthDeparture, EARTH_DEPARTURE_VERSION, earthBeyondSoiCorrection, EARTH_BEYOND_SOI } from './EarthDeparture.js';
 import { EARTH_GM_KM3_S2 } from './LaunchEarth.js';
 
-// 20: la captura planetaria se apunta para compensar el desplazamiento del periapsis (resultados distintos de 13–17.1).
-// 21: salida opcional desde la plataforma (lanzamiento 12E, aparcamiento e inyección de empuje finito); sin ella, como en 20.
+// Versión vigente del modelo integrado (incluye captura con compensación de periapsis y salida opcional desde plataforma).
 export const INTEGRATED_MISSION_VERSION = '28-integrated-mission-4';
 export const PHASE_STATUS = Object.freeze({ done: 'COMPLETADA SEGÚN EL MODELO', failed: 'NO VIABLE PARA EL ESCENARIO CONFIGURADO', partial: 'COMPLETADA CON OBJETIVO NO ALCANZADO',
   skipped: 'NO EVALUADA', pending: 'PENDIENTE (sin modelo en esta etapa)', noData: 'DATOS NO DISPONIBLES', initial: 'CONDICIÓN INICIAL (no simulada)' });
 export const LEVEL = Object.freeze({ operational: 'OPERATIVO', experimental: 'EXPERIMENTAL', pending: 'PENDIENTE', notViable: 'NO VIABLE para el escenario configurado' });
 
 const gm = id => SOLAR_SYSTEM_GM_CATALOG.getParameter(id);
-// Destinos de encuentro. Los gigantes usan el BARICENTRO de su sistema (NAIF 5–8, cadencia 4 d con error medido ≤ 3 m) y el GM
-// del sistema: resuelve OBS-12G-02 (el centro de Júpiter, 599, oscila ~10² km alrededor del baricentro y la cadencia de 4 d lo
-// submuestrea). Mercurio, Venus y Marte usan el centro del planeta (cadencia 1 d).
+// Para los gigantes gaseosos y helados uso el baricentro de su sistema (NAIF 5–8) y el GM del sistema, evitando el bamboleo
+// del centro planetario que una cadencia de 4 días submuestrearía. En Mercurio, Venus y Marte uso el centro del planeta.
 const target = (id, ephemerisId, name, centerLabel, color) => Object.freeze({ id, ephemerisId, name, centerLabel, mu: gm(id).muKm3PerS2, radiusKm: gm(id).referenceRadiusKm,
   massScope: gm(id).massScope, gmSource: gm(id).source, color });
 export const ENCOUNTER_TARGETS = Object.freeze({
@@ -47,11 +45,10 @@ export const ENCOUNTER_TARGETS = Object.freeze({
   '699': target('699', '6', 'Saturno', 'baricentro del sistema de Saturno (6)', '#d6c38f'), '799': target('799', '7', 'Urano', 'baricentro del sistema de Urano (7)', '#8fd0d8'),
   '899': target('899', '8', 'Neptuno', 'baricentro del sistema de Neptuno (8)', '#5b7fd6')
 });
-// Satélites con efemérides de ventana adquiridas en 13 (clave del conjunto planetocéntrico).
+// Mapeo los códigos NAIF de los satélites galileanos a las claves de la ventana de efemérides planetocéntricas.
 export const MOON_WINDOW_KEYS = Object.freeze({ '501': 'Io', '502': 'Europa', '503': 'Ganymede', '504': 'Callisto' });
 
-// Módulo de propulsión ILUSTRATIVO (no es un vehículo real): orden de magnitud de una etapa bipropelente de inserción.
-// La masa de depósitos escala con el propelente (fracción declarada). Editable en el planificador.
+// Defino un módulo de propulsión orbital ilustrativo editable cuya masa de tanques escala proporcionalmente con el propelente.
 export const DEMO_PROPULSION_MODULE = Object.freeze({ id: 'demo-orbital-module-v1', name: 'Módulo de propulsión orbital demostrativo',
   provenance: 'Parámetros ilustrativos para entrenamiento (orden de magnitud de una etapa bipropelente de inserción orbital). No es un vehículo real ni una fuente verificada.',
   structureKg: 1500, tankFraction: 0.06, propellantKg: 80000, engine: Object.freeze({ name: 'Tres motores bipropelentes de inserción (ilustrativos)', thrustN: 270000, ispS: 323 }) });
@@ -61,9 +58,8 @@ export const DEFAULT_PROFILE = Object.freeze({
   soiModel: 'laplace',
   planet: Object.freeze({ mode: 'capture', periapsisAltitudeKm: 400, bPlane: Object.freeze({ mode: 'auto' }), captureBurns: Object.freeze([Object.freeze({ apoapsisAltitudeKm: 33000 })]), orbitCoastDays: 2, periapsisCompensation: true }),
   moon: null, landing: Object.freeze({ enabled: false }), flybyOutboundDays: 120,
-  // 21: con `enabled`, la misión empieza en la plataforma de Cabo Cañaveral (EarthDeparture.js); si no, en la v∞ apuntada.
-  // 28: `patch` = empalme en la SOI terrestre ('asymptote', el convencional, o 'velocity', el de la etapa 21); con la asíntota,
-  // `earthBeyondSoi` apunta además con la gravedad terrestre fuera de la SOI (Sol + Tierra integrados hasta la llegada).
+  // Cuando `launch.enabled` está activo arranco en Cabo Cañaveral (EarthDeparture.js); `patch` elige el criterio de empalme en la SOI
+  // terrestre ('asymptote' o 'velocity') y `earthBeyondSoi` añade la corrección por la gravedad terrestre fuera de la SOI.
   launch: Object.freeze({ enabled: false, azimuthDeg: 'auto', patch: 'asymptote', earthBeyondSoi: true })
 });
 
@@ -74,7 +70,7 @@ const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a
 
 export class IntegratedMissionError extends Error { constructor(message, details = {}) { super(message); this.name = 'IntegratedMissionError'; this.details = details; } }
 
-/** Pila del vehículo: sonda del Hangar (carga útil con su propelente), módulo de propulsión opcional y módulo de aterrizaje opcional. */
+// Ensamblo la pila completa del vehículo (sonda del Hangar, módulo de propulsión orbital opcional y módulo de aterrizaje opcional) y valido sus masas y potencia.
 export function buildVehicleStack({ design, propulsionModule = null, lander = null }) {
   const eng = calculateEngineering(design), issues = [...eng.structuralIssues];
   if (!(eng.dryMassKg > 0)) issues.push('La sonda del Hangar no tiene masa: selecciona una estructura.');
@@ -83,7 +79,7 @@ export function buildVehicleStack({ design, propulsionModule = null, lander = nu
     if (!(propulsionModule.engine?.thrustN > 0) || !(propulsionModule.engine?.ispS > 0)) issues.push('Módulo: empuje e Isp deben ser positivos.');
   }
   if (lander) issues.push(...validateLander(lander));
-  // 15: el motor conserva su modelo eléctrico (si lo tiene) para limitar el empuje con la potencia disponible en cada encendido.
+  // Conservo la curva eléctrica del motor si la sonda usa propulsión iónica para limitar su empuje según la potencia disponible en destino.
   const electricPart = design.parts.map(p => getComponent(p.componentId)).find(c => c?.category === 'engine' && c.electric);
   const probe = { name: design.name, dryKg: eng.dryMassKg, propellantKg: eng.fuelKg, wetKg: eng.wetMassKg,
     engine: eng.thrustN > 0 && eng.effectiveIspS > 0 ? { name: electricPart ? `${electricPart.name} (Hangar)` : 'Motor de la sonda (Hangar)', thrustN: eng.thrustN, ispS: eng.effectiveIspS,
@@ -99,13 +95,7 @@ export function buildVehicleStack({ design, propulsionModule = null, lander = nu
 
 function elapsedOf(departureJdTdb, jd) { return (jd - departureJdTdb) * 86400; }
 
-/**
- * `input`: { destinationId, moonId?, opportunity: { departureJdTdb, arrivalJdTdb, label? }, design, propulsionModule?, lander?, profile }
- * `data`: { helio, moons? }. Devuelve la misión con tramos, eventos, fases, recursos y comprobaciones de continuidad.
- */
-// 17.1: órbita resultante tras una captura de empuje finito. El encendido se corta al alcanzar el apoapsis objetivo; en un
-// encendido largo el periapsis se desplaza respecto al apuntado en la llegada (p. ej. A1 con Cassini: 3000 → 315,5 km).
-// Solo describe el estado ya calculado.
+// Redacto una nota descriptiva sobre la órbita resultante tras la captura, señalando si un encendido largo desplazó el periapsis respecto al apuntado.
 function resultingOrbitNote(insertion, aimedPeriapsisAltitudeKm, compensated = false) {
   const o = insertion.final?.orbit;
   if (!o?.bound || !Number.isFinite(o.apoapsisAltitudeKm)) return '';
@@ -115,20 +105,13 @@ function resultingOrbitNote(insertion, aimedPeriapsisAltitudeKm, compensated = f
   return ` Órbita resultante: ${km(o.periapsisAltitudeKm)} × ${km(o.apoapsisAltitudeKm)} km de altitud${shifted && !compensated ? ` (periapsis apuntado ${km(aimedPeriapsisAltitudeKm)} km; el encendido de ${hours.toFixed(1)} h lo desplaza)` : ''}.`;
 }
 
-// ---- 20 · Captura apuntada -------------------------------------------------------------------------------------------------
-// Un encendido de captura largo, centrado en el periapsis y retrógrado, baja la trayectoria mientras actúa: la órbita final
-// tiene un periapsis más bajo que el apuntado en la llegada (A1 con Cassini: 3000 → 315,5 km). Un planificador apunta la llegada
-// a otro periapsis para acabar en el pedido. Aquí se busca por secante sobre la cadena COMPLETA: cada prueba repite el apuntado
-// (Lambert a la SOI con el plano B pedido) y la inserción de empuje finito con el mismo vehículo, motor y encendidos. No cambia
-// ningún modelo físico: solo elige la condición de llegada. Si la relación no es monótona (subir el periapsis apuntado no sube el
-// final), si el apuntado falla o si no converge, se conserva el apuntado sin compensar y se dice por qué.
+// ---- Compensación del desplazamiento de periapsis en captura de empuje finito -----------------------------------------------
+// Como un encendido retrógrado largo alrededor del periapsis hace caer la trayectoria mientras actúa, la órbita final suele
+// terminar con un periapsis más bajo que el apuntado inicialmente. Aquí ajusto por método de la secante el radio de periapsis
+// apuntado sobre la cadena real (apuntado de Lambert a la SOI + inserción finita completa) hasta clavar el periapsis pedido.
+// Si la respuesta no es monótona, el apuntado falla o falta Δv, mantengo el apuntado original y explico el motivo.
 export const PERIAPSIS_COMPENSATION = Object.freeze({ toleranceKm: 0.01, maxIterations: 12, minSlope: 0.2 });
 export const COMPENSATION_STATUS = Object.freeze({ applied: 'aplicada', unnecessary: 'innecesaria', disabled: 'desactivada', failed: 'no aplicable' });
-/**
- * `aimAt(rpKm)` → resultado de `aimEncounter`; `trial(aim)` → resultado de `simulateInsertion` desde `aim.soi.relative`.
- * Radios en km desde el centro del cuerpo. Devuelve { status, applied, aim, aimedRadiusKm, targetRadiusKm, uncompensatedRadiusKm,
- * iterations, residualKm, reason, history: [{ aimedRadiusKm, finalRadiusKm, reachedTarget }] }.
- */
 export function compensateCapturePeriapsis({ aimAt, firstAim, trial, targetRadiusKm, bodyRadiusKm, soiRadiusKm, enabled = true,
   toleranceKm = PERIAPSIS_COMPENSATION.toleranceKm, maxIterations = PERIAPSIS_COMPENSATION.maxIterations, minSlope = PERIAPSIS_COMPENSATION.minSlope }) {
   const altitude = r => `${Math.round(r - bodyRadiusKm)}`;
@@ -145,7 +128,7 @@ export function compensateCapturePeriapsis({ aimAt, firstAim, trial, targetRadiu
   const uncompensatedResidual = first.finalRadiusKm - targetRadiusKm;
   if (Math.abs(uncompensatedResidual) <= toleranceKm) return keep(COMPENSATION_STATUS.unnecessary, 'El encendido no desplaza el periapsis de forma apreciable.', { residualKm: uncompensatedResidual });
   if (!enabled) return keep(COMPENSATION_STATUS.disabled, 'Compensación desactivada: la llegada se apunta al periapsis pedido.', { residualKm: uncompensatedResidual });
-  // Captura parcial o sobrevuelo (falta Δv o empuje): no hay órbita final que ajustar. Un impacto sí puede evitarse subiendo la llegada.
+  // Si el vehículo no alcanza la captura por falta de Δv o empuje no tiene sentido compensar; en cambio, un impacto sí puede evitarse elevando la llegada.
   if (!first.reachedTarget && first.status !== INSERTION_STATUS.impact) return keep(COMPENSATION_STATUS.failed, 'La captura no alcanza la órbita objetivo ni sin compensar (falta Δv o empuje): apuntar la llegada no lo cambia.', { residualKm: uncompensatedResidual });
   let x0 = targetRadiusKm, f0 = uncompensatedResidual, x1 = x0 - f0;
   for (let k = 1; k <= maxIterations; k++) {
@@ -166,7 +149,7 @@ export function compensateCapturePeriapsis({ aimAt, firstAim, trial, targetRadiu
   }
   return keep(COMPENSATION_STATUS.failed, `Sin convergencia en ${maxIterations} iteraciones.`, { residualKm: uncompensatedResidual });
 }
-// Resumen serializable para el resultado (sin el objeto de apuntado). Altitudes en km sobre el radio medio del cuerpo.
+// Genero un resumen serializable de la compensación en altitudes (km sobre el radio medio) sin arrastrar los objetos de apuntado.
 function compensationSummary(c, bodyRadiusKm) {
   if (!c) return null;
   const alt = r => (Number.isFinite(r) ? r - bodyRadiusKm : null);
@@ -181,6 +164,8 @@ function compensationNote(summary) {
   return ` Captura apuntada no aplicada. ${summary.reason}`;
 }
 
+// Calculo la misión integrada completa a partir del destino, la oportunidad, el vehículo y las ventanas de efemérides cargadas,
+// devolviendo todos los tramos, eventos, fases, consumo de recursos, balance energético y verificación de continuidad en fronteras.
 export function computeIntegratedMission(input, data) {
   const t0 = typeof performance !== 'undefined' ? performance.now() : 0;
   const tgt = ENCOUNTER_TARGETS[input.destinationId];
@@ -199,13 +184,13 @@ export function computeIntegratedMission(input, data) {
   let engine = engineKey === 'module' ? vehicle.module.engine : vehicle.probe.engine, electricBlocked = false;
   const { departureJdTdb: plannedDepartureJdTdb, arrivalJdTdb } = input.opportunity;
   if (!(arrivalJdTdb > plannedDepartureJdTdb)) throw new IntegratedMissionError('La llegada debe ser posterior a la salida.');
-  // Época de la misión (t = 0): la salida prevista o, con lanzamiento (21), el despegue. Todos los tiempos se cuentan desde ella.
+  // Fijo t = 0 en la salida prevista (o en el instante real del despegue si simulo el lanzamiento desde plataforma).
   let departureJdTdb = plannedDepartureJdTdb;
 
   const segments = [], events = [], phases = [], maneuvers = [], warnings = [], separations = [], patches = [];
   const tanks = { probe: vehicle.probe.propellantKg, module: vehicle.module?.propellantKg ?? 0, lander: vehicle.lander?.propellantKg ?? 0 };
   let mass = vehicle.totalKg;
-  // Se rellena al apuntar la llegada; si el apuntado falla, finish() devuelve la misión sin aproximación (antes: ReferenceError).
+  // Inicializo `approachInfo` a null para que finish() pueda construir una salida limpia incluso si falla el apuntado inicial.
   let approachInfo = null;
   const phase = (id, label, status, level, detail = {}) => phases.push({ id, label, status, level, ...detail });
   const event = (id, kind, title, elapsedSeconds, extra = {}) => events.push({ id, kind, title, elapsedSeconds, ...extra });
@@ -213,13 +198,13 @@ export function computeIntegratedMission(input, data) {
   const helioState = (id, jd) => { const s = data.helio.stateAt(id, jd); return s?.status === 'available' ? s : null; };
   const moonState = (key, jd) => { if (!data.moons) return null; const s = data.moons.stateAt(key, jd); return s?.status === 'available' ? s : null; };
 
-  // ---- 0. Salida: condición inicial (inyección externa) ---------------------------------------------------------------------
+  // ---- 0. Salida terrestre y apuntado del crucero heliocéntrico -------------------------------------------------------------
   const earth = helioState('399', departureJdTdb), planetAtArrival = helioState(tgt.ephemerisId, arrivalJdTdb);
   if (!earth || !planetAtArrival) throw new IntegratedMissionError('Efemérides no disponibles para el intervalo solicitado.');
   const orbitAtArrival = osculatingOrbitOfBody(planetAtArrival.positionKm, planetAtArrival.velocityKmS, MU_SUN + tgt.mu);
   const soiKm = sphereOfInfluenceRadiusKm({ model: profile.soiModel, semiMajorAxisKm: orbitAtArrival.semiMajorAxisKm, eccentricity: orbitAtArrival.eccentricity, muBody: tgt.mu, muPrimary: MU_SUN });
   const rpPlanet = tgt.radiusKm + profile.planet.periapsisAltitudeKm;
-  // Orientación del plano B: 'auto' minimiza la inclinación respecto al plano orbital del satélite objetivo (si lo hay) o a la eclíptica.
+  // En modo 'auto' elijo el ángulo del plano B que minimiza la inclinación respecto al plano orbital del satélite elegido o a la eclíptica.
   let bPlane = profile.planet.bPlane, bPlaneNote;
   if (bPlane.mode === 'auto') {
     const m = moonKey ? moonState(moonKey, arrivalJdTdb) : null;
@@ -227,8 +212,7 @@ export function computeIntegratedMission(input, data) {
     else { bPlane = { mode: 'normal', normal: [0, 0, 1] }; bPlaneNote = 'θ del plano B elegido para minimizar la inclinación respecto a la eclíptica J2000 (la orientación del ecuador del planeta no está en los datos del proyecto).'; }
   } else bPlaneNote = `θ del plano B fijado por el usuario: ${bPlane.angleDeg}°.`;
   const mu = tgt.mu, R = tgt.radiusKm;
-  // 15: un motor eléctrico de la sonda solo dispone de la potencia que queda a la distancia solar del destino tras el consumo de
-  // servicio. Dentro de la SOI la distancia al Sol se toma constante (la del planeta en la llegada).
+  // Si el motor de captura es eléctrico, calculo la potencia sobrante a la distancia heliocéntrica del destino y ajusto o bloqueo su empuje.
   if (engine?.electric) {
     const rAu = norm(planetAtArrival.positionKm) / AU_KM, years = (arrivalJdTdb - departureJdTdb) / JULIAN_YEAR_DAYS;
     const availableW = generationAt(vehicle.power.sources, { distanceAu: rAu, yearsSinceLaunch: years }).totalW - vehicle.power.serviceW;
@@ -242,7 +226,7 @@ export function computeIntegratedMission(input, data) {
   const aimFrom = (departurePositionKm, fromJdTdb) => periapsisRadiusKm => aimEncounter({ departurePositionKm, departureJdTdb: fromJdTdb, periapsisJdTdb: arrivalJdTdb,
     targetStateAt: jd => helioState(tgt.ephemerisId, jd), muCentral: MU_SUN, muTarget: tgt.mu, targetRadiusKm: tgt.radiusKm, periapsisRadiusKm, bPlane, soiRadiusKm: soiKm });
   const burnSpecs = profile.planet.captureBurns.map((b, i) => ({ id: `planet-capture-${i + 1}`, label: i === 0 ? `Inserción en órbita de ${tgt.name}` : `Reducción de apoapsis ${i + 1}`, targetApoapsisRadiusKm: R + b.apoapsisAltitudeKm }));
-  // 20: captura apuntada. Cada prueba usa la misma inserción que el cálculo (sin la espera posterior, que no cambia la órbita).
+  // Ejecuto el apuntado a la SOI y, si hay captura propulsiva, aplico la compensación de periapsis con la misma inserción sin espera posterior.
   const designArrival = aimAt => {
     let a = aimAt(rpPlanet), comp = null;
     if (a.status === AIM_STATUS.aimed && profile.planet.mode !== 'flyby' && engine) {
@@ -254,13 +238,12 @@ export function computeIntegratedMission(input, data) {
     return { aim: a, compensation: comp, rpAimKm: comp?.applied ? comp.aimedRadiusKm : rpPlanet };
   };
   let arrival = designArrival(aimFrom(earth.positionKm, departureJdTdb)), launch = null, launchRounds = 0, earthBeyondSoi = null;
-  // 21: salida desde la plataforma. El crucero empieza en la salida de la SOI terrestre, así que la llegada (y su compensación) se
-  // rediseña desde ese punto; se repite hasta que el periapsis de llegada apuntado cambia menos de 1 m (2–3 vueltas).
+  // Si parto desde la plataforma, itero la salida terrestre con el rediseño de llegada desde la frontera de la SOI terrestre
+  // hasta que el periapsis apuntado varía menos de 1 m (y, si activo `earthBeyondSoi`, el desvío real Sol + Tierra baja de 1 km).
   if (profile.launch.enabled) {
     const earthOrbit = osculatingOrbitOfBody(earth.positionKm, earth.velocityKmS, MU_SUN + EARTH_GM_KM3_S2);
     const earthSoiKm = sphereOfInfluenceRadiusKm({ model: profile.soiModel, semiMajorAxisKm: earthOrbit.semiMajorAxisKm, eccentricity: earthOrbit.eccentricity, muBody: EARTH_GM_KM3_S2, muPrimary: MU_SUN });
-    // 28: con la gravedad terrestre fuera de la SOI, cada vuelta mide además el fallo en la llegada de la nave real (Sol + Tierra) y
-    // corrige la velocidad pedida en la frontera; se para cuando el periapsis cambia < 1 m y el fallo es < 1 km.
+    // Con empalme por asíntota y gravedad terrestre más allá de la SOI, acumulo la corrección en la velocidad pedida en cada vuelta.
     const refineEarth = profile.launch.patch === 'asymptote' && profile.launch.earthBeyondSoi !== false;
     const maxRounds = refineEarth ? EARTH_BEYOND_SOI.maxRounds : 4;
     const ephemerisAt = (id, jd) => { const s = data.helio.stateAt(id, jd); return s?.status === 'available' ? s : null; };
@@ -286,7 +269,7 @@ export function computeIntegratedMission(input, data) {
       earthBeyondSoi = beyond?.ok
         ? { applied: true, converged: beyond.missKm <= EARTH_BEYOND_SOI.toleranceKm, missKm: beyond.missKm, correctionKmS: [...beyond.correctionAppliedKmS], correctionMS: norm(beyond.correctionAppliedKmS) * 1000,
           rounds: launchRounds, steps: beyond.steps, perturbers: EARTH_BEYOND_SOI.perturbers.map(p => p.name), toleranceKm: EARTH_BEYOND_SOI.toleranceKm }
-        // Auditoría 28 (O-1): si falla en una vuelta posterior, la salida ya lleva la corrección acumulada; se declara.
+        // Si el refinamiento falla en una ronda posterior, informo explícitamente la corrección parcial que ya quedó aplicada en la salida.
         : { applied: false, converged: false, reason: beyond?.reason ?? 'sin llegada apuntada', partialCorrectionMS: norm(correction) * 1000 };
       if (!earthBeyondSoi.applied) warnings.push(`Gravedad terrestre fuera de la SOI no incluida en el apuntado de la salida: ${earthBeyondSoi.reason}${earthBeyondSoi.partialCorrectionMS > 0 ? ` (la salida lleva una corrección parcial de ${earthBeyondSoi.partialCorrectionMS.toFixed(1)} m/s sin comprobar)` : ''}. La nave real se apartaría de la llegada cónica (cientos de miles de km en una transferencia a Marte).`);
       else if (!earthBeyondSoi.converged) warnings.push(`El apuntado con la gravedad terrestre fuera de la SOI no bajó de ${EARTH_BEYOND_SOI.toleranceKm} km en ${maxRounds} vueltas (fallo ${earthBeyondSoi.missKm.toFixed(1)} km en la llegada).`);
@@ -301,7 +284,7 @@ export function computeIntegratedMission(input, data) {
   }
   if (launch) {
     departureJdTdb = launch.liftoffJdTdb;
-    departureVInf = launch.exit.vInfVectorKmS; // 28: v∞ de la asíntota (|v∞|² = C3), no la velocidad en la frontera de la SOI
+    departureVInf = launch.exit.vInfVectorKmS; // tomo el vector v∞ de la asíntota (|v∞|² = C3) en lugar de la velocidad en la frontera de la SOI
     if (aim.status === AIM_STATUS.aimed) appendLaunch();
   } else {
     departureVInf = aim.departure ? sub(aim.departure.velocityKmS, earth.velocityKmS) : null;
@@ -320,7 +303,7 @@ export function computeIntegratedMission(input, data) {
     startSeconds: tCruise, endSeconds: tSoi });
   event('soi-entry', 'soi', `Entrada en la esfera de influencia de ${tgt.name} (${(soiKm / 1e6).toFixed(3)} millones de km)`, tSoi, { centralBodyId: tgt.id });
 
-  // ---- 1. Aproximación y captura planetaria ----------------------------------------------------------------------------------
+  // ---- 1. Aproximación hiperbólica y captura planetaria ---------------------------------------------------------------------
   const rel0 = aim.soi.relative;
   approachInfo = { soiRadiusKm: soiKm, soiModel: profile.soiModel, vInfKmS: aim.achieved.vInfKmS, BdotT: aim.achieved.BdotT, BdotR: aim.achieved.BdotR, bAngleDeg: aim.achieved.bAngleDeg,
     bMagnitudeKm: aim.achieved.bMagnitudeKm, periapsisTargetKm: compensation?.aimedRadiusKm ?? rpPlanet, orbitPeriapsisTargetKm: rpPlanet, periapsisCompensation, periapsisAchievedKm: aim.achieved.periapsisRadiusKm, periapsisAltitudeKm: aim.achieved.periapsisAltitudeKm,
@@ -348,13 +331,13 @@ export function computeIntegratedMission(input, data) {
   phase('capture', `Captura en ${tgt.name} (empuje finito)`, insertionLabel, ins.status === INSERTION_STATUS.target ? LEVEL.experimental : LEVEL.notViable, {
     detail: `${ins.status}. ${ins.failure ?? ''} Propelente ${ins.totals.propellantKg.toFixed(1)} kg · Δv ${(ins.totals.propulsiveDeltaVKmS * 1000).toFixed(1)} m/s (referencia impulsiva ${(reference.totalDeltaVKmS * 1000).toFixed(1)} m/s).${resultingOrbitNote(ins, approachInfo.periapsisAltitudeKm, periapsisCompensation?.applied)}${compensationNote(periapsisCompensation)}`,
     insertion: summarizeInsertion(ins, R), reference, periapsisCompensation, startSeconds: tSoi, endSeconds: tAfterPlanet,
-    // 24: objetivo pedido y radio del cuerpo, para comparar en «Resultados» (solo descripción del cálculo ya hecho).
+    // Adjunto el objetivo solicitado y el radio del planeta para mostrar la comparativa en la pestaña de resultados.
     objective: { periapsisAltitudeKm: profile.planet.periapsisAltitudeKm, apoapsisAltitudeKm: profile.planet.captureBurns.at(-1)?.apoapsisAltitudeKm ?? null }, bodyRadiusKm: R, bodyName: tgt.name });
   captured = ins.final.orbit.bound && ins.status !== INSERTION_STATUS.impact;
   if (ins.status === INSERTION_STATUS.flyby) { flybyAndOutbound(ins.final, tAfterPlanet, true); return finish(); }
   if (!captured) return finish();
 
-  // ---- 2. Fase lunar: transferencia planetocéntrica → SOI del satélite → captura → descenso ----------------------------------
+  // ---- 2. Fase lunar: transferencia planetocéntrica → SOI del satélite → captura o sobrevuelo → descenso --------------------
   if (moonId) {
     if (ins.status !== INSERTION_STATUS.target) phase('moon-transfer', `Transferencia hacia ${moonProfile.name}`, PHASE_STATUS.skipped, LEVEL.notViable, { detail: 'La órbita de captura planetaria no alcanzó el objetivo; no se planifica la fase lunar sobre una órbita distinta de la diseñada.' });
     else moonPhase();
@@ -365,7 +348,7 @@ export function computeIntegratedMission(input, data) {
   return finish();
 
   // ===========================================================================================================================
-  // 21: lanzamiento (tramos de 12E girados a ejes eclípticos J2000), aparcamiento, inyección y escape, centrados en la Tierra.
+  // Registro los tramos geocéntricos de salida (ascenso rotado a eclípticos J2000, aparcamiento, inyección y escape) y sus separaciones.
   function appendLaunch() {
     const L = launch, earthBody = { centralBodyId: '399', centralName: 'Tierra', mu: EARTH_GM_KM3_S2 };
     const asc = L.ascent.segments.filter(sg => sg.endSeconds - sg.startSeconds > 1e-9);
@@ -373,7 +356,7 @@ export function computeIntegratedMission(input, data) {
     asc.forEach((sg, i) => {
       const ks = L.ascentKnots.filter(k => k.elapsedSeconds >= sg.startSeconds - 1e-9 && k.elapsedSeconds <= sg.endSeconds + 1e-9).map(k => ({ ...k }));
       if (ks.length < 2) return;
-      // Masas de frontera: la del inicio del tramo; al final, la del siguiente salvo que haya una separación declarada en esa frontera.
+      // Fijo las masas exactas de frontera en cada tramo de ascenso respetando la separación de etapa cuando ocurre en ese instante.
       ks[0].massKg = sg.massStartKg;
       const next = asc[i + 1], sepHere = sep1 && Math.abs(sep1.elapsedSeconds - sg.endSeconds) < 1e-6;
       ks.at(-1).massKg = next && !sepHere ? next.massStartKg : sg.massEndKg;
@@ -407,9 +390,8 @@ export function computeIntegratedMission(input, data) {
     pushSegment({ id: 'earth-escape', phase: 'earth-escape', kind: 'kepler', label: 'Hipérbola de escape terrestre', ...earthBody, startSeconds: L.escape.startSeconds, endSeconds: L.escape.endSeconds,
       initial: { positionKm: [...L.escape.initial.positionKm], velocityKmS: [...L.escape.initial.velocityKmS], massKg: mass }, massKg: mass });
     event('earth-soi-exit', 'soi', `Salida de la esfera de influencia terrestre (${(L.soiRadiusKm / 1e6).toFixed(3)} millones de km)`, L.exit.elapsedSeconds, { centralBodyId: '10' });
-    // 28: residuo del apuntado frente a la velocidad que se pidió (la del Lambert más la corrección por la Tierra fuera de la SOI).
+    // Mido el residuo del apuntado frente a la velocidad pedida y registro el salto declarado en la SOI terrestre cuando uso empalme por asíntota.
     const residualMmS = norm(sub(L.exit.helioVelocityAchievedKmS, L.exit.helioVelocityRequiredKmS)) * 1e6;
-    // 28: salto de velocidad declarado en la frontera (empalme por la asíntota). Con el empalme de la etapa 21 es nulo.
     const jumpKmS = norm(sub(L.exit.helioVelocityActualKmS, aim.departure.velocityKmS));
     if (L.patch === 'asymptote') patches.push({ elapsedSeconds: L.exit.elapsedSeconds, from: 'earth-escape', to: 'cruise', velocityJumpKmS: jumpKmS,
       reason: earthBeyondSoi?.applied ? 'cónicas parcheadas: lo que la gravedad terrestre quita fuera de la SOI (calculado con el Sol y la Tierra hasta la llegada) se aplica en la frontera'
@@ -446,11 +428,11 @@ export function computeIntegratedMission(input, data) {
       finalOrbit: { bound: o.bound, periapsisAltitudeKm: o.periapsisRadiusKm - radius, apoapsisAltitudeKm: o.bound ? o.apoapsisRadiusKm - radius : null, eccentricity: o.eccentricity,
         periodHours: o.periodSeconds ? o.periodSeconds / 3600 : null, inclinationDeg: o.inclinationDeg, vInfKmS: o.vInfKmS } };
   }
-  // Sobrevuelo: rama hiperbólica hasta salir de la SOI y crucero heliocéntrico posterior (limitado por la cobertura).
+  // Propago la rama hiperbólica de sobrevuelo hasta salir de la SOI del planeta y conecto el crucero heliocéntrico posterior dentro de cobertura.
   function flybyAndOutbound(state, offset, afterFailedCapture = false) {
     const c = conicSummary(state.positionKm, state.velocityKmS, mu);
     if (c.periapsisKm < R && norm(state.positionKm) > c.periapsisKm) { phase('flyby', 'Sobrevuelo', PHASE_STATUS.failed, LEVEL.notViable, { detail: 'La hipérbola corta la superficie: impacto.' }); return; }
-    // Tiempo hasta |r| = r_SOI en la rama de salida (bisección sobre la cónica).
+    // Localizo por bisección sobre la cónica el instante exacto en que |r| alcanza el radio de la SOI en la rama de salida.
     const f = x => norm(propagateKepler(state.positionKm, state.velocityKmS, x, mu).positionKm) - soiKm;
     let a = 0, b = Math.max(86400, 2 * approachInfo.secondsSoiToPeriapsis + 86400);
     while (f(b) < 0 && b < 1e10) b *= 2;
@@ -494,14 +476,14 @@ export function computeIntegratedMission(input, data) {
       targetStateAt: jd => moonState(moonKey, jd), muCentral: mu, muTarget: moonMu, targetRadiusKm: moonR, periapsisRadiusKm: rpMoon,
       bPlane: { mode: 'normal', normal: cross(moonNow.positionKm, moonNow.velocityKmS) }, soiRadiusKm: moonSoi, centralRadiusKm: R });
     if (moonAim.status !== AIM_STATUS.aimed) { phase('moon-transfer', `Transferencia hacia ${moon.name}`, moonAim.status === AIM_STATUS.noCoverage ? PHASE_STATUS.noData : PHASE_STATUS.failed, LEVEL.notViable, { detail: moonAim.reason }); return; }
-    // Encendido FINITO que reproduce la salida apuntada (método de disparo hasta el punto de entrada en la SOI del satélite).
+    // Calculo el encendido finito de dirección inercial fija mediante método de disparo hasta el punto de entrada en la SOI del satélite.
     const arrivalLocal = elapsedOf(startJd, moonAim.soi.jdTdb);
     const burn = targetFiniteBurn({ mu, positionKm: planetFinal.positionKm, velocityKmS: planetFinal.velocityKmS, massKg: mass, propellantKg: tanks[engineKey], engine,
       burnCenterSeconds: tBurnLocal, aimPositionKm: moonAim.soi.aimPositionKm, arrivalSeconds: arrivalLocal, initialDeltaVKmS: sub(moonAim.departure.velocityKmS, scAtBurn.velocityKmS), centralRadiusKm: R });
     const transferDetail = `Búsqueda: ${search.evaluated} transferencias evaluadas; mejor Δv impulsivo de salida ${(best.transferDeltaVKmS * 1000).toFixed(1)} m/s + captura ideal ${(best.captureDeltaVKmS * 1000).toFixed(1)} m/s (v∞ en ${moon.name} ${best.vInfMoonKmS.toFixed(3)} km/s). Sin asistencias gravitacionales de otros satélites.`;
     if (!burn.converged) { phase('moon-transfer', `Transferencia hacia ${moon.name}`, PHASE_STATUS.failed, LEVEL.notViable, { detail: `${burn.reason} ${transferDetail}`, search: { evaluated: search.evaluated, best } }); return; }
     const off = tAfterPlanet;
-    // Tramos: órbita de captura (balística) → encendido de transferencia (DOPRI54) → arco balístico hasta la SOI del satélite.
+    // Encadeno los tres tramos planetocéntricos: espera en la órbita de captura, encendido finito (DOPRI54) y crucero balístico hasta la SOI lunar.
     if (burn.startSeconds > 0) pushSegment({ id: 'planet-orbit-wait', phase: 'planet-orbit', kind: 'kepler', label: `Órbita de captura en ${tgt.name} (espera de la salida)`, centralBodyId: tgt.id, centralName: tgt.name, mu,
       startSeconds: off, endSeconds: off + burn.startSeconds, initial: { positionKm: [...planetFinal.positionKm], velocityKmS: [...planetFinal.velocityKmS], massKg: mass }, massKg: mass });
     const massBefore = mass;
@@ -519,7 +501,7 @@ export function computeIntegratedMission(input, data) {
     phase('planet-orbit', `Órbita de captura en ${tgt.name}`, PHASE_STATUS.done, LEVEL.experimental, { detail: `${((burn.startSeconds) / 86400).toFixed(2)} d de espera en la órbita de captura hasta la salida óptima de la búsqueda.`, startSeconds: off, endSeconds: off + burn.startSeconds });
     phase('moon-transfer', `Transferencia planetocéntrica hacia ${moon.name}`, PHASE_STATUS.done, LEVEL.experimental, { detail: `${transferDetail} Encendido finito ${burn.durationSeconds.toFixed(0)} s, ${burn.propellantKg.toFixed(0)} kg, Δv ${(burn.propulsiveDeltaVKmS * 1000).toFixed(1)} m/s; error en la SOI ${burn.missKm.toFixed(3)} km.`,
       startSeconds: off + burn.startSeconds, endSeconds: off + arrivalLocal, search: { evaluated: search.evaluated, rejected: search.rejected, best } });
-    // Estado REAL en la SOI del satélite (tras el encendido finito), relativo al satélite con su efeméride en esa época.
+    // Traslado el estado real al borde de la SOI del satélite restando su efeméride en esa misma época TDB.
     const tMoonSoi = off + arrivalLocal, jdMoonSoi = departureJdTdb + tMoonSoi / 86400, mNow = moonState(moonKey, jdMoonSoi);
     const relMoon = { positionKm: sub(burn.arrival.positionKm, mNow.positionKm), velocityKmS: sub(burn.arrival.velocityKmS, mNow.velocityKmS) };
     event('moon-soi-entry', 'soi', `Entrada en la esfera de influencia de ${moon.name} (${moonSoi.toFixed(0)} km)`, tMoonSoi, { centralBodyId: moon.id });
@@ -541,7 +523,7 @@ export function computeIntegratedMission(input, data) {
       insertion: summarizeInsertion(mins, moonR), reference: mRef, startSeconds: tMoonSoi, endSeconds: tAfterMoon,
       objective: { periapsisAltitudeKm: rpMoon - moonR, apoapsisAltitudeKm: raMoon - moonR }, bodyRadiusKm: moonR, bodyName: moon.name });
     approachInfo.moon = moonApproach;
-    // Cribado de otros satélites durante la fase joviana (validez de la cónica parcheada).
+    // Compruebo aproximaciones a otros satélites durante los tramos planetocéntricos para advertir si se invade otra SOI.
     const others = Object.entries(MOON_WINDOW_KEYS).filter(([id]) => id !== moonId && data.moons?.coverage?.(MOON_WINDOW_KEYS[id])).map(([id, key]) => {
       const p = getBodyProfile(id), st = moonState(key, startJd);
       const o = st ? osculatingOrbitOfBody(st.positionKm, st.velocityKmS, mu + p.gm.value) : null;
@@ -552,7 +534,7 @@ export function computeIntegratedMission(input, data) {
       jdAt: t => departureJdTdb + t / 86400, moons: others, stepSeconds: 1200 });
     for (const c of approachInfo.closeApproaches) if (c.insideSoi) warnings.push(`El tramo planetocéntrico entra en la esfera de influencia de ${c.name} (mínimo ${c.minimumDistanceKm.toFixed(0)} km): la cónica parcheada respecto a ${tgt.name} no es válida allí y ese sobrevuelo no está modelado.`);
     if (!(mins.status === INSERTION_STATUS.target || mins.status === INSERTION_STATUS.partial) || !mins.final.orbit.bound) return;
-    // ---- Descenso 12F: solo si el estado final es compatible con su órbita inicial ------------------------------------------
+    // ---- Descenso propulsado conectado: verifico que la órbita final de captura sea transferible sin residuo al simulador de aterrizaje ----
     if (!vehicle.landerSpec || !profile.landing?.enabled) { phase('landing', `Descenso en ${moon.name}`, PHASE_STATUS.skipped, LEVEL.experimental, { detail: 'Sin módulo de aterrizaje en la configuración.' }); return; }
     const cap = landingCapability(moon);
     if (![CAPABILITY.operational, CAPABILITY.experimental].includes(cap.state)) { phase('landing', `Descenso en ${moon.name}`, PHASE_STATUS.pending, LEVEL.pending, { detail: cap.reason }); return; }
@@ -563,7 +545,7 @@ export function computeIntegratedMission(input, data) {
     const env = createLandingEnvironment(moon), check = initialOrbitState(env, elements);
     const residual = { positionKm: norm(sub(check.positionKm, fin.positionKm)), velocityKmS: norm(sub(check.velocityKmS, fin.velocityKmS)) };
     if (residual.positionKm > 1e-6 || residual.velocityKmS > 1e-9) { phase('landing', `Descenso en ${moon.name}`, PHASE_STATUS.failed, LEVEL.notViable, { detail: `Estado final no representable como órbita inicial de 12F (residuo ${residual.positionKm} km).` }); return; }
-    // Separación: el módulo de propulsión se queda en órbita; descienden la sonda (carga útil, con su propelente sin usar) y el módulo de aterrizaje.
+    // Separo el módulo de propulsión orbital antes de descender: bajan únicamente la sonda (con su combustible intacto) y el módulo de aterrizaje.
     const descentMass = vehicle.probe.wetKg - (vehicle.probe.propellantKg - tanks.probe) + vehicle.lander.wetKg;
     separations.push({ elapsedSeconds: tAfterMoon, massBeforeKg: mass, massAfterKg: descentMass, released: vehicle.module ? `${vehicle.module.name} (${(mass - descentMass).toFixed(0)} kg, queda en órbita)` : 'nada' });
     event('separation', 'separation', `Separación del módulo de propulsión (queda en órbita de ${moon.name})`, tAfterMoon, { centralBodyId: moon.id });
@@ -574,7 +556,7 @@ export function computeIntegratedMission(input, data) {
     pushSegment({ id: 'landing', phase: 'landing', kind: 'landing', label: `Descenso propulsado en ${moon.name} (12F)`, centralBodyId: moon.id, centralName: moon.name, mu: moonMu,
       startSeconds: tAfterMoon, endSeconds: tAfterMoon + sim.endSeconds, localOffsetSeconds: tAfterMoon, simulation: sim, massKg: descentMass,
       initial: { positionKm: sim.knots[0].positionKm, velocityKmS: sim.knots[0].velocityKmS, massKg: sim.knots[0].massKg } });
-    // Los títulos de 12F imprimen los elementos sin redondear; aquí se muestran con 3 decimales (el valor numérico no cambia).
+    // Acorto a tres decimales las cifras de los títulos de evento del descenso para mejorar su lectura sin alterar los datos numéricos.
     for (const e of sim.events) if (e.id !== 'end') event(`landing-${e.id}`, e.kind, e.title.replace(/(\d+\.\d{3})\d+/g, '$1'), tAfterMoon + e.elapsedSeconds, { centralBodyId: moon.id });
     mass = sim.final.massKg; tanks.lander = sim.final.fuelKg;
     maneuvers.push({ id: 'landing', label: `Descenso en ${moon.name}`, engineKey: 'lander', engine: vehicle.landerSpec.engine.name, centralBodyId: moon.id, startSeconds: tAfterMoon, endSeconds: tAfterMoon + sim.endSeconds,
@@ -583,9 +565,7 @@ export function computeIntegratedMission(input, data) {
       detail: `${sim.outcome}. Órbita inicial = estado final de la captura (residuo ${residual.positionKm.toExponential(1)} km). El modelo 12F es de un solo cuerpo: omite la marea de ${tgt.name} durante el descenso.`, startSeconds: tAfterMoon, endSeconds: tAfterMoon + sim.endSeconds,
       landing: { outcome: sim.outcome, contact: sim.contact, reasons: sim.reasons, propellantKg: sim.totals.propellantConsumedKg, elements, residual } });
   }
-  // 15: sobrevuelo balístico del satélite (sin encendido de captura). La hipérbola relativa al satélite se propaga hasta la salida
-  // de su SOI; después, el estado se traslada al marco del planeta con la efeméride del satélite en esa época y se propaga un arco
-  // planetocéntrico balístico. Solo actúa el cuerpo central de cada tramo (cónicas parcheadas).
+  // Propago un sobrevuelo balístico del satélite hasta la salida de su SOI y traslado después el estado al marco del planeta anfitrión.
   function moonFlyby({ moon, moonMu, moonR, moonSoi, relMoon, relConic, moonApproach, tMoonSoi }) {
     const mp = profile.moon ?? {};
     phase('moon-approach', `Aproximación a ${moon.name}`, PHASE_STATUS.done, LEVEL.experimental, { detail: `Periapsis resultante ${moonApproach.periapsisAltitudeKm.toFixed(2)} km (objetivo ${moonApproach.periapsisTargetAltitudeKm} km); v∞ ${moonApproach.vInfKmS.toFixed(4)} km/s.`,
@@ -613,10 +593,8 @@ export function computeIntegratedMission(input, data) {
     pushSegment({ id: 'moon-outbound', phase: 'planet-orbit', kind: 'kepler', label: `Arco planetocéntrico tras el sobrevuelo de ${moon.name}`, centralBodyId: tgt.id, centralName: tgt.name, mu,
       startSeconds: tExit, endSeconds: tExit + hours, initial: { positionKm: add(atExit.positionKm, mExit.positionKm), velocityKmS: add(atExit.velocityKmS, mExit.velocityKmS), massKg: mass }, massKg: mass });
   }
-  // 15: balance de energía de la sonda a lo largo de toda la cadena. Generación (solar a la distancia heliocéntrica calculada y
-  // RTG según el tiempo transcurrido) frente a consumo de servicio, más el del motor de la sonda durante sus encendidos. El
-  // déficit se integra en el tiempo y se compara con la batería (cargada al inicio y sin recarga posterior: criterio conservador).
-  // Los módulos ilustrativos de propulsión y aterrizaje no declaran consumo y no se cargan a la sonda.
+  // Evalúo el balance eléctrico de la sonda a lo largo de toda la misión integrando el déficit solar/RTG frente a servicio y encendidos.
+  // Aplico un criterio conservador comparando el déficit acumulado con la capacidad inicial de batería sin recarga posterior.
   function evaluateMissionPower(durationSeconds) {
     const p = vehicle.power;
     if (!segments.length || !(durationSeconds > 0) || !p) return null;
@@ -672,7 +650,7 @@ export function computeIntegratedMission(input, data) {
   }
 }
 
-/** 21: resumen del lanzamiento para el resultado (sin los nudos ni la simulación de 12E completa). */
+// Construyo el resumen serializable del lanzamiento terrestre (sin arrastrar todos los nudos de ascenso) incluyendo empalme y estado en la SOI.
 function launchSummary(L, rounds, aim, earthBeyondSoi = null) {
   const base = { model: L.model, status: L.status, ok: L.ok, reason: L.reason, launcherName: L.launcherName, site: L.site, upperStage: L.upperStage, stackMassKg: L.stackMassKg,
     azimuthDeg: L.azimuthDeg ?? null, declinationDeg: L.declinationDeg ?? null };
@@ -685,7 +663,7 @@ function launchSummary(L, rounds, aim, earthBeyondSoi = null) {
       impulsiveDeltaVKmS: L.injection.impulsiveDeltaVKmS, gravityLossKmS: L.injection.gravityLossKmS, c3Km2S2: L.injection.c3Km2S2, burnoutAltitudeKm: L.injection.burnoutAltitudeKm, startSeconds: L.injection.startSeconds },
     soiRadiusKm: L.soiRadiusKm, soiExitSeconds: L.exit.elapsedSeconds, soiExitJdTdb: L.exit.jdTdb, escapeDays: L.escape.durationSeconds / 86400,
     handoffResidualKmS: norm(sub(L.exit.helioVelocityAchievedKmS, L.exit.helioVelocityRequiredKmS)), iterations: L.iterations, rounds,
-    // 28: empalme, salto de velocidad en la frontera y estado real de la nave allí (para el crucero de n cuerpos).
+    // Guardo el tipo de empalme, el salto de velocidad en la frontera y el estado heliocéntrico real para contrastarlo con el propagador de N cuerpos.
     patch: L.patch, soiVelocityJumpKmS: aim?.departure ? norm(sub(L.exit.helioVelocityActualKmS, aim.departure.velocityKmS)) : null,
     soiExitHelioState: { positionKm: [...L.exit.helioPositionKm], velocityKmS: [...L.exit.helioVelocityActualKmS] }, vInfVectorKmS: [...L.exit.vInfVectorKmS], earthBeyondSoi });
 }
@@ -701,7 +679,7 @@ export const MISSION_LIMITS = Object.freeze([
   'Energía (15): generación solar a la distancia heliocéntrica calculada y RTG con su disminución temporal frente al consumo de servicio de las piezas; sin eclipses, orientación ni recarga de batería. La propulsión eléctrica usa la potencia restante en el destino; el crucero de bajo empuje no se modela.'
 ]);
 
-// Estado nativo (marco del cuerpo central del tramo) en un instante de misión, sin conversión.
+// Muestreo el estado nativo del tramo activo en su propio marco central (Kepler exacto o Hermite entre nudos integrados).
 export function samplePlain(segments, t) {
   let s = segments[0];
   for (const seg of segments) if (t >= seg.startSeconds - 1e-9) s = seg;
@@ -734,10 +712,10 @@ function hermiteKnot(a, b, t) {
   return { positionKm: p, velocityKmS: v, massKg: a.massKg + (b.massKg - a.massKg) * u };
 }
 
-/** Conversión de un estado nativo (relativo a `centralBodyId`) al marco heliocéntrico o al del planeta, con las efemérides en la época. */
+// Traslado un estado nativo entre marcos centrados en el Sol, la Tierra, el planeta destino o su satélite usando las efemérides en la misma época TDB.
 export function convertState(state, fromCentral, toFrame, jdTdb, data, tgt, moonKey) {
   if (fromCentral === toFrame) return state;
-  // 21: tramos centrados en la Tierra (lanzamiento, aparcamiento, inyección y escape): traslación con la efeméride de la Tierra.
+  // Para tramos centrados en la Tierra aplico traslación con la efeméride terrestre pasando por el marco heliocéntrico.
   if (fromCentral === '399' || toFrame === '399') {
     const e = data.helio.stateAt('399', jdTdb);
     if (e?.status !== 'available') throw new RangeError('Efemérides de la Tierra no disponibles para el intervalo solicitado');
@@ -757,11 +735,8 @@ export function convertState(state, fromCentral, toFrame, jdTdb, data, tgt, moon
   throw new RangeError('Conversión de marco no soportada.');
 }
 
-/**
- * Continuidad en cada frontera: tiempo, posición y velocidad en el marco común de ambos tramos, y masa (salvo separaciones declaradas).
- * 28: `patches` declara los saltos de velocidad propios del modelo (empalme por la asíntota en la SOI terrestre). Esas fronteras no
- * cuentan en `maxVelocityErrorKmS`; su salto medido se devuelve aparte (`declaredPatches`) junto con el declarado.
- */
+// Verifico la continuidad de tiempo, posición, velocidad y masa en cada frontera entre tramos consecutivos.
+// Excluyo de `maxVelocityErrorKmS` los saltos de velocidad declarados en `patches` (empalme por asíntota en la SOI terrestre) y los reporto aparte.
 export function checkContinuity(segments, separations, data, tgt, moonKey, departureJdTdb, patches = []) {
   const boundaries = [];
   for (let i = 1; i < segments.length; i++) {
@@ -784,6 +759,6 @@ export function checkContinuity(segments, separations, data, tgt, moonKey, depar
     maxTimeGapSeconds: Math.max(0, ...valid.map(b => Math.abs(b.timeGapSeconds))), undeclaredMassJumps: valid.filter(b => !b.separation && Math.abs(b.massChangeKg) > 1e-6).length };
 }
 
-/** Comprueba que un resultado sigue vigente para el diseño y la configuración actuales. */
+// Compruebo que el resultado calculado siga vigente respecto al modelo integrado actual y a la firma de la sonda.
 export function isIntegratedMissionCurrent(mission, design) { return Boolean(mission && design && mission.model === INTEGRATED_MISSION_VERSION && mission.designSignature === designSignature(design)); }
 export { tsiolkovskyDeltaVMS, impulsiveCaptureDeltaV, orbitDescription };

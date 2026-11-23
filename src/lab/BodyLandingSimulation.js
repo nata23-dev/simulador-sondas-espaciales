@@ -1,7 +1,7 @@
-// Etapa 12F — simulación completa de un descenso propulsado sobre un cuerpo sólido sin atmósfera significativa.
-// Fases: órbita inicial → salida de órbita (encendido retrógrado) → aproximación al periapsis → frenado principal →
-// reducción de velocidad horizontal → descenso terminal → contacto → evaluación. Todo resulta de integrar DOPRI54
-// con el guiado en lazo cerrado de BodyLandingDynamics; nada está predefinido. El contacto es un evento numérico |r| = R.
+// En este módulo orquesto la simulación completa de un descenso propulsado sobre un cuerpo sólido sin atmósfera significativa.
+// Encadeno todas las fases de vuelo: órbita inicial, encendido retrógrado de salida de órbita, aproximación al periapsis,
+// descenso propulsado en lazo cerrado (frenado principal, reducción horizontal y fase terminal), contacto con el suelo y dictamen final.
+// Todo surge de integrar DOPRI54 con la dinámica de BodyLandingDynamics; detecto el contacto como el evento numérico |r| = R.
 import { CAPABILITY, landingCapability, localFrameDescriptor } from './CelestialBodyMissionRegistry.js';
 import { DEFAULT_LANDING_GUIDANCE, DEFAULT_LANDING_LIMITS, LandingError, createLandingEnvironment, descentPhaseOf, initialOrbitState, landingCommand,
   orbitalSummary, runLandingLeg, surfaceGravityMS2, surfaceKinematics, CONTACT_PREDICATE_KM, CONTACT_BRACKET_SECONDS, LANDING_ABS_TOL, LANDING_REL_TOL } from './BodyLandingDynamics.js';
@@ -17,6 +17,7 @@ export const DEFAULT_LANDING_SCHEDULE = Object.freeze({ maxDescentSeconds: 4000 
 export const DEFAULT_DESCENT_ORBIT = Object.freeze({ periapsisAltitudeKm: 100, apoapsisAltitudeKm: 100, inclinationDeg: 30, raanDeg: 0, argumentOfPeriapsisDeg: 0, trueAnomalyDeg: 0 });
 const DEG = 180 / Math.PI;
 
+// Clasifico el contacto comparando las velocidades vertical y horizontal respecto al suelo con los umbrales configurados.
 export function classifyContact(limits, verticalMS, horizontalMS) {
   const down = Math.abs(verticalMS);
   if (down <= limits.softVerticalMS && horizontalMS <= limits.softHorizontalMS) return 'soft';
@@ -24,6 +25,7 @@ export function classifyContact(limits, verticalMS, horizontalMS) {
   return 'impact';
 }
 
+// Verifico que la configuración de órbita inicial, parámetros de guiado y tiempo máximo de descenso sean válidos.
 export function validateLandingOptions(options) {
   const issues = [];
   if (!options?.orbit) return ['Falta la órbita inicial.'];
@@ -39,7 +41,7 @@ export function validateLandingOptions(options) {
   return issues;
 }
 
-// 12F.1 (OBS-12F-01): informe separado de las tolerancias del contacto; ninguna sustituye a otra.
+// Construyo un informe desglosado de las tolerancias del contacto para no mezclar predicado geométrico, bisección temporal y error DOPRI54.
 export function contactToleranceReport(contact, contactInfo, env) {
   if (!contact || !contactInfo) return null;
   const r = contactInfo.positionKm, v = contactInfo.velocityKmS, rn = Math.hypot(r[0], r[1], r[2]);
@@ -49,6 +51,8 @@ export function contactToleranceReport(contact, contactInfo, env) {
     integrationTolerance: { absPositionKm: LANDING_ABS_TOL[0], rel: LANDING_REL_TOL },
     note: 'El predicado (1e-9 km) solo fija que el estado está bajo R; la precisión espacial la limita |v_r|·Δt del intervalo de bisección, y el error de integración lo fijan las tolerancias DOPRI54.' };
 }
+
+// Simulo el descenso de principio a fin y devuelvo nudos, tramos, eventos, diagnóstico numérico y clasificación del contacto.
 export function simulateLanding({ profile, lander, payloadMassKg, options }) {
   const capability = landingCapability(profile);
   if (![CAPABILITY.operational, CAPABILITY.experimental].includes(capability.state)) throw new LandingError('NOT_AVAILABLE', capability.reason, { capability });
@@ -57,7 +61,7 @@ export function simulateLanding({ profile, lander, payloadMassKg, options }) {
   if (!Number.isFinite(payloadMassKg) || payloadMassKg < 0) throw new LandingError('INVALID_MASS', 'La masa de la carga útil debe ser finita y no negativa.');
   const optionIssues = validateLandingOptions(options);
   if (optionIssues.length) throw new LandingError('INVALID_OPTIONS', optionIssues.join(' '), { issues: optionIssues });
-  // Guiado de lazo cerrado: exige estrangulamiento real y que el empuje mínimo permita sostener el vuelo estacionario.
+  // Exijo un motor estrangulable cuyo empuje mínimo sea inferior al peso final en superficie para que el lazo cerrado no oscile al acercarse al suelo.
   if (!lander.engine.throttleable) throw new LandingError('NOT_SUPPORTED', 'El guiado de descenso implementado requiere un motor estrangulable: los motores de empuje fijo necesitan una ley de encendido único que aún no está implementada. No se simula un estrangulamiento que el motor no tiene.');
   const guidance = { ...DEFAULT_LANDING_GUIDANCE, ...options.guidance }, limits = { ...DEFAULT_LANDING_LIMITS, ...options.limits }, schedule = { ...DEFAULT_LANDING_SCHEDULE, ...options.schedule };
   const env = createLandingEnvironment(profile);
@@ -77,7 +81,7 @@ export function simulateLanding({ profile, lander, payloadMassKg, options }) {
     stats.acceptedSteps += run.stats.acceptedSteps; stats.rejectedSteps += run.stats.rejectedSteps; stats.functionEvaluations += run.stats.functionEvaluations;
     if (run.stats.maxStepSeconds) { stats.minStepSeconds = Math.min(stats.minStepSeconds, run.stats.minStepSeconds); stats.maxStepSeconds = Math.max(stats.maxStepSeconds, run.stats.maxStepSeconds); }
   };
-  // Ejecuta un tramo; contacto y agotamiento se registran aquí para que ningún tramo posterior los ignore.
+  // Ejecuto un tramo de integración y registro de inmediato el contacto o el agotamiento de propelente para que ningún tramo posterior los omita.
   function leg({ id, label, mode, duration, maxStepSeconds = 20, stopWhen = null }) {
     const t0 = t, run = runLandingLeg({ env, lander, guidance, mode, massDryKg: mDry, state, t0, t1: t + duration, maxStepSeconds, stopWhen });
     append(run); state = run.state; t = run.time;
@@ -125,6 +129,7 @@ export function simulateLanding({ profile, lander, payloadMassKg, options }) {
   stats.minStepSeconds = Number.isFinite(stats.minStepSeconds) ? stats.minStepSeconds : 0;
 
   // ---- Eventos derivados de la trayectoria integrada (transiciones de fase) -----------------------------------------------
+  // Localizo por bisección sobre los nudos integrados los instantes exactos en que el descenso cambia de fase horizontal.
   const sample = time => sampleIntegratedState(knots, time);
   const descent = segments.find(s => s.id === 'descent');
   const phaseAt = time => { const k = surfaceKinematics(env, sample(time).positionKm, sample(time).velocityKmS); return descentPhaseOf(guidance, k.horizontalMS); };
@@ -143,11 +148,11 @@ export function simulateLanding({ profile, lander, payloadMassKg, options }) {
   }
   events.sort((a, b) => a.elapsedSeconds - b.elapsedSeconds);
 
-  // ---- Resultado -------------------------------------------------------------------------------------------------------------
+  // ---- Evaluación del resultado ----------------------------------------------------------------------------------------------
   const last = knots.at(-1);
   const final = { elapsedSeconds: last.elapsedSeconds, positionKm: last.positionKm, velocityKmS: last.velocityKmS, massKg: last.massKg, dvAccKmS: last.dvAccKmS, fuelKg: Math.max(0, last.massKg - mDry) };
   const finite = knots.every(k => k.positionKm.every(Number.isFinite) && k.velocityKmS.every(Number.isFinite) && Number.isFinite(k.massKg));
-  // Empuje/peso al inicio del frenado y saturación del guiado durante el descenso.
+  // Mido la relación empuje/peso al iniciar el frenado y compruebo si el guiado saturó el motor en los últimos 120 s.
   const pdiKnot = descent ? knots.find(k => k.elapsedSeconds >= descent.startSeconds) : null;
   const gPdi = pdiKnot ? surfaceKinematics(env, pdiKnot.positionKm, pdiKnot.velocityKmS).gravityMS2 : surfaceGravityMS2(env);
   const thrustToWeightPdi = pdiKnot ? lander.engine.thrustMaxN / (pdiKnot.massKg * gPdi) : null;

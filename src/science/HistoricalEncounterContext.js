@@ -1,8 +1,24 @@
+/**
+ * En este módulo resuelvo vectores geométricos relativos de alta cadencia
+ * procedentes de NASA/JPL Horizons para los encuentros planetarios y lunares
+ * históricos de Voyager 1 y Voyager 2.
+ *
+ * - Unidades: posiciones relativas en km, velocidades relativas en km/s,
+ *   intervalos máximos en segundos (s, ≤ 300 s) y épocas en JD TDB.
+ * - Marco de referencia: ejes `ICRF_ECLIPTIC_J2000` sin corrección por tiempo
+ *   de luz (`VEC_CORR=NONE`), con origen `planet-center` (vector nave − planeta)
+ *   para encuentros planetarios y `probe-center` (vector luna − nave) para
+ *   encuentros con satélites naturales.
+ * - Límites: nunca trato estos vectores relativos como un estado heliocéntrico
+ *   global, rechazo fechas fuera de cobertura o huecos mayores que `maxIntervalSeconds`,
+ *   y cacheo en memoria el catálogo y cada serie validada.
+ */
 import { requireJdTdb } from './Time.js';
 
 export const HISTORICAL_ENCOUNTER_CONTEXT_CATALOG_PATH = 'data/historical-encounter-contexts-v1.json';
 const SECONDS_PER_DAY = 86400;
 
+/** Aquí valido el contrato global y cada entrada de encuentro planetario y lunar del catálogo. */
 function validateCatalog(catalog) {
   if (catalog?.version !== 1 || catalog?.frame !== 'ICRF_ECLIPTIC_J2000'
     || catalog?.timeScale !== 'TDB' || catalog?.correction !== 'NONE'
@@ -31,6 +47,7 @@ function validateCatalog(catalog) {
   }
 }
 
+/** Aquí verifico la integridad de una serie de encuentro (formato, origen, extremos, orden creciente y paso máximo). */
 function validateSeries(data, entry) {
   const moon=entry.moon!==undefined;
   if (data?.format !== (moon?'voyager-moon-relative-v1':'voyager-relative-v1')
@@ -55,6 +72,7 @@ function validateSeries(data, entry) {
   }
 }
 
+/** Aquí interpolo posición (km) y velocidad (km/s) con polinomios cúbicos de Hermite dentro de un intervalo válido. */
 function hermite(first, last, jdTdb) {
   const duration = (last[0] - first[0]) * SECONDS_PER_DAY;
   const u = (jdTdb - first[0]) / (last[0] - first[0]);
@@ -83,12 +101,18 @@ function freezeVector(values) {
   return Object.freeze({x:values[0],y:values[1],z:values[2]});
 }
 
-/** A geometric probe-minus-planet vector. It is never a global probe state. */
+/**
+ * Aquí creo el resolvedor de vectores geométricos directos de encuentro
+ * (nave − planeta o luna − nave) con caché perezosa del catálogo y de las series.
+ * Estos estados describen únicamente la geometría local del sobrevuelo y nunca
+ * sustituyen al estado heliocéntrico global de la sonda.
+ */
 export function createHistoricalEncounterContextResolver({
   loadJson,
   catalogPath = HISTORICAL_ENCOUNTER_CONTEXT_CATALOG_PATH
 }) {
   if (typeof loadJson !== 'function') throw new TypeError('Se requiere loadJson.');
+  // Cacheo las promesas del catálogo y de cada serie por id para evitar lecturas y validaciones repetidas.
   let catalogPromise = null;
   const seriesPromises = new Map();
   async function getCatalog() {
@@ -104,6 +128,7 @@ export function createHistoricalEncounterContextResolver({
     }
     return seriesPromises.get(entry.id);
   }
+  /** Resuelvo una entrada de encuentro concreta comprobando cobertura, buscando muestras vecinas por bisección e interpolando con Hermite si hace falta. */
   async function resolveEntry(entry,jdTdb,catalog) {
     if (!entry) return Object.freeze({status:'unavailable',state:null,reason:'No existe contexto local verificado para esta pareja nave–objetivo.'});
     if (jdTdb < entry.startJdTdb || jdTdb > entry.endJdTdb) {

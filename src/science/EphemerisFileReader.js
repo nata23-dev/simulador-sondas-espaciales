@@ -1,6 +1,18 @@
 /**
- * Crea un lector asíncrono de JSON estático bajo la ruta base de Vite/Pages.
- * No contiene ninguna URL de NASA ni inicia una petición hasta que se invoca.
+ * En este módulo construyo el lector asíncrono de archivos JSON estáticos de
+ * efemérides servidos bajo la ruta base local de Vite o GitHub Pages.
+ *
+ * - Unidades y marco de referencia: no interpreto ni transformo unidades físicas
+ *   (km, km/s, s, JD TDB) ni marcos; únicamente entrego el objeto JSON decodificado
+ *   a las capas de validación científica.
+ * - Límites y seguridad: nunca incluyo URLs externas de NASA/JPL Horizons ni ejecuto
+ *   peticiones al construirse; rechazo rutas absolutas, secuencias `..` o barras dobles
+ *   para impedir accesos fuera del directorio estático local.
+ */
+
+/**
+ * Aquí devuelvo una función `readJson(file)` que valida la ruta relativa,
+ * solicita el recurso mediante `fetchImpl` y comprueba estado HTTP y sintaxis JSON.
  */
 export function createStaticJsonReader({ baseUrl, fetchImpl = globalThis.fetch }) {
   if (typeof baseUrl !== 'string' || !baseUrl.startsWith('/') || !baseUrl.endsWith('/')) {
@@ -8,6 +20,7 @@ export function createStaticJsonReader({ baseUrl, fetchImpl = globalThis.fetch }
   }
   if (typeof fetchImpl !== 'function') throw new TypeError('fetchImpl debe ser una función.');
   return async function readJson(file) {
+    // Valido que el archivo sea una ruta JSON relativa estricta sin ascensos ni barras duplicadas.
     if (typeof file !== 'string' || !/^[A-Za-z0-9_./-]+\.json$/.test(file)
       || file.startsWith('/') || file.includes('..') || file.includes('//')) {
       throw new RangeError('file debe ser una ruta JSON local relativa.');

@@ -1,9 +1,12 @@
+// En este módulo construyo la bóveda celeste inercial con las estrellas del catálogo Hipparcos
+// y una banda galáctica ilustrativa alineada con el polo galáctico norte J2000.
 import * as THREE from 'three';
 import { cargarCatalogoHipparcos, direccionICRSEscena } from './StarCatalog.js';
 
-// La esfera sigue a la cámara y permanece dentro del plano lejano (> 350 AU), sin paralaje.
+// Mantengo la esfera celeste solidaria a la cámara dentro del plano lejano para evitar paralaje artificial.
 const RADIO_CIELO = 14000;
 
+// Mapeo de forma ilustrativa el índice de color B-V de cada estrella a un tono RGB aproximado.
 function colorEstelar(indiceBV, destino) {
   if (!Number.isFinite(indiceBV)) return destino.set(0xf5f3ed);
   if (indiceBV < 0) return destino.set(0xa9c7ff);
@@ -13,6 +16,7 @@ function colorEstelar(indiceBV, destino) {
   return destino.set(0xffb17d);
 }
 
+// Construyo los atributos de posición, color y tamaño en pantalla a partir de los registros de Hipparcos.
 function crearGeometriaCatalogo(registros) {
   const posiciones = [];
   const colores = [];
@@ -23,7 +27,7 @@ function crearGeometriaCatalogo(registros) {
     const direccion = direccionICRSEscena(registros[i], registros[i + 1]);
     posiciones.push(direccion.x * RADIO_CIELO, direccion.y * RADIO_CIELO, direccion.z * RADIO_CIELO);
 
-    // La magnitud y B-V son medidos; su conversión a píxeles y RGB es ilustrativa.
+    // Parto de la magnitud y el índice B-V medidos, pero su traducción a tamaño en píxeles y RGB es ilustrativa.
     const brillo = THREE.MathUtils.clamp((6.5 - registros[i + 2]) / 7.94, 0, 1);
     const intensidad = 0.024 + 0.84 * Math.pow(brillo, 2.1);
     colorEstelar(registros[i + 3], color).multiplyScalar(intensidad);
@@ -38,8 +42,8 @@ function crearGeometriaCatalogo(registros) {
   return geometria;
 }
 
+// Oriento la banda difusa de la Vía Láctea usando el polo galáctico norte J2000 con brillo y textura ilustrativos.
 function crearBandaGalactica() {
-  // Polo galáctico norte J2000. La luminosidad y el detalle de la banda son ilustrativos.
   const polo = direccionICRSEscena(192.8594812065348, 27.12825118085622);
   const material = new THREE.ShaderMaterial({
     uniforms: { uPoloGalactico: { value: polo } },
@@ -103,6 +107,7 @@ function crearMaterialEstrellas(pixelRatio) {
   });
 }
 
+/** Creo el grupo del fondo estelar, cargo Hipparcos en segundo plano y expongo su sincronización con la cámara. */
 export function crearFondoEstelar(camera, pixelRatio) {
   const grupo = new THREE.Group();
   grupo.add(crearBandaGalactica());
@@ -115,8 +120,8 @@ export function crearFondoEstelar(camera, pixelRatio) {
     })
     .catch(error => console.error('Error al cargar el fondo estelar:', error));
 
+  // Traslado la bóveda junto con la cámara manteniendo fija su orientación inercial para eliminar cualquier paralaje.
   function actualizar() {
-    // Traslación solidaria con la cámara, orientación inercial: sin paralaje artificial.
     grupo.position.copy(camera.position);
   }
 

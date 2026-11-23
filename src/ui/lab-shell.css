@@ -1,5 +1,4 @@
-/* Etapa 17 — laboratorio en tres etapas: panel lateral de etapas, pestañas por etapa, barra de resumen, Centro de Misión con
-   panel lateral por pestañas y vista inmersiva. Solo presentación; se carga después de theme.css y reutiliza sus tokens. */
+/* En esta hoja organizo la estructura del Laboratorio en tres pasos: barra lateral de etapas, pestañas y vista inmersiva del Centro de Misión. */
 
 /* ---------- Estructura: panel de etapas + área principal ---------- */
 #experimental-lab { display:grid; grid-template-columns:auto minmax(0,1fr); grid-template-rows:minmax(0,1fr); }

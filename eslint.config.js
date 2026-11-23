@@ -1,5 +1,5 @@
-// ESLint del proyecto: solo reglas que detectan errores (código que falla o hace algo distinto de lo escrito), sin reglas de
-// estilo ni de formato. Se ejecuta con `npm run lint` y en la integración continua.
+// Aquí configuro ESLint con reglas enfocadas en detectar errores reales de ejecución sin imponer formato rígido.
+// Se ejecuta con `npm run lint` y de forma automática en la integración continua.
 import globals from 'globals';
 
 const ERROR_RULES = Object.freeze({

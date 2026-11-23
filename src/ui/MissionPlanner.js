@@ -1,3 +1,5 @@
+// En este módulo construyo el planificador Tierra–Luna: cargo y valido las efemérides lunares locales, calculo transferencias,
+// gestiono la visualización 3D de la trayectoria, coordino el subplanificador de empuje finito y permito guardar o importar planes.
 import { validateMoonDataset } from '../science/PlanetaryMoons.js';
 import { gregorianTimestampToJdTdb } from '../science/Time.js';
 import { formatMissionTdb, formatMissionFlightDays, formatMissionFlightSeconds } from './MissionTimeDisplay.js';
@@ -14,6 +16,7 @@ import { mostrarVista3DNoDisponible } from './WebGLUnavailableNotice.js';
 const number = (n, digits = 1) => Number.isFinite(n) ? new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(n) : 'No disponible';
 const valueOrNA = (n, unit, digits = 1) => Number.isFinite(n) ? `${number(n, digits)} ${unit}` : 'No disponible';
 
+// Monto la interfaz del planificador lunar, su vista 3D de trayectoria y los controles de persistencia de planes.
 export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () => {}, onExecuteRequest = () => {} } = {}) {
   host.classList.add('mission-planner');
   host.innerHTML = `
@@ -55,13 +58,14 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
         <details class="mission-details"><summary>Modelo, marcos y límites</summary><p>Posiciones en km y velocidades en km/s, Tierra como centro, ejes ICRF eclípticos J2000, fechas TDB. La sonda se integra con gravedad terrestre y lunar más el término indirecto del marco geocéntrico mediante DOPRI54. La Luna procede de Horizons, interpolada con Hermite dentro de octubre de 2026.</p><p>La fase y el plano de la órbita terrestre se seleccionan para la transferencia. La elipse de Hohmann proporciona la semilla de apuntado; la trayectoria visual es el resultado numérico. No se incluyen gravedad solar, empuje finito, eclipses, correcciones ni lanzamiento. La captura lunar y el éxito de una misión completa quedan sin verificar.</p></details>
       </div></div>`;
   const $ = selector => host.querySelector(selector);
-  // 16: solo destinos calculables (la Luna). Los planes antiguos con otros destinos se siguen validando en MissionPlanStore.
+  // Cargo en el selector únicamente los destinos calculables en este planificador; los planes antiguos se siguen validando al importarlos.
   for (const destination of DESTINATIONS.filter(destination => destination.available)) $('#mission-destination').add(new Option(destination.name, destination.id));
   let design = null, loadedPlan = null, result = null, dataset = null, dataError = null, finite = null;
   let saved = loadSavedPlans();
   let disposed = false;
   const dataAbort = new AbortController();
   let trajectoryView;
+  // Inicializo la vista 3D de la trayectoria y, si WebGL falla, muestro un aviso claro dejando operativa la planificación numérica.
   try { trajectoryView = createMissionTrajectoryView($('#mission-canvas'), phase => showSelectedPhase(phase)); }
   catch (error) { mostrarVista3DNoDisponible($('#mission-canvas'), error, { vista: 'La visualización 3D de la trayectoria', sigue: 'El cálculo de la misión sigue disponible.' }); console.error('Trayectoria 3D no disponible:', error); trajectoryView ={ setTransfer() {}, setVisible() {}, setTouchInteraction() {}, focus() {}, resetCamera() {}, dispose() {} }; }
   const coarse = window.matchMedia('(pointer: coarse)').matches;
@@ -69,6 +73,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
   function message(value, error = false) { $('#mission-message').textContent = value; $('#mission-message').dataset.error = String(error); }
   function options() { return { destination: $('#mission-destination').value, objective: $('#mission-objective').value,
     altitudeKm: Number($('#mission-altitude').value), targetDistanceKm: Number($('#mission-distance').value), departureTdb: $('#mission-departure').value }; }
+  // Compruebo si cuento con efemérides, un cálculo vigente y una evaluación viable antes de habilitar el envío al Centro de Misión.
   function executionCandidate() {
     if (!dataset) return { ready: false, reason: dataError ? `Efemérides lunares no disponibles: ${dataError}` : 'Espera la carga de efemérides lunares locales.' };
     if (!result) return { ready: false, reason: 'Calcula una transferencia lunar en el Planificador.' };
@@ -79,12 +84,12 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     return { ready: true, result, design, dataset, name: $('#mission-name').value.trim() || 'Misión lunar' };
   }
   function notifyPlan() { updateExecute(); if (finite?.isActive()) return; onPlanChange(executionCandidate()); }
-  // 16: «Ejecutar» solo se activa con un plan viable y vigente; el motivo se muestra en el botón.
+  // Habilito el botón de ejecución únicamente con un plan viable y vigente, y muestro el motivo de bloqueo en su descripción emergente.
   function updateExecute() {
     const candidate = executionCandidate(), button = $('#mission-execute');
     button.disabled = !candidate.ready; button.title = candidate.ready ? '' : candidate.reason;
   }
-  // 16: consejo según la sonda activa (FleetGuide, comprobado con el mismo modelo en tests/Stage16Coherence.test.mjs).
+  // Muestro la recomendación de altitud inicial correspondiente a la sonda activa y ofrezco aplicarla con un solo clic.
   function renderAdvice() {
     const box = $('#mission-probe-advice'); box.replaceChildren();
     const guide = LUNAR_GUIDE[design?.basedOn];
@@ -113,6 +118,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     for (const plan of saved) select.add(new Option(plan.name, plan.id));
     $('#mission-load').disabled = !saved.length;
   }
+  // Descarto el resultado vigente cuando cambia algún parámetro y actualizo la vista 3D y el estado de ejecución.
   function stale(reason) {
     result = null; trajectoryView.setTransfer(finite?.getViewTransfer() ?? null);
     $('#mission-stage-status').textContent = 'Recalcular'; $('#mission-stage-empty').hidden = Boolean(finite?.getViewTransfer());
@@ -131,6 +137,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     phase?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     phase?.focus({ preventScroll: true });
   }
+  // Muestro el resumen de evaluación, las fases de la transferencia y paso la trayectoria calculada a la escena 3D.
   function renderResults() {
     const summary = $('#mission-summary'), phases = $('#mission-phases');
     summary.replaceChildren(); phases.replaceChildren();
@@ -206,6 +213,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     $('#mission-stage-empty').hidden = true;
     trajectoryView.setTransfer(transfer);
   }
+  // Cargo y valido las efemérides lunares locales con soporte de cancelación al desmontar; si fallan, informo el error sin romper el panel.
   async function loadDataset() {
     try {
       const response = await fetch(`${import.meta.env.BASE_URL}data/moons-2026-10.json`, { signal: dataAbort.signal });
@@ -219,6 +227,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     } catch (error) { if (disposed) return; dataError = error.message; message(`Efemérides no disponibles: ${dataError}`, true); notifyPlan(); }
   }
   loadDataset();
+  // Al pulsar «Calcular transferencia» valido las opciones, integro el vuelo lunar, evalúo la sonda y capturo cualquier error.
   $('#mission-calculate').addEventListener('click', () => {
     try {
       const current = options();
@@ -249,6 +258,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     if (loadedPlan?.designId === plan.designId && loadedPlan.designSignature === plan.designSignature) plan.id = loadedPlan.id;
     return plan;
   }
+  // Gestiono el guardado local, la exportación e importación de planes JSON y la restauración de la sonda asociada.
   $('#mission-save').addEventListener('click', () => {
     try { loadedPlan = currentPlan(); saved = saveMissionPlan(loadedPlan); refreshSaved(); $('#mission-saved').value = loadedPlan.id; message('Plan guardado localmente. El resultado se recalcula al recuperarlo.'); }
     catch (error) { message(error.message, true); }
@@ -287,6 +297,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     onRestoreDesign(structuredClone(loadedPlan.designSnapshot));
     $('#mission-restore-design').hidden = true; message('Sonda asociada restaurada en «1 · Elegir sonda». Recalcula la transferencia.');
   });
+  // Conecto los accesos de cámara sobre Tierra y Luna y el interruptor de interacción táctil 3D en pantallas táctiles.
   $('#mission-focus-earth').addEventListener('click', () => trajectoryView.focus('earth'));
   $('#mission-focus-moon').addEventListener('click', () => trajectoryView.focus('moon'));
   $('#mission-touch-toggle').addEventListener('click', () => {
@@ -294,6 +305,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     trajectoryView.setTouchInteraction(active); $('#mission-touch-toggle').setAttribute('aria-pressed', String(active));
     $('#mission-touch-toggle').textContent = active ? 'Desactivar control 3D' : 'Activar control 3D';
   });
+  // Conecto el subplanificador de empuje finito compartiendo efemérides y alternando la vista 3D cuando presenta su propia trayectoria.
   finite = createFiniteThrustPlanner({
     controlsHost: $('#ft-controls-host'), resultsHost: $('#ft-results-host'),
     getDataset: () => dataset, getDataError: () => dataError,
@@ -305,6 +317,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
     }
   });
   refreshSaved(); updateExecute();
+  // Expongo los métodos para consultar el candidato ejecutable, controlar la cámara, actualizar la sonda, gestionar visibilidad y liberar recursos.
   return {
     getExecutionCandidate: executionCandidate,
     focusEarth() { trajectoryView.focus('earth'); },

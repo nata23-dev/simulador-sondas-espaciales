@@ -1,3 +1,7 @@
+// En este módulo construyo y orquesto la escena 3D principal del sistema solar:
+// inicializo WebGL 2, coloco el Sol, planetas, lunas, sondas históricas y de misión (32 unidades/AU),
+// gestiono la cámara, la exposición fotográfica, el nivel de detalle geométrico (LOD), la descarga
+// diferida de texturas, la precompilación de sombreadores y la pausa del bucle de renderizado (RAF).
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { crearPlaneta } from './PlanetFactory.js';
@@ -38,7 +42,7 @@ const PLANETAS = [
   { nombre: 'Neptuno', radio: 2.1, orbitaAU: 30.070, color: 0x4269ed }
 ];
 
-// 14.1: color de presentación de cada órbita de referencia (identifica el cuerpo; no altera la geometría ilustrativa).
+// Asigno un color distintivo de presentación a cada arco orbital de referencia sin alterar la geometría ilustrativa.
 const COLORES_ORBITA = Object.freeze({
   Mercurio: 0xa88bc9, Venus: 0xd9a443, Tierra: 0x35b4e8, Marte: 0xd97842,
   Jupiter: 0xe3a68c, Saturno: 0xdcc78f, Urano: 0x7fd8e2, Neptuno: 0x7b97f2
@@ -60,7 +64,7 @@ function crearReferenciaOrbital(radio, interior, colorHex = 0x7d9cae) {
 
   const geometria = new THREE.BufferGeometry().setFromPoints(puntos);
   geometria.setAttribute('color', new THREE.Float32BufferAttribute(colores, 3));
-  // 14 y 14.1: órbitas de referencia con el color de cada cuerpo y más legibles (presentación; la geometría ilustrativa no cambia).
+  // Ajusto la opacidad base de cada arco orbital para equilibrar legibilidad entre el sistema interior y el exterior.
   const opacidadBase = interior ? 0.3 : 0.36;
   const orbita = new THREE.Line(geometria, new THREE.LineBasicMaterial({
     vertexColors: true,
@@ -139,6 +143,7 @@ function crearVisualizadorMedicionDistancia() {
   return { grupo, actualizar };
 }
 
+/** Inicializo la escena principal del sistema solar en `container` y devuelvo su API de control visual. */
 export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda = null, opcionesExtra = {}) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x030406);
@@ -146,11 +151,12 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   const camera = new THREE.PerspectiveCamera(48, 1, 0.05, 36000);
   camera.position.set(320, 450, 830);
 
-  // 27: preferencia de GPU del menú; sin suavizado de bordes (MSAA) en equipos que empiezan con detalle bajo o mínimo.
-  // STAB-01: sin contexto WebGL 2 lanza WebGLUnavailableError antes de tocar el DOM; main.js lo muestra al usuario.
+  // Creo el renderizador WebGL 2 aplicando la preferencia de GPU y desactivando MSAA en detalle bajo o mínimo;
+  // si el dispositivo carece de WebGL 2, lanzo WebGLUnavailableError antes de modificar el DOM.
   const renderer = crearRenderizadorWebGL(opcionesRenderizador({ antialias: true }), 'escena principal');
 
-  registerRenderer(renderer); // 15: relación de píxeles según el perfil de calidad (tope 2, como antes en «Alta»)
+  // Registro el renderizador en el gestor de calidad para sincronizar su relación de píxeles con el perfil activo.
+  registerRenderer(renderer);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -163,7 +169,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   controls.minDistance = 0.25;
   controls.maxDistance = 24000;
 
-  // Space has no uniform ambient source. Sunlight comes from the solar PointLight.
+  // No añado luz ambiental uniforme en el espacio profundo: toda la iluminación planetaria procede de la luz puntual solar.
 
   let modoEscala = MODOS_ESCALA_VISUAL.CIENTIFICA;
   const observadoresModoEscala = new Set();
@@ -204,10 +210,10 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     }
   }
 
-  // 17.1: quien ocupa la escena con sus propios paneles (Centro de Misión del laboratorio) indica el área libre del lienzo.
+  // Permito que una vista que ocupa parcialmente la escena (como el Centro de Misión) informe su área libre y obstáculos.
+  // Memorizo tanto los obstáculos de etiquetas (200 ms) como la zona de encuadre (180 ms) para evitar lecturas
+  // síncronas repetidas de `getBoundingClientRect()` en cada fotograma.
   let proveedorZonaEncuadre = null;
-  // 24: controles superpuestos a la escena que los rótulos deben esquivar (lectura del DOM como mucho cada 200 ms).
-  // PERF-02: también se memoriza la zona de encuadre (180 ms) para evitar 8+ lecturas forzadas de getBoundingClientRect() en cada fotograma.
   let obstaculosEtiquetas = null, lecturaObstaculos = -Infinity;
   let zonaEncuadreCache = null, lecturaZonaEncuadre = -Infinity;
   let ultimaActualizacionEtiquetas = -Infinity, claveEtiquetasAnterior = '';
@@ -231,8 +237,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   }
   function calcularZonaEncuadre() {
     const lienzo = renderer.domElement.getBoundingClientRect();
-    // 17.1.1 (D-01): aunque la zona indicada sea demasiado pequeña para encuadrar, su recorte se mantiene: el lienzo no debe
-    // dibujarse fuera de la ventana de quien ocupa la escena.
+    // Conservo el recorte de la vista anfitriona incluso si su ventana útil es pequeña para no dibujar fuera de ella.
     let recorteProveedor = null;
     if (proveedorZonaEncuadre) {
       const zona = proveedorZonaEncuadre(lienzo);
@@ -255,14 +260,14 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
         right = Math.min(right, herramientas.getBoundingClientRect().left - lienzo.left - 8);
       }
     } else if (!movil) {
-      // 14.1: en escritorio la barra de herramientas es una columna a la derecha; el margen deja sitio a medio rótulo.
+      // En escritorio dejo margen frente a la columna derecha de herramientas para que quepan las etiquetas.
       const herramientas = document.querySelector('#workspace-dock');
       if (herramientas?.getClientRects().length) {
         right = Math.min(right, Math.max(ancho * 0.6, herramientas.getBoundingClientRect().left - lienzo.left - 56));
       }
     }
     let bottom = Math.max(top + 80, Math.min(alto - 24, tiempo.top - lienzo.top - 20));
-    // 14.1: la portada de misiones destacadas ocupa el margen izquierdo; el encuadre usa el espacio libre a su derecha.
+    // Descuento el panel izquierdo de misiones destacadas cuando está desplegado en escritorio.
     const destacadas = document.querySelector('#featured-panel:not([hidden]):not([data-collapsed="true"])');
     if (!movil && destacadas?.getClientRects().length) {
       left = Math.min(Math.max(left, destacadas.getBoundingClientRect().right - lienzo.left + 24), ancho - 260);
@@ -289,8 +294,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     return zonaEncuadreCache;
   }
 
-  // 17.1: si quien ocupa la escena indica un recorte (la ventana de la escena del Centro de Misión), el lienzo y los rótulos
-  // solo se ven dentro de él; así no asoman por los huecos entre paneles. Solo presentación.
+  // Aplico un `clip-path` cuando una vista anfitriona define una ventana de recorte para evitar que la escena asome entre paneles.
   let recorteAplicado = '';
   function aplicarRecorte(recorte) {
     const valor = recorte
@@ -302,18 +306,16 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
 
   let desplazamientoProyeccionX = 0;
   let desplazamientoProyeccionY = 0;
-  // Desplazar el centro óptico conserva las posiciones físicas y el objetivo
-  // orbital. Las cámaras de instrumentos conservan siempre su FOV exacto.
+  // Desplazo el centro óptico mediante `setViewOffset` para componer el objeto en el área libre sin alterar
+  // posiciones físicas ni el FOV exacto de las cámaras instrumentales.
   function componerObjetoEnAreaLibre(segundos) {
     const instrumento = controladorCamara.requiereEscalaFisicaUnoAUno();
-    // El panel móvil modifica el área libre después de elegir un acontecimiento.
-    // Recalcular el FOV contextual conserva distancia y radio; el FOV manual no se toca.
+    // Recalculo el FOV contextual automático si cambió el área libre, sin modificar nunca un FOV elegido manualmente.
     controladorCamara.actualizarFovContextualAutomatico();
     const estadoCamara = controladorCamara.obtenerEstadoCamaraHistorica();
     const contextualPrimeraPersona = estadoCamara.modo === 'first_person'
       && estadoCamara.fovTipo === 'contextual_vertical' && estadoCamara.objetivoMirada;
-    // 17.1: con la zona de la misión del laboratorio la proyección se centra siempre en ella (también en la vista general),
-    // de modo que el encuadre acompaña a la ventana de la escena si la página se desplaza.
+    // Cuando existe un proveedor de zona de misión centro siempre la proyección en esa ventana al desplazarse la página.
     const enfocando = contextualPrimeraPersona || (!instrumento && (Boolean(proveedorZonaEncuadre) || controladorCamara.nombreSeleccionado()
       || controladorCamara.sondaSeleccionada() || controladorCamara.sondaHistoricaSeleccionada()));
     const zona = obtenerZonaEncuadre();
@@ -324,16 +326,14 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     const mezcla = instrumento || reducirMovimiento || segundos <= 0 ? 1 : 1 - Math.exp(-segundos * 7);
     desplazamientoProyeccionX = THREE.MathUtils.lerp(desplazamientoProyeccionX, objetivoX, mezcla);
     desplazamientoProyeccionY = THREE.MathUtils.lerp(desplazamientoProyeccionY, objetivoY, mezcla);
-    // El inspector desplaza el centro del encuadre; reducir el zoom hacía
-    // desaparecer las sondas y los planetas pequeños en la escala científica.
+    // Mantengo `camera.zoom = 1` para evitar que los cuerpos pequeños desaparezcan en escala científica al abrir el inspector.
     camera.zoom = 1;
     camera.setViewOffset(zona.width, zona.height, desplazamientoProyeccionX,
       desplazamientoProyeccionY, zona.width, zona.height);
     camera.updateProjectionMatrix();
   }
 
-  // 17.1: sonda de la misión planificada en el laboratorio («3 · Reproducir»). Sustituye a la antigua Sonda Experimental 01:
-  // su modelo y su nombre los fija configurarSondaMision() con el diseño con el que se calculó la misión (sin Voyager.glb).
+  // Instancio la sonda de misión del laboratorio sin cargar Voyager.glb: su modelo y nombre se inyectan con `configurarSondaMision`.
   const sonda = crearSondaVisual({
     idSonda: '__SONDA__',
     nombreGrupo: 'SondaMision',
@@ -344,7 +344,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   scene.add(sonda.trayectoriaGrupo);
   scene.add(sonda.posicion);
 
-  // Instancias históricas independientes de Voyager 1 (-31) y Voyager 2 (-32) con Voyager.glb compartido
+  // Creo instancias históricas independientes para Voyager 1 (-31) y Voyager 2 (-32) compartiendo la plantilla Voyager.glb.
   const metaV1 = HISTORICAL_MISSIONS_CATALOG[VOYAGER_1_ID];
   const metaV2 = HISTORICAL_MISSIONS_CATALOG[VOYAGER_2_ID];
 
@@ -447,17 +447,15 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   const fondoEstelar = crearFondoEstelar(camera, renderer.getPixelRatio());
   scene.add(fondoEstelar.grupo);
 
-  // 25: el lanzamiento 3D tiene su propia escena (src/launch/, carga diferida). Aquí solo se acerca la cámara a la Tierra antes
-  // del fundido y se deja de dibujar mientras el lanzamiento ocupa la pantalla.
-  // PERF-01: también se suspende el bucle de requestAnimationFrame cuando el contenedor opaco del laboratorio cubre #solar-system,
-  // evitando llamadas gráficas, proyección de etiquetas DOM y muestras a reportFrame() sobre una escena oculta.
+  // Gestiono la aproximación previa al lanzamiento 3D y los motivos de pausa del bucle `requestAnimationFrame`
+  // para suspender por completo el renderizado, las etiquetas DOM y el muestreo de FPS mientras otra vista
+  // opaca (el lanzamiento 3D o el laboratorio) cubre `#solar-system`.
   let aproximacionTierra = null;
   const motivosPausa = new Set();
   let renderPausado = false;
   let rafId = null;
-  // 26: precompilación en paralelo (KHR_parallel_shader_compile) de los programas que aún no existen, p. ej. el modelo de la
-  // sonda y las líneas de una misión del laboratorio recién configurada. Mientras dura se conserva el último fotograma en lugar
-  // de bloquear la página (≈ 0,6 s con la GPU de referencia). Con un tope de 2 s por si el navegador no informa del final.
+  // Precompilo en paralelo (`compileAsync` / `KHR_parallel_shader_compile`) los sombreadores nuevos de la escena
+  // conservando el último fotograma dibujado para evitar bloqueos, con un tope de 2 s de seguridad.
   let precompilacion = null;
   function precompilarEscena() {
     if (precompilacion) return precompilacion;
@@ -469,9 +467,8 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
   }
   const suaveCubica = u => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
   /**
-   * Acerca la cámara a la Tierra hasta que su disco ocupa ≈ 60 % de la altura y se resuelve al llegar. Con `subsolar` (latitud y
-   * longitud del punto subsolar del instante) se orienta antes el meridiano de la Tierra ilustrativa hacia el Sol, y con `sitio`
-   * la cámara termina sobre ese lugar con el norte arriba, como empieza la escena del lanzamiento.
+   * Acerco la cámara a la Tierra hasta que su disco ocupa ~60 % de la altura de pantalla antes de ceder
+   * el paso a la escena de lanzamiento 3D; si recibo `subsolar` y `sitio`, oriento el meridiano y el norte arriba.
    */
   function aproximarATierraParaLanzamiento({ duracionS = 3.2, subsolar = null, sitio = null } = {}) {
     const tierra = objetos.get('Tierra');
@@ -496,7 +493,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
           dirIni.normalize();
           if (sitio && tierra.direccionGeografica) tierra.direccionGeografica(sitio.latDeg, sitio.lonDeg, dirFin);
           else {
-            // Sin lugar: hacia el Sol (en el origen de la escena), algo inclinado al norte.
+            // Sin sitio concreto, apunto hacia el hemisferio diurno inclinado ligeramente al norte.
             dirFin.copy(centro).negate().normalize().multiplyScalar(0.8).addScaledVector(dirIni, 0.2);
             dirFin.y += 0.25; dirFin.normalize();
           }
@@ -549,7 +546,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     return ok;
   }
 
-  // 17.1: cámaras de la misión del laboratorio en la escena principal. `proveedor()` da [{ x, y, z, radio }] en unidades de escena.
+  // Encuadro el conjunto de cuerpos de una misión del laboratorio convirtiendo sus coordenadas a THREE.Vector3.
   function encuadrarConjuntoMision(proveedor) {
     const ok = controladorCamara.encuadrarConjuntoMision(() => (proveedor() ?? [])
       .map(c => ({ posicion: new THREE.Vector3(c.x, c.y, c.z), radio: c.radio })));
@@ -557,7 +554,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     return ok;
   }
 
-  // 23: también un satélite visible (fase de satélite de la misión del laboratorio).
+  // Enfoco el cuerpo de destino (planeta o satélite visible) junto con la sonda durante una misión del laboratorio.
   function encuadrarDestinoConSonda(nombre) {
     if (!objetos.has(nombre) && !lunasPlanetarias.moons.get(nombre)?.posicion.visible) return false;
     return controladorCamara.encuadrarDestinoConSonda(nombre);
@@ -568,6 +565,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     publicarVista();
   }
 
+  // Ajusto dinámicamente los planos `near` y `far` según la distancia al cuerpo visible más próximo para preservar precisión de profundidad.
   function actualizarPlanosProfundidad() {
     let menorDistanciaSuperficie = camera.position.length() - sol.radioActualEscena();
     for (const [nombre, objeto] of objetos) {
@@ -699,11 +697,12 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     const old = luna?.posicion.visible ? luna.posicion.position.clone() : null;
     lunasPlanetarias.actualizar(states, visible);
     if (!old) return;
-    // 23: si el satélite seleccionado deja de dibujarse (fuera de su ventana o al soltar la escena), la cámara pasa a su planeta.
+    // Si el satélite seleccionado deja de ser visible, traslado automáticamente el enfoque a su planeta anfitrión.
     if (!luna.posicion.visible) { controladorCamara.seleccionar(luna.definition.parent); return; }
     controladorCamara.alActualizarLuna(old);
   }
 
+  // Ubico los ocho planetas en la escala de 32 unidades/AU y sincronizo la orientación de sus arcos orbitales de referencia.
   function actualizarPosiciones(estados, opciones = {}) {
     const seleccionado = controladorCamara.nombreSeleccionado();
     const centroAnterior = seleccionado && objetos.has(seleccionado)
@@ -745,13 +744,13 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     sonda.mostrarSonda(false);
   }
 
-  // 17.1: identidad visual de la sonda de la misión (nombre de la etiqueta y modelo 3D ya normalizado). Solo presentación.
+  // Configuro el modelo externo normalizado y el nombre de etiqueta de la sonda de misión del laboratorio.
   function configurarSondaMision({ nombre = 'Sonda', modelo = null, radioObservacion } = {}) {
     sonda.establecerModeloExterno(modelo, { radioObservacion });
     etiquetas.establecerNombreSonda(nombre);
   }
 
-  // --- API específica para Voyager 1 y Voyager 2 en Modo Histórico ---
+  // Expongo los métodos dedicados a las trayectorias y estados de Voyager 1 y Voyager 2 en modo histórico.
   function configurarTrayectoriaHistorica(idMision, knotsEscena) {
     const sHist = sondasHistoricas.get(idMision);
     if (!sHist || !Array.isArray(knotsEscena)) return;
@@ -804,7 +803,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
         sHist.actualizarEstadoEscena(datoSonda.visual.posicionEscena, jdTdb, posicionTierra);
         controladorCamara.alActualizarPosicionSondaHistorica(idMision, posAnterior);
       } else {
-        // Un observador en primera persona requiere una posición certificada.
+        // Exijo una posición certificada para mantener activa una cámara en primera persona.
         if (datoSonda.status === 'spk_segment_transition' && sHist.posicion.visible) {
           sondasEnEmpalme.add(idMision);
         }
@@ -904,9 +903,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     const objetoSeleccionado = objetos.get(nombreObjetivo)
       ?? (sateliteLocal?.posicion.visible ? sateliteLocal : null)
       ?? (lunaGlobal?.posicion.visible ? lunaGlobal : null);
-    // En la vista exterior histórica la cámara sigue a la Voyager y puede
-    // encuadrar un planeta sin que exista un nombre de objetivo seleccionado.
-    // La ganancia fotográfica debe seguir al cuerpo realmente visible.
+    // En la vista exterior histórica adapto la ganancia fotográfica al planeta cercano visible aunque no esté seleccionado.
     const exteriorHistorico = estadoCamHist.modo === 'exterior'
       && Boolean(estadoCamHist.idSondaExterior);
     const objeto = objetoSeleccionado ?? (exteriorHistorico ? planetaVisibleCercaDeSonda() : null);
@@ -921,8 +918,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       const cercano = THREE.MathUtils.clamp((umbralRel - relacion) / Math.max(umbralRel * 0.65, 1), 0, 1);
       const adaptacion = cercano * cercano * (3 - 2 * cercano);
       const distanciaAU = distanciaHeliocentricaAU(objeto.posicion.position);
-      // El modelo de la sonda comparte exposición con el planeta. Limitar
-      // esta ayuda exterior evita quemar el modelo y la textura planetaria.
+      // Limito esta ganancia auxiliar cuando comparto cuadro con el modelo de la sonda para evitar quemar texturas.
       const ganancia = exteriorHistorico && !objetoSeleccionado
         ? Math.min(12, exposicionFotografica(distanciaAU))
         : exposicionFotografica(distanciaAU);
@@ -948,11 +944,13 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     };
   }
 
+  // Programo el siguiente fotograma en `requestAnimationFrame` solo cuando la escena no está pausada ni tiene uno pendiente.
   function programarFotograma() {
     if (renderPausado || rafId !== null) return;
     rafId = requestAnimationFrame(animar);
   }
 
+  // Pauso o reanudo el bucle de renderizado por motivo acumulado, cancelando cualquier RAF pendiente al pausar.
   function establecerRenderPausado(valor, motivo = 'lanzamiento') {
     if (valor) motivosPausa.add(motivo);
     else motivosPausa.delete(motivo);
@@ -972,6 +970,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     programarFotograma();
   }
 
+  // Actualizo el nivel de detalle geométrico (LOD) del Sol, planetas y lunas como máximo cada 100 ms salvo cambio de estado.
   function actualizarLodGeometria(ahora, detalle, seleccionado, objetivoMirada) {
     const clave = `${detalle}|${seleccionado ?? ''}|${objetivoMirada ?? ''}|${modoEscala}|${aproximacionTierra !== null}`;
     if (clave === claveLodAnterior && ahora - ultimaActualizacionLod < 100) return;
@@ -1006,13 +1005,16 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     });
   }
 
+  // Ejecuto el ciclo principal de animación y renderizado de la escena cuando no está pausada ni precompilando sombreadores.
   function animar(tiempo) {
     rafId = null;
-    if (renderPausado) return; // otra escena (lanzamiento 3D o laboratorio) ocupa la pantalla
+    // Si otra vista opaca (lanzamiento 3D o laboratorio) cubre la escena, detengo el bucle aquí.
+    if (renderPausado) return;
     programarFotograma();
     if (precompilacion) {
       tiempoAnterior = null;
-      return; // 26: se mantiene el fotograma anterior mientras se compilan los programas nuevos
+      // Conservo el último fotograma visible mientras finaliza la precompilación asíncrona de programas WebGL.
+      return;
     }
     const inicioCpu = performance.now();
     const delta = tiempoAnterior === null ? 0 : Math.max((tiempo - tiempoAnterior) / 1000, 0);
@@ -1038,7 +1040,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     }
 
     actualizarExposicion(dtClamped);
-    // 18: texturas de planetas y lunas bajo demanda (solo las que ya se ven con unos píxeles de radio).
+    // Solicito bajo demanda las texturas de los planetas y lunas cuyo disco ya alcanza el umbral visible en pantalla.
     solicitarTexturasVisibles(camera, container.clientHeight);
     if (!orbitasVisibles) for (const orbita of orbitas) orbita.visible = false;
     transitosSolares.actualizar(dtClamped);
@@ -1046,8 +1048,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     fondoEstelar.actualizar();
 
     const estadoCamHist = controladorCamara.obtenerEstadoCamaraHistorica();
-    // Las líneas de recorrido permanecen configuradas, pero se ocultan durante
-    // la observación desde la sonda para no atravesar visualmente el disco planetario.
+    // Oculto las líneas de trayectoria durante la vista en primera persona o recreación para no cruzar el disco observado.
     if (estadoCamHist.modo !== 'exterior') {
       for (const sHist of sondasHistoricas.values()) sHist.trayectoriaGrupo.visible = false;
     } else {
@@ -1061,8 +1062,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     const comparadorActivo = Boolean(opcionesExtra.obtenerComparadorActivo?.());
     actualizarLodGeometria(inicioCpu, detalleCalidad, nombreSel, estadoCamHist.objetivoMirada);
 
-    // PERF-02: en detalle bajo o mínimo, la proyección 2D y mutación DOM de etiquetas se modera a ~18 Hz (55 ms),
-    // salvo cuando cambia la selección, la cámara histórica o el modo de escala (actualización inmediata).
+    // En detalle bajo o mínimo limito la actualización DOM de etiquetas a ~18 Hz salvo cambio inmediato de selección o cámara.
     const claveEtiquetas = `${nombreSel ?? ''}|${sondaSel}|${idHistSel ?? ''}|${estadoCamHist.modo}|${estadoCamHist.objetivoMirada ?? ''}|${aproximacionTierra !== null}|${comparadorActivo}`;
     const intervaloEtiquetasMs = (detalleCalidad === 'bajo' || detalleCalidad === 'minimo') ? 55 : 0;
     if (claveEtiquetas !== claveEtiquetasAnterior || inicioCpu - ultimaActualizacionEtiquetas >= intervaloEtiquetasMs) {
@@ -1083,7 +1083,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
       );
     }
     renderer.render(scene, camera);
-    // 27: resolución dinámica con el intervalo y el tiempo de CPU de este fotograma (solo de los que se dibujan).
+    // Informo el intervalo y el tiempo de CPU del fotograma recién dibujado al controlador de calidad adaptativa.
     if (delta > 0) reportFrame(delta, { cpu: (performance.now() - inicioCpu) / 1000 });
   }
 
@@ -1097,7 +1097,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     actualizarPosiciones,
     actualizarLunas,
     seleccionarLuna,
-    // 18: Voyager.glb ya no se descarga al arrancar; el modo histórico lo pide al activarse (una sola descarga compartida).
+    // Descargo bajo demanda la plantilla compartida de Voyager.glb únicamente al activar el modo histórico.
     precargarModelosHistoricos: () => { for (const s of sondasHistoricas.values()) s.solicitarModelo(); },
     obtenerEstadoVisualLunas: () => Object.fromEntries([...lunasPlanetarias.moons].map(([key, moon]) => [key, {
       visible: moon.posicion.visible,
@@ -1109,7 +1109,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
         return [(p.x + 1) * rect.width / 2 + rect.left, (1 - p.y) * rect.height / 2 + rect.top];
       })(),
       radiusScene: moon.radioEscena,
-      // 18: true cuando el mosaico ya se descargó y se aplica (las texturas se piden al verse la luna con unos píxeles de radio).
+      // Indico si la textura superficial diferida de esta luna ya terminó de cargarse y aplicarse.
       texturaCargada: Boolean(moon.mesh.material.map),
       parentRadiusScene: objetos.get(moon.definition.parent).planeta.radio
         * objetos.get(moon.definition.parent).posicion.scale.x
@@ -1118,7 +1118,7 @@ export function createSolarSystem(container, alSeleccionar, alSeleccionarSonda =
     actualizarEstadoSonda,
     ocultarSonda,
     configurarSondaMision,
-    // 17.1: diagnóstico de solo lectura (verificación automatizada): posiciones dibujadas y estado de la sonda.
+    // Expongo una instantánea de solo lectura del estado actual de la escena (posiciones, sonda, cámara y pausa RAF).
     obtenerDiagnosticoEscena: () => ({
       planetas: Object.fromEntries([...objetos].map(([nombre, objeto]) => [nombre, objeto.posicion.position.toArray()])),
       sonda: { visible: sonda.posicion.visible, posicion: sonda.posicion.position.toArray(), escalaVisual: sonda.visual.scale.x,

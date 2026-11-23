@@ -1,13 +1,9 @@
-// Etapa 26 · Medidor de fotogramas por segundo, opcional y discreto (Menú → Calidad gráfica → «Mostrar FPS», o ?fps=1).
-// Solo presentación: mide la cadencia real de requestAnimationFrame del navegador, sea cual sea la vista (Sistema Solar,
-// misiones históricas, laboratorio o lanzamiento 3D). Mientras está oculto no ejecuta nada.
+// En este módulo implemento el medidor discreto y opcional de fotogramas por segundo (desde el menú de calidad gráfica o con ?fps=1).
+// Mido la cadencia real de requestAnimationFrame en cualquier vista del simulador y no ejecuto nada mientras el indicador permanece oculto.
 
 const CLAVE = 'simulador:mostrar-fps';
 
-/**
- * Resumen de una ventana de intervalos entre fotogramas (ms). Función pura (probada).
- * Devuelve FPS medios, intervalo medio, el peor intervalo y cuántos superan 1,5 veces el intervalo de 60 Hz (tirones).
- */
+// Resumo una ventana de intervalos entre fotogramas (en ms) calculando FPS medios, tiempo medio, peor fotograma y tirones mayores de 25 ms.
 export function resumirFotogramas(intervalosMs) {
   const validos = intervalosMs.filter(ms => Number.isFinite(ms) && ms > 0 && ms < 1000);
   if (!validos.length) return null;
@@ -22,36 +18,32 @@ export function resumirFotogramas(intervalosMs) {
   };
 }
 
-/** Estado de color del medidor: 'bien' (≥ 50 FPS), 'aviso' (30–50) o 'mal' (< 30). Función pura (probada). */
+// Clasifico la fluidez en tres estados visuales: «bien» (≥ 50 FPS), «aviso» (30–50) o «mal» (< 30).
 export function estadoFps(fps) {
   if (!(fps >= 30)) return 'mal';
   return fps >= 50 ? 'bien' : 'aviso';
 }
 
 const coma = (x, d = 0) => x.toFixed(d).replace('.', ',');
-/**
- * Texto del medidor, p. ej. «60 FPS» y «16,7 ms · peor 18». Función pura (probada).
- * 27: con `calidad` (estado de QualityProfile) añade la resolución de render y si se dibuja por software («CPU»).
- */
+
+// Construyo las etiquetas principal y de detalle del medidor, añadiendo el factor de resolución y la marca «CPU» si el dibujo es por software.
 export function textoFps(resumen, calidad = null) {
   const extra = calidad ? ` · ×${coma(calidad.pixelRatio, calidad.pixelRatio % 1 ? 2 : 0).replace(/(,\d)0$/, '$1')}${calidad.gpu?.software ? ' · CPU' : ''}` : '';
   if (!resumen) return { principal: '— FPS', detalle: `midiendo…${extra}` };
   return { principal: `${Math.round(resumen.fps)} FPS`, detalle: `${coma(resumen.mediaMs, 1)} ms · peor ${coma(resumen.peorMs)}${extra}` };
 }
 
+// Leo si el usuario activó el medidor por parámetro de URL (?fps=1) o mediante preferencia guardada en localStorage.
 function leerPreferencia() {
   try {
     if (/[?&]fps=1\b/.test(globalThis.location?.search ?? '')) return true;
     return globalThis.localStorage?.getItem(CLAVE) === '1';
   } catch { return false; }
 }
-function guardarPreferencia(valor) { try { globalThis.localStorage?.setItem(CLAVE, valor ? '1' : '0'); } catch { /* sin persistencia */ } }
+// Guardo la visibilidad elegida en localStorage, ignorando silenciosamente entornos sin almacenamiento disponible.
+function guardarPreferencia(valor) { try { globalThis.localStorage?.setItem(CLAVE, valor ? '1' : '0'); } catch { /* Ignoro errores si no hay almacenamiento disponible. */ } }
 
-/**
- * Crea el medidor dentro de `contenedor` y lo conecta con la casilla `casilla` (opcional). Devuelve { mostrar, visible, destruir }.
- * `ventanaMs`: cada cuánto se actualiza el texto (por defecto 500 ms). 27: `calidad`, función que devuelve el estado de la
- * calidad gráfica de la escena que se dibuja (resolución y procesador), para mostrarlo junto a los FPS.
- */
+// Creo el medidor dentro del contenedor indicado, lo enlazo con su casilla de control y actualizo las cifras cada ventanaMs milisegundos.
 export function crearMedidorFps({ contenedor = document.body, casilla = null, ventanaMs = 500, calidad = null } = {}) {
   const raiz = document.createElement('div');
   raiz.className = 'fps-meter';
@@ -63,6 +55,7 @@ export function crearMedidorFps({ contenedor = document.body, casilla = null, ve
 
   let activo = false, id = 0, ultimo = null, inicioVentana = 0;
   const intervalos = [];
+  // Pinto el resumen acumulado de la ventana actual y reinicio el búfer de intervalos.
   function pintar() {
     const resumen = resumirFotogramas(intervalos);
     const texto = textoFps(resumen, calidad?.() ?? null);
@@ -70,6 +63,7 @@ export function crearMedidorFps({ contenedor = document.body, casilla = null, ve
     raiz.dataset.state = resumen ? estadoFps(resumen.fps) : 'bien';
     intervalos.length = 0;
   }
+  // Registro el tiempo transcurrido entre fotogramas consecutivos y refresco la lectura al completar la ventana.
   function bucle(ahora) {
     if (!activo) return;
     if (ultimo !== null) intervalos.push(ahora - ultimo);
@@ -77,6 +71,7 @@ export function crearMedidorFps({ contenedor = document.body, casilla = null, ve
     if (ahora - inicioVentana >= ventanaMs) { pintar(); inicioVentana = ahora; }
     id = requestAnimationFrame(bucle);
   }
+  // Activo o detengo por completo el bucle de medición y sincronizo la casilla asociada.
   function mostrar(valorMostrar, { guardar = true } = {}) {
     const nuevo = Boolean(valorMostrar);
     if (casilla) casilla.checked = nuevo;
@@ -87,7 +82,7 @@ export function crearMedidorFps({ contenedor = document.body, casilla = null, ve
     if (activo) { ultimo = null; intervalos.length = 0; inicioVentana = performance.now(); id = requestAnimationFrame(bucle); }
     else cancelAnimationFrame(id);
   }
-  // Con la pestaña oculta el navegador no da fotogramas: al volver se descarta el intervalo largo de la espera.
+  // Cuando la pestaña pasa a segundo plano descarto la marca temporal para no contar la pausa como un tirón al volver.
   const alCambiarVisibilidad = () => { ultimo = null; };
   document.addEventListener('visibilitychange', alCambiarVisibilidad);
   const alCambiarCasilla = () => mostrar(casilla.checked);

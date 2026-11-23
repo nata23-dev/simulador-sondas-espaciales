@@ -1,3 +1,7 @@
+// Aquí defino y valido los contratos inmutables que describen una sonda espacial, su modelo dinámico,
+// la procedencia de sus condiciones iniciales y su estado mecánico instantáneo, completamente aislados de Three.js.
+// Unidades: km, km/s, s (tiempo transcurrido desde `epochJdTdb`), kg para masa opcional y km³/s² para GM.
+// Marco de referencia: heliocéntrico eclíptico J2000/ICRF (estándar NASA/JPL Horizons) en la escala temporal TDB.
 import { HORIZONS_FRAME, requireVector3 } from './Frames.js';
 import { GM_UNIT } from './GravitationalParameters.js';
 import { DYNAMICAL_MODELS } from './GravitationalDynamics.js';
@@ -28,6 +32,7 @@ const FORBIDDEN_VISUAL_KEYS = new Set([
   'threeObject'
 ]);
 
+/** Valido que el valor sea un objeto plano y rechazo explícitamente claves visuales para no contaminar el estado científico. */
 function requirePlainObject(value, name) {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     throw new TypeError(`${name} debe ser un objeto.`);
@@ -40,6 +45,7 @@ function requirePlainObject(value, name) {
   return value;
 }
 
+/** Valido que el texto recibido no esté vacío y devuelvo su versión recortada. */
 function requireNonEmptyText(value, name) {
   if (typeof value !== 'string' || value.trim() === '') {
     throw new TypeError(`${name} debe ser una cadena no vacía.`);
@@ -48,11 +54,9 @@ function requireNonEmptyText(value, name) {
 }
 
 /**
- * Define la identidad física y descriptiva de una sonda espacial, estrictamente
- * separada de su estado instantáneo y de su representación gráfica en Three.js.
- *
- * Incluye una ranura contractual (`maneuverPlan`) preparada para futuras maniobras
- * impulsivas o de empuje continuo, sin activar todavía un sistema de propulsión.
+ * Aquí construyo la identidad física y descriptiva de una sonda espacial, estrictamente separada
+ * de su estado instantáneo y de cualquier objeto gráfico de Three.js.
+ * Dejo reservada la ranura contractual `maneuverPlan` para maniobras propulsivas sin activarla todavía.
  */
 export function createProbeDefinition(input) {
   requirePlainObject(input, 'probe');
@@ -107,8 +111,7 @@ export function createProbeDefinition(input) {
 }
 
 /**
- * Describe de manera verificable e inmutable el modelo dinámico e integrador
- * empleados para obtener un estado de sonda.
+ * Aquí describo de forma inmutable y verificable el modelo dinámico y el integrador empleados para propagar una sonda.
  */
 export function createDynamicalModelDescriptor(input) {
   requirePlainObject(input, 'dynamicalModel');
@@ -151,7 +154,7 @@ export function createDynamicalModelDescriptor(input) {
 }
 
 /**
- * Registra la procedencia explícita de las condiciones iniciales de una sonda.
+ * Aquí registro la procedencia explícita de las condiciones iniciales con las que lanzo o reconstruyo una sonda.
  */
 export function createInitialConditionProvenance(input) {
   requirePlainObject(input, 'initialConditionProvenance');
@@ -174,6 +177,7 @@ export function createInitialConditionProvenance(input) {
   });
 }
 
+/** Valido y congelo la instantánea de parámetros gravitacionales GM (km³/s²) usada en la propagación. */
 function validateGravitationalParameterSnapshot(snapshot) {
   requirePlainObject(snapshot, 'gravitationalParameters');
   const catalogId = requireNonEmptyText(snapshot.catalogId, 'gravitationalParameters.catalogId');
@@ -206,10 +210,9 @@ function validateGravitationalParameterSnapshot(snapshot) {
 }
 
 /**
- * Crea un estado dinámico inmutable de una sonda espacial.
- * Conserva posición en km, velocidad en km/s, tiempo interno en segundos desde
- * `epochJdTdb` junto con `jdTdb`, marco, origen, modelo dinámico, parámetros GM
- * utilizados y procedencia de condiciones iniciales.
+ * Aquí creo un estado dinámico inmutable de una sonda espacial, validando coherencia de unidades (km, km/s),
+ * tiempo interno en segundos desde `epochJdTdb` junto con `jdTdb`, marco ICRF eclíptico J2000,
+ * modelo dinámico, parámetros GM y procedencia de condiciones iniciales.
  */
 export function createProbeDynamicState(input) {
   requirePlainObject(input, 'probeState');
@@ -296,8 +299,8 @@ export function createProbeDynamicState(input) {
 }
 
 /**
- * Adapta un `ProbeDynamicState` al contrato canónico `ScientificState`
- * (`identity.type === 'probe'`) sin mutar el estado original.
+ * Aquí adapto un `ProbeDynamicState` al contrato canónico `ScientificState` (`identity.type === 'probe'`)
+ * preservando sus metadatos de propagación y sin mutar el estado original.
  */
 export function probeStateToScientificState(probeDynamicState) {
   const validated = createProbeDynamicState(probeDynamicState);

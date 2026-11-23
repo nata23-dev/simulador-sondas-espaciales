@@ -1,12 +1,27 @@
+/**
+ * En este módulo calculo distancias geométricas tridimensionales y tiempos de
+ * viaje de la luz en el vacío entre dos cuerpos con estados científicos válidos.
+ *
+ * - Unidades: posiciones y separaciones en kilómetros (km), unidades astronómicas (AU),
+ *   velocidad de la luz en km/s (definición exacta SI/IAU), tiempos de luz en segundos (s)
+ *   y épocas en JD TDB.
+ * - Marco de referencia: por defecto trabajo en el marco heliocéntrico `SUN_CENTER` /
+ *   `ICRF_ECLIPTIC_J2000`, aunque acepto cualquier par de estados siempre que ambos
+ *   compartan exactamente el mismo origen y el mismo marco.
+ * - Límites y validación: rechazo estados ausentes, del mismo cuerpo, con marcos u
+ *   orígenes incompatibles o desfasados en más de 1 microsegundo en JD TDB; nunca
+ *   utilizo coordenadas visuales ni extrapolo fechas.
+ */
 import { HORIZONS_FRAME, requireVector3 } from './Frames.js';
 import { KM_PER_AU, requireFiniteNumber } from './Units.js';
 
 export const SPEED_OF_LIGHT_KM_PER_S = 299792.458;
-const MAX_EPOCH_DRIFT_DAYS = 1e-6 / 86400; // 1 microsegundo en días julianos
+// Tolero como máximo 1 microsegundo de deriva entre épocas JD TDB.
+const MAX_EPOCH_DRIFT_DAYS = 1e-6 / 86400;
 
 /**
- * Construye un descriptor de estado científico homogéneo en km para medición
- * tridimensional de distancias en el marco heliocéntrico J2000/ICRF.
+ * Aquí construyo y valido un descriptor inmutable de extremo medible en km
+ * para comparar posiciones científicas en un mismo instante JD TDB.
  */
 export function createMeasurableBodyEndpoint({
   id,
@@ -51,9 +66,10 @@ export function createMeasurableBodyEndpoint({
 }
 
 /**
- * Calcula la distancia euclidiana tridimensional entre dos estados científicos
- * verificando identidad distinta, disponibilidad, mismo origen, mismo marco
- * y mismo instante JD TDB. Nunca utiliza coordenadas visuales ni extrapola fechas.
+ * Aquí calculo la distancia euclidiana 3D entre dos extremos científicos
+ * comprobando disponibilidad, identidad distinta, compatibilidad de origen y
+ * marco, y coincidencia de época JD TDB. Jamás recurro a coordenadas visuales
+ * ni extrapolo instantes.
  */
 export function computeScientificDistance(endpointA, endpointB) {
   if (!endpointA || !endpointB) {
@@ -118,7 +134,8 @@ export function computeScientificDistance(endpointA, endpointB) {
 }
 
 /**
- * Formatea el tiempo de viaje de la luz en el vacío para referencia astronómica.
+ * Formateo en texto legible el tiempo de viaje de la luz en el vacío (en
+ * segundos, minutos u horas) para referencia astronómica.
  */
 export function formatLightTime(seconds) {
   requireFiniteNumber(seconds, 'seconds');

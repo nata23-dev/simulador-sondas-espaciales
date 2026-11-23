@@ -1,18 +1,20 @@
+// Aquí calculo el presupuesto completo de ingeniería de una sonda ensamblada en el Hangar:
+// masas seca, de propelente y húmeda (kg), impulso específico efectivo (s), Δv de Tsiolkovski (m/s),
+// centro de masas y alineación del empuje (m, °), perfil eléctrico (W, Wh, AU), propulsión eléctrica
+// y trazabilidad de fuentes y calidad de datos.
 import { getComponent, needsAdapter, adapterMassKg, ADAPTER_MASS_RULE, ILLUSTRATIVE_PROGRAM } from './ComponentCatalog.js';
 import { validateDesign } from './ProbeDesign.js';
 import { HERITAGE_SOURCES, DATA_QUALITY } from './HeritageCatalog.js';
 import { STANDARD_GRAVITY_M_S2, generationAt, electricThrust, breakEvenDistanceAu } from './SpacecraftPower.js';
 
-// Aceleración normal convencional, no gravedad local del cuerpo central.
-// NIST SP 811, B.9: https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9
+// Reexporto la aceleración normal convencional g0 (9,80665 m/s², NIST SP 811 B.9), distinta de la gravedad local.
 export { STANDARD_GRAVITY_M_S2 };
 
-// Distancias de referencia (AU, semiejes mayores redondeados) para el perfil de potencia del Hangar; la misión usa las efemérides.
+// Defino distancias heliocéntricas de referencia (AU) para resumir el perfil eléctrico del Hangar; en misión uso las efemérides.
 export const POWER_REFERENCE_POINTS = Object.freeze([
   ['Tierra', 1], ['Marte', 1.52], ['Júpiter', 5.2], ['Saturno', 9.54], ['Urano', 19.2]
 ]);
-// Criterio ORIENTATIVO del simulador para el par del empuje: distancia del centro de masas a la línea de empuje (m).
-// Con las masas por pieza estimadas, el centro de masas es aproximado (orden de 10 cm).
+// Establezco un criterio orientativo de brazo de palanca (m) entre el centro de masas y la línea de empuje (precisión ~10 cm).
 export const THRUST_ALIGNMENT_LIMIT_M = Object.freeze({ fixed: 0.1, gimbaled: 0.25 });
 
 export const ENGINEERING_STATUS = Object.freeze({
@@ -25,14 +27,15 @@ const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const norm = a => Math.hypot(a[0], a[1], a[2]);
 
-/** Centroide de una pieza montada: en el punto si es interna; si es exterior, a media longitud a lo largo de la normal del punto. */
+/** Estimo el centroide (m) de una pieza montada: en el anclaje si es interna, o a media longitud sobre la normal si es externa. */
 export function partCentroidM(slot, component) {
   const base = slot?.position ?? [0, 0, 0];
   if (!slot?.direction || component.mount === 'internal') return [...base];
-  const n = Math.hypot(...slot.direction) || 1; // dirección del catálogo como normal unitaria
+  const n = Math.hypot(...slot.direction) || 1; // Normalizo el vector dirección del catálogo.
   return add(base, scale(slot.direction, component.dimensionsM[1] / (2 * n)));
 }
 
+// Evalúo integralmente masas, propulsión química y eléctrica, centro de masas, energía, compatibilidades y calidad de datos.
 export function calculateEngineering(design) {
   const structuralIssues = validateDesign(design);
   const core = getComponent(design.coreId);
@@ -42,7 +45,7 @@ export function calculateEngineering(design) {
   const rcsItems = mounted.filter(item => item.component.category === 'rcs');
   const rcsPropellantKg = rcsItems.reduce((n, item) => n + (item.component.rcsPropellantKg ?? 0), 0);
   const structuralDryMassKg = (core?.dryMassKg ?? 0) + mounted.reduce((n, item) => n + item.component.dryMassKg, 0) + adapterKg;
-  // «Masa seca» para la propulsión principal: estructura + adaptadores + propelente de actitud (no lo quema el motor principal).
+  // Incluyo el propelente RCS en la masa seca de la propulsión principal porque no lo quema el motor principal.
   const dryMassKg = structuralDryMassKg + rcsPropellantKg;
   const tanks = mounted.filter(item => item.component.category === 'tank');
   const engines = mounted.filter(item => item.component.category === 'engine');
@@ -79,7 +82,7 @@ export function calculateEngineering(design) {
     notes.push('La potencia nominal no basta para operar todos los equipos activos; no se calcula tiempo de encendido.');
   }
 
-  // ---- 15: centro de masas, energía, propulsión eléctrica, compatibilidades y calidad de datos -------------------------------
+  // Calculo centro de masas, alineación del empuje, presupuesto eléctrico, propulsión eléctrica, alertas y calidad de datos.
   const compatibility = [];
   const issue = (type, severity, message) => compatibility.push({ type, severity, message });
   for (const message of structuralIssues) issue('estructural', 'error', message);
@@ -109,6 +112,7 @@ export function calculateEngineering(design) {
     issue('mecánica', 'warning', `${item.component.name} se monta en «${item.slot.name}» con un adaptador estructural (+${adapterMassKg(item.component)} kg estimados: ${ADAPTER_MASS_RULE}).`);
   }
 
+  // Construyo el perfil de generación solar y RTG a distintas distancias heliocéntricas y el límite operativo de servicio.
   const components = powered;
   const powerProfile = POWER_REFERENCE_POINTS.map(([label, distanceAu]) => {
     const g = generationAt(components, { distanceAu, yearsSinceLaunch: 0 });
@@ -122,6 +126,7 @@ export function calculateEngineering(design) {
   else if (core && idlePowerW > generationW) issue('eléctrica', 'error', `El consumo de servicio (${idlePowerW.toFixed(0)} W) supera la generación a 1 AU (${generationW.toFixed(0)} W).`);
   else if (core && Number.isFinite(serviceBreakEvenAu)) issue('eléctrica', 'info', `La generación cubre el consumo de servicio hasta ≈ ${serviceBreakEvenAu.toFixed(2)} AU del Sol (al lanzamiento).`);
 
+  // Si hay motor eléctrico, evalúo el empuje real disponible a 1 AU y la distancia máxima de encendido.
   let electric = null;
   const electricEngine = engines.find(item => item.component.electric);
   if (electricEngine) {
@@ -151,6 +156,7 @@ export function calculateEngineering(design) {
   }
   if (core && !mounted.some(item => item.component.category === 'antenna')) issue('comunicaciones', 'warning', 'Sin antena: no hay enlace con la Tierra.');
 
+  // Agrego las fuentes bibliográficas y el recuento de calidad de datos para declarar qué parte descansa en estimaciones.
   const programs = [...new Set([core, ...mounted.map(item => item.component)].filter(Boolean).map(c => c.heritage ?? ILLUSTRATIVE_PROGRAM))];
   const quality = Object.fromEntries(Object.values(DATA_QUALITY).map(q => [q, 0]));
   let illustrativeCount = 0;

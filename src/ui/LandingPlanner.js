@@ -1,5 +1,5 @@
-// Etapa 12F — sección «Descenso y aterrizaje»: elige un destino del registro multicuerpo, configura módulo, órbita y perfil de descenso,
-// calcula con src/lab/BodyLanding*.js y muestra resultados. La reproducción ocurre en el Centro de Misión.
+// En este módulo construyo la sección «Descenso y aterrizaje»: permito elegir un destino del registro multicuerpo,
+// configurar el módulo, la órbita local y el perfil de descenso, calcular la trayectoria y delegar la reproducción al Centro de Misión.
 import { CAPABILITY, getBodyProfile, landingCapability, listBodyProfiles } from '../lab/CelestialBodyMissionRegistry.js';
 import { DEMO_LANDER, payloadFromDesign } from '../lab/BodyLandingVehicle.js';
 import { DEFAULT_DESCENT_ORBIT, DEFAULT_LANDING_SCHEDULE } from '../lab/BodyLandingSimulation.js';
@@ -10,6 +10,7 @@ import { createLandingExecution } from '../lab/BodyLandingPlayback.js';
 const number = (n, digits = 1) => Number.isFinite(n) ? new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(n) : 'No disponible';
 const PARENT_NAME = id => { try { return getBodyProfile(id).name; } catch { return id; } };
 
+// Monto el planificador de descenso propulsado dentro del contenedor indicado y conecto los avisos de ejecución e invalidación.
 export function createLandingPlanner({ host, onExecuteRequest, onInvalidated }) {
   host.classList.add('mission-planner');
   host.innerHTML = `
@@ -51,7 +52,7 @@ export function createLandingPlanner({ host, onExecuteRequest, onInvalidated }) 
   const results = $('#ld-results'), select = $('#ld-body');
   let design = null, lander = structuredClone(DEMO_LANDER), result = null, active = false, bodyId = '301';
 
-  // El selector se deriva del registro (catálogos reales): ninguna lista manual.
+  // Construyo el selector de destinos directamente desde el registro multicuerpo para no depender de listas manuales.
   for (const profile of listBodyProfiles()) {
     const option = document.createElement('option'); option.value = profile.id;
     option.textContent = `${profile.name} (${profile.parentId ? PARENT_NAME(profile.parentId) : 'estrella'}) · ${landingCapability(profile).state}`;
@@ -62,6 +63,7 @@ export function createLandingPlanner({ host, onExecuteRequest, onInvalidated }) 
   const message = (text, error = false) => { $('#ld-message').textContent = text; $('#ld-message').dataset.error = String(error); };
   const deep = (object, path) => path.split('.').reduce((o, k) => o[k], object);
   function setDeep(object, path, value) { const keys = path.split('.'); const last = keys.pop(); keys.reduce((o, k) => o[k], object)[last] = value; }
+  // Sincronizo los campos editables del formulario con la estructura anidada del módulo de aterrizaje.
   const writeLander = () => {
     for (const input of host.querySelectorAll('[data-lander]')) input.value = deep(lander, input.dataset.lander);
     for (const input of host.querySelectorAll('[data-lander-bool]')) input.checked = Boolean(deep(lander, input.dataset.landerBool));
@@ -81,6 +83,7 @@ export function createLandingPlanner({ host, onExecuteRequest, onInvalidated }) 
     const strong = document.createElement('strong'); strong.textContent = value; el.append(term, strong); container.append(el);
   }
   function paragraph(container, text, className = 'mission-hint') { const p = document.createElement('p'); p.className = className; p.textContent = text; container.append(p); }
+  // Muestro la ficha física del cuerpo seleccionado, su capacidad de aterrizaje y los datos de la órbita circular local.
   function renderBodyInfo() {
     const info = $('#ld-body-info'), orbitInfo = $('#ld-orbit-info'); info.replaceChildren(); orbitInfo.replaceChildren();
     const profile = getBodyProfile(bodyId), cap = landingCapability(profile);
@@ -105,17 +108,20 @@ export function createLandingPlanner({ host, onExecuteRequest, onInvalidated }) 
     row(info, 'Efemérides', `${profile.ephemeris.kind}${profile.ephemeris.coverageTdb ? `, TDB ${profile.ephemeris.coverageTdb.join(' → ')}` : ''}`);
     if (cap.missing.length) paragraph(info, `Datos que faltan: ${cap.missing.join('; ')}.`);
   }
+  // Habilito el cálculo y la reproducción solo cuando el destino es válido y el resultado coincide con los parámetros vigentes.
   function updateButtons() {
     const cap = landingCapability(bodyId), available = [CAPABILITY.operational, CAPABILITY.experimental].includes(cap.state);
     $('#ld-calculate').disabled = !design || !available;
     $('#ld-execute').disabled = !(result && design && isLandingResultCurrent(result, design, bodyId, readLander(), options()) && result.simulation.knots.length > 2);
   }
+  // Descarto el resultado anterior cuando cambia cualquier parámetro y aviso al exterior si la ejecución estaba activa.
   function invalidate(text) {
     result = null; results.replaceChildren();
     if (text) message(text);
     if (active) { active = false; onInvalidated?.(); }
     updateButtons();
   }
+  // Pinto el resumen del descenso calculado junto con las métricas de contacto, los tramos y los diagnósticos numéricos.
   function render() {
     results.replaceChildren();
     if (!result) return;
@@ -151,6 +157,7 @@ export function createLandingPlanner({ host, onExecuteRequest, onInvalidated }) 
     const payload = payloadFromDesign(design);
     $('#ld-payload').value = `${payload.name} · ${number(payload.massKg, 1)} kg (seca ${number(payload.dryMassKg, 1)} + propelente ${number(payload.fuelKg, 1)})`;
   }
+  // Valido los parámetros actuales, ejecuto la integración del descenso y capturo cualquier error para informarlo en el panel.
   function calculate() {
     try {
       const current = options(), currentLander = readLander();
@@ -161,6 +168,7 @@ export function createLandingPlanner({ host, onExecuteRequest, onInvalidated }) 
     } catch (error) { result = null; results.replaceChildren(); message(`Cálculo no disponible: ${error.message}`, true); }
     updateButtons();
   }
+  // Escucho los cambios de parámetros, destino y botones principales; antes de pasar al Centro de Misión verifico que el cálculo siga vigente.
   host.addEventListener('input', event => { if (event.target.matches('input')) { renderBodyInfo(); invalidate('Parámetros modificados. Recalcula el descenso.'); } });
   select.addEventListener('change', () => {
     bodyId = select.value; renderBodyInfo();

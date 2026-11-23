@@ -1,8 +1,8 @@
-// Etapa 13 — reproducción determinista de una misión integrada (Centro de Misión unificado).
-// Función pura del instante: cada estado sale del tramo calculado que contiene ese instante (Kepler exacto en tramos balísticos,
-// Hermite entre nudos DOPRI54 en encendidos y descenso). Retroceder o repetir no recalcula ni consume propelente.
-// La vista tiene CONTEXTOS (heliocéntrico, planetocéntrico, centrado en el satélite y escena local del descenso). Cambiar de
-// contexto solo cambia el marco en que se DIBUJA el mismo estado: la conversión usa las efemérides en la misma época TDB.
+// En este módulo reproduzco de forma determinista una misión interplanetaria integrada para el Centro de Misión unificado.
+// Evalúo cada instante como función pura del tiempo: uso propagación kepleriana exacta en los tramos balísticos e interpolación
+// de Hermite entre nudos DOPRI54 en los encendidos y descensos, de modo que avanzar o retroceder nunca recalcula ni consume propelente.
+// Administro los contextos visuales (geocéntrico, heliocéntrico, planetocéntrico, lunar y escena local de descenso) transformando
+// siempre el mismo estado físico mediante las efemérides en la misma época TDB.
 import { tdbToTimeScales } from '../science/AstrodynamicsTime.js';
 import { KM_PER_AU } from '../science/Units.js';
 import { orbitDescription } from './OrbitalInsertion.js';
@@ -17,10 +17,10 @@ import { precessionMatrixJ2000ToDate, applyMatrix } from '../science/EarthOrient
 import { eclipticJ2000ToIcrfEquatorial } from '../science/Frames.js';
 
 export const INTEGRATED_MAX_RATE = 100 * 86400;
-// Frontera gráfica de los contextos planetocéntrico y del satélite: la del Centro de Misión (1 unidad = 10 000 km).
+// Uso la escala local del Centro de Misión (1 unidad de escena = 10 000 km) para escenas geocéntricas, planetocéntricas y lunares.
 export const LOCAL_CONTEXT_SCENE_SCALE = 1 / 10000;
 export const CONTEXT_LABELS = Object.freeze({ earth: 'Geocéntrico (salida desde la Tierra)', helio: 'Heliocéntrico (Sol)', planet: 'Planetocéntrico', moon: 'Centrado en el satélite', landing: 'Escena local del descenso' });
-// Ritmo sugerido por tipo de tramo (s de misión por s real) para el modo «automático por fase».
+// Sugiero una velocidad de reproducción (segundos de misión por segundo real) adaptada a cada fase para el modo automático.
 export const AUTO_RATE = Object.freeze({ cruise: 864000, outbound: 864000, 'planet-approach': 86400, flyby: 21600, 'planet-capture': 60, 'planet-orbit': 21600,
   'moon-transfer': 3600, 'moon-approach': 600, 'moon-capture': 10, 'moon-orbit': 600, 'moon-flyby': 300, landing: 60 });
 const SAMPLES = Object.freeze({ cruise: 360, outbound: 120, kepler: 90, burn: 40, landing: 60 });
@@ -29,13 +29,14 @@ const ZERO = Object.freeze([0, 0, 0]);
 const PLANET_COLOR = Object.freeze({ '199': '#a39a91', '299': '#d8b979', '399': '#3f7cc0', '499': '#c46a43', '599': '#c9a77f', '699': '#d6c38f', '799': '#8fd0d8', '899': '#5b7fd6' });
 const MOON_COLOR = '#b9c9d6';
 
-/** Tramo que contiene el instante (en una frontera se toma el tramo que EMPIEZA: estado ya transformado). */
+// Localizo por bisección el tramo que contiene el instante t; en una frontera exacta tomo el tramo que empieza ya transformado.
 export function segmentAtTime(segments, t) {
   let lo = 0, hi = segments.length - 1;
   if (t <= segments[0].startSeconds) return 0;
   while (hi - lo > 1) { const m = (lo + hi) >> 1; if (segments[m].startSeconds <= t) lo = m; else hi = m; }
   return segments[hi].startSeconds <= t ? hi : lo;
 }
+// Determino el contexto visual natural al que pertenece un tramo según su tipo y su cuerpo central.
 export function contextOfSegment(mission, segment) {
   if (segment.kind === 'landing') return 'landing';
   if (segment.centralBodyId === '399') return 'earth';
@@ -44,7 +45,7 @@ export function contextOfSegment(mission, segment) {
   return 'moon';
 }
 const frameIdOf = (mission, context) => context === 'earth' ? '399' : context === 'helio' ? '10' : context === 'planet' ? mission.destinationId : mission.moonId;
-// 21: radio y color de la Tierra en la escena geocéntrica (radio ecuatorial WGS84, el de 12E).
+// Uso el radio ecuatorial WGS84 de la Tierra (km) para dibujar la esfera terrestre en el contexto geocéntrico.
 const EARTH_RADIUS_KM = 6378.137;
 
 function stateIn(mission, data, segment, t, context) {
@@ -78,10 +79,9 @@ function buildContext(mission, data, context, design) {
   function originPosition(ctx, jd) { if (ctx !== 'helio') return null; const e = data.helio.stateAt('399', jd); return e?.status === 'available' ? e.positionKm : null; }
   const radii = trajectory.map(p => norm(p.positionKm));
   const maxAll = Math.max(...radii, ...trajectory.map(p => norm(p.moonPositionKm)));
-  // Encuadre general: en el contexto planetario el arco de aproximación empieza en el borde de la esfera de influencia, decenas
-  // de veces más lejos que la órbita; el encuadre usa la parte cercana (órbitas y encendidos) y la aproximación queda visible al alejar.
+  // Calculo el radio de encuadre inicial dejando fuera los tramos lejanos de aproximación o escape para que las órbitas cercanas se vean con detalle.
   let frameRadius = maxAll;
-  // 21: en la escena geocéntrica, la hipérbola de escape llega a la SOI (~ 924 000 km); el encuadre usa ascenso, aparcamiento e inyección.
+  // En la escena geocéntrica encuadro el ascenso, el aparcamiento y la inyección, dejando la hipérbola hacia la SOI (~924 000 km) visible al alejar.
   if (context === 'earth') {
     const core = trajectory.filter(p => segs[segmentAtTime(segs, p.elapsedSeconds)].phase !== 'earth-escape');
     frameRadius = Math.max(...(core.length ? core : trajectory).map(p => norm(p.positionKm)), 3 * EARTH_RADIUS_KM);
@@ -104,12 +104,12 @@ function buildContext(mission, data, context, design) {
       moonArrivalPositionKm: trajectory.at(-1).moonPositionKm, originColor: PLANET_COLOR['399'], destinationColor: context === 'helio' ? (tgt.color ?? PLANET_COLOR[tgt.id]) : MOON_COLOR,
       sceneScale: scale, bodyRadiusKm, centralBodyVisualRadius: context === 'helio' ? 0.35 : null, centralBody: body, overviewRadiusScene,
       cameraFar: Math.max(300, maxAll * scale * 4, overviewRadiusScene * 8), showOrigin: context === 'helio', hideMoon: context === 'moon' || context === 'earth' || (context === 'planet' && !moonKey),
-      // Tamaño ilustrativo de los marcadores ≈ 1/10 del radio encuadrado (en escenas pequeñas, menor que 1: Europa ≈ 0,16 u).
+      // Escalo los marcadores a ~1/10 del radio encuadrado para que sigan siendo legibles incluso en escenas lunares compactas.
       markerScale: Math.max(context === 'helio' ? 1 : 0.02, overviewRadiusScene / 10), minDistance: Math.min(1.4, overviewRadiusScene * 0.02) }
   };
 }
 
-/** `candidate`: { result (computeIntegratedMission), data: { helio, moons }, design, name }. */
+// Construyo el objeto de ejecución reproducible con todos los contextos gráficos disponibles a partir de la misión calculada.
 export function createIntegratedExecution({ result: mission, data, design = null, name = null }) {
   if (mission?.kind !== 'integrated' || mission.model !== INTEGRATED_MISSION_VERSION) throw Error('El resultado no corresponde al modelo de misión integrada vigente.');
   if (!mission.segments.length || !(mission.durationSeconds > 0)) throw Error('La misión no tiene tramos reproducibles.');
@@ -135,7 +135,7 @@ export function autoContextAt(execution, t) {
   return execution.contexts[c] ? c : 'helio';
 }
 
-/** Muestra en el contexto pedido (o el automático). Devuelve también el estado nativo del tramo y su cuerpo central. */
+// Muestreo el estado de la misión en el instante dado, en el contexto solicitado o en el automático, devolviendo también el estado nativo del tramo.
 export function sampleIntegratedExecution(execution, elapsedSeconds, context = null) {
   if (execution?.kind !== 'integrated' || !Number.isFinite(elapsedSeconds) || elapsedSeconds < 0 || elapsedSeconds > execution.durationSeconds + 1e-9) throw Error('Instante fuera de la misión calculada.');
   const m = execution.mission, t = Math.min(elapsedSeconds, execution.durationSeconds), index = segmentAtTime(m.segments, t), seg = m.segments[index];
@@ -175,6 +175,7 @@ function tankState(mission, t) {
   return { tanks, active, separated };
 }
 
+// Derivo la telemetría completa para la interfaz (escalas de tiempo, marco, altitud, depósitos, encendidos activos y potencia instantánea).
 export function deriveIntegratedTelemetry(execution, sample) {
   const m = execution.mission, seg = sample.segment, time = tdbToTimeScales(sample.jdTdb), native = sample.native;
   const centralId = seg.kind === 'landing' ? m.moonId : seg.centralBodyId;
@@ -182,8 +183,7 @@ export function deriveIntegratedTelemetry(execution, sample) {
   const radius = centralId === '10' ? 695700 : centralId === '399' ? EARTH_RADIUS_KM : centralId === m.destinationId ? m.target.radiusKm : getBodyProfile(centralId).radiusKm.value;
   const mu = seg.mu;
   const r = norm(native.positionKm), orbit = orbitDescription(native.positionKm, native.velocityKmS, mu, radius);
-  // 21: cerca de la Tierra, altitud geodésica sobre el elipsoide WGS84 (ecuador de la fecha, misma precesión que el cálculo);
-  // con el radio ecuatorial, la plataforma LC-41 quedaría a −4,9 km.
+  // Cerca de la Tierra calculo la altitud geodésica sobre el elipsoide WGS84 (en el ecuador de la fecha) porque con radio esférico LC-41 quedaría a −4,9 km.
   const altitudeKm = centralId === '399' ? geodeticFromPosition(applyMatrix(precessionMatrixJ2000ToDate(time.jdTt), eclipticJ2000ToIcrfEquatorial(native.positionKm))).altitudeKm : r - radius;
   let helio = null, toPlanet = null;
   try { helio = convertState(native, centralId, '10', sample.jdTdb, execution.data, m.target, MOON_WINDOW_KEYS[m.moonId]); } catch { helio = null; }
@@ -192,11 +192,11 @@ export function deriveIntegratedTelemetry(execution, sample) {
   const massKg = sample.landingSample ? sample.landingSample.massKg ?? native.massKg : native.massKg;
   if (active) { const used = Math.max(0, (active.massAfterKg + active.propellantKg) - massKg); tanks[active.engineKey] = Math.max(0, tanks[active.engineKey] - used); }
   const engineOn = sample.landingSample ? Boolean(sample.landingSample.engineOn) : Boolean(active) || (seg.kind === 'burn' && native.engineOn);
-  // Fase vigente: la de inicio más reciente que contiene el instante (en una frontera, la que empieza).
+  // Elijo como fase activa la de inicio más reciente que cubre este instante, de modo que en una frontera prevalece la que arranca.
   const phase = m.phases.filter(p => p.id !== 'departure' && sample.elapsedSeconds >= (p.startSeconds ?? Infinity) - 1e-9 && sample.elapsedSeconds <= (p.endSeconds ?? p.startSeconds ?? -Infinity) + 1e-9)
     .sort((a, b) => b.startSeconds - a.startSeconds)[0];
   const doneManeuvers = m.maneuvers.filter(mv => mv.endSeconds <= sample.elapsedSeconds + 1e-9);
-  // 15: energía en el instante con el mismo modelo que la fase «power» (generación a la distancia heliocéntrica actual).
+  // Evalúo la generación eléctrica instantánea a la distancia heliocéntrica actual con el mismo modelo solar/RTG de la fase de potencia.
   const sunDistanceAu = helio ? norm(helio.positionKm) / KM_PER_AU : null, p = m.vehicle.power;
   let power = null;
   if (p && Number.isFinite(sunDistanceAu) && sunDistanceAu > 0) {

@@ -1,3 +1,5 @@
+// En este módulo controlo la herramienta científica de medición tridimensional de distancias entre cuerpos celestes y sondas.
+// Calculo siempre a partir de estados físicos en km en el mismo marco y época TDB, y sincronizo la línea visual en la escena 3D.
 import {
   computeScientificDistance,
   formatLightTime
@@ -27,11 +29,12 @@ export const CUERPOS_BASE_SISTEMA = Object.freeze([
   { id: 'Neptuno', etiqueta: 'Neptuno' }
 ]);
 
-// 17.1: sin la Sonda Experimental 01, el modo Laboratorio mide los mismos cuerpos que la exploración.
+// Mantengo la misma lista base de cuerpos medibles tanto para el modo de exploración como para el laboratorio.
 export const CUERPOS_MEDIBLES_SISTEMA = Object.freeze([
   ...CUERPOS_BASE_SISTEMA
 ]);
 
+// En modo histórico añado Voyager 1 y 2 junto con las lunas de sobrevuelo relevantes.
 export const CUERPOS_MEDIBLES_HISTORICOS = Object.freeze([
   { id: 'voyager-1', etiqueta: 'Voyager 1 (-31)' },
   { id: 'voyager-2', etiqueta: 'Voyager 2 (-32)' },
@@ -41,10 +44,7 @@ export const CUERPOS_MEDIBLES_HISTORICOS = Object.freeze([
   { id: 'Triton', etiqueta: 'Tritón (801 · sobrevuelo)' }
 ]);
 
-/**
- * Controlador de la herramienta científica de medición tridimensional de distancias.
- * Calcula siempre a partir de estados físicos en km en el mismo marco y época TDB.
- */
+// Creo y conecto los controles del panel de distancias, sus selectores, la línea 3D fijable y el refresco de resultados.
 export function crearControlesDistancia({
   obtenerDescriptorCuerpo,
   alActualizarLineaEscena,
@@ -65,6 +65,7 @@ export function crearControlesDistancia({
   const campoEpoca = document.querySelector('#distance-epoch');
   const campoFuente = document.querySelector('#distance-source');
 
+  // Relleno ambos selectores preservando la elección previa cuando sigue disponible y evitando seleccionar el mismo cuerpo dos veces.
   function poblarOpciones(listaCuerpos, defectoA, defectoB) {
     const prevA = selectorA.value;
     const prevB = selectorB.value;
@@ -89,12 +90,14 @@ export function crearControlesDistancia({
   let lineaFijada = false;
   let ultimaMedicion = null;
 
+  // Sincronizo el estado visual y aria-pressed del botón que mantiene visible la línea 3D aunque se pliegue el menú.
   function sincronizarBotonFijar() {
     botonFijar.setAttribute('aria-pressed', String(lineaFijada));
     botonFijar.classList.toggle('is-active', lineaFijada);
     botonFijar.textContent = lineaFijada ? 'Fijado' : 'Fijar';
   }
 
+  // Consulto los extremos actuales, calculo la distancia científica y actualizo tanto las cifras del panel como el vector 3D.
   function actualizar() {
     const idA = selectorA.value;
     const idB = selectorB.value;
@@ -148,6 +151,7 @@ export function crearControlesDistancia({
     return resultado;
   }
 
+  // Reacciono a cambios de cuerpos, inversión de extremos, visibilidad de la línea y apertura del panel desplegable.
   selectorA.addEventListener('change', actualizar);
   selectorB.addEventListener('change', actualizar);
 
@@ -186,11 +190,13 @@ export function crearControlesDistancia({
   return {
     actualizar,
     obtenerUltimaMedicion: () => ultimaMedicion,
+    // Permito fijar un par concreto desde fuera y recalcular de inmediato.
     seleccionarPar(idA, idB) {
       selectorA.value = idA;
       selectorB.value = idB;
       return actualizar();
     },
+    // Adapto la lista de cuerpos disponibles al cambiar entre el modo histórico y el resto de modos.
     configurarModoOperacion(modo) {
       if (modo === 'historico') {
         poblarOpciones(CUERPOS_MEDIBLES_HISTORICOS, 'Tierra', 'voyager-1');

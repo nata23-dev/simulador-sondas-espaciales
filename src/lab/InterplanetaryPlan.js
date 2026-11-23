@@ -1,9 +1,7 @@
-// Etapa 12G — planificación interplanetaria preliminar: búsqueda de ventanas Tierra → planeta con efemérides
-// NASA/JPL Horizons, Lambert heliocéntrico de cero revoluciones y cónicas parcheadas para el coste de inyección.
-//
-// Modelo: dos cuerpos (Sol) entre la salida y la llegada; los planetas solo fijan las condiciones de contorno
-// (posición y velocidad en sus épocas). Sin perturbaciones planetarias, sin esfera de influencia, sin asistencias
-// gravitacionales, sin inserción orbital. La «mejor» oportunidad lo es SOLO dentro de la cuadrícula examinada.
+// En este módulo realizo la planificación interplanetaria preliminar buscando ventanas Tierra → planeta sobre efemérides NASA/JPL Horizons.
+// Uso un modelo heliocéntrico de dos cuerpos (gravedad solar, Lambert de cero revoluciones) y cónicas parcheadas para estimar el coste
+// ideal de inyección, sin perturbaciones planetarias, asistencias gravitacionales ni captura orbital.
+// Cada «mejor» oportunidad lo es exclusivamente dentro de la cuadrícula examinada (o su caja de refinamiento local).
 import { solveLambert, LAMBERT_STATUS, LAMBERT_SOLVER_VERSION } from '../science/LambertSolver.js';
 import { SOLAR_SYSTEM_GM_CATALOG } from '../science/GravitationalParameters.js';
 import { eclipticJ2000ToIcrfEquatorial } from '../science/Frames.js';
@@ -21,11 +19,11 @@ export const CANDIDATE_STATUS = Object.freeze({
   best: 'MEJOR CANDIDATO DEL INTERVALO EXAMINADO', computed: 'CANDIDATO FÍSICAMENTE CALCULADO', noConvergence: 'SOLUCIÓN NO CONVERGENTE',
   noCoverage: 'FECHA SIN COBERTURA', illConditioned: 'GEOMETRÍA MAL CONDICIONADA', notEvaluated: 'MISIÓN NO EVALUADA COMPLETAMENTE'
 });
-// Códigos compactos de la cuadrícula (mapa de oportunidades).
+// Codifico el estado de cada celda del mapa de oportunidades en enteros compactos (Uint8Array).
 export const CELL = Object.freeze({ ok: 1, noCoverage: 2, noConvergence: 3, illConditioned: 4 });
 export const CRITERIA = Object.freeze({ c3: 'C3 de salida mínimo', arrival: 'v∞ de llegada mínima', total: '|v∞ salida| + |v∞ llegada| mínimo' });
 export const MAX_GRID_CELLS = 120000;
-// Cierre máximo aceptado (propagación kepleriana independiente desde la solución hasta la llegada).
+// Acepto una solución de Lambert solo si su propagación kepleriana independiente cierra dentro de 1 km en la llegada.
 export const CLOSURE_TOLERANCE_KM = 1;
 export const MODEL_LIMITS = Object.freeze([
   'Transferencia cónica heliocéntrica idealizada (Lambert de cero revoluciones, solo gravedad solar).',
@@ -43,8 +41,7 @@ export const DEFAULT_INTERPLANETARY_OPTIONS = Object.freeze({
   originId: '399', destinationId: '499', departureStartUtc: '2028-08-01', departureEndUtc: '2029-04-01', departureStepDays: 4,
   tofMinDays: 120, tofMaxDays: 400, tofStepDays: 4, criterion: 'c3', parkingAltitudeKm: 200
 });
-// Rangos de búsqueda sugeridos por destino (escala de tiempos de vuelo física: semiperiodo de Hohmann ± margen).
-// Son puntos de partida editables, no fechas óptimas.
+// Propongo intervalos de tiempo de vuelo y pasos orientativos alrededor del semiperiodo de Hohmann de cada planeta.
 export const SUGGESTED_RANGES = Object.freeze({
   '199': { tofMinDays: 60, tofMaxDays: 200, tofStepDays: 2, departureStepDays: 2, spanDays: 240 },
   '299': { tofMinDays: 80, tofMaxDays: 220, tofStepDays: 2, departureStepDays: 2, spanDays: 600 },
@@ -55,7 +52,7 @@ export const SUGGESTED_RANGES = Object.freeze({
   '899': { tofMinDays: 3500, tofMaxDays: 6800, tofStepDays: 50, departureStepDays: 10, spanDays: 380 }
 });
 
-/** Valida y normaliza opciones; devuelve { issues, options } con épocas TDB derivadas de las fechas UTC. */
+// Valido y normalizo las opciones de búsqueda, convirtiendo las fechas UTC de entrada a épocas Julianas TDB.
 export function validateInterplanetaryOptions(input = {}) {
   const o = { ...DEFAULT_INTERPLANETARY_OPTIONS, ...input };
   const issues = [];
@@ -80,14 +77,14 @@ export function validateInterplanetaryOptions(input = {}) {
     timeScales: Object.freeze({ start: depStart, end: depEnd }) }) };
 }
 
-/** Firma determinista de las condiciones: cualquier cambio de fechas, destino o parámetros invalida resultados previos. */
+// Genero una firma determinista de los parámetros de búsqueda para invalidar resultados cuando cambia cualquier campo.
 export function interplanetarySignature(options) {
   const keys = ['originId', 'destinationId', 'departureStartUtc', 'departureEndUtc', 'departureStepDays', 'tofMinDays', 'tofMaxDays', 'tofStepDays', 'criterion', 'parkingAltitudeKm'];
   return JSON.stringify(keys.map(key => [key, options[key]]));
 }
 export function isInterplanetaryResultCurrent(result, options) { return Boolean(result) && result.signature === interplanetarySignature({ ...DEFAULT_INTERPLANETARY_OPTIONS, ...options }); }
 
-/** Δv ideal (impulsivo) desde una órbita circular de estacionamiento: √(v∞² + 2μ/r) − √(μ/r). */
+// Calculo el Δv impulsivo ideal desde una órbita circular de estacionamiento: √(v∞² + 2μ/r) − √(μ/r) en km/s.
 export function injectionDeltaV(vInfKmS, parkingAltitudeKm, { mu = MU_EARTH, bodyRadiusKm = EARTH_RADIUS_KM } = {}) {
   if (!Number.isFinite(vInfKmS) || vInfKmS < 0) throw new RangeError('v∞ debe ser finita y no negativa.');
   if (!Number.isFinite(parkingAltitudeKm) || parkingAltitudeKm <= 0) throw new RangeError('La altitud de estacionamiento debe ser positiva.');
@@ -95,7 +92,7 @@ export function injectionDeltaV(vInfKmS, parkingAltitudeKm, { mu = MU_EARTH, bod
   return { deltaVKmS: vPeri - vCirc, circularSpeedKmS: vCirc, periapsisSpeedKmS: vPeri, parkingRadiusKm: r, escapeSpeedKmS: Math.sqrt(2 * mu / r) };
 }
 
-/** Exceso hiperbólico, C3 y asíntota de salida (declinación/ascensión recta en ejes ecuatoriales ICRF). */
+// Obtengo el vector de exceso hiperbólico v∞, la energía característica C3 (km²/s²) y la orientación ecuatorial ICRF de la asíntota.
 export function hyperbolicExcess(transferVelocityKmS, planetVelocityKmS) {
   const vInf = sub(transferVelocityKmS, planetVelocityKmS), magnitude = norm(vInf);
   const eq = eclipticJ2000ToIcrfEquatorial(vInf);
@@ -115,10 +112,7 @@ function solveCell(origin, destination, tofDays) {
 
 function score(criterion, c3, vArr) { return criterion === 'c3' ? c3 : criterion === 'arrival' ? vArr : Math.sqrt(c3) + vArr; }
 
-/**
- * Explora la cuadrícula (fecha de salida × tiempo de vuelo). `window` es el evaluador síncrono de
- * InterplanetaryEphemeris.loadWindow, que debe cubrir [salida inicial, salida final + TOF máximo].
- */
+// Exploro la cuadrícula (fecha de salida × tiempo de vuelo) usando la ventana síncrona de efemérides para construir el mapa porkchop y sus mínimos locales.
 export function searchLaunchWindows(window, input) {
   const { issues, options } = validateInterplanetaryOptions(input);
   if (issues.length) throw new RangeError(issues.join(' '));
@@ -150,7 +144,7 @@ export function searchLaunchWindows(window, input) {
     }
   }
   candidates.sort((a, b) => a.score - b.score);
-  // Mínimos locales de la cuadrícula (sin vecino válido con menor puntuación): oportunidades distintas, no solo celdas contiguas.
+  // Extraigo los mínimos locales de la cuadrícula (sin ningún vecino válido con mejor puntuación) para destacar oportunidades independientes.
   const local = candidates.filter(c => {
     const i = Math.floor(c.index / nTof), j = c.index % nTof;
     for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) {
@@ -169,7 +163,7 @@ export function searchLaunchWindows(window, input) {
       + (bestIndex >= 0 && candidates[0].atGridEdge ? ' Está en el BORDE de la cuadrícula: el mínimo podría estar fuera del intervalo examinado; amplía fechas o tiempos de vuelo.' : '') });
 }
 
-/** Cálculo completo de una oportunidad: estados de contorno con procedencia, Lambert, v∞, C3, asíntota, inyección y requisitos. */
+// Evalúo en detalle una oportunidad individual calculando estados de contorno, Lambert, v∞, C3, asíntota e inyección ideal.
 export function evaluateTransfer(window, { originId = '399', destinationId, departureJdTdb, arrivalJdTdb, parkingAltitudeKm = 200, isBest = false } = {}) {
   const tofDays = arrivalJdTdb - departureJdTdb;
   const origin = window.stateAt(originId, departureJdTdb), destination = window.stateAt(destinationId, arrivalJdTdb);
@@ -195,17 +189,13 @@ export function evaluateTransfer(window, { originId = '399', destinationId, depa
     finalState: Object.freeze({ positionKm: destination.positionKm, velocityKmS: cell.lambert.arrivalVelocityKmS }) });
 }
 
-/**
- * Comparación físicamente justificable con el Hangar: el Δv ideal del diseño (Tsiolkovsky, ProbeEngineering) frente al Δv
- * de inyección ideal. Es una condición NECESARIA, no suficiente: no verifica empuje, lanzador ni pérdidas.
- */
+// Comparo el Δv ideal de la sonda del Hangar frente al Δv de inyección requerido como condición necesaria, nunca suficiente.
 export function compareRequirementsWithDesign(requirements, engineering) {
   const available = engineering?.deltaVMS;
   if (!requirements) return { status: 'SIN REQUISITOS', message: 'Calcula y selecciona una oportunidad.' };
   if (!Number.isFinite(available)) return { status: 'NO VERIFICABLE', message: 'El diseño no tiene un Δv ideal calculable (revisa Ingeniería).' };
   const requiredMS = requirements.injectionDeltaVKmS * 1000;
-  // Etapa 16: mismo criterio que el Planificador Tierra–Luna (MissionEngineering): con propulsión eléctrica el Δv de Tsiolkovsky
-  // no sirve para una inyección impulsiva; el empuje de milinewtons tardaría meses y exige propagación de empuje finito y potencia.
+  // Con propulsión eléctrica no puedo comparar el Δv de Tsiolkovsky contra un impulso instantáneo porque los milinewtons requieren espirales de meses.
   if (engineering.propulsionType === 'electric') return { status: 'NO VERIFICABLE CON PROPULSIÓN ELÉCTRICA', availableMS: available, requiredMS,
     message: 'El motor iónico tiene mucho Δv ideal pero muy poco empuje: no puede dar la inyección como un impulso desde la órbita de estacionamiento (tardaría meses en espiral). Esta comprobación no se aplica; la salida la daría el lanzador o una etapa superior (no evaluados).' };
   return available >= requiredMS
@@ -213,7 +203,7 @@ export function compareRequirementsWithDesign(requirements, engineering) {
     : { status: 'Δv IDEAL INSUFICIENTE PARA LA INYECCIÓN', availableMS: available, requiredMS, message: 'La sonda sola no puede realizar la inyección idealizada; haría falta una etapa superior o un lanzador que entregue ese C3 (no evaluado).' };
 }
 
-/** Destinos de misión: planetas directos (transferencia preliminar operativa) y satélites (requieren etapas futuras). */
+// Listo los planetas con transferencia preliminar directa y los satélites con sus fases pendientes y capacidades locales.
 export function listMissionDestinations() {
   const profiles = listBodyProfiles();
   const planets = PLANET_DESTINATION_IDS.map(id => Object.freeze({ id, name: PLANET_NAMES[id], kind: 'planet', status: 'Transferencia heliocéntrica preliminar operativa (Lambert, cero revoluciones)' }));
@@ -228,12 +218,9 @@ export function listMissionDestinations() {
   return Object.freeze({ planets: Object.freeze(planets), satellites: Object.freeze(satellites) });
 }
 
-// ---- Etapa 13 (OBS-12G-01): refinamiento local continuo de un candidato de la cuadrícula ------------------------------------
-/**
- * Refina (salida, tiempo de vuelo) con Nelder–Mead acotado a ± media celda alrededor del candidato. El resultado sigue siendo el
- * mejor DENTRO del intervalo examinado (no un óptimo global); si el mínimo continuo cae en el límite de la caja de refinamiento
- * se marca `atRefinementBoundary` (el valle sigue fuera de la celda: conviene ampliar la búsqueda).
- */
+// ---- Refinamiento local continuo de un candidato de la cuadrícula -----------------------------------------------------------
+// Refino (fecha de salida, tiempo de vuelo) mediante Nelder–Mead acotado dentro de ± media celda alrededor del candidato elegido.
+// Si el óptimo local queda pegado al borde de la caja de refinamiento activo `atRefinementBoundary` para avisar de que el valle sigue fuera.
 export function refineTransferCandidate(window, { originId = '399', destinationId, departureJdTdb, tofDays, criterion = 'c3', halfSpanDepartureDays, halfSpanTofDays, maxEvaluations = 160 }) {
   if (!CRITERIA[criterion]) throw new RangeError('Criterio de comparación desconocido.');
   if (!(halfSpanDepartureDays > 0) || !(halfSpanTofDays > 0)) throw new RangeError('La caja de refinamiento debe tener semiamplitudes positivas.');
@@ -268,7 +255,7 @@ export function refineTransferCandidate(window, { originId = '399', destinationI
     note: 'Refinado localmente (Nelder–Mead) dentro de ± media celda del mejor candidato de la cuadrícula: sigue siendo el mejor del intervalo examinado, no un óptimo global.' });
 }
 
-/** OBS-12G-03: diagnóstico de bordes de un candidato respecto a la cuadrícula y a la cobertura de efemérides. */
+// Diagnostico si un candidato cae en los bordes de la cuadrícula de búsqueda o junto al límite de cobertura de las efemérides.
 export function candidateEdgeDiagnostics(search, candidate, coverage) {
   const o = search.options, i = Math.round((candidate.departureJdTdb - o.departureStartJdTdb) / o.departureStepDays), j = Math.round((candidate.tofDays - o.tofMinDays) / o.tofStepDays);
   const warnings = [];

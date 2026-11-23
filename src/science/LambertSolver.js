@@ -1,23 +1,25 @@
-// Etapa 12G — problema de Lambert de dos cuerpos, cero revoluciones, por variables universales.
+// Aquí resuelvo el problema de Lambert de dos cuerpos a cero revoluciones mediante variables universales.
 //
-// Formulación (Bate, Mueller & White 1971, §5.3; Curtis 2014, alg. 5.2; Vallado 2013, alg. 58):
+// Formulación que aplico (Bate, Mueller & White 1971, §5.3; Curtis 2014, alg. 5.2; Vallado 2013, alg. 58):
 //   A = sin Δθ · sqrt(r1·r2 / (1 − cos Δθ))
 //   y(z) = r1 + r2 + A·(z·S(z) − 1)/sqrt(C(z))
 //   √μ·t(z) = (y/C)^{3/2}·S + A·sqrt(y)
 //   f = 1 − y/r1,  g = A·sqrt(y/μ),  ġ = 1 − y/r2
 //   v1 = (r2 − f·r1)/g,  v2 = (ġ·r2 − r1)/g
-// Para cero revoluciones t(z) crece monótonamente en el dominio admisible (y > 0, z < 4π²), desde 0 hasta ∞;
-// se resuelve t(z) = Δt por bisección/regula falsi (Illinois) con intervalo garantizado, sin Newton sin protección.
-// Se trabaja adimensionalizado (L = r1, T = sqrt(L³/μ)) para tolerar diferencias extremas de escala.
 //
-// Alcance: SOLO cero revoluciones. No se calculan soluciones multi-revolución, óptimos globales ni asistencias gravitacionales.
+// Unidades: km, km/s, s y μ en km³/s², en un marco inercial común centrado en el cuerpo atractivo (por defecto +Z como norte eclíptico).
+// Como en cero revoluciones t(z) crece monótonamente en el dominio admisible (y > 0, z < 4π²) desde 0 hasta ∞,
+// resuelvo t(z) = Δt con regula falsi modificada (Illinois) y bisección de respaldo sobre un intervalo acotado,
+// trabajando adimensionalizado (L = r1, T = sqrt(L³/μ)) para tolerar diferencias extremas de escala.
+//
+// Alcance: resuelvo únicamente transferencias de cero revoluciones; no calculo ramas multi-revolución, óptimos globales ni asistencias gravitacionales.
 import { stumpff, propagateKepler } from './KeplerPropagator.js';
 
 export const LAMBERT_SOLVER_VERSION = '12G-universal-0rev-1';
 export const LAMBERT_STATUS = Object.freeze({
   converged: 'converged', invalid: 'invalid_input', degenerate: 'degenerate_geometry', noSolution: 'no_solution', noConvergence: 'not_converged'
 });
-// |Δθ − 180°| o |Δθ| por debajo de este ángulo: plano de transferencia mal condicionado (A → 0).
+// Cuando |Δθ − 180°| o |Δθ| queda por debajo de este umbral, marco la geometría como casi colineal (A → 0, plano mal condicionado).
 export const NEAR_COLINEAR_DEG = 1;
 
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -25,15 +27,17 @@ const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a
 const norm = a => Math.hypot(a[0], a[1], a[2]);
 const finiteVector = v => Array.isArray(v) && v.length === 3 && v.every(Number.isFinite);
 
+/** Construyo una respuesta inmutable de error con diagnóstico estructurado. */
 function failure(status, reason, extra = {}) { return Object.freeze({ status, converged: false, reason, ...extra }); }
 
 /**
+ * Aquí resuelvo el arco de transferencia de dos cuerpos entre r1Km y r2Km en tofSeconds para un cuerpo central de parámetro μ.
  * @param {number[]} r1Km posición inicial (km)
- * @param {number[]} r2Km posición final (km), mismo origen, ejes y época de referencia que r1
+ * @param {number[]} r2Km posición final (km), en el mismo origen, ejes y época de referencia que r1Km
  * @param {number} tofSeconds tiempo de vuelo (s), > 0
- * @param {number} muKm3S2 parámetro gravitacional del cuerpo central
+ * @param {number} muKm3S2 parámetro gravitacional del cuerpo central (km³/s²)
  * @param {{ direction?: 'prograde'|'retrograde', referenceNormal?: number[], tolerance?: number, maxIterations?: number, verify?: boolean }} options
- *   `direction` define el sentido respecto a `referenceNormal` (por defecto +Z del marco: norte eclíptico). Prograda ⇒ h·n > 0.
+ *   Uso `direction` respecto a `referenceNormal` (por defecto +Z del marco: norte eclíptico); en sentido prógrado exijo h·n > 0.
  */
 export function solveLambert(r1Km, r2Km, tofSeconds, muKm3S2, { direction = 'prograde', referenceNormal = [0, 0, 1], tolerance = 1e-13, maxIterations = 300, verify = true } = {}) {
   if (!finiteVector(r1Km) || !finiteVector(r2Km)) return failure(LAMBERT_STATUS.invalid, 'Las posiciones deben ser vectores finitos de tres componentes.');
@@ -52,15 +56,16 @@ export function solveLambert(r1Km, r2Km, tofSeconds, muKm3S2, { direction = 'pro
   let theta = (direction === 'prograde') === sameSign ? base : 2 * Math.PI - base;
   const thetaDeg = theta * 180 / Math.PI;
   const sinTheta = Math.sin(theta);
-  // Δθ = 0 (posiciones alineadas en el mismo sentido) o Δθ = 180° exactos: el plano no queda definido.
+  // Rechazo los casos colineales (Δθ = 0° o Δθ = 180° exactos) porque el plano de transferencia queda indeterminado.
   if (cn <= 1e-14 * R1 * R2 || 1 - cosTheta <= 1e-15) {
     return failure(LAMBERT_STATUS.degenerate, 'Posiciones colineales con el cuerpo central: el plano de transferencia no está definido (Δθ = 0° o 180°).', { transferAngleDeg: thetaDeg });
   }
   const A = sinTheta * Math.sqrt(R1 * R2 / (1 - cosTheta));
   const nearColinear = Math.abs(thetaDeg - 180) < NEAR_COLINEAR_DEG || thetaDeg < NEAR_COLINEAR_DEG || thetaDeg > 360 - NEAR_COLINEAR_DEG;
   const yOf = z => { const { C, S } = stumpff(z); return { y: R1 + R2 + A * (z * S - 1) / Math.sqrt(C), C, S }; };
-  // t(z) extendida a 0 donde y ≤ 0 (fuera del dominio físico): sigue siendo monótona no decreciente.
+  // Extiendo t(z) a 0 donde y ≤ 0 (fuera del dominio físico) para conservar su monotonía no decreciente al acotar la raíz.
   const tOf = z => { const { y, C, S } = yOf(z); if (!(y > 0)) return 0; return Math.pow(y / C, 1.5) * S + A * Math.sqrt(y); };
+  // Acoto primero el extremo superior hacia z → 4π² (elipses de periodo largo) y luego el inferior hacia z < 0 (hipérbolas rápidas).
   const Z_MAX = 4 * Math.PI * Math.PI;
   let zHi = Z_MAX * (1 - 1e-6), tHi = tOf(zHi), guard = 0;
   while (tHi < t && guard++ < 40) { zHi = Z_MAX - (Z_MAX - zHi) / 8; tHi = tOf(zHi); }
@@ -68,7 +73,7 @@ export function solveLambert(r1Km, r2Km, tofSeconds, muKm3S2, { direction = 'pro
   let zLo = -4, tLo = tOf(zLo); guard = 0;
   while (tLo > t && guard++ < 60) { zLo = zLo * 2 - 4; if (zLo < -4e5) break; tLo = tOf(zLo); }
   if (!(tLo <= t) || !Number.isFinite(tLo)) return failure(LAMBERT_STATUS.noSolution, 'Tiempo de vuelo demasiado corto para una hipérbola representable (fuera del rango numérico).', { transferAngleDeg: thetaDeg });
-  // Illinois (regula falsi modificada) sobre g(z) = t(z) − Δt con intervalo garantizado.
+  // Resuelvo g(z) = t(z) − Δt = 0 con el método de Illinois (regula falsi modificada) dentro del intervalo acotado [a, b].
   let a = zLo, b = zHi, fa = tLo - t, fb = tHi - t, side = 0, iterations = 0, z = a;
   for (; iterations < maxIterations; iterations++) {
     z = (a * fb - b * fa) / (fb - fa);
@@ -81,6 +86,7 @@ export function solveLambert(r1Km, r2Km, tofSeconds, muKm3S2, { direction = 'pro
   const { y } = yOf(z);
   const tofError = Math.abs(tOf(z) - t) / t;
   if (!(y > 0) || !(tofError <= 1e-10)) return failure(LAMBERT_STATUS.noConvergence, `El solucionador no alcanzó la tolerancia (error relativo de tiempo ${tofError.toExponential(2)}).`, { iterations, transferAngleDeg: thetaDeg });
+  // Obtengo las velocidades de salida y llegada mediante los coeficientes de Lagrange f, g y ġ y reescalo a km/s.
   const f = 1 - y / R1, g = A * Math.sqrt(y), gdot = 1 - y / R2;
   const v1 = [0, 1, 2].map(i => (r2[i] - f * r1[i]) / g * V), v2 = [0, 1, 2].map(i => (gdot * r2[i] - r1[i]) / g * V);
   if (!finiteVector(v1) || !finiteVector(v2)) return failure(LAMBERT_STATUS.noConvergence, 'Velocidades no finitas.', { iterations, transferAngleDeg: thetaDeg });
@@ -93,7 +99,7 @@ export function solveLambert(r1Km, r2Km, tofSeconds, muKm3S2, { direction = 'pro
       warnings: nearColinear ? ['Geometría casi colineal (Δθ a menos de 1° de 0°/180°): el plano de transferencia está mal condicionado y la velocidad fuera del plano puede ser muy grande.'] : [] }
   };
   if (verify) {
-    // Cierre: propagación kepleriana independiente desde (r1, v1) durante Δt (otro algoritmo: ecuación de Kepler en χ).
+    // Verifico el cierre propagando (r1Km, v1) durante tofSeconds con mi propagador kepleriano independiente (ecuación de Kepler en χ).
     try {
       const end = propagateKepler(r1Km, v1, tofSeconds, muKm3S2);
       const miss = Math.hypot(end.positionKm[0] - r2Km[0], end.positionKm[1] - r2Km[1], end.positionKm[2] - r2Km[2]);
