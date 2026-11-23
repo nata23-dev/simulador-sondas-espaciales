@@ -23,7 +23,7 @@ test('GEN-01 · declara los límites del modelo y no lo presenta como validado',
   assert.match(readme, /\*\*No hay\*\* integración de n cuerpos continua de toda la misión ni asistencias gravitatorias/);
   assert.match(readme, /solo como comparación/);
   assert.match(readme, /«Implementada» no significa «validada»/);
-  assert.match(readme, /Pendiente la validación final completa/);
+  assert.match(readme, /docs\/auditoria-final\/08_DICTAMEN_FINAL\.md/);
   assert.doesNotMatch(readme, /transferencias? interplanetarias? (?:están |quedan )?validad/i);
   assert.ok(MODEL_LIMITS.some(l => /Sin asistencias gravitacionales/.test(l)), 'coincide con los límites declarados en el código');
 });

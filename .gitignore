@@ -42,18 +42,18 @@ __pycache__/
 /UX_Rediseno_Profesional_Voyager.zip
 /.redesign-chrome/
 
-# Consolidación (12F+): archivos locales que no forman parte del repositorio
+# Archivos temporales locales y paquetes de respaldo
 /scratch/
 /.claude/settings.local.json
 /evidence/stage12a.zip
 /evidence/stage12a1.zip
 /evidence/stage12b.zip
 /evidence/stage12f.zip
+/docs/auditoria-final.zip
+*.cpuprofile
 Thumbs.db
 
-# 26: paquetes .zip locales. Los dos primeros eran copias exactas (archivo por archivo) de AUDITORIA_INTEGRAL_SIMULADOR_VOYAGER/
-# y evidence/tercer_avance/, que siguen en Git; el tercero, capturas del lanzamiento 2D retirado en la etapa 19. Siguen en el
-# historial de Git y como archivos locales.
+# Paquetes .zip locales no versionados
 /AUDITORIA_INTEGRAL_SIMULADOR_VOYAGER.zip
 /Tercer_Avance_Evidencias_Simulador.zip
 /UX_Lanzamiento_Guiado_Voyager.zip

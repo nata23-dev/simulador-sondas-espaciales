@@ -1,87 +1,140 @@
 # Simulador de Sondas Espaciales
 
-Simulador web interactivo del Sistema Solar, de las misiones históricas **Voyager 1 y 2** y de un **laboratorio experimental** para diseñar y ensayar sondas. Construido con **Vite** y **Three.js**. La escena 3D es el centro de la experiencia; los cálculos científicos, su adaptación visual y la interfaz son capas separadas.
+Simulador web interactivo en 3D del Sistema Solar, las misiones históricas **Voyager 1 y Voyager 2** y un **Laboratorio de Misiones** con datos reales de **NASA/JPL Horizons**, física orbital numérica y renderizado adaptativo en **WebGL 2**.
 
-- Repositorio: <https://github.com/nata23-dev/simulador-sondas-espaciales>
-- Versión web: <https://nata23-dev.github.io/simulador-sondas-espaciales/>
+- **Demostración en línea:** <https://nata23-dev.github.io/simulador-sondas-espaciales/>
+- **Repositorio:** <https://github.com/nata23-dev/simulador-sondas-espaciales>
 
-> **Meta del proyecto:** construir un simulador de misiones científicas a los planetas y lunas del Sistema Solar, con posiciones reales, épocas astronómicas, ventanas de lanzamiento, trayectorias verificables y capacidades físicas de los vehículos. Hoy el laboratorio calcula misiones **Tierra → planeta (→ satélite)** con un modelo de **cónicas parcheadas** sobre efemérides de NASA/JPL Horizons guardadas en el repositorio (cobertura 2026-11-18 → 2046-01-01, sin extrapolar): ventanas con Lambert heliocéntrico, salida desde la órbita terrestre o, opcionalmente, desde la plataforma LC-41, encuentro apuntado por el plano B, captura con empuje finito integrado (DOPRI54) y, solo como comparación, un crucero de n cuerpos en paralelo a la cónica con su corrección de trayectoria. **No hay** integración de n cuerpos continua de toda la misión ni asistencias gravitatorias, y una misión «viable según el modelo» no está validada como misión real. Véase la [hoja de ruta](docs/DEVELOPMENT_ROADMAP.md).
+![Vista general del Sistema Solar en el simulador](docs/auditoria-final/evidencias/aceptacion/acc-solar-1600.png)
 
-## Estado real de las funcionalidades
+---
 
-| Área | Estado |
-| --- | --- |
-| Exploración del Sistema Solar (planetas, lunas, fechas, cámaras, medición) | Implementada. Datos locales de octubre de 2026. |
-| Misiones históricas Voyager 1/2 (1977–2026) | Implementada; con cortes SPK declarados. La trayectoria global **no está certificada como continua**. |
-| Sonda Experimental 01 (DOPRI54) | Módulo científico y pruebas numéricas conservados; **retirada de la interfaz en 17.1**. |
-| Laboratorio: Hangar, Ingeniería, Planificador Tierra–Luna, Centro de Misión (12A–12C) | Implementado; auditorías independientes registradas en `docs/`. |
-| Empuje finito (12D) y lanzamiento terrestre (12E) | Implementados; 12E con auditoría de Gemini «aprobada con observaciones» (corregidas en 12E.1). |
-| Arquitectura multicuerpo y descenso propulsado (12F) | Implementada; aprobada por Gemini, observaciones corregidas en 12F.1. El descenso se retiró de la interfaz en 15.1; el motor se conserva. |
-| Ventanas de lanzamiento y transferencias interplanetarias (12G) y misiones interplanetarias integradas (13) | Implementadas con **cónicas parcheadas**: Lambert heliocéntrico de cero revoluciones entre efemérides reales; dentro de cada esfera de influencia solo actúa el cuerpo central como masa puntual (sin J2, otros satélites ni presión de radiación); encendidos finitos integrados con DOPRI54. Destinos: los siete planetas y los satélites de la ventana cargada. 12G aprobada por Gemini; 13 **pendiente de auditoría externa**. |
-| Identidad visual, flota NASA y laboratorio en tres etapas (14–17) | Implementadas y probadas localmente; **pendientes de auditoría**. |
-| Reproducción en el Sistema Solar principal (17.1) | Implementada; **auditada por Claude (su implementador): aprobada con observaciones**, corregidas en 17.1.1 ([informe](docs/STAGE17_1_AUDIT_CLAUDE.md)). |
-| Plan de mejora 18–25 (21-11-2026) | Implementado y probado localmente: carga rápida, limpieza, captura apuntada, lanzamiento → inyección opcional desde LC-41, crucero de n cuerpos en paralelo a la cónica, satélites galileanos en la escena principal, experiencia de uso del Centro de Misión y lanzamiento 3D de las Voyager. Cada etapa, **auditada por Claude (su implementador): aprobada con observaciones**; **pendiente la revisión independiente** de 20, 21, 22 y del perfil científico de 25 ([índice](docs/README.md#plan-de-mejora)). |
-| Rendimiento y contador de FPS (26, 22-11-2026) | Implementado y probado en Chrome con GPU real: lanzamiento 3D sin bloqueos con el reloj en marcha, reproducción del laboratorio en el Sistema Solar a la cadencia completa y contador opcional en el menú «Capas» (o `?fps=1`). Sin cambios de física ni datos. **Auditado por Claude (su implementador): aprobado con observaciones** ([detalle](docs/STAGE26_PERFORMANCE.md), [informe](docs/STAGE26_AUDIT_CLAUDE.md)). |
-| Rendimiento adaptativo, salida desde la plataforma y menús (27–29, 22-11-2026) | **27:** calidad automática que detecta la GPU (o el dibujo por software), ajusta la resolución y el detalle para buscar 50–60 FPS, perfil «Mínima» y preferencia de GPU en «Capas»; lanzamiento 3D con niveles de detalle sin tocar la trayectoria. **28:** la salida desde LC-41 usa el empalme convencional por la asíntota y se apunta con la gravedad terrestre fuera de la SOI. A1 vuelve a C3 = 8,932 km²/s² y la nave real llega a 45 029 km en n cuerpos, frente a 13,2 millones antes; **cambia física: pendiente la revisión independiente**. **29:** un solo «Menú» (áreas, herramientas y ayuda) y «Buscar» solo busca. Cada etapa, **auditada por Claude (su implementador): aprobada con observaciones** ([27](docs/STAGE27_ADAPTIVE_PERFORMANCE.md), [28](docs/STAGE28_DEPARTURE_PATCH.md), [29](docs/STAGE29_MENUS.md)). |
-| Auditoría final y correcciones (fases 1–5, 22-11-2026) | Implementadas y probadas localmente: carrera del planificador, aviso sin WebGL 2 y segundos intercalares (fase 1); pausa del dibujo con la escena oculta (2); optimización del lanzamiento 3D (3); Sistema Solar y cálculos científicos en un Web Worker (4); accesibilidad de «Buscar» y de la bienvenida histórica, liberación de memoria del lanzamiento 3D y este README (5). **Pendiente la validación final completa** ([informes](docs/auditoria-final/)). |
-| Asistencias gravitatorias, integración de n cuerpos continua de toda la misión, descenso atmosférico, sondas de entrada | **No implementados.** Ver el [análisis y plan de mejora](docs/ANALISIS_INTEGRAL_Y_PLAN_DE_MEJORA.md). |
+## Descripción
 
-«Implementada» no significa «validada», y «viable según el modelo» no significa éxito operativo. Las piezas del Hangar y el lanzador/módulo de aterrizaje demostrativos tienen parámetros **ilustrativos**.
+**Simulador de Sondas Espaciales** combina graficación 3D en tiempo real con astrodinámica verificable directamente en el navegador. La arquitectura separa estrictamente la capa científica (sin dependencias gráficas ni del DOM), la capa de integración físico-visual, el motor gráfico en Three.js y la interfaz de usuario, manteniendo explícitas las unidades (`km`, `km/s`, `s`, `kg`, `N`), los marcos de referencia (`ICRF eclíptico J2000`) y las escalas de tiempo (`UTC` y `TDB`).
 
-## Requisitos
+## Módulos principales
 
-- **Git** y **Node.js ≥ 22** (el flujo de CI prueba 22 y 24; desarrollo local verificado con Node 24). Incluye npm.
-- Python 3 es **opcional**: solo algunos scripts de auditoría (`scripts/*.py`) lo usan; la aplicación, las pruebas y el build no.
+### 1. Sistema Solar
+- Visualización 3D interactiva del Sol, los ocho planetas y diez satélites principales usando efemérides heliocéntricas y planetocéntricas reales de **NASA/JPL Horizons** (octubre de 2026) y campo estelar basado en el catálogo **Hipparcos**.
+- Alternancia entre **Escala científica 1:1** (posiciones proporcionales a `32 unidades/AU`) y **Escala exploratoria**, con encuadre automático y vista cinematográfica.
+- Herramienta de **medición 3D** entre cualquier par de cuerpos (distancia en `AU` y `km`, vector espacial y tiempo luz) y línea temporal interactiva.
+- Perfil de **calidad gráfica adaptativa** (detección de GPU / renderizado por software, ajuste dinámico de resolución y nivel de detalle geométrico).
 
-## Instalación y uso
+### 2. Misiones Históricas — Voyager 1 y Voyager 2 (1977–2026)
+- Recorrido histórico completo de **Voyager 1 (`NAIF -31`)** y **Voyager 2 (`NAIF -32`)** desde 1977 hasta 2026 con efemérides reales de NASA/JPL Horizons, hitos cronológicos y cortes de kernels SPK declarados con transparencia.
+- Cámara exterior e inspección **en primera persona desde Voyager** con campos visuales instrumentales (cámara estrecha `ISS-NAC 0,424°` y gran angular `WAC 3,2°`).
+- **Comparador A/B** entre fotografías originales de archivo NASA/JPL y la recreación geométrica 3D en WebGL.
+- Escena dedicada de **Lanzamiento 3D** desde el Complejo **LC-41** de Cabo Cañaveral con el cohete **Titan IIIE-Centaur**, separación de etapas, efectos de propulsión y despliegue de la sonda Voyager.
 
-Funciona igual en Windows (PowerShell o Git Bash), Linux y macOS:
+![Escena de Lanzamiento 3D del Titan IIIE-Centaur desde LC-41](docs/auditoria-final/evidencias/aceptacion/acc-lanzamiento-voyager.png)
+
+### 3. Laboratorio de Misiones
+- **Flota histórica NASA:** selección e inspección 3D de modelos oficiales GLB (**Voyager**, **Cassini**, **Juno** y **Dawn**), fichas de ingeniería, presupuesto eléctrico y centro de masas.
+- **Planificación interplanetaria:** cálculo de misiones **Tierra → planeta (→ satélite)** mediante **cónicas parcheadas** sobre efemérides reales de NASA/JPL Horizons (cobertura 2026-11-18 → 2046-01-01, sin extrapolar). Destinos: los siete planetas y los satélites galileanos de la ventana cargada.
+- Incluye ventanas de lanzamiento con solucionador de **Lambert heliocéntrico**, salida desde órbita terrestre u opcionalmente desde plataforma **LC-41**, encuentro apuntado por el **plano B**, captura con empuje finito integrado con **DOPRI54** y un **crucero de n cuerpos** (ocho planetas como masas puntuales) ejecutado solo como comparación paralela.
+- Los cálculos astrodinámicos pesados corren en un **Web Worker** dedicado para mantener la interfaz fluida sin bloqueos.
+- **Centro de Misión:** reproducción 3D determinista directamente en la escena del Sistema Solar (misiones heliocéntricas) o en escena local (misiones geocéntricas), con cámaras de seguimiento y telemetría continua.
+
+![Centro de Misión reproduciendo una misión interplanetaria de Cassini](docs/auditoria-final/evidencias/aceptacion/acc-lab-centro-cassini.png)
+
+---
+
+## Tecnologías utilizadas
+
+- **JavaScript (ES Modules)** sin frameworks pesados de UI
+- **Three.js (`0.186.1`)** y **WebGL 2** (con decodificación Draco para modelos 3D GLB)
+- **Vite (`8.3`)** para desarrollo y empaquetado de producción con división de paquetes
+- **Web Workers** para cálculos astrodinámicos intensivos fuera del hilo principal
+- **HTML5 y CSS3** con diseño responsivo y soporte de teclado/accesibilidad
+- **Node.js ≥ 22**, pruebas automatizadas con `node:test` (**485 pruebas**) y análisis estático con **ESLint**
+- **Datos científicos reales** procedentes de **NASA/JPL Horizons**, **NASA/NAIF SPK** y **NASA 3D Resources**
+
+---
+
+## Instalación y ejecución local
+
+Requisitos: **Git** y **Node.js ≥ 22** (incluye `npm`).
 
 ```bash
 git clone https://github.com/nata23-dev/simulador-sondas-espaciales.git
 cd simulador-sondas-espaciales
-git checkout revision/modo-historico-voyager   # rama de desarrollo, si aún no es la predeterminada
-npm ci                  # instala desde package-lock.json
-npm run dev             # servidor de desarrollo; abre la URL que muestre Vite
-npm run lint            # ESLint, solo reglas que detectan errores
-npm test                # node --test "tests/*.test.mjs"
-npm run build           # build de producción en dist/
-npm run preview         # previsualiza dist/
+npm ci
+npm run dev
 ```
 
-Flujo comprobado en Windows (ver el informe de consolidación). Linux y macOS: no verificados localmente; la integración continua lo ejecuta en Ubuntu.
+Abre la dirección local que indique Vite en tu navegador.
 
-## Navegación
+### Verificación y pruebas
 
-La barra superior alterna los tres modos:
+```bash
+npm run lint        # ESLint (reglas de detección de errores)
+npm test            # Ejecuta la batería completa (485 pruebas automatizadas)
+npm run preview     # Previsualiza localmente la compilación de producción
+```
 
-1. **Exploración**: Sistema Solar por fecha; seleccionar un cuerpo y viajar hasta él.
-2. **Histórico**: Voyager 1 y 2, hitos, encuentros, comparador con fotografías NASA y «Lanzamiento 3D»: acercamiento desde el Sistema Solar hasta el Complejo 41 de Cabo Cañaveral y lanzamiento del Titan IIIE-Centaur hasta la nave desplegada ([25](docs/STAGE25_VOYAGER_LAUNCH.md)). También `?mode=historical`.
-3. **Laboratorio**: elegir sonda, planificar y reproducir. También `?mode=experimental`. El **Centro de Misión** («3 · Reproducir») reproduce la ejecución con cámaras y telemetría; desde 17.1 las misiones heliocéntricas (por ejemplo, Cassini → Marte) se reproducen en el **Sistema Solar principal**, con los satélites galileanos de Horizons para el sobrevuelo de Europa ([23](docs/STAGE23_MAIN_SCENE_MOONS.md)); las geocéntricas, en su escena local ([17.1](docs/STAGE17_1_MAIN_SCENE_PLAYBACK.md)).
+---
 
-## Ciencia y fidelidad
+## Compilación de producción y publicación
 
-El proyecto mezcla tres niveles que deben distinguirse:
+Compilación estándar (en `dist/`):
 
-- **Datos astronómicos reales**: efemérides NASA/JPL Horizons y kernels SPK preservados con hashes (`public/data/`, `evidence/`).
-- **Aproximaciones físicas**: dinámica DOPRI54, masa puntual, gravedad central, cónicas parcheadas con Lambert heliocéntrico, crucero de n cuerpos (ocho planetas como masas puntuales) solo como comparación con la cónica, atmósfera US-1976 simplificada. Cada modelo declara sus límites.
-- **Representación ilustrativa**: tamaños visuales ampliados, órbitas dibujadas, texturas ([créditos](public/textures/README.md)) y modelos 3D.
+```bash
+npm run build
+```
 
-Nunca se mezclan en silencio UTC con TDB, AU con km, ni tamaño visual con distancia física. Contratos: [contrato científico](docs/contrato-cientifico.md).
+Compilación con la ruta base de GitHub Pages (`/simulador-sondas-espaciales/`):
 
-## Documentación
+```bash
+# Linux / macOS / Git Bash
+GITHUB_PAGES=true npm run build
 
-Índice completo: [docs/README.md](docs/README.md). Lo esencial:
+# Windows PowerShell
+$env:GITHUB_PAGES='true'; npm run build
+```
 
-- [Contexto del proyecto](docs/PROJECT_CONTEXT.md) · [Arquitectura](docs/ARCHITECTURE_MAP.md) · [Hoja de ruta](docs/DEVELOPMENT_ROADMAP.md)
-- [Guía de desarrollo](docs/DEVELOPMENT_GUIDE.md) · [Contribuir](CONTRIBUTING.md) · [Sistema visual](docs/UI_DESIGN_SYSTEM.md)
-- Agentes: [AGENTS.md](AGENTS.md) (Codex), [CLAUDE.md](CLAUDE.md) (Claude Code), [GEMINI.md](GEMINI.md) (procedimiento de auditoría: Gemini o Claude)
-- [Datos científicos y su integridad](docs/DATOS_CIENTIFICOS.md) · [Índice de evidencias](evidence/README.md)
+La publicación en **GitHub Pages** se ejecuta automáticamente mediante [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) en cada actualización de la rama `main`, mientras que [`.github/workflows/ci.yml`](.github/workflows/ci.yml) verifica ESLint, pruebas y compilación en Node 22 y 24.
 
-## Publicación
+---
 
-GitHub Pages se despliega con `.github/workflows/deploy.yml` al enviar a `main`; la integración continua (`ci.yml`) ejecuta ESLint, pruebas y build en cada push. Vite usa la ruta `/simulador-sondas-espaciales/` solo con `GITHUB_PAGES=true`.
+## Base científica y limitaciones
 
-## Licencia y créditos
+El simulador distingue explícitamente tres niveles de fidelidad para evitar mezclar datos reales con recursos visuales:
 
-No se ha declarado una licencia para el código. Los datos de NASA/JPL, las texturas de Solar System Scope y las fotografías conservan las condiciones de sus fuentes (ver documentación de cada recurso).
+1. **Datos astronómicos reales:** efemérides NASA/JPL Horizons en marco `ICRF eclíptico J2000` (tiempo `TDB`), conversión `UTC ↔ TAI ↔ TT ↔ TDB` con tabla IERS de segundos intercalares, e interpolación cúbica de Hermite sin extrapolación fuera de cobertura (integridad verificada mediante hashes SHA-256).
+2. **Modelos físicos simplificados:** integración adaptativa Runge-Kutta **DOPRI54**, cónicas parcheadas con Lambert heliocéntrico de cero revoluciones, gravedad de masa puntual dentro de cada esfera de influencia (sin armónicos `J2` ni presión de radiación solar), atmósfera estándar US-1976 simplificada y crucero de n cuerpos solo como comparación.
+3. **Representación ilustrativa:** tamaños planetarios ampliados para visibilidad, órbitas guía dibujadas, texturas cartográficas y perfil calibrado del lanzamiento 3D.
+
+**Limitaciones declaradas:**
+- **No hay** integración de n cuerpos continua de toda la misión ni asistencias gravitatorias, ni descenso atmosférico o sondas de entrada.
+- Las trayectorias globales de **Voyager 1 (1981)** y **Voyager 2 (1989)** tienen cortes documentados entre kernels SPK y no se presentan como una única curva continua certificada; las vistas en primera persona usan apuntado geométrico sin kernels `CK/IK`.
+- «Implementada» no significa «validada» como ingeniería de vuelo operativa: una misión «viable según el modelo» es válida dentro de las hipótesis numéricas del simulador y no sustituye software profesional de navegación espacial.
+- La auditoría final de aceptación del simulador (rendimiento, pruebas científicas, funcionalidad y estabilidad) se encuentra documentada en [`docs/auditoria-final/08_DICTAMEN_FINAL.md`](docs/auditoria-final/08_DICTAMEN_FINAL.md).
+
+---
+
+## Documentación adicional
+
+- [Arquitectura del software](docs/ARQUITECTURA.md) — estructura de capas, módulos, Web Workers y renderizado WebGL 2.
+- [Fundamento científico y modelos](docs/FUNDAMENTO_CIENTIFICO.md) — marcos de referencia, escalas de tiempo, integradores, datos reales y límites.
+- [Guía de uso](docs/GUIA_DE_USO.md) — recorrido práctico por Sistema Solar, Misiones Históricas y Laboratorio.
+- [Auditoría final de aceptación](docs/auditoria-final/08_DICTAMEN_FINAL.md) — dictamen, matriz de aceptación y evidencias reproducibles.
+
+---
+
+## Autoría
+
+- **Autor:** Barrera Dueñas Topilzin Natanael
+- **Contexto:** Proyecto académico de la materia de **Graficación**
+
+---
+
+## Fuentes, créditos y condiciones de uso
+
+No se ha declarado una licencia específica para el código fuente del proyecto. Los conjuntos de datos, modelos 3D, fotografías y texturas conservan las condiciones y créditos de sus respectivas fuentes oficiales:
+
+- **Efemérides y kernels de referencia:** NASA / JPL Horizons y NASA / NAIF SPICE (`public/data/`, `evidence/`).
+- **Modelos 3D oficiales:** NASA 3D Resources — Voyager, Cassini-Huygens, Juno y Dawn ([procedencia](public/models/nasa/README.md)).
+- **Fotografías históricas y de flota:** NASA / JPL-Caltech / PDS ([archivo Voyager](public/images/fleet/README.md)).
+- **Texturas planetarias, lunares y terrestres:** Solar System Scope ([créditos](public/textures/README.md)), NASA SVS / LROC / USGS Astrogeology / Cassini ([lunas](public/textures/moons/README.md)) y NASA Blue Marble / USGS ([lanzamiento LC-41](public/launch/README.md)).
+- **Catálogo estelar:** ESA Hipparcos (`public/data/hipparcos-vmag-6p5.tsv`).

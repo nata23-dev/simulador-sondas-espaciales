@@ -6,7 +6,7 @@
 `titan-cassini-938nm.jpg` se conserva como referencia infrarroja y ya no aparece
 debajo de la bruma. Ío usa el derivado local `io-voyager-usgs-seam-feathered.png`;
 el JPEG Voyager original y su máscara se conservan. Véase
-[`docs/VOYAGER_VISUAL_REFINEMENT.md`](../../../docs/VOYAGER_VISUAL_REFINEMENT.md).
+[`docs/FUNDAMENTO_CIENTIFICO.md`](../../../docs/FUNDAMENTO_CIENTIFICO.md).
 
 Los diez mapas se cargan desde este directorio y comparten materiales en Sistema Solar, Misiones históricas y Experimental. Todos los mapas de superficie son cilíndricos simples/equirectangulares 2:1 con el norte arriba. Los JPEG de misión son mosaicos procesados de distintas tomas, no fotografías de una sola exposición. El mapeo UV de la esfera no está registrado contra una solución CK/PCK/IAU validada: **no interpretar la longitud visible ni la rotación absoluta como orientación científica confirmada**. La cartografía moderna también aparece en el modo histórico como recurso de visualización, no como imagen disponible para Voyager en la fecha mostrada.
 

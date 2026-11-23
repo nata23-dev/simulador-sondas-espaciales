@@ -19,7 +19,7 @@ Peticiones (21-11-2026):
 
 La ortoimagen original trae zonas «sin datos» en blanco puro sobre el océano: dos rectángulos al este. SHA-256 del original: `4b30c9b79e77db73e44f9f4bddd979eb60e94044906133c3a8ec5db82454fad9`.
 
-El guion [`scripts/derive-launch-cape-fill.mjs`](../../scripts/derive-launch-cape-fill.mjs):
+El guion de generación original (`scripts/derive-launch-cape-fill.mjs`, conservado en el historial de Git):
 
 - rellena esas zonas, y un borde de 2 px, con un relleno difuso del color del mar vecino (ecuación de Laplace en una rejilla de 16 px y un ruido suave);
 - no edita el resto, aunque la imagen se vuelve a codificar en JPEG con calidad 0,86.

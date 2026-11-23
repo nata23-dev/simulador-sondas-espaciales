@@ -69,6 +69,6 @@ test('Z-D: tolerancias del contacto separadas: predicado, intervalo temporal, co
   // Ejemplo del enunciado: a 1,5 km/s un intervalo de 1e-7 s son 0,15 mm, 150 veces la tolerancia del predicado.
   assert.ok(Math.abs(1.5 * 1e-7 - 1.5e-7) < 1e-20 && 1.5e-7 / CONTACT_PREDICATE_KM > 100);
   assert.equal(ct.integrationTolerance.absPositionKm, LANDING_ABS_TOL[0]);
-  const doc = readFileSync('docs/STAGE12F_MULTIBODY_LANDING.md', 'utf8');
+  const doc = readFileSync('docs/FUNDAMENTO_CIENTIFICO.md', 'utf8');
   assert.match(doc, /intervalo temporal/i); assert.match(doc, /predicado geométrico/i);
 });

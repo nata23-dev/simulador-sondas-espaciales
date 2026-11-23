@@ -100,7 +100,7 @@ test('12B.1-F: fechas y duración que ve la interfaz coinciden con los casos doc
   assert.equal(formatMissionFlightDays(caseTransfer('A').flightSeconds), '4.324941 días');
   assert.equal(formatMissionFlightDays(caseTransfer('B').flightSeconds), '6.104695 días');
   assert.equal(formatMissionFlightSeconds(caseTransfer('B').flightSeconds), '527,445.609 s');
-  const doc = readFileSync(new URL('../docs/STAGE12B1_NUMERICAL_RECONCILIATION.md', import.meta.url), 'utf8');
+  const doc = readFileSync(new URL('../docs/FUNDAMENTO_CIENTIFICO.md', import.meta.url), 'utf8');
   for (const value of ['CASO-A', 'CASO-B', 'CASO-F', '2026-10-21 14:30:45.609 TDB', '+0,288665', '+0,288160']) assert.ok(doc.includes(value), value);
 });
 
