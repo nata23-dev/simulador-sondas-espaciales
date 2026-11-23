@@ -14,6 +14,8 @@ import { compareMissionCruise, NBODY_EPHEMERIS_IDS } from '../lab/NBodyCruise.js
 import { getBodyProfile } from '../lab/CelestialBodyMissionRegistry.js';
 import { scenarioOutcome, probesCompleting } from '../lab/FleetGuide.js';
 import { HISTORICAL_PROBES } from '../lab/HeritageCatalog.js';
+import { designSignature } from '../lab/MissionPlanStore.js';
+import { createIntegratedMissionWorkerClient } from '../lab/IntegratedMissionWorkerClient.js';
 
 const number = (n, digits = 1) => Number.isFinite(n) ? new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(n) : 'No disponible';
 const utcLabel = jd => tdbToTimeScales(jd).labelUtc;
@@ -130,6 +132,11 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
   const $ = selector => host.querySelector(selector);
   let nbody = null, nbodyBusy = false; // 22: comparación de n cuerpos, bajo demanda (no forma parte de la misión)
   let helioEphemeris = null, loadError = null, moonsData = null, design = null, mission = null, data = null, execution = null, executionError = null, refinement = null, active = false, busy = false, plotContext = 'helio';
+  // GEN-02: revisión monotónica de las condiciones. La incrementan cada cambio del formulario o de la sonda (invalidate) y cada
+  // cálculo nuevo. Un cálculo solo publica su resultado si, tras cada espera, su revisión sigue siendo la vigente; la misión
+  // publicada guarda la suya y solo se reproduce mientras coincida. `pendingDesignKey`: firma de la sonda del cálculo en curso.
+  let revision = 0, missionRevision = -1, pendingDesignKey = null;
+  const workerClient = createIntegratedMissionWorkerClient();
   function message(text, error = false) { $('#im-message').textContent = text; $('#im-message').dataset.error = String(error); }
   // 15: comparación de las últimas misiones calculadas en esta sesión (solo resúmenes; no se guardan en el navegador).
   const history = [];
@@ -160,8 +167,9 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     select.value = [...select.options].some(o => o.value === previous) ? previous : '';
     $('#im-moon-profile').hidden = !select.value;
   }
-  function applyScenario(id) {
-    const s = INTEGRATED_SCENARIOS.find(item => item.id === id); if (!s) return;
+  function loadScenario(id) {
+    const s = INTEGRATED_SCENARIOS.find(item => item.id === id); if (!s) return false;
+    $('#im-scenario').value = s.id;
     $('#im-destination').value = s.destinationId; fillMoons(); $('#im-moon').value = s.moonId; $('#im-moon-profile').hidden = !s.moonId;
     $('#im-departure').value = s.departureUtc; $('#im-tof').value = s.tofDays; $('#im-refine').checked = s.refine;
     $('#im-mode').value = s.planet.mode; $('#im-rp').value = s.planet.periapsisAltitudeKm; $('#im-ra').value = s.planet.apoapsisAltitudeKm;
@@ -171,6 +179,11 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     $('#im-moon-mode').value = s.moon?.mode ?? 'capture';
     $('#im-scenario-note').textContent = s.note ?? ''; $('#im-scenario-note').hidden = !s.note;
     syncEnabled(); renderOutcome();
+    return true;
+  }
+  function applyScenario(id) {
+    if (loadScenario(id)) changed();
+    else renderOutcome(); // «Personalizado»: los valores no cambian (la misión sigue vigente), pero sí el resultado esperado
   }
   // 16: resultado esperado del escenario con la sonda activa (FleetGuide, comprobado por pruebas con el mismo motor).
   function renderOutcome() {
@@ -210,17 +223,25 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     if (moonId && moonMode === 'capture' && (!(mrp > 0) || !(mra >= mrp) || !(mri >= 0) || (mri > 0 && mri < mra))) issues.push('Satélite: periapsis > 0, apoapsis final ≥ periapsis e intermedio 0 o ≥ apoapsis final.');
     return { issues, departure, tof, rp, ra, moonId, moonMode, mrp, mra, mri };
   }
-  function invalidate(reason) {
-    const had = Boolean(mission); mission = null; execution = null; executionError = null; data = null; refinement = null; nbody = null;
+  const CANCELLED_MESSAGE = 'Las condiciones cambiaron durante el cálculo: se descartó su resultado. Vuelve a calcular.';
+  function invalidate(reason, cancelledReason = CANCELLED_MESSAGE) {
+    revision += 1; // GEN-02: ningún cálculo empezado antes puede publicar ya su resultado
+    const had = Boolean(mission), cancelled = busy;
+    if (busy || nbodyBusy) workerClient.cancelAll(cancelledReason);
+    mission = null; execution = null; executionError = null; data = null; refinement = null; nbody = null; nbodyBusy = false;
+    // El cálculo en curso queda descartado: el formulario vuelve a estar listo para uno nuevo con las condiciones actuales.
+    if (cancelled) { busy = false; pendingDesignKey = null; $('#im-compute').disabled = false; $('#im-compute').removeAttribute('aria-busy'); }
     $('#im-execute').disabled = true; renderAll();
-    if (had) { message(reason); if (active) { active = false; onInvalidated(); } }
+    if (cancelled) message(cancelledReason);
+    else if (had) message(reason);
+    if (had && active) { active = false; onInvalidated(); }
   }
   const changed = () => { syncEnabled(); invalidate('Las condiciones cambiaron: el cálculo anterior se invalidó. Vuelve a calcular.'); };
   for (const el of host.querySelectorAll('.mission-controls input, .mission-controls select')) if (el.id !== 'im-scenario' && el.id !== 'im-launch') el.addEventListener('change', () => { $('#im-scenario').value = 'custom'; renderOutcome(); changed(); });
   $('#im-launch').addEventListener('change', () => { renderOutcome(); changed(); });
   $('#im-destination').addEventListener('change', fillMoons);
   $('#im-moon').addEventListener('change', () => { $('#im-moon-profile').hidden = !$('#im-moon').value; });
-  $('#im-scenario').addEventListener('change', () => { applyScenario($('#im-scenario').value); renderOutcome(); changed(); });
+  $('#im-scenario').addEventListener('change', () => { applyScenario($('#im-scenario').value); });
 
   async function compute() {
     if (busy) return;
@@ -228,10 +249,22 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     if (!design) { message('Elige una sonda de la flota en «1 · Elegir sonda».', true); return; }
     const v = readInputs();
     if (v.issues.length) { message(v.issues.join(' '), true); return; }
-    const tgt = ENCOUNTER_TARGETS[$('#im-destination').value];
-    busy = true; $('#im-compute').disabled = true; $('#im-compute').setAttribute('aria-busy', 'true'); $('#im-stage-status').textContent = 'Calculando…'; $('#im-verdict').textContent = 'Calculando la cadena…'; $('#im-verdict').dataset.tone = 'idle'; renderFlow();
+    // GEN-02: la solicitud fija aquí, antes de la primera espera, todo lo que define la misión (formulario completo y sonda).
+    // Después de cada `await` solo sigue si nada la invalidó; si no, termina sin tocar el estado, los botones ni los mensajes,
+    // que ya pertenecen a las condiciones nuevas.
+    const request = Object.freeze({ revision: ++revision, design, designKey: designSignature(design), target: ENCOUNTER_TARGETS[$('#im-destination').value], inputs: v,
+      refine: $('#im-refine').checked, soiModel: $('#im-soi').value, planetMode: $('#im-mode').value,
+      bPlane: $('#im-bmode').value === 'fixed' ? { mode: 'fixed', angleDeg: Number($('#im-btheta').value) } : { mode: 'auto' },
+      compensate: $('#im-compensate').checked, launch: $('#im-launch').checked });
+    const stale = () => request.revision !== revision;
+    const tgt = request.target;
+    busy = true; pendingDesignKey = request.designKey;
+    // Mientras se calcula no se puede reproducir nada: el resultado anterior queda sustituido por esta solicitud.
+    $('#im-execute').disabled = true;
+    $('#im-compute').disabled = true; $('#im-compute').setAttribute('aria-busy', 'true'); $('#im-stage-status').textContent = 'Calculando…'; $('#im-verdict').textContent = 'Calculando la cadena…'; $('#im-verdict').dataset.tone = 'idle'; renderFlow();
     message('Cargando efemérides y calculando: apuntado, encendidos integrados y fases…');
     await new Promise(resolve => setTimeout(resolve, 30));
+    if (stale()) return;
     try {
       let departureJdTdb = datetimeLocalUtcToJdTdb(v.departure), tofDays = v.tof;
       const covE = helioEphemeris.coverage('399'), covT = helioEphemeris.coverage(tgt.ephemerisId);
@@ -240,28 +273,62 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
       const start = Math.max(covE.startJdTdb, covT.startJdTdb, departureJdTdb - margin), end = Math.min(covE.endJdTdb, covT.endJdTdb, departureJdTdb + tofDays + margin + 200);
       if (departureJdTdb < start || departureJdTdb + tofDays > end) throw Error(`${UNAVAILABLE_MESSAGE}: la oportunidad sale de la cobertura (${dateOnly(Math.max(covE.startJdTdb, covT.startJdTdb))} → ${dateOnly(Math.min(covE.endJdTdb, covT.endJdTdb))}).`);
       const helio = await helioEphemeris.loadWindow(['399', tgt.ephemerisId], start, end);
-      refinement = null;
-      if ($('#im-refine').checked) {
-        refinement = refineTransferCandidate(helio, { destinationId: tgt.ephemerisId, departureJdTdb, tofDays, criterion: 'c3', halfSpanDepartureDays: refinementHalfSpanDays(tofDays), halfSpanTofDays: refinementHalfSpanDays(tofDays) });
-        if (Number.isFinite(refinement.score)) { departureJdTdb = refinement.departureJdTdb; tofDays = refinement.tofDays; }
-      }
+      if (stale()) return;
       let moons = null;
-      if (v.moonId) { moonsData ??= createPlanetocentricWindow(await fetchJson(MOON_WINDOW_FILE)); moons = moonsData; }
-      const input = integratedMissionInput({ destinationId: tgt.id, moonId: v.moonId, departureJdTdb, tofDays, soiModel: $('#im-soi').value, planetMode: $('#im-mode').value, rp: v.rp, ra: v.ra,
-        bPlane: $('#im-bmode').value === 'fixed' ? { mode: 'fixed', angleDeg: Number($('#im-btheta').value) } : { mode: 'auto' }, moonMode: v.moonMode, mrp: v.mrp, mra: v.mra, mri: v.mri, compensate: $('#im-compensate').checked, launch: $('#im-launch').checked }, design);
-      data = { helio, moons };
-      nbody = null;
-      mission = computeIntegratedMission(input, data);
+      if (v.moonId) {
+        moonsData ??= createPlanetocentricWindow(await fetchJson(MOON_WINDOW_FILE)); // caché de datos: válida para cualquier solicitud
+        if (stale()) return;
+        moons = moonsData;
+      }
+      const workerOut = await workerClient.runTask({
+        type: 'computeIntegratedMission',
+        helioWindow: helio.serializeWindow(),
+        moonsRaw: moons ? moons.serializeWindow() : null,
+        departureJdTdb,
+        tofDays,
+        refine: request.refine,
+        targetEphemerisId: tgt.ephemerisId,
+        halfSpanDays: refinementHalfSpanDays(tofDays),
+        formInput: {
+          destinationId: tgt.id,
+          moonId: v.moonId,
+          soiModel: request.soiModel,
+          planetMode: request.planetMode,
+          rp: v.rp,
+          ra: v.ra,
+          bPlane: request.bPlane,
+          moonMode: v.moonMode,
+          mrp: v.mrp,
+          mra: v.mra,
+          mri: v.mri,
+          compensate: request.compensate,
+          launch: request.launch
+        },
+        design: request.design
+      });
+      if (stale()) return;
+      const refined = workerOut.refined;
+      const nextMission = workerOut.mission;
+      const nextData = { helio, moons };
       // 17: si la cadena se calcula pero su reproducción necesitaría efemérides fuera de la ventana cargada, se conserva el
       // resultado y se indica que no hay trayectoria reproducible (no se extrapola ni se recorta en silencio).
-      try { execution = createIntegratedExecution({ result: mission, data, design }); executionError = null; }
-      catch (error) { execution = null; executionError = error.message; }
+      let nextExecution = null, nextExecutionError = null;
+      try { nextExecution = createIntegratedExecution({ result: nextMission, data: nextData, design: request.design }); }
+      catch (error) { nextExecutionError = error.message; }
+      if (stale()) return; // el cálculo es asíncrono (Web Worker); la comprobación protege la publicación si cambió el formulario
+      // nbodyBusy: una comparación de n cuerpos de la misión anterior que siga cargando ya no la libera (solo actúa sobre su misión).
+      refinement = refined; data = nextData; nbody = null; nbodyBusy = false; mission = nextMission; missionRevision = request.revision;
+      execution = nextExecution; executionError = nextExecutionError;
       $('#im-execute').disabled = !execution;
       remember(mission);
       message(execution ? `${mission.verdict} Cálculo en ${number(mission.computeMs, 0)} ms.`
         : `${mission.verdict} Reproducción 3D no disponible: ${executionError}. La cadena dura ${number(mission.durationSeconds / 86400, 1)} d y termina después de la ventana de efemérides cargada; no se extrapola.`, mission.verdict.startsWith('NO VIABLE') || !execution);
-    } catch (error) { mission = null; execution = null; executionError = null; $('#im-execute').disabled = true; message(error.message, true); }
-    finally { busy = false; $('#im-compute').disabled = false; $('#im-compute').removeAttribute('aria-busy'); renderAll(); }
+    } catch (error) {
+      if (stale()) return; // el error de una solicitud descartada no pisa el estado ni el mensaje actuales
+      mission = null; execution = null; executionError = null; data = null; refinement = null; nbody = null; $('#im-execute').disabled = true; message(error.message, true);
+    } finally {
+      if (!stale()) { busy = false; pendingDesignKey = null; $('#im-compute').disabled = false; $('#im-compute').removeAttribute('aria-busy'); renderAll(); }
+    }
   }
   $('#im-compute').addEventListener('click', compute);
   // 22: crucero de n cuerpos en paralelo a la cónica. Carga los ocho planetas en la ventana del crucero y no toca la misión.
@@ -271,18 +338,28 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
     const target = mission; nbodyBusy = true; nbody = null; renderNBody();
     $('#im-nbody-status').textContent = 'Calculando el crucero de n cuerpos y la corrección…';
     await new Promise(resolve => setTimeout(resolve, 30));
+    if (mission !== target) return;
     try {
       const start = target.departureJdTdb + cruise.startSeconds / 86400, end = target.departureJdTdb + cruise.endSeconds / 86400;
       const win = await helioEphemeris.loadWindow(NBODY_EPHEMERIS_IDS, start - 1, end + 1);
       if (mission !== target) return;
-      nbody = compareMissionCruise(target, (id, jd) => { const s = win.stateAt(id, jd); return s?.status === 'available' ? s : null; });
+      const out = await workerClient.runTask({
+        type: 'compareNBody',
+        helioWindow: win.serializeWindow(),
+        mission: target
+      });
+      if (mission !== target) return;
+      nbody = out.nbody;
     } catch (error) { if (mission === target) nbody = { ok: false, status: 'error', reason: error.message }; }
-    finally { nbodyBusy = false; renderNBody(); }
+    finally { if (mission === target) { nbodyBusy = false; renderNBody(); } }
   }
   $('#im-nbody').addEventListener('click', compareNBody);
   $('#im-execute').disabled = true;
+  // GEN-02: solo se reproduce la misión de la última solicitud vigente (misma revisión de condiciones y misma sonda).
+  const missionIsCurrent = () => Boolean(mission) && !busy && missionRevision === revision && isIntegratedMissionCurrent(mission, design);
   $('#im-execute').addEventListener('click', () => {
-    if (!mission || !isIntegratedMissionCurrent(mission, design)) { message('Calcula una misión vigente para la sonda actual.', true); return; }
+    if (busy) { message('Espera a que termine el cálculo en curso.', true); return; }
+    if (!missionIsCurrent()) { message('Calcula una misión vigente para la sonda actual.', true); return; }
     if (!execution) { message(`Esta misión no tiene trayectoria reproducible: ${executionError ?? 'no disponible'}.`, true); return; }
     active = true; renderFlow();
     onExecuteRequest({ ready: true, kind: 'integrated', result: mission, data, design, name: `Tierra → ${mission.moonName ?? mission.destinationName} (${dateOnly(mission.departureJdTdb)})` });
@@ -523,19 +600,21 @@ export function createIntegratedMissionPlanner({ host, onExecuteRequest = () => 
   const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { if (!host.hidden) drawPlot(); }) : null;
   observer?.observe($('#im-plot'));
   $('#im-bmode').addEventListener('change', syncEnabled); $('#im-mode').addEventListener('change', syncEnabled); $('#im-moon-mode').addEventListener('change', syncEnabled);
-  fillMoons(); applyScenario('A1'); renderAll();
+  fillMoons(); loadScenario('A1'); renderAll();
   return {
     setDesign(next) {
       design = next;
       $('#im-design').textContent = next ? `Sonda activa: ${next.name}. Todas las maniobras usan su propio motor y propelente (${next.experimental ? 'ensamblaje experimental: resultados hipotéticos' : 'configuración histórica'}). Puedes cambiarla en la barra superior.` : 'Sonda activa: sin elegir.';
       renderOutcome();
-      if (mission && !isIntegratedMissionCurrent(mission, design)) invalidate('La sonda activa cambió: el cálculo anterior se invalidó.');
+      // GEN-02: otra sonda durante el cálculo descarta la solicitud en curso (se calculó con la anterior); la misma firma, no.
+      if (busy && pendingDesignKey !== (next ? designSignature(next) : null)) invalidate('La sonda activa cambió: el cálculo anterior se invalidó.', 'La sonda activa cambió durante el cálculo: se descartó su resultado. Vuelve a calcular.');
+      else if (mission && !isIntegratedMissionCurrent(mission, design)) invalidate('La sonda activa cambió: el cálculo anterior se invalidó.');
     },
     setVisible(visible) { if (visible) drawPlot(); },
     isActive: () => active, deactivate() { active = false; renderFlow(); },
-    getState: () => ({ mission, refinement, scenarioId: $('#im-scenario').value, busy, executable: Boolean(mission && execution) && !$('#im-execute').disabled, executionError }),
+    getState: () => ({ mission, refinement, scenarioId: $('#im-scenario').value, busy, executable: Boolean(mission && execution) && missionIsCurrent() && !$('#im-execute').disabled, executionError }),
     compute, applyScenario,
-    dispose() { observer?.disconnect(); host.replaceChildren(); }
+    dispose() { workerClient.dispose(); observer?.disconnect(); host.replaceChildren(); }
   };
 }
 export { moduleDryMassKg };

@@ -15,6 +15,7 @@ import { crearTitanIIIECentaur, prepararFundido } from './TitanIIIECentaur3D.js'
 import { crearPlataformaLC41_1977, PLATAFORMA_1977 } from './LC41Pad1977.js';
 import { crearPenacho, crearHumo, crearEstela } from './LaunchEffects.js';
 import { cargarPlantillaVoyagerCompartida, normalizarEscenaVoyagerGltf, METADATOS_MODELO_VOYAGER } from '../graphics/SpaceProbeVisual.js';
+import { separarRecursosCompartidos } from './LaunchSharedResources.js';
 
 const H = PLATAFORMA_1977.alturaMesaM;
 const DEG = Math.PI / 180;
@@ -48,7 +49,11 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   canvas.setAttribute('role', 'img');
   canvas.setAttribute('aria-label', `Reconstrucción 3D del lanzamiento de la ${mision.nombre} desde el Complejo 41 de Cabo Cañaveral`);
   contenedor.append(canvas);
-  const mundo = crearMundoLanzamiento({ canvas, mision, calidad, detalle, baseUrl, escritorio });
+  let mundo;
+  // STAB-01: si no hay contexto WebGL 2 para el lanzamiento, el lienzo vacío no se queda sobre la escena principal (aún no
+  // existe `destruir()` que lo retire); el llamador recibe el error y cierra el lanzamiento.
+  try { mundo = crearMundoLanzamiento({ canvas, mision, calidad, detalle, baseUrl, escritorio }); }
+  catch (error) { canvas.remove(); throw error; }
   const { escena, camara, renderer, ajustes } = mundo;
   // 27: si la calidad automática baja el nivel de detalle durante el lanzamiento, se aplica lo que no obliga a recompilar.
   let detalleVigente = ajustes.detalle;
@@ -57,9 +62,9 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     detalleVigente = estado.detalle; mundo.reducirDetalle(estado.detalle);
   });
 
-  const plataforma = crearPlataformaLC41_1977();
+  const plataforma = crearPlataformaLC41_1977({ anisotropia: mundo.anisotropia });
   escena.add(plataforma.grupo);
-  const vehiculo = crearTitanIIIECentaur({ numeroVehiculo: misionId === 'voyager-1' ? 6 : 7 });
+  const vehiculo = crearTitanIIIECentaur({ numeroVehiculo: misionId === 'voyager-1' ? 6 : 7, anisotropia: mundo.anisotropia });
   const raiz = vehiculo.grupo, P = vehiculo.piezas, G = vehiculo.geometria;
   escena.add(raiz);
   raiz.traverse(o => { if (o.isMesh) o.frustumCulled = false; });
@@ -166,7 +171,7 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   // ---- Modelo oficial de NASA al desplegarse los mástiles ----
   const plegada = P.nave.children[0];
   const fundirPlegada = prepararFundido(plegada);
-  let fundirNasa = null, estadoModeloNasa = 'cargando', envolturaNasa = null;
+  let fundirNasa = null, estadoModeloNasa = 'cargando', envolturaNasa = null, liberarRecursosNasa = null;
   const urlGlb = `${baseUrl}${METADATOS_MODELO_VOYAGER.archivoRelativo}`;
   cargarPlantillaVoyagerCompartida(urlGlb).then(plantilla => {
     if (destruido) return;
@@ -177,6 +182,9 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     envoltura.add(normalizado.grupo);
     P.nave.add(envoltura); envolturaNasa = envoltura;
     fundirNasa = prepararFundido(envoltura); // clona los materiales: el fundido no altera la Voyager de la escena principal
+    // LAN-02: geometrías y texturas propias que comparten los datos de la plantilla, para que el renderizador del lanzamiento no
+    // deje sus oyentes (y con ellos su estado) en la plantilla de la escena principal al cerrarse. Después de clonar los materiales.
+    liberarRecursosNasa = separarRecursosCompartidos(envoltura);
     fundirNasa(0);
     estadoModeloNasa = 'cargado';
     // 26: si el modelo llega después de la compilación inicial, sus sombreadores se compilan ya, en paralelo, y no al aparecer.
@@ -374,11 +382,24 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
 
   // ---- Bucle ----
   const luzSombra = new THREE.Color(), luzSol = new THREE.Color();
-  function aplicarInstante(t, tiempoAnim) {
+  function aplicarInstante(t, tiempoAnim, { forzarInternos = false } = {}) {
     calcularEstado(t, est);
     raiz.position.copy(est.pos); raiz.quaternion.copy(est.q);
     plataforma.retraerBrazos(suave((t + 9) / 6));
     colocarPiezas(t);
+    // LAN-01: mientras la cofia permanece cerrada (t < tCofia) y la etapa I unida (t < tE1off), las piezas internas selladas
+    // dentro de la cofia opaca (Centaur, módulo de propulsión y Voyager plegada) y la tobera LR91 dentro del interetapa no son
+    // visibles desde ningún ángulo exterior; omitirlas ahorra 20 llamadas de dibujo (~37 con sombras) y ~9 386 triángulos.
+    const mostrarInteriorCofia = forzarInternos || t >= tCofia - 0.1;
+    if (!mostrarInteriorCofia) {
+      P.centaur.visible = false;
+      P.moduloPropulsion.visible = false;
+      P.nave.visible = false;
+    } else {
+      P.nave.visible = true;
+    }
+    const mostrarToberaEtapa2 = forzarInternos || t >= tE1off - 0.5;
+    for (const o of P.etapa2.userData.ocultaEnInteretapa ?? []) o.visible = mostrarToberaEtapa2;
     for (const { pen, encendido } of penachos) pen.actualizar(encendido(t), Math.exp(-Math.max(0, est.altitud) / 7200), tiempoAnim);
     const k = suave((t - tMast) / 2.5);
     fundirPlegada(fundirNasa ? 1 - k : 1);
@@ -396,6 +417,8 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
     aplicarInstante(t, tiempoAnim);
     const plano = colocarCamara(t, p, est);
     camara.updateMatrixWorld();
+    // LAN-01: a más de 25 km de la plataforma, la estructura de 50 m subtiende < 0,1 px y queda fuera de plano.
+    plataforma.grupo.visible = camara.position.lengthSq() < 25000 * 25000;
     mundoInfo = mundo.actualizar({ ms, foco: tmpB.copy(est.pos).addScaledVector(est.eje, 20), tiempoAnim });
     luzSol.setRGB(1, 0.97, 0.92).multiplyScalar(0.7 + 0.3 * mundoInfo.brilloCielo);
     luzSombra.setRGB(0.36, 0.41, 0.5).multiplyScalar(0.35 + 0.65 * mundoInfo.brilloCielo);
@@ -434,13 +457,23 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
   // Listo cuando hay texturas (o tras 8 s) y los sombreadores están compilados; luego empieza la reproducción.
   const listo = Promise.race([mundo.cargas, new Promise(r => setTimeout(r, 8000))]).then(async () => {
     if (destruido) return;
-    aplicarInstante(linea.tInicio, 0);
-    poseAproximacion(0, pose); camara.position.copy(pose.pos); camara.up.copy(pose.arriba); camara.lookAt(pose.mira); camara.updateMatrixWorld();
-    mundoInfo = mundo.actualizar({ ms: instanteUtcMs(mision, linea.tInicio), foco: null, tiempoAnim: 0 });
     await mundo.subirTexturas(); // 26: texturas en la GPU antes de reproducir (sin tirones al entrar en el encuadre)
     if (destruido) return;
+    // LAN-01: precalentar también un fotograma oculto a nivel de plataforma (t = 0,5 s) con cielo, parches de terreno,
+    // plataforma, vehículo, piezas internas y penachos activos, antes de situar la cámara en el espacio (tInicio = -24 s).
+    // Así se evita compilar/validar por primera vez el cielo y las capas de terreno en mitad de la aproximación a ~80 km.
+    aplicarInstante(0.5, 0, { forzarInternos: true });
+    colocarCamara(-8, linea.presentacionDesdeMision(-8), est);
+    camara.updateMatrixWorld();
+    mundo.actualizar({ ms: instanteUtcMs(mision, -8), foco: est.pos, tiempoAnim: 0 });
     try { await renderer.compileAsync(escena, camara); } catch { /* compilación perezosa como respaldo */ }
     if (destruido) return;
+    renderer.render(escena, camara);
+
+    aplicarInstante(linea.tInicio, 0);
+    poseAproximacion(0, pose); camara.position.copy(pose.pos); camara.up.copy(pose.arriba); camara.lookAt(pose.mira); camara.updateMatrixWorld();
+    plataforma.grupo.visible = true;
+    mundoInfo = mundo.actualizar({ ms: instanteUtcMs(mision, linea.tInicio), foco: null, tiempoAnim: 0 });
     // 26: primer dibujo con el lienzo aún invisible: la primera vez que se usa cada programa y búfer tiene un coste que, sin
     // esto, caía en el primer fotograma visible.
     renderer.render(escena, camara);
@@ -481,10 +514,12 @@ export function crearLanzamientoVoyager3D({ contenedor, misionId = 'voyager-2', 
       renderer.setAnimationLoop(null);
       observador.disconnect();
       for (const { pen } of penachos) pen.destruir();
-      // El modelo de NASA comparte geometrías y texturas con la plantilla de la escena principal (clone(true)): se separa antes de
-      // desechar el vehículo y el mundo, y solo se liberan sus materiales clonados.
+      // El modelo de NASA comparte los datos de geometrías y texturas con la plantilla de la escena principal (clone(true)): se separa
+      // antes de desechar el vehículo y el mundo, y solo se liberan sus objetos propios (materiales clonados y, LAN-02, las
+      // geometrías y texturas que apuntan a los datos de la plantilla); la plantilla no se toca.
       if (envolturaNasa) {
         envolturaNasa.traverse(o => { if (o.isMesh) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.dispose()); });
+        liberarRecursosNasa?.(); liberarRecursosNasa = null;
         envolturaNasa.removeFromParent(); envolturaNasa = null;
       }
       humo.destruir(); estela.destruir(); plataforma.destruir(); vehiculo.destruir();

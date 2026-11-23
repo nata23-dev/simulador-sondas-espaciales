@@ -23,14 +23,14 @@ export const GEOMETRIA_VEHICULO = Object.freeze((() => {
   };
 })());
 
-function texturaCanvas(ancho, alto, dibujar, { repetir = false } = {}) {
+function texturaCanvas(ancho, alto, dibujar, { repetir = false, anisotropia = 8 } = {}) {
   const canvas = document.createElement('canvas');
   canvas.width = ancho; canvas.height = alto;
   const g = canvas.getContext('2d');
   dibujar(g, ancho, alto);
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 8;
+  tex.anisotropy = Math.max(1, Math.min(8, anisotropia));
   if (repetir) tex.wrapS = THREE.RepeatWrapping;
   return tex;
 }
@@ -54,7 +54,7 @@ function letrasApiladas(g, texto, x, yInicio, alto, color = '#141414') {
   for (const c of texto) { if (c === ' ') { y += alto * 0.7; continue; } g.fillText(c, x, y); y += alto * 1.08; }
 }
 
-function materiales(numeroVehiculo) {
+function materiales(numeroVehiculo, anisotropia = 8) {
   const G = GEOMETRIA_VEHICULO;
   // Núcleo Titan: tono beige claro (PIA21744), aros de unión y «UNITED STATES» en negro entre los motores sólidos (caras ±Z).
   const etapa1 = texturaCanvas(512, 1024, (g, w, h) => {
@@ -66,7 +66,7 @@ function materiales(numeroVehiculo) {
       letrasApiladas(g, 'UNITED STATES', u * w + 8, h * 0.06, 26);
       g.fillStyle = '#1b1b1b'; g.fillRect(u * w + 30, h * 0.62, 18, 26);
     }
-  });
+  }, { anisotropia });
   const etapa2 = texturaCanvas(512, 380, (g, w, h) => {
     g.fillStyle = '#ddd0ae'; g.fillRect(0, 0, w, h);
     grano(g, w, h, 12, 5);
@@ -76,7 +76,7 @@ function materiales(numeroVehiculo) {
     g.font = '700 30px Arial'; g.textAlign = 'center';
     g.fillText(String(numeroVehiculo), w * 0.12, h * 0.75); g.fillText(String(numeroVehiculo), w * 0.62, h * 0.75);
     g.fillStyle = 'rgba(70,55,35,0.4)'; g.fillRect(0, h * 0.18, w, 3); g.fillRect(0, h - 4, w, 4);
-  });
+  }, { anisotropia });
   // Motores sólidos: blancos con juntas marrones en las uniones de segmentos y marca roja con el número en la falda (PIA21744).
   const srm = (numero) => texturaCanvas(256, 2048, (g, w, h) => {
     g.fillStyle = '#f1efe9'; g.fillRect(0, 0, w, h);
@@ -89,7 +89,7 @@ function materiales(numeroVehiculo) {
     for (const j of juntas) g.fillRect(0, h - j * metro - 3, w, 5);
     g.fillStyle = '#d0452a'; g.fillRect(w * 0.18, h - 1.15 * metro, w * 0.14, 0.95 * metro);
     g.fillStyle = '#ffffff'; g.font = '700 26px Arial'; g.textAlign = 'center'; g.fillText(String(numero), w * 0.25, h - 0.55 * metro);
-  });
+  }, { anisotropia });
   // Cofia estándar del Centaur: blanca, costuras grises, línea de separación de las dos mitades y parches dorados y oscuros.
   const cofia = texturaCanvas(1024, 1024, (g, w, h) => {
     g.fillStyle = '#efede8'; g.fillRect(0, 0, w, h);
@@ -103,7 +103,7 @@ function materiales(numeroVehiculo) {
     for (const [u, v] of [[0.03, 0.2], [0.53, 0.2], [0.14, 0.85]]) g.fillRect(u * w, v * h, 16, 16);
     g.fillStyle = '#222'; g.font = '700 34px Arial'; g.textAlign = 'center';
     g.fillText(String(numeroVehiculo), w * 0.07, h * 0.52); g.fillText(String(numeroVehiculo), w * 0.57, h * 0.52);
-  });
+  }, { anisotropia });
   const std = (opciones) => new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.04, ...opciones });
   return {
     etapa1: std({ map: etapa1, roughness: 0.62 }), etapa2: std({ map: etapa2, roughness: 0.6 }),
@@ -195,8 +195,8 @@ function crearNavePlegada(M) {
  * Crea el vehículo completo. `numeroVehiculo`: 6 (TC-6, Voyager 1) o 7 (TC-7, Voyager 2), como en las fotografías.
  * Devuelve el grupo y las piezas separables, cada una con su punto de tobera (para las llamas) en coordenadas locales.
  */
-export function crearTitanIIIECentaur({ numeroVehiculo = 7 } = {}) {
-  const G = GEOMETRIA_VEHICULO, M = materiales(numeroVehiculo), raiz = new THREE.Group();
+export function crearTitanIIIECentaur({ numeroVehiculo = 7, anisotropia = 8 } = {}) {
+  const G = GEOMETRIA_VEHICULO, M = materiales(numeroVehiculo, anisotropia), raiz = new THREE.Group();
   raiz.name = `TitanIIIE_Centaur_TC${numeroVehiculo}`;
   const pieza = (nombre) => { const g = new THREE.Group(); g.name = nombre; raiz.add(g); return g; };
 
@@ -212,8 +212,9 @@ export function crearTitanIIIECentaur({ numeroVehiculo = 7 } = {}) {
   const etapa2 = pieza('etapa2');
   etapa2.add(cilindro(G.radioNucleo, G.topeEtapa2 - G.baseEtapa2, M.etapa2, G.baseEtapa2));
   const t2 = tobera(0.25, 0.75, 1.6, M); t2.position.y = G.baseEtapa2 + 0.4; etapa2.add(t2);
-  etapa2.add(tapa(G.radioNucleo * 0.98, G.baseEtapa2 + 0.01, M.tobera));
+  const tapaEtapa2 = tapa(G.radioNucleo * 0.98, G.baseEtapa2 + 0.01, M.tobera); etapa2.add(tapaEtapa2);
   etapa2.userData.toberas = [new THREE.Vector3(0, G.baseEtapa2 - 1.25, 0)];
+  etapa2.userData.ocultaEnInteretapa = [t2, tapaEtapa2];
   // Adaptador entre la etapa II y el Centaur: se va con la etapa II.
   etapa2.add(cilindro(G.radioNucleo, G.baseCofia - G.baseAdaptador, M.adaptador, G.baseAdaptador));
 

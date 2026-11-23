@@ -296,6 +296,7 @@ export function createSolarSystemMissionView({ scene, loadEphemeris, createModel
     reframe() { if (controlling && prepared && cameraMode === 'overview') scene.encuadrarConjuntoMision(overviewBodies); },
     getCameraMode: () => cameraMode,
     setFrameZoneProvider(fn) { zoneProvider = typeof fn === 'function' ? fn : null; if (controlling) scene.establecerProveedorZonaEncuadre(zoneProvider); },
+    setMainSceneOccluded(occluded) { scene.establecerRenderPausado?.(Boolean(occluded), 'laboratorio'); },
     clear() { ++token; discard(); },
     isControlling: () => controlling,
     getState: () => Object.freeze({ ready: Boolean(prepared), controlling, kind: execution?.kind ?? null, probeName: prepared?.name ?? null,

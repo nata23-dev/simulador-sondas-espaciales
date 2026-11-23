@@ -5,6 +5,7 @@ import { cargarTextura } from './TextureLoader.js';
 import { MOON_TEXTURES } from './MoonTextureCatalog.js';
 import { crearPenachoIo } from './IoVolcanism.js';
 import { registrarTexturaDiferida, vincularMallaTextura } from './DeferredTextures.js';
+import { GEOMETRIAS_ESFERA_LOD, resolverNivelLodEsfera } from './PlanetFactory.js';
 
 // 18: clave de la carga diferida de las texturas de una luna (mosaico, ilustración y máscara; 0,3–1,3 MB por luna).
 export const claveTexturaLuna = key => `luna:${key}`;
@@ -116,7 +117,7 @@ export function crearNeblinaTitan(geometry, radioEscena) {
 export function crearLunasPlanetarias(scene, objetos) {
   const moons = new Map();
   // One shared mesh keeps the limb and polar UV sampling smooth in close views.
-  const geometry = new THREE.SphereGeometry(1, 48, 32);
+  const geometry = GEOMETRIAS_ESFERA_LOD.alto;
   let penachoIo = null;
   for (const [key, definition] of Object.entries(MOONS)) {
     const group = new THREE.Group();
@@ -127,14 +128,18 @@ export function crearLunasPlanetarias(scene, objetos) {
     mesh.userData.nombreLuna = key;
     vincularMallaTextura(claveTexturaLuna(key), mesh);
     group.add(mesh);
+    let neblina = null;
     if (key === 'Io') {
       penachoIo = crearPenachoIo();
       mesh.add(penachoIo.mesh);
     }
-    if (key === 'Titan') group.add(crearNeblinaTitan(geometry, radioEscena));
+    if (key === 'Titan') {
+      neblina = crearNeblinaTitan(geometry, radioEscena);
+      group.add(neblina);
+    }
     group.visible = false;
     scene.add(group);
-    moons.set(key, { definition, posicion: group, mesh, radioEscena });
+    moons.set(key, { definition, posicion: group, mesh, neblina, radioEscena, nivelDetalle: 'alto' });
   }
 
   function actualizar(states, visible) {
@@ -147,7 +152,20 @@ export function crearLunasPlanetarias(scene, objetos) {
       moon.posicion.position.copy(parent.posicion.position).add(new THREE.Vector3(x, z, -y));
     }
   }
+  function actualizarNivelDetalle( resolverOpciones ) {
+    for (const [key, moon] of moons) {
+      if (!moon.posicion.visible) continue;
+      const { nivel, mostrarCapas } = resolverNivelLodEsfera(resolverOpciones(key, moon));
+      moon.nivelDetalle = nivel;
+      const geo = GEOMETRIAS_ESFERA_LOD[nivel] ?? GEOMETRIAS_ESFERA_LOD.alto;
+      if (moon.mesh.geometry !== geo) moon.mesh.geometry = geo;
+      if (moon.neblina) {
+        if (moon.neblina.geometry !== geo) moon.neblina.geometry = geo;
+        moon.neblina.visible = mostrarCapas;
+      }
+    }
+  }
   function ocultar() { for (const moon of moons.values()) moon.posicion.visible = false; }
-  return { moons, actualizar, ocultar,
+  return { moons, actualizar, ocultar, actualizarNivelDetalle,
     actualizarEfectos: time => { if (moons.get('Io')?.posicion.visible) penachoIo?.actualizar(time); } };
 }

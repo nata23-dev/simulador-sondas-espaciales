@@ -45,13 +45,13 @@ function celosia({ x, z, ancho, fondo, y0, alto, paso = 4, grosor = 0.35, caras 
   return mergeGeometries(partes, false);
 }
 
-function texturaPaneles(color, rayas = 64, alto = 256) {
+function texturaPaneles(color, rayas = 64, alto = 256, anisotropia = 8) {
   const c = document.createElement('canvas'); c.width = 256; c.height = alto;
   const g = c.getContext('2d');
   g.fillStyle = color; g.fillRect(0, 0, 256, alto);
   for (let i = 0; i < rayas; i++) { g.fillStyle = i % 2 ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.08)'; g.fillRect(i * 256 / rayas, 0, 256 / rayas / 2, alto); }
   for (let j = 1; j < 8; j++) { g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(0, j * alto / 8, 256, 2); }
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = anisotropia;
   return t;
 }
 // Borde difuso de la explanada (opaca hasta ≈ 72 % del radio): pasa a la ortoimagen sin un contorno de disco.
@@ -64,7 +64,7 @@ function texturaBordeRadial(interior = 0.72) {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.NoColorSpace;
   return t;
 }
-function texturaHormigon(base = '#b9b4a8', manchas = 'rgba(70,60,45,0.12)') {
+function texturaHormigon(base = '#b9b4a8', manchas = 'rgba(70,60,45,0.12)', anisotropia = 8) {
   const c = document.createElement('canvas'); c.width = 256; c.height = 256;
   const g = c.getContext('2d');
   g.fillStyle = base; g.fillRect(0, 0, 256, 256);
@@ -72,38 +72,52 @@ function texturaHormigon(base = '#b9b4a8', manchas = 'rgba(70,60,45,0.12)') {
   for (let i = 0; i < 900; i++) { g.fillStyle = azar() > 0.5 ? manchas : 'rgba(255,255,255,0.06)'; const r = 1 + azar() * 7; g.beginPath(); g.arc(azar() * 256, azar() * 256, r, 0, 7); g.fill(); }
   g.strokeStyle = 'rgba(40,40,40,0.25)'; g.lineWidth = 1.5;
   for (let i = 0; i <= 4; i++) { g.beginPath(); g.moveTo(i * 64, 0); g.lineTo(i * 64, 256); g.moveTo(0, i * 64); g.lineTo(256, i * 64); g.stroke(); }
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = anisotropia;
   return t;
 }
 
-export function crearPlataformaLC41_1977() {
+export function crearPlataformaLC41_1977({ anisotropia = 8 } = {}) {
   const grupo = new THREE.Group(); grupo.name = 'LC41_1977';
-  const hormigon = texturaHormigon(); hormigon.repeat.set(12, 12);
+  const aniso = Math.max(1, Math.min(8, anisotropia));
+  const hormigon = texturaHormigon('#b9b4a8', 'rgba(70,60,45,0.12)', aniso); hormigon.repeat.set(12, 12);
   const mat = {
     explanada: new THREE.MeshStandardMaterial({ map: hormigon, roughness: 0.95, color: 0xaaa69c, envMapIntensity: 0.4, // hormigón envejecido
       alphaMap: texturaBordeRadial(), transparent: true, depthWrite: false }),
-    mesa: new THREE.MeshStandardMaterial({ map: texturaPaneles('#6f716f', 16), roughness: 0.75, metalness: 0.35 }),
+    mesa: new THREE.MeshStandardMaterial({ map: texturaPaneles('#6f716f', 16, 256, aniso), roughness: 0.75, metalness: 0.35 }),
     celosia: new THREE.MeshStandardMaterial({ color: 0x3b3d3e, roughness: 0.7, metalness: 0.5 }),
-    paneles: new THREE.MeshStandardMaterial({ map: texturaPaneles('#7d7f7c', 96), roughness: 0.6, metalness: 0.45 }),
-    mastil: new THREE.MeshStandardMaterial({ map: (() => { const t = texturaHormigon('#cdb89a', 'rgba(150,90,40,0.18)'); t.repeat.set(1, 6); return t; })(), roughness: 0.9 }),
+    paneles: new THREE.MeshStandardMaterial({ map: texturaPaneles('#7d7f7c', 96, 256, aniso), roughness: 0.6, metalness: 0.45 }),
+    mastil: new THREE.MeshStandardMaterial({ map: (() => { const t = texturaHormigon('#cdb89a', 'rgba(150,90,40,0.18)', aniso); t.repeat.set(1, 6); return t; })(), roughness: 0.9 }),
     amarillo: new THREE.MeshStandardMaterial({ color: 0xd9a531, roughness: 0.6, metalness: 0.3 }),
-    blancoTorre: new THREE.MeshStandardMaterial({ map: texturaPaneles('#d8d8d2', 40), roughness: 0.6, metalness: 0.2 }),
+    blancoTorre: new THREE.MeshStandardMaterial({ map: texturaPaneles('#d8d8d2', 40, 256, aniso), roughness: 0.6, metalness: 0.2 }),
     oscuro: new THREE.MeshStandardMaterial({ color: 0x141414, roughness: 1 }),
     via: new THREE.MeshStandardMaterial({ color: 0x4a4038, roughness: 0.6, metalness: 0.7 }),
     cable: new THREE.MeshStandardMaterial({ color: 0x1d1d1d, roughness: 0.6 }),
     lampara: new THREE.MeshStandardMaterial({ color: 0xe8e8e0, emissive: 0x333028, roughness: 0.4 })
   };
   const add = (geo, m, sombra = true) => { const o = new THREE.Mesh(geo, m); o.castShadow = sombra; o.receiveShadow = true; grupo.add(o); return o; };
-  const caja = (sx, sy, sz, x, y, z, m, sombra = true) => { const g = new THREE.BoxGeometry(sx, sy, sz); g.translate(x, y, z); return add(g, m, sombra); };
+  // LAN-01 / LAN-02: agrupa mallas estáticas por (material, sombra, zona) para reducir llamadas de dibujo sin alterar silueta,
+  // normales, sombras ni el culling entre la plataforma y la torre de servicio retirada al sur.
+  const lotes = new Map();
+  const addEst = (geo, m, sombra = true, zona = 'pad') => {
+    let lote = lotes.get(m);
+    if (!lote) { lote = new Map(); lotes.set(m, lote); }
+    const clave = `${zona}:${sombra ? 1 : 0}`;
+    let lista = lote.get(clave);
+    if (!lista) { lista = { geos: [], sombra }; lote.set(clave, lista); }
+    lista.geos.push(geo);
+  };
+  const caja = (sx, sy, sz, x, y, z, m, sombra = true, zona = 'pad') => {
+    const g = new THREE.BoxGeometry(sx, sy, sz); g.translate(x, y, z); addEst(g, m, sombra, zona);
+  };
   const H = PLATAFORMA_1977.alturaMesaM;
 
   // Explanada de hormigón (cubre los edificios actuales de la imagen aérea bajo la plataforma) y fosos de llamas este-oeste.
   const explanada = new THREE.CircleGeometry(70, 64); explanada.rotateX(-Math.PI / 2); explanada.translate(0, 0.06, 0);
   add(explanada, mat.explanada, false).renderOrder = 4; // después de los parches de terreno (órdenes 1–3)
-  for (const lado of [-1, 1]) caja(26, 0.1, 9, lado * 21, 0.08, 0, mat.oscuro, false);
+  for (const lado of [-1, 1]) caja(26, 0.1, 9, lado * 21, 0.08, 0, mat.oscuro, false, 'pad');
 
   // Vías hacia el sur (por ellas llegaba la plataforma desde el edificio de integración y se retiraba la torre de servicio).
-  for (const x of [-7.5, -6.0, 6.0, 7.5]) caja(0.18, 0.2, 420, x, 0.1, 200, mat.via, false);
+  for (const x of [-7.5, -6.0, 6.0, 7.5]) caja(0.18, 0.2, 420, x, 0.1, 200, mat.via, false, 'vias');
 
   // Plataforma de lanzamiento móvil: mesa con hueco para las toberas.
   // Los motores sólidos quedan al norte y al sur del núcleo (eje perpendicular al acimut de la plataforma, 100,2°): hueco de 12 × 11 m.
@@ -112,11 +126,11 @@ export function crearPlataformaLC41_1977() {
   for (const x of [-10, 10]) for (const z of [-8, 8]) caja(2.5, 1.6, 2.5, x, 0.8, z, mat.oscuro); // bogies
 
   // Torre umbilical al oeste (aguas arriba del vuelo): escalera de celosía, torre de paneles y mástil de hormigón.
-  add(celosia({ x: -16.5, z: 0, ancho: 5, fondo: 5, y0: H, alto: 49, paso: 3.5, grosor: 0.3, rellanos: 2 }), mat.celosia);
+  addEst(celosia({ x: -16.5, z: 0, ancho: 5, fondo: 5, y0: H, alto: 49, paso: 3.5, grosor: 0.3, rellanos: 2 }), mat.celosia);
   caja(6, 51, 6.5, -10.5, H + 25.5, 0, mat.paneles);
   const mastil = new THREE.CylinderGeometry(1.5, 2.4, 33, 4, 1); mastil.rotateY(Math.PI / 4); mastil.translate(-5.6, H + 16.5, 0);
-  add(mastil, mat.mastil);
-  add(celosia({ x: -5.4, z: 0, ancho: 3.2, fondo: 3.6, y0: H + 33, alto: 10, paso: 2.5, grosor: 0.22 }), mat.amarillo);
+  addEst(mastil, mat.mastil);
+  addEst(celosia({ x: -5.4, z: 0, ancho: 3.2, fondo: 3.6, y0: H + 33, alto: 10, paso: 2.5, grosor: 0.22 }), mat.amarillo);
   // Brazos umbilicales hacia la etapa II, el adaptador y el Centaur (se retraen en la cuenta atrás).
   const brazos = [];
   for (const [y, largo] of [[H + 23, 2.8], [H + 30.5, 2.8], [H + 38, 2.1]]) {
@@ -127,19 +141,27 @@ export function crearPlataformaLC41_1977() {
   // Mangueras umbilicales (cuelgan del mástil a la base del vehículo).
   for (const [y0, y1, z] of [[H + 12, H + 4, 0.8], [H + 18, H + 9, -0.7]]) {
     const curva = new THREE.CatmullRomCurve3([new THREE.Vector3(-4.3, y0, z), new THREE.Vector3(-3.0, (y0 + y1) / 2 - 1.5, z), new THREE.Vector3(-1.6, y1, z * 0.6)]);
-    add(new THREE.TubeGeometry(curva, 12, 0.09, 6), mat.cable);
+    addEst(new THREE.TubeGeometry(curva, 12, 0.09, 6), mat.cable);
   }
 
   // Torre de servicio móvil, retirada hacia el sur sobre las vías (PIA21739, PIA21742).
   const zT = PLATAFORMA_1977.torreServicioRetiradaZ;
-  add(celosia({ x: 0, z: zT, ancho: 22, fondo: 20, y0: 0, alto: 66, paso: 5.5, grosor: 0.55, caras: [0, 1, 3], rellanos: 3 }), mat.celosia);
-  caja(10, 26, 9, 3, 46, zT - 4, mat.blancoTorre); caja(7, 18, 6, -5, 52, zT + 3, mat.blancoTorre);
-  caja(24, 1.4, 22, 0, 66.5, zT, mat.celosia);
+  addEst(celosia({ x: 0, z: zT, ancho: 22, fondo: 20, y0: 0, alto: 66, paso: 5.5, grosor: 0.55, caras: [0, 1, 3], rellanos: 3 }), mat.celosia, true, 'torreSur');
+  caja(10, 26, 9, 3, 46, zT - 4, mat.blancoTorre, true, 'torreSur'); caja(7, 18, 6, -5, 52, zT + 3, mat.blancoTorre, true, 'torreSur');
+  caja(24, 1.4, 22, 0, 66.5, zT, mat.celosia, true, 'torreSur');
 
   // Báculos de iluminación (PIA21744).
   for (const [x, z] of [[-28, -30], [30, -28], [28, 30], [-30, 28]]) {
-    add(new THREE.CylinderGeometry(0.15, 0.25, 16, 8).translate(x, 8, z), mat.via);
-    for (const dx of [-0.6, 0.6]) add(new THREE.SphereGeometry(0.42, 12, 8).translate(x + dx, 16.3, z), mat.lampara);
+    addEst(new THREE.CylinderGeometry(0.15, 0.25, 16, 8).translate(x, 8, z), mat.via);
+    for (const dx of [-0.6, 0.6]) addEst(new THREE.SphereGeometry(0.42, 12, 8).translate(x + dx, 16.3, z), mat.lampara);
+  }
+
+  for (const [m, porZona] of lotes) {
+    for (const { geos, sombra } of porZona.values()) {
+      const fusionada = geos.length === 1 ? geos[0] : mergeGeometries(geos, false);
+      if (geos.length > 1) for (const g of geos) g.dispose();
+      add(fusionada, m, sombra);
+    }
   }
 
   const materialesLista = Object.values(mat);

@@ -228,7 +228,25 @@ function intervalGaps(items, cadenceSeconds, datasetId) {
   return gaps;
 }
 
+const neighborIndexCache = new WeakMap();
 function neighbors(items, jdTdb) {
+  if (!items || items.length < 2) return null;
+  let lastLo = neighborIndexCache.get(items);
+  if (lastLo !== undefined && lastLo >= 0 && lastLo < items.length - 1) {
+    if (items[lastLo].time.jdTdb < jdTdb && jdTdb < items[lastLo + 1].time.jdTdb) {
+      return [items[lastLo], items[lastLo + 1]];
+    }
+    const nextLo = lastLo + 1;
+    if (nextLo < items.length - 1 && items[nextLo].time.jdTdb < jdTdb && jdTdb < items[nextLo + 1].time.jdTdb) {
+      neighborIndexCache.set(items, nextLo);
+      return [items[nextLo], items[nextLo + 1]];
+    }
+    const prevLo = lastLo - 1;
+    if (prevLo >= 0 && items[prevLo].time.jdTdb < jdTdb && jdTdb < items[prevLo + 1].time.jdTdb) {
+      neighborIndexCache.set(items, prevLo);
+      return [items[prevLo], items[prevLo + 1]];
+    }
+  }
   let low = 0;
   let high = items.length;
   while (low < high) {
@@ -236,7 +254,11 @@ function neighbors(items, jdTdb) {
     if (items[middle].time.jdTdb < jdTdb) low = middle + 1;
     else high = middle;
   }
-  return low > 0 && low < items.length ? [items[low - 1], items[low]] : null;
+  if (low > 0 && low < items.length) {
+    neighborIndexCache.set(items, low - 1);
+    return [items[low - 1], items[low]];
+  }
+  return null;
 }
 
 /**

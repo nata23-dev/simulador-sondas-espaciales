@@ -12,6 +12,8 @@ import { LC41, RADIO_TIERRA_M, solEnLC41, matrizEcuatorialAEnu } from '../scienc
 import { cargarCatalogoHipparcos } from '../graphics/StarCatalog.js';
 import { crearSolEspacio } from './LaunchEffects.js';
 import { registerRenderer, opcionesRenderizador } from '../graphics/QualityProfile.js';
+import { crearRenderizadorWebGL } from '../graphics/WebGLSupport.js';
+import { texturaDfgCompartida } from './LaunchSharedResources.js';
 
 const DEG = Math.PI / 180;
 const R = RADIO_TIERRA_M;
@@ -57,6 +59,17 @@ export function ajustesLanzamiento(detalle = 'alto') {
 }
 
 /**
+ * LAN-01: filtrado anisotrópico máximo según el nivel de detalle y la capacidad del hardware.
+ * En equipos potentes ('alto') conserva 16×; en dibujo por software / perfil mínimo usa 1× (trilineal estándar),
+ * evitando el bucle de 16 muestras por fragmento en planos rasantes de plataforma. Función pura (probada).
+ */
+export function anisotropiaLanzamiento(detalle = 'alto', maxHardware = 16) {
+  const tope = { alto: 16, medio: 8, bajo: 2, minimo: 1 }[detalle] ?? 16;
+  const hw = Number.isFinite(maxHardware) && maxHardware >= 1 ? maxHardware : 1;
+  return Math.max(1, Math.min(hw, tope));
+}
+
+/**
  * 26: carga de una imagen como textura. Con createImageBitmap la imagen se decodifica fuera del hilo principal (un JPEG de
  * 8192 px tardaba ≈ 0,4 s en decodificarse al subirlo a la GPU, congelando la escena); la orientación se invierte al
  * decodificar, así que la textura lleva flipY = false y queda igual que con una imagen HTML. Sin conversión de color, como
@@ -84,10 +97,16 @@ export function direccionGeografica(latDeg, lonDeg, destino = new THREE.Vector3(
 }
 export const enuAEscena = (enu, destino = new THREE.Vector3()) => destino.set(enu[0], enu[2], -enu[1]);
 
-/** Parche esférico (lat/lon) con vértices relativos a su centro para conservar precisión; devuelve la malla ya colocada. */
-function parcheEsferico({ lat, lon, radio, segLat, segLon }, material) {
+/**
+ * Parche esférico (lat/lon) con vértices relativos a su centro para conservar precisión; devuelve la malla ya colocada.
+ * LAN-01: cuando `margenOpaco > 0`, particiona el búfer de índices en el anillo exterior semitransparente (`idxBorde`) y el
+ * núcleo interior 100 % opaco (`idxNucleo`, donde `alphaMap === 1`). El núcleo opaco comparte los mismos atributos de vértices e
+ * índices mediante `setDrawRange` y se dibuja en la lista opaca de delante hacia atrás (`ordenOpaco < 0`), permitiendo que el
+ * Z-buffer descarte por Early-Z el sombreado redundante de las capas inferiores y del cielo detrás del terreno opaco.
+ */
+function parcheEsferico({ lat, lon, radio, segLat, segLon, margenOpaco = 0, ordenOpaco = 0 }, material) {
   const centro = direccionGeografica((lat[0] + lat[1]) / 2, (lon[0] + lon[1]) / 2).multiplyScalar(radio).add(CENTRO_TIERRA);
-  const pos = [], nor = [], uv = [], idx = [], d = new THREE.Vector3();
+  const pos = [], nor = [], uv = [], idxBorde = [], idxNucleo = [], d = new THREE.Vector3();
   for (let i = 0; i <= segLat; i++) {
     const la = lat[0] + (lat[1] - lat[0]) * i / segLat;
     for (let j = 0; j <= segLon; j++) {
@@ -98,10 +117,17 @@ function parcheEsferico({ lat, lon, radio, segLat, segLon }, material) {
       uv.push(j / segLon, i / segLat);
     }
   }
-  for (let i = 0; i < segLat; i++) for (let j = 0; j < segLon; j++) {
-    const a = i * (segLon + 1) + j, b = a + 1, c = a + segLon + 1, e = c + 1;
-    idx.push(a, b, e, a, e, c);
+  for (let i = 0; i < segLat; i++) {
+    const v0 = i / segLat, v1 = (i + 1) / segLat;
+    const filaOpaca = margenOpaco > 0 && v0 >= margenOpaco - 1e-6 && v1 <= 1 - margenOpaco + 1e-6;
+    for (let j = 0; j < segLon; j++) {
+      const u0 = j / segLon, u1 = (j + 1) / segLon;
+      const esOpaco = filaOpaca && u0 >= margenOpaco - 1e-6 && u1 <= 1 - margenOpaco + 1e-6;
+      const a = i * (segLon + 1) + j, b = a + 1, c = a + segLon + 1, e = c + 1;
+      (esOpaco ? idxNucleo : idxBorde).push(a, b, e, a, e, c);
+    }
   }
+  const idx = idxNucleo.length ? [...idxBorde, ...idxNucleo] : idxBorde;
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
@@ -111,6 +137,29 @@ function parcheEsferico({ lat, lon, radio, segLat, segLon }, material) {
   const malla = new THREE.Mesh(geo, material);
   malla.position.copy(centro);
   malla.receiveShadow = true;
+  if (idxNucleo.length) {
+    const nBorde = idxBorde.length, nNucleo = idxNucleo.length, nTotal = idx.length;
+    geo.setDrawRange(0, nBorde);
+    const geoNucleo = new THREE.BufferGeometry();
+    geoNucleo.setAttribute('position', geo.getAttribute('position'));
+    geoNucleo.setAttribute('normal', geo.getAttribute('normal'));
+    geoNucleo.setAttribute('uv', geo.getAttribute('uv'));
+    geoNucleo.setIndex(geo.getIndex());
+    geoNucleo.boundingSphere = geo.boundingSphere;
+    geoNucleo.setDrawRange(nBorde, nNucleo);
+    const matNucleo = new THREE.MeshLambertMaterial({ color: 0xffffff });
+    const nucleo = new THREE.Mesh(geoNucleo, matNucleo);
+    nucleo.receiveShadow = true;
+    nucleo.renderOrder = ordenOpaco;
+    malla.add(nucleo);
+    malla.userData.nucleo = nucleo;
+    malla.userData.matNucleo = matNucleo;
+    malla.userData.alternarNucleoOpaco = (activo) => {
+      if (nucleo.visible === activo) return;
+      nucleo.visible = activo;
+      geo.setDrawRange(0, activo ? nBorde : nTotal);
+    };
+  }
   return malla;
 }
 
@@ -173,7 +222,7 @@ function colorBV(bv) {
 export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detalle = 'alto', baseUrl = '/', escritorio = true }) {
   const ajustes = ajustesLanzamiento(detalle);
   // 27: preferencia de GPU del menú y suavizado de bordes según el nivel de detalle.
-  const renderer = new THREE.WebGLRenderer(opcionesRenderizador({ canvas, antialias: ajustes.antialias, logarithmicDepthBuffer: true }, 'lanzamiento'));
+  const renderer = crearRenderizadorWebGL(opcionesRenderizador({ canvas, antialias: ajustes.antialias, logarithmicDepthBuffer: true }, 'lanzamiento'), 'lanzamiento 3D'); // STAB-01
   // 26: la resolución interna sigue el perfil de calidad del menú (Alta ×2, Media ×1,5, Baja ×1) y, en «Automática», baja sola si
   // el lanzamiento no sostiene 30 FPS, igual que la escena principal. Antes el lanzamiento usaba siempre ×2 salvo en «Baja».
   const bajaCalidad = registerRenderer(renderer, 'lanzamiento'); // 27: resolución dinámica propia del lanzamiento
@@ -187,12 +236,15 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detall
   const camara = new THREE.PerspectiveCamera(45, 1, 0.4, 2.0e8);
   escena.add(camara);
   const nuboso = mision.id === 'voyager-2';
+  let destruido = false;
   const recursos = [];
   const url = rel => `${baseUrl}${rel}`;
   const texturas = {};
   // 26: la primera consulta de la anisotropía cuesta ≈ 0,2 s en ANGLE; se hace una vez aquí, durante la carga.
-  const anisotropia = renderer.capabilities.getMaxAnisotropy();
+  // LAN-01: acotada por el nivel de detalle para evitar 16 muestras por píxel en rasterización por software.
+  const anisotropia = anisotropiaLanzamiento(ajustes.detalle, renderer.capabilities.getMaxAnisotropy());
   const cargar = (clave, rel) => cargarTextura(url(rel)).then(t => {
+    if (destruido) { t.dispose(); t.image?.close?.(); return null; }
     t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = anisotropia; texturas[clave] = t; recursos.push(t); return t;
   }).catch(() => { console.warn(`No se pudo cargar ${rel}; se usa el color de respaldo.`); return null; });
 
@@ -203,12 +255,16 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detall
   globo.renderOrder = 0; escena.add(globo);
   const mascara = mascaraBordes(), mascaraAncha = mascaraBordes(0.3);
   const capas = {};
-  for (const [clave, segs, orden] of [['florida', [48, 48], 1], ['cabo', [24, 24], 2], ['lc41', [16, 16], 3]]) {
+  for (const [clave, segs, orden, margenOpaco, ordenOpaco] of [
+    ['florida', [div(48), div(48)], 1, 0.125, -1],
+    ['cabo', [div(24), div(24)], 2, 1 / 3, -2],
+    ['lc41', [16, 16], 3, 0.125, -3]
+  ]) {
     const def = RECURSOS_LANZAMIENTO[clave];
     // Difuso puro: la ortoimagen ya trae su sombreado y un reflejo especular rasante la haría parecer agua. El Cabo (USGS, mar
     // turquesa) se funde con un borde más ancho sobre Florida (Blue Marble, océano oscuro).
     const mat = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, alphaMap: clave === 'cabo' ? mascaraAncha : mascara, opacity: 0, depthWrite: true });
-    const m = parcheEsferico({ lat: def.lat, lon: def.lon, radio: R + def.desnivel, segLat: segs[0], segLon: segs[1] }, mat);
+    const m = parcheEsferico({ lat: def.lat, lon: def.lon, radio: R + def.desnivel, segLat: segs[0], segLon: segs[1], margenOpaco, ordenOpaco }, mat);
     m.renderOrder = orden; m.visible = false; escena.add(m); capas[clave] = m;
   }
   const matNubes = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, roughness: 1, envMapIntensity: 0 });
@@ -228,7 +284,11 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detall
   const cargasTexturas = Promise.all([
     cargar('globo', archivoGlobo({ calidad, escritorio, detalle: ajustes.detalle, maxTextura: renderer.capabilities.maxTextureSize })).then(t => { if (t) { matGlobo.map = t; matGlobo.color.set(0xffffff); matGlobo.needsUpdate = true; } }),
     ...['florida', 'cabo', 'lc41'].map(clave => cargar(clave, RECURSOS_LANZAMIENTO[clave].archivo).then(t => {
-      if (!t) return; const m = capas[clave]; m.material.map = t; m.material.opacity = 1; m.material.needsUpdate = true; m.visible = true;
+      if (!t) return;
+      const m = capas[clave];
+      m.material.map = t; m.material.opacity = 1; m.material.needsUpdate = true;
+      if (m.userData.matNucleo) { m.userData.matNucleo.map = t; m.userData.matNucleo.needsUpdate = true; }
+      m.visible = true;
     })),
     // 27: sin capa de nubes en el nivel mínimo (ni se descarga su textura).
     ajustes.nubes ? cargar('nubes', RECURSOS_LANZAMIENTO.nubes.archivo).then(t => {
@@ -240,14 +300,25 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detall
   const cielo = new Sky();
   cielo.scale.setScalar(1.0e4);
   cielo.material.depthWrite = false;
-  cielo.renderOrder = -10;
+  // LAN-01: renderOrder = 1 dentro de la lista opaca (después de los núcleos opacos del terreno, plataforma y vehículo).
+  // Como el vértice del cielo fija gl_Position.z = gl_Position.w (profundidad 1,0 en el plano lejano), el Z-buffer descarta
+  // automáticamente el sombreador del cielo en todos los píxeles ya cubiertos por el suelo opaco, la plataforma y el cohete.
+  cielo.renderOrder = 1;
   const u = cielo.material.uniforms;
   u.turbidity.value = nuboso ? 5.5 : 3.5; u.rayleigh.value = nuboso ? 1.3 : 1.5; u.mieCoefficient.value = 0.0035; u.mieDirectionalG.value = 0.8;
   u.cloudCoverage.value = nuboso ? 0.42 : 0.1; u.cloudDensity.value = nuboso ? 0.55 : 0.35; u.cloudElevation.value = 0.55; u.cloudScale.value = 0.00025;
   u.uBrilloCielo = { value: 1 };
   cielo.material.onBeforeCompile = sh => {
     sh.uniforms.uBrilloCielo = u.uBrilloCielo;
-    sh.fragmentShader = 'uniform float uBrilloCielo;\n' + sh.fragmentShader.replace('gl_FragColor = vec4( texColor, 1.0 );', 'gl_FragColor = vec4( texColor * uBrilloCielo, 1.0 );');
+    let frag = sh.fragmentShader
+      .replace('float theta = acos( direction.y ); // elevation --> y-axis, [-pi/2, pi/2]', '')
+      .replace('float phi = atan( direction.z, direction.x ); // azimuth --> x-axis [-pi/2, pi/2]', '')
+      .replace('vec2 uv = vec2( phi, theta ) / vec2( 2.0 * pi, pi ) + vec2( 0.5, 0.0 );', '')
+      .replace('gl_FragColor = vec4( texColor, 1.0 );', 'gl_FragColor = vec4( texColor * uBrilloCielo, 1.0 );');
+    if (ajustes.detalle === 'minimo') {
+      frag = frag.replace('for ( int i = 0; i < 4; i ++ )', 'for ( int i = 0; i < 2; i ++ )');
+    }
+    sh.fragmentShader = 'uniform float uBrilloCielo;\n' + frag;
   };
   escena.add(cielo);
 
@@ -262,6 +333,7 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detall
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
   });
   const estrellasListas = cargarCatalogoHipparcos().then(reg => {
+    if (destruido) return;
     const n = reg.length / 4, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), tam = new Float32Array(n);
     for (let i = 0; i < n; i++) {
       const ra = reg[i * 4] * DEG, dec = reg[i * 4 + 1] * DEG, mag = reg[i * 4 + 2];
@@ -292,7 +364,7 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detall
 
   // Entorno para reflejos (cielo pre-filtrado una vez).
   const pmrem = new THREE.PMREMGenerator(renderer);
-  let entorno = null;
+  let entorno = null, entornoObjetivo = null;
   const escEntorno = new THREE.Scene(), cieloEntorno = new Sky();
   cieloEntorno.scale.setScalar(50);
   for (const k of ['turbidity', 'rayleigh', 'mieCoefficient', 'mieDirectionalG']) cieloEntorno.material.uniforms[k].value = u[k].value;
@@ -301,8 +373,9 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detall
   function generarEntorno(dirSol) {
     if (!ajustes.entorno) return; // 27: nivel mínimo, sin reflejos del cielo
     cieloEntorno.material.uniforms.sunPosition.value.copy(dirSol);
-    entorno?.dispose();
-    entorno = pmrem.fromScene(escEntorno, 0, 0.1, 100).texture;
+    entornoObjetivo?.dispose();
+    entornoObjetivo = pmrem.fromScene(escEntorno, 0, 0.1, 100);
+    entorno = entornoObjetivo.texture;
     escena.environment = entorno;
   }
   /**
@@ -312,7 +385,7 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detall
    * camino síncrono de siempre, con el mismo resultado.
    */
   async function precompilarEntorno() {
-    if (!ajustes.entorno) return;
+    if (!ajustes.entorno || destruido) return;
     try {
       pmrem._setSize(256);
       pmrem._allocateTargets().dispose();
@@ -368,11 +441,18 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detall
     atmosferaDentro.visible = fuera > 0.001 && altitud <= 80000;
     matNubes.opacity = (nuboso ? 0.9 : 0.75) * THREE.MathUtils.smoothstep(altitud, 12000, 45000);
     nubes.visible = permitirNubes && Boolean(matNubes.alphaMap) && matNubes.opacity > 0.002;
-    // Capas de detalle: se ocultan cuando están muy lejos (ahorro) o son innecesarias.
+    // Capas de detalle: se ocultan cuando están muy lejos (ahorro) o cuando quedan geométricamente bajo el horizonte opaco
+    // de las capas superiores (LAN-01: bajo 3,5 km el horizonte terrestre ≤ 211 km cae íntegramente dentro del núcleo opaco de
+    // Florida > 340 km; bajo 10 m el horizonte de Florida cae íntegramente detrás del núcleo opaco del Cabo).
     capas.lc41.visible = Boolean(capas.lc41.material.map) && altitud < 400000;
     // El Cabo se desvanece al subir: desde más de ≈ 50 km su mar turquesa destacaría como un recuadro sobre Blue Marble.
     capas.cabo.material.opacity = 1 - THREE.MathUtils.smoothstep(altitud, 25000, 50000);
     capas.cabo.visible = Boolean(capas.cabo.material.map) && capas.cabo.material.opacity > 0.002;
+    capas.cabo.userData.alternarNucleoOpaco?.(capas.cabo.material.opacity >= 0.999);
+    const caboOpacoCubreHorizonte = capas.cabo.visible && capas.cabo.material.opacity >= 0.999 && altitud < 10;
+    capas.florida.visible = Boolean(capas.florida.material.map) && !caboOpacoCubreHorizonte;
+    const terrenoCubreGlobo = (capas.florida.visible || caboOpacoCubreHorizonte) && altitud < 3500;
+    globo.visible = !terrenoCubreGlobo;
     // Estrellas: se ven cuando el cielo se oscurece.
     matEstrellas.uniforms.uVisibilidad.value = THREE.MathUtils.clamp(1 - brillo * 40, 0, 1) * 0.85;
     matEstrellas.uniforms.uPixel.value = renderer.getPixelRatio(); // la calidad automática puede cambiarla durante el lanzamiento
@@ -431,21 +511,28 @@ export function crearMundoLanzamiento({ canvas, mision, calidad = 'alto', detall
    */
   async function subirTexturas() {
     for (const t of [...recursos, mascara, mascaraAncha]) {
+      if (destruido) return;
       renderer.initTexture(t);
       await new Promise(r => requestAnimationFrame(() => r()));
     }
   }
 
   return {
-    renderer, escena, camara, cargas, actualizar, redimensionar, capas, subirTexturas, ajustes, reducirDetalle,
+    renderer, escena, camara, cargas, actualizar, redimensionar, capas, subirTexturas, ajustes, anisotropia, reducirDetalle,
     estadoTexturas: () => Object.fromEntries(Object.keys(RECURSOS_LANZAMIENTO).map(k => [k, Boolean(texturas[k])])),
     destruir() {
+      if (destruido) return;
+      destruido = true;
+      // LAN-02: textura DFG global de three que este renderizador usó (se pide antes de desechar los materiales); al desecharla se
+      // retira su oyente, que retenía el renderizador destruido. Los demás renderizadores la vuelven a subir al usarla.
+      const dfgCompartida = texturaDfgCompartida(renderer, escena);
       escena.traverse(o => { if (o.isMesh || o.isPoints) { o.geometry?.dispose(); if (o.material && o !== cielo) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.dispose()); } });
       cielo.geometry.dispose(); cielo.material.dispose();
-      solEspacio.material.map?.dispose(); solEspacio.material.dispose();
+      solEspacio.geometry.dispose(); solEspacio.material.map?.dispose(); solEspacio.material.dispose(); // LAN-02: geometría propia
       for (const t of recursos) { t.dispose(); t.image?.close?.(); } // ImageBitmap: libera la imagen decodificada
-      mascara.dispose(); mascaraAncha.dispose(); entorno?.dispose(); pmrem.dispose();
+      mascara.dispose(); mascaraAncha.dispose(); entornoObjetivo?.dispose(); entorno?.dispose(); pmrem.dispose();
       cieloEntorno.geometry.dispose(); cieloEntorno.material.dispose();
+      dfgCompartida?.dispose();
       bajaCalidad();
       renderer.dispose();
       renderer.forceContextLoss(); // libera el contexto WebGL ya, sin esperar al recolector (Chrome limita los contextos activos)

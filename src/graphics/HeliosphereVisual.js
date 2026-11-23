@@ -5,6 +5,7 @@ import { HISTORICAL_ENCOUNTER_MOONS } from '../science/HistoricalEphemerisResolv
 import { crearMaterialSuperficie, crearNeblinaTitan, claveTexturaLuna } from './MoonVisuals.js';
 import { vincularMallaTextura } from './DeferredTextures.js';
 import { crearPenachoIo } from './IoVolcanism.js';
+import { GEOMETRIAS_ESFERA_LOD, resolverNivelLodEsfera } from './PlanetFactory.js';
 
 /**
  * Dirección aproximada de proa del viento interestelar local en coordenadas eclípticas J2000:
@@ -158,7 +159,7 @@ export function crearSatelitesEncuentroVisual() {
   const grupo = new THREE.Group();
   grupo.name = 'SatelitesEncuentroHistorico';
 
-  const geometriaEsfera = new THREE.SphereGeometry(1, 48, 32);
+  const geometriaEsfera = GEOMETRIAS_ESFERA_LOD.alto;
   const mapaSatelites = new Map();
   let penachoIo = null;
 
@@ -173,7 +174,11 @@ export function crearSatelitesEncuentroVisual() {
     malla.userData.nombreSatelite = meta.key;
     vincularMallaTextura(claveTexturaLuna(meta.key), malla);
     nodoPosicion.add(malla);
-    if (meta.key === 'Titan') malla.add(crearNeblinaTitan(geometriaEsfera, 1));
+    let neblina = null;
+    if (meta.key === 'Titan') {
+      neblina = crearNeblinaTitan(geometriaEsfera, 1);
+      malla.add(neblina);
+    }
     if (meta.key === 'Io') {
       penachoIo = crearPenachoIo();
       malla.add(penachoIo.mesh);
@@ -185,8 +190,24 @@ export function crearSatelitesEncuentroVisual() {
       meta,
       posicion: nodoPosicion,
       malla,
-      radioFisicoEscena
+      neblina,
+      radioFisicoEscena,
+      nivelDetalle: 'alto'
     });
+  }
+
+  function actualizarNivelDetalle(resolverOpciones) {
+    for (const [key, item] of mapaSatelites) {
+      if (!item.posicion.visible) continue;
+      const { nivel, mostrarCapas } = resolverNivelLodEsfera(resolverOpciones(key, item));
+      item.nivelDetalle = nivel;
+      const geo = GEOMETRIAS_ESFERA_LOD[nivel] ?? GEOMETRIAS_ESFERA_LOD.alto;
+      if (item.malla.geometry !== geo) item.malla.geometry = geo;
+      if (item.neblina) {
+        if (item.neblina.geometry !== geo) item.neblina.geometry = geo;
+        item.neblina.visible = mostrarCapas;
+      }
+    }
   }
 
   function aplicarEscalas() {
@@ -228,6 +249,7 @@ export function crearSatelitesEncuentroVisual() {
     satelites: mapaSatelites,
     actualizarEstados,
     ocultarTodos,
+    actualizarNivelDetalle,
     actualizarEfectos: time => { if (mapaSatelites.get('Io')?.posicion.visible) penachoIo?.actualizar(time); },
     establecerModoEscala,
     establecerForzarUnoAUno

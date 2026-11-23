@@ -1,0 +1,383 @@
+{
+  "fecha": "2026-11-23T00:09:33.408Z",
+  "navegadores": {
+    "chrome": "157.0.8103.79",
+    "edge": "158.0.4370.33"
+  },
+  "modulos": {
+    "sistemaSolar": {
+      "planetas": 8,
+      "lunasVisibles": 10,
+      "renderPausado": false,
+      "saturno": {
+        "titulo": "Saturno",
+        "dist": "9.431914 AU",
+        "sel": "Saturno"
+      },
+      "escalaAlt": "exploratoria",
+      "fechaDespues": "2026-10-12 · 00:00 TDB"
+    },
+    "historico": {
+      "bienvenida": true,
+      "europa": {
+        "evento": "Voyager 1 · disco de Europa",
+        "utc": "1979-03-04 · 18:00:00 UTC",
+        "fotoBtnVisible": true,
+        "modelos": {
+          "voyager-1": {
+            "idSonda": "voyager-1",
+            "aparienciaPreferida": "voyager",
+            "modeloActivo": "voyager",
+            "modeloExterno": null,
+            "factorEscala": 1,
+            "voyagerCargado": true,
+            "cargaSolicitada": true,
+            "errorCargaVoyager": null,
+            "metadatosVoyager": {
+              "id": "nasa-vtad-voyager-gltf",
+              "nombre": "Voyager (modelo 3D oficial NASA)",
+              "archivoRelativo": "models/voyager/Voyager.glb",
+              "fuenteOficial": "https://science.nasa.gov/resource/voyager-3d-model/",
+              "credito": "NASA / JPL-Caltech / Visualization Technology Applications and Development (VTAD)",
+              "licencia": "Dominio público / NASA Media Usage Guidelines (uso educativo y científico sin implicar respaldo oficial)",
+              "advertenciaCientifica": "Representación visual tridimensional oficial NASA VTAD de Voyager 1 (-31) y Voyager 2 (-32) en el modo histórico. La sonda de una misión del laboratorio usa el modelo de su propio diseño."
+            },
+            "diagnosticoGeometriaVoyager": {
+              "url": "/simulador-sondas-espaciales/models/voyager/Voyager.glb",
+              "cantidadMallas": 4,
+              "factorEscalaUniforme": 0.20460951067690888,
+              "dimensionesEscena": {
+                "x": 1.58617909433275,
+                "y": 3.4597557612379104,
+                "z": 2.2583509167897082
+              },
+              "radioEnvolvente": 2.2128049456561962
+            }
+          },
+          "voyager-2": {
+            "idSonda": "voyager-2",
+            "aparienciaPreferida": "voyager",
+            "modeloActivo": "voyager",
+            "modeloExterno": null,
+            "factorEscala": 1,
+            "voyagerCargado": true,
+            "cargaSolicitada": true,
+            "errorCargaVoyager": null,
+            "metadatosVoyager": {
+              "id": "nasa-vtad-voyager-gltf",
+              "nombre": "Voyager (modelo 3D oficial NASA)",
+              "archivoRelativo": "models/voyager/Voyager.glb",
+              "fuenteOficial": "https://science.nasa.gov/resource/voyager-3d-model/",
+              "credito": "NASA / JPL-Caltech / Visualization Technology Applications and Development (VTAD)",
+              "licencia": "Dominio público / NASA Media Usage Guidelines (uso educativo y científico sin implicar respaldo oficial)",
+              "advertenciaCientifica": "Representación visual tridimensional oficial NASA VTAD de Voyager 1 (-31) y Voyager 2 (-32) en el modo histórico. La sonda de una misión del laboratorio usa el modelo de su propio diseño."
+            },
+            "diagnosticoGeometriaVoyager": {
+              "url": "/simulador-sondas-espaciales/models/voyager/Voyager.glb",
+              "cantidadMallas": 4,
+              "factorEscalaUniforme": 0.20460951067690888,
+              "dimensionesEscena": {
+                "x": 1.58617909433275,
+                "y": 3.4597557612379104,
+                "z": 2.2583509167897082
+              },
+              "radioEnvolvente": 2.2128049456561962
+            }
+          }
+        }
+      },
+      "compAbierto": true,
+      "compInfo": {
+        "etiquetaWebGL": "B · RECREACIÓN TRIDIMENSIONAL WEBGL (NO ES FOTOGRAFÍA)",
+        "tituloFoto": "Europa: disco completo (PIA00016)",
+        "imgCargada": true
+      }
+    },
+    "laboratorio": {
+      "perf01EnHangar": {
+        "renderPausado": true,
+        "rafActivo": false,
+        "motivos": [
+          "laboratorio"
+        ]
+      },
+      "ingCassini": "Ingeniería",
+      "workerA1": {
+        "wallMs": 187,
+        "longTasks": [],
+        "executeDisabled": false,
+        "verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada."
+      },
+      "enMainCassini": true,
+      "centroCassini": {
+        "renderPausado": false,
+        "probe": "Cassini"
+      },
+      "gen02Estado": {
+        "escenario": "C1",
+        "executeDisabled": true,
+        "mensaje": "Las condiciones cambiaron durante el cálculo: se descartó su resultado. Vuelve a calcular."
+      },
+      "junoC1": {
+        "sonda": "juno",
+        "veredicto": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+        "executeDisabled": false,
+        "escenario": "C1",
+        "centro": {
+          "ready": true,
+          "controlling": true,
+          "kind": "integrated",
+          "probeName": "Juno",
+          "model": "nasa",
+          "cameraMode": "overview",
+          "elapsedSeconds": 465495.5519999969,
+          "jdTdb": 2462137.026613193,
+          "destination": "Jupiter",
+          "destinationBodyId": "5",
+          "moon": "Europa",
+          "moonCoverage": {
+            "startJdTdb": 2463079.5,
+            "endJdTdb": 2463384.5
+          },
+          "moonsShown": [],
+          "cameraFocus": null,
+          "trajectoryPoints": 981,
+          "error": null
+        }
+      }
+    }
+  },
+  "lanzamiento3D": {
+    "ciclos": [
+      {
+        "ciclo": 1,
+        "mId": "voyager-2",
+        "listo": true,
+        "cofiaAbierta": true,
+        "nasaOk": true,
+        "renderersVivos": 0,
+        "contextosVivos": 1,
+        "heapMB": 29.4
+      },
+      {
+        "ciclo": 2,
+        "mId": "voyager-1",
+        "listo": true,
+        "cofiaAbierta": true,
+        "nasaOk": true,
+        "renderersVivos": 0,
+        "contextosVivos": 1,
+        "heapMB": 30.34
+      },
+      {
+        "ciclo": 3,
+        "mId": "voyager-2",
+        "listo": true,
+        "cofiaAbierta": true,
+        "nasaOk": true,
+        "renderersVivos": 0,
+        "contextosVivos": 1,
+        "heapMB": 30.52
+      },
+      {
+        "ciclo": 4,
+        "mId": "voyager-1",
+        "listo": true,
+        "cofiaAbierta": true,
+        "nasaOk": true,
+        "renderersVivos": 0,
+        "contextosVivos": 1,
+        "heapMB": 30.58
+      },
+      {
+        "ciclo": 5,
+        "mId": "voyager-2",
+        "listo": true,
+        "cofiaAbierta": true,
+        "nasaOk": true,
+        "renderersVivos": 0,
+        "contextosVivos": 1,
+        "heapMB": 30.73
+      }
+    ],
+    "postTemprano": {
+      "renderersVivos": 0,
+      "contextosVivos": 1,
+      "canvasesDom": 1
+    }
+  },
+  "estabilidad": {
+    "cambiosRapidos": {
+      "modo": "exploracion",
+      "renderPausado": false,
+      "rafActivo": true,
+      "errs": {
+        "page": [],
+        "console": [],
+        "http": []
+      }
+    },
+    "sinWebGL2": {
+      "pageErrors": 0,
+      "alertDialogVisible": true,
+      "status": "WebGL 2 no disponible: la escena 3D no se pudo iniciar.",
+      "appInert": true
+    },
+    "falloYRecuperacionDatos": {
+      "pageErrors": 0,
+      "falloDatos": {
+        "status": "No se pudieron cargar las efemérides: No se pudo cargar el archivo de efemerides.",
+        "retryVisible": true
+      },
+      "recuperado": true
+    }
+  },
+  "responsive": [
+    {
+      "resolucion": "1920x1080",
+      "tactil": false,
+      "erroresPagina": 0,
+      "solarOverflowX": false,
+      "histOverflowX": false,
+      "labOverflowX": false,
+      "cabeceraAccesibleEnBienvenida": true,
+      "cabeceraEnLab": true,
+      "ux01TabYEsc": true,
+      "ux02TarjetaCabe": true,
+      "tarjetaOk": {
+        "arriba": 425,
+        "abajo": 719,
+        "cabAbajo": 64,
+        "alto": 1080,
+        "cabe": true
+      }
+    },
+    {
+      "resolucion": "1600x900",
+      "tactil": false,
+      "erroresPagina": 0,
+      "solarOverflowX": false,
+      "histOverflowX": false,
+      "labOverflowX": false,
+      "cabeceraAccesibleEnBienvenida": true,
+      "cabeceraEnLab": true,
+      "ux01TabYEsc": true,
+      "ux02TarjetaCabe": true,
+      "tarjetaOk": {
+        "arriba": 335,
+        "abajo": 629,
+        "cabAbajo": 64,
+        "alto": 900,
+        "cabe": true
+      }
+    },
+    {
+      "resolucion": "1366x768",
+      "tactil": false,
+      "erroresPagina": 0,
+      "solarOverflowX": false,
+      "histOverflowX": false,
+      "labOverflowX": false,
+      "cabeceraAccesibleEnBienvenida": true,
+      "cabeceraEnLab": true,
+      "ux01TabYEsc": true,
+      "ux02TarjetaCabe": true,
+      "tarjetaOk": {
+        "arriba": 269,
+        "abajo": 563,
+        "cabAbajo": 64,
+        "alto": 768,
+        "cabe": true
+      }
+    },
+    {
+      "resolucion": "1280x720",
+      "tactil": false,
+      "erroresPagina": 0,
+      "solarOverflowX": false,
+      "histOverflowX": false,
+      "labOverflowX": false,
+      "cabeceraAccesibleEnBienvenida": true,
+      "cabeceraEnLab": true,
+      "ux01TabYEsc": true,
+      "ux02TarjetaCabe": true,
+      "tarjetaOk": {
+        "arriba": 245,
+        "abajo": 539,
+        "cabAbajo": 64,
+        "alto": 720,
+        "cabe": true
+      }
+    },
+    {
+      "resolucion": "768x1024",
+      "tactil": true,
+      "erroresPagina": 0,
+      "solarOverflowX": false,
+      "histOverflowX": false,
+      "labOverflowX": false,
+      "cabeceraAccesibleEnBienvenida": true,
+      "cabeceraEnLab": true,
+      "ux01TabYEsc": true,
+      "ux02TarjetaCabe": true,
+      "tarjetaOk": {
+        "arriba": 397,
+        "abajo": 691,
+        "cabAbajo": 64,
+        "alto": 1024,
+        "cabe": true
+      }
+    },
+    {
+      "resolucion": "390x844",
+      "tactil": true,
+      "erroresPagina": 0,
+      "solarOverflowX": false,
+      "histOverflowX": false,
+      "labOverflowX": false,
+      "cabeceraAccesibleEnBienvenida": true,
+      "cabeceraEnLab": true,
+      "ux01TabYEsc": true,
+      "ux02TarjetaCabe": true,
+      "tarjetaOk": {
+        "arriba": 309,
+        "abajo": 631,
+        "cabAbajo": 96,
+        "alto": 844,
+        "cabe": true
+      }
+    },
+    {
+      "resolucion": "320x568",
+      "tactil": true,
+      "erroresPagina": 0,
+      "solarOverflowX": false,
+      "histOverflowX": false,
+      "labOverflowX": false,
+      "cabeceraAccesibleEnBienvenida": true,
+      "cabeceraEnLab": true,
+      "ux01TabYEsc": true,
+      "ux02TarjetaCabe": true,
+      "tarjetaOk": {
+        "arriba": 131,
+        "abajo": 533,
+        "cabAbajo": 96,
+        "alto": 568,
+        "cabe": true
+      }
+    }
+  ],
+  "edge": {
+    "eSolar": true,
+    "eSlash": true,
+    "eWelcome": true,
+    "eReabre": true,
+    "eLanz": true,
+    "eWorker": true,
+    "errores": []
+  },
+  "fallos": [],
+  "resumen": {
+    "comprobacionesFallidas": 0
+  }
+}

@@ -16,9 +16,19 @@ import { createIntegratedMissionPlanner } from './IntegratedMissionPlanner.js';
 import { createLabGuidedMission, revealInScrollAreas } from './LabGuidedMission.js';
 import { createLabGlossary, GLOSSARY } from './LabGlossary.js';
 import { LAB_STAGES } from './LabStages.js';
+import { mostrarVista3DNoDisponible } from './WebGLUnavailableNotice.js';
 
 const number = (value, digits = 1) => new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(value);
 const valueOrNA = (value, unit, digits = 1) => value == null ? 'No disponible' : `${number(value, digits)} ${unit}`;
+
+// PERF-01: la escena principal (#solar-system) queda completamente cubierta por #experimental-lab cuando el modo experimental
+// muestra el constructor (data-lab-view="builder") y el Centro de Misión no está proyectando una misión heliocéntrica en ella
+// (data-lab-scene !== "main"). Coincide exactamente con la regla CSS de experimental-laboratory.css y lab-shell.css.
+export function isMainSceneOccludedByLab(app) {
+  return app?.dataset?.appMode === 'experimental'
+    && app?.dataset?.labView === 'builder'
+    && app?.dataset?.labScene !== 'main';
+}
 
 export { LAB_STAGES } from './LabStages.js';
 
@@ -171,7 +181,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   try { view = createProbeAssemblyView($('#lab-canvas'), id => { selectedPartId = id; if (stage === 'probe' && tabByStage.probe !== 'architecture') go('probe', 'architecture'); render(); }, { onModelState: state => { modelState = state; renderModelState(); } }); }
   catch (error) {
     view = { setDesign() {}, setVisible() {}, setTouchInteraction() {}, getLandingClearance: () => null, resetCamera() {}, dispose() {} };
-    $('#lab-canvas').textContent = 'No se pudo iniciar WebGL para el modelo 3D.';
+    mostrarVista3DNoDisponible($('#lab-canvas'), error, { vista: 'El modelo 3D de la sonda', sigue: 'Las fichas, la ingeniería y la planificación siguen disponibles.' }); // STAB-01
     console.error('Laboratorio 3D no disponible:', error);
   }
   let center, launchActive = false;
@@ -210,9 +220,12 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     onPane: id => go('play', id),
     // 17.1: con una misión heliocéntrica, «3 · Reproducir» deja ver el Sistema Solar principal en el área de la escena.
     sceneView: missionScene,
-    onSceneMode: mode => { if (mode) app.dataset.labScene = mode; else delete app.dataset.labScene; },
+    onSceneMode: mode => { if (mode) app.dataset.labScene = mode; else delete app.dataset.labScene; syncMainSceneVisibility(); },
     onOpenResults: () => go('plan', centerPlan?.kind === 'launch' ? 'launch' : centerPlan?.kind === 'interplanetary' ? 'interplanetary' : centerPlan?.kind === 'integrated' ? 'integrated' : 'lunar')
   });
+  function syncMainSceneVisibility() {
+    missionScene?.setMainSceneOccluded?.(isMainSceneOccludedByLab(app));
+  }
   const centerSetPlan = center.setPlan;
   let centerPlan = null, invalidated = null;
   center.setPlan = candidate => {
@@ -309,6 +322,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     if (stage === 'play') center.setPane(current);
     center.setVisible(enabled && stage === 'play');
     if (stage !== 'play') delete lab.dataset.immersive;
+    syncMainSceneVisibility();
     updateStatus();
   }
 
@@ -815,6 +829,7 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
   const modeObserver = new MutationObserver(() => {
     if (app.dataset.appMode === 'experimental') { setBuilder(true); render(); }
     else { setBuilder(false); delete app.dataset.labView; }
+    syncMainSceneVisibility();
   });
   modeObserver.observe(app, { attributes: true, attributeFilter: ['data-app-mode'] });
   const header = document.querySelector('.app-header');
@@ -837,5 +852,6 @@ export function createExperimentalLaboratory({ missionScene = null } = {}) {
     modeObserver.disconnect(); headerObserver.disconnect(); window.removeEventListener('resize', measureHeader); clearInterval(statusTimer); document.removeEventListener('keydown', onKey);
     glossary.dispose(); guide.dispose(); center.dispose(); integrated.dispose(); interplanetary.dispose(); launch.dispose(); planner.dispose(); view.dispose(); lab.remove(); app.style.removeProperty('--lab-top');
     delete app.dataset.labView; delete app.dataset.labScene;
+    syncMainSceneVisibility();
   } };
 }

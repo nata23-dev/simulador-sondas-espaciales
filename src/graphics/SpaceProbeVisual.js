@@ -352,6 +352,15 @@ export function crearSondaVisual({
   geoRecorrida.setAttribute('position', attrRecorrido);
   geoRecorrida.setDrawRange(0, 0);
 
+  function marcarRangoRecorridoSucio(inicioFloat, cantidadFloat) {
+    if (!(cantidadFloat > 0)) return;
+    if (typeof attrRecorrido.clearUpdateRanges === 'function' && typeof attrRecorrido.addUpdateRange === 'function') {
+      attrRecorrido.clearUpdateRanges();
+      attrRecorrido.addUpdateRange(inicioFloat, cantidadFloat);
+    }
+    attrRecorrido.needsUpdate = true;
+  }
+
   const lineaRecorrida = new THREE.LineSegments(
     geoRecorrida,
     new THREE.LineBasicMaterial({
@@ -398,6 +407,9 @@ export function crearSondaVisual({
   let cantidadMuestras = 0;
   let trayectoriaVisible = true;
   let ultimoIndiceRecorrido = -1;
+  let ultimaPosRecorridoX = NaN;
+  let ultimaPosRecorridoY = NaN;
+  let ultimaPosRecorridoZ = NaN;
   let modoEscala = MODOS_ESCALA_VISUAL.CIENTIFICA;
   let aparienciaPreferida = MODELOS_VISUALES_SONDA.VOYAGER;
   let voyagerCargado = false;
@@ -566,6 +578,9 @@ export function crearSondaVisual({
     verticesBase = verticesEscenaFloat32;
     cortesMuestras = cortes;
     ultimoIndiceRecorrido = -1;
+    ultimaPosRecorridoX = NaN;
+    ultimaPosRecorridoY = NaN;
+    ultimaPosRecorridoZ = NaN;
 
     for (let i = 0; i < total - 1; i++) {
       const from = i * 3;
@@ -578,7 +593,7 @@ export function crearSondaVisual({
       }
     }
     attrPredicho.needsUpdate = true;
-    attrRecorrido.needsUpdate = true;
+    if (total > 1) marcarRangoRecorridoSucio(0, (total - 1) * 6);
     geoPredicha.setDrawRange(0, Math.max(0, total - 1) * 2);
     if (total > 1) geoPredicha.computeBoundingSphere();
     geoRecorrida.setDrawRange(0, 0);
@@ -636,14 +651,26 @@ export function crearSondaVisual({
       else high = mid;
     }
 
+    const tipEdge = Math.min(low, cantidadMuestras - 2);
+    const drawCount = (tipEdge + 1) * 2;
+    const posIgual = posicionEscena.x === ultimaPosRecorridoX
+      && posicionEscena.y === ultimaPosRecorridoY
+      && posicionEscena.z === ultimaPosRecorridoZ;
+    if (tipEdge === ultimoIndiceRecorrido && posIgual && geoRecorrida.drawRange.count === drawCount) {
+      return;
+    }
+
+    let minDirtyEdge = tipEdge;
+    let maxDirtyEdge = tipEdge;
     if (ultimoIndiceRecorrido >= 0 && ultimoIndiceRecorrido < cantidadMuestras - 1) {
       const previousEdge = ultimoIndiceRecorrido * 6 + 3;
       const previousEnd = (cortesMuestras?.[ultimoIndiceRecorrido + 1]
         ? ultimoIndiceRecorrido : ultimoIndiceRecorrido + 1) * 3;
       bufferRecorrido.set(verticesBase.subarray(previousEnd, previousEnd + 3), previousEdge);
+      minDirtyEdge = Math.min(minDirtyEdge, ultimoIndiceRecorrido);
+      maxDirtyEdge = Math.max(maxDirtyEdge, ultimoIndiceRecorrido);
     }
 
-    const tipEdge = Math.min(low, cantidadMuestras - 2);
     const tipOffset = tipEdge * 6 + 3;
     if (!cortesMuestras?.[tipEdge + 1]) {
       bufferRecorrido[tipOffset] = posicionEscena.x;
@@ -651,9 +678,13 @@ export function crearSondaVisual({
       bufferRecorrido[tipOffset + 2] = posicionEscena.z;
     }
     ultimoIndiceRecorrido = tipEdge;
+    ultimaPosRecorridoX = posicionEscena.x;
+    ultimaPosRecorridoY = posicionEscena.y;
+    ultimaPosRecorridoZ = posicionEscena.z;
 
-    attrRecorrido.needsUpdate = true;
-    geoRecorrida.setDrawRange(0, (tipEdge + 1) * 2);
+    // PERF-02: sube a WebGL solo los 1–2 segmentos modificados en vez del buffer completo (hasta 393 KB por fotograma).
+    marcarRangoRecorridoSucio(minDirtyEdge * 6, (maxDirtyEdge - minDirtyEdge + 1) * 6);
+    geoRecorrida.setDrawRange(0, drawCount);
   }
 
   function mostrarTrayectoria(valor) {

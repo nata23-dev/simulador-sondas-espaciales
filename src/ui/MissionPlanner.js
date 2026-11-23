@@ -9,6 +9,7 @@ import { createMissionPlan, designSignature, DESTINATIONS, isMissionResultCurren
 import { TRANSFER_MODEL_VERSION } from '../lab/MissionPhysics.js';
 import { createFiniteThrustPlanner } from './FiniteThrustPlanner.js';
 import { LUNAR_DEFAULTS, LUNAR_GUIDE } from '../lab/FleetGuide.js';
+import { mostrarVista3DNoDisponible } from './WebGLUnavailableNotice.js';
 
 const number = (n, digits = 1) => Number.isFinite(n) ? new Intl.NumberFormat('es-MX', { maximumFractionDigits: digits }).format(n) : 'No disponible';
 const valueOrNA = (n, unit, digits = 1) => Number.isFinite(n) ? `${number(n, digits)} ${unit}` : 'No disponible';
@@ -62,7 +63,7 @@ export function createMissionPlanner(host, onRestoreDesign, { onPlanChange = () 
   const dataAbort = new AbortController();
   let trajectoryView;
   try { trajectoryView = createMissionTrajectoryView($('#mission-canvas'), phase => showSelectedPhase(phase)); }
-  catch (error) { $('#mission-canvas').textContent = 'Visualización 3D no disponible.'; trajectoryView = { setTransfer() {}, setVisible() {}, setTouchInteraction() {}, focus() {}, resetCamera() {}, dispose() {} }; }
+  catch (error) { mostrarVista3DNoDisponible($('#mission-canvas'), error, { vista: 'La visualización 3D de la trayectoria', sigue: 'El cálculo de la misión sigue disponible.' }); console.error('Trayectoria 3D no disponible:', error); trajectoryView ={ setTransfer() {}, setVisible() {}, setTouchInteraction() {}, focus() {}, resetCamera() {}, dispose() {} }; }
   const coarse = window.matchMedia('(pointer: coarse)').matches;
   $('#mission-touch-toggle').hidden = !coarse;
   function message(value, error = false) { $('#mission-message').textContent = value; $('#mission-message').dataset.error = String(error); }

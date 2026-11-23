@@ -55,6 +55,8 @@ import { crearRecorridoHistoricoGuiado, HITOS_RECORRIDO_GUIADO } from './ui/Hist
 import { getVoyagerPhotoById } from './science/VoyagerPhotoCatalog.js';
 import { crearSuperficieLanzamientoCinematografico, metadatosLanzamiento } from './ui/LaunchCinematicOverlay.js';
 import { LANZAMIENTOS_VOYAGER, LC41, instanteUtcMs, puntoSubsolar } from './science/VoyagerLaunchProfile.js';
+import { esFalloWebGL } from './graphics/WebGLSupport.js';
+import { mostrarAvisoJunto, mostrarFalloEscenaPrincipal } from './ui/WebGLUnavailableNotice.js';
 // 14: capa visual común (tokens, componentes y movimiento). Se importa después de los demás estilos para prevalecer.
 import './ui/theme.css';
 // 17: laboratorio en tres etapas (panel lateral, pestañas y Centro de Misión con panel por pestañas); después de theme.css.
@@ -101,6 +103,7 @@ let promesaInicioHistorico = null;
 let ultimoSnapshotHistorico = null;
 let rafHistoricoId = null;
 let instanteRealHistAnterior = 0;
+let ultimoRefrescoDomHist = -Infinity;
 let consultaHistToken = 0;
 let bucleHistOcupado = false;
 
@@ -416,7 +419,8 @@ function actualizarEncabezadoHistorico(snapshot) {
 
 async function aplicarInstanteHistorico(jdTdb, {
   reencuadrarEvento = null,
-  accionPosteriorEscena = null
+  accionPosteriorEscena = null,
+  soloEscena = false
 } = {}) {
   if (!pipelineHistorico || !motorHistorico) return null;
   const token = ++consultaHistToken;
@@ -445,6 +449,7 @@ async function aplicarInstanteHistorico(jdTdb, {
   if (accionPosteriorEscena) {
     accionPosteriorEscena(snapshot);
   }
+  if (soloEscena) return snapshot;
 
   actualizarEncabezadoHistorico(snapshot);
   controlesHistoricos.actualizarDesdeMotor({
@@ -548,9 +553,15 @@ function bucleReproduccionHistorica(ahora) {
         motorHistorico.setTimeJdTdb(instanteVisible);
         motorHistorico.setPlaying(false);
       }
+      const detalleHist = getQualityState().detalle;
+      const intervaloDomHistMs = (detalleHist === 'bajo' || detalleHist === 'minimo') ? 55 : 0;
+      const pausadoPorEvento = Boolean(empalmeAtravesado || !motorHistorico.isPlaying() || paso.triggeredEvent);
+      const soloEscena = !pausadoPorEvento && intervaloDomHistMs > 0 && (ahora - ultimoRefrescoDomHist < intervaloDomHistMs);
+      if (!soloEscena) ultimoRefrescoDomHist = ahora;
       bucleHistOcupado = true;
       aplicarInstanteHistorico(instanteVisible, {
-        reencuadrarEvento: !empalmeAtravesado && !motorHistorico.isPlaying() && paso.triggeredEvent ? paso.triggeredEvent : null
+        reencuadrarEvento: !empalmeAtravesado && !motorHistorico.isPlaying() && paso.triggeredEvent ? paso.triggeredEvent : null,
+        soloEscena
       }).catch(err => {
         console.error(err);
         estadoDatos.textContent = `Error en reproducción histórica: ${err.message}`;
@@ -676,7 +687,8 @@ async function cambiarModoOperacion(nuevoModo) {
       });
       if (esInicio1977) sincronizarAcontecimientoHistorico(VOYAGER_HISTORICAL_EVENTS[0]);
       else actualizarOrientacionHistorica(motorHistorico.getTriggeredEvent());
-      modalBienvenida?.abrir(false);
+      // UX-02: no se abre si mientras se preparaba el modo el usuario ya pasó a otra sección.
+      if (modoOperacion === 'historico') modalBienvenida?.abrir(false);
     } catch (err) {
       console.error(err);
       estadoDatos.textContent = `No fue posible inicializar el Modo Histórico: ${err.message}`;
@@ -690,6 +702,7 @@ async function cambiarModoOperacion(nuevoModo) {
     ++consultaHistToken;
     simulador.ocultarModoHistoricoEscena();
     recorridoGuiado?.mostrar(false);
+    modalBienvenida?.cerrar({ restaurarFoco: false }); // UX-02: la bienvenida no se queda sobre otro modo
     cerrarLanzamiento3D();
     const dockHist = document.querySelector('#hist-mission-dock');
     if (dockHist) dockHist.hidden = true;
@@ -896,6 +909,7 @@ function alCompletarLanzamiento({ misionId }) {
 async function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
   if (modoOperacion !== 'historico' || lanzamientoEnCurso) return;
   lanzamientoEnCurso = true;
+  document.querySelector('#hist-launch-webgl-note')?.remove(); // STAB-01: aviso de un intento anterior sin WebGL 2
   misionLanzamiento = misionId;
   const solicitud = ++solicitudLanzamiento;
   // 27: la preparación (acercamiento, texturas, compilación) no cuenta para la resolución dinámica.
@@ -933,6 +947,13 @@ async function iniciarLanzamientoHistorico(misionId = VOYAGER_2_ID) {
   } catch (error) {
     console.error('No se pudo abrir el lanzamiento 3D:', error);
     if (solicitud === solicitudLanzamiento) cerrarLanzamiento3D();
+    // STAB-01: el lanzamiento usa un contexto WebGL 2 propio; si no se pudo crear, se dice por qué junto al botón que lo abre
+    // (visible) y en el estado de la fuente.
+    if (esFalloWebGL(error)) {
+      estadoDatos.textContent = 'Lanzamiento 3D no disponible: este dispositivo o navegador no pudo inicializar WebGL 2 para la vista del lanzamiento. El Sistema Solar y las misiones siguen disponibles.';
+      const acciones = document.querySelector('#hist-launch-cinematic-btn')?.closest('.hist-mission-quick-actions');
+      if (acciones) mostrarAvisoJunto(acciones, error, { id: 'hist-launch-webgl-note', vista: 'El lanzamiento 3D', sigue: 'El Sistema Solar y las misiones siguen disponibles.' });
+    }
   } finally {
     finPreparacion();
   }
@@ -964,7 +985,11 @@ function actualizarDockMision(choice) {
   }
 }
 
-const simulador = createSolarSystem(
+// STAB-01: si el navegador no puede crear el contexto WebGL 2 de la escena principal, se muestra un aviso accesible en lugar de
+// una excepción no capturada con la interfaz detenida en «Esperando datos…». Ningún modo funciona sin esta escena (y no se
+// sustituye por otra representación), así que la evaluación de este módulo se detiene aquí: la espera que nunca se resuelve
+// no lanza error ni deja a medias el registro de controles que vienen después. Con WebGL 2 disponible no cambia nada.
+const simulador = crearEscenaPrincipalOAvisar(() => createSolarSystem(
   document.querySelector('#solar-system'),
   nombre => {
     planetaSeleccionado = nombre;
@@ -1006,7 +1031,18 @@ const simulador = createSolarSystem(
     },
     obtenerComparadorActivo: () => comparadorAbierto
   }
-);
+));
+if (!simulador) await new Promise(() => {});
+
+function crearEscenaPrincipalOAvisar(crear) {
+  try {
+    return crear();
+  } catch (error) {
+    console.error('No se pudo iniciar la escena 3D principal:', error);
+    mostrarFalloEscenaPrincipal(error);
+    return null;
+  }
+}
 
 const controlesDistancia = crearControlesDistancia({
   obtenerDescriptorCuerpo: obtenerDescriptorCientificoCuerpo,
@@ -1776,9 +1812,24 @@ function cargarLaboratorio() {
   });
   return promesaLaboratorio;
 }
-const observadorModoLaboratorio = new MutationObserver(() => { if (document.querySelector('#app')?.dataset.appMode === 'experimental') cargarLaboratorio(); });
-observadorModoLaboratorio.observe(document.querySelector('#app'), { attributes: true, attributeFilter: ['data-app-mode'] });
+function sincronizarVisibilidadEscenaPrincipal() {
+  const app = document.querySelector('#app');
+  const ocultaPorLab = app?.dataset.appMode === 'experimental'
+    && app?.dataset.labView === 'builder'
+    && app?.dataset.labScene !== 'main';
+  simulador.establecerRenderPausado(ocultaPorLab, 'laboratorio');
+}
+
+const observadorModoLaboratorio = new MutationObserver(() => {
+  if (document.querySelector('#app')?.dataset.appMode === 'experimental') cargarLaboratorio();
+  sincronizarVisibilidadEscenaPrincipal();
+});
+observadorModoLaboratorio.observe(document.querySelector('#app'), {
+  attributes: true,
+  attributeFilter: ['data-app-mode', 'data-lab-view', 'data-lab-scene']
+});
 if (document.querySelector('#app')?.dataset.appMode === 'experimental') cargarLaboratorio();
+sincronizarVisibilidadEscenaPrincipal();
 if (import.meta.hot) import.meta.hot.dispose(() => { observadorModoLaboratorio.disconnect(); mejorasLaboratorio?.dispose(); misionesDestacadas.dispose(); paletaBusqueda.dispose(); navegadorAreas.dispose(); laboratorioExperimental?.dispose(); });
 actualizarOrientacionHistorica();
 iniciar();

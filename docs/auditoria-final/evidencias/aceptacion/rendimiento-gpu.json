@@ -1,0 +1,411 @@
+{
+  "fecha": "2026-11-23T00:11:37.081Z",
+  "modo": "gpu",
+  "chrome": "157.0.8103.79",
+  "cpu": "AMD Ryzen 5 5600 6-Core Processor              ",
+  "errores": [],
+  "global": [
+    {
+      "nombre": "Solar general",
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 575,
+      "fps": 179.68,
+      "avgMs": 5.57,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.58,
+      "longTasks": 0,
+      "heapMiB": 16.3,
+      "canvases": {
+        "solar-system": {
+          "renders": 576,
+          "cpuRenderMs": 0.41,
+          "gpuMs": 0.78,
+          "calls": 38,
+          "triangles": 73364,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Tierra cercana",
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 569,
+      "fps": 178.11,
+      "avgMs": 5.61,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.8,
+      "longTasks": 0,
+      "heapMiB": 12.83,
+      "canvases": {
+        "solar-system": {
+          "renders": 570,
+          "cpuRenderMs": 0.49,
+          "gpuMs": 0.23,
+          "calls": 21,
+          "triangles": 37576,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Solar tiempo ×4",
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 576,
+      "fps": 180,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.76,
+      "longTasks": 0,
+      "heapMiB": 13.07,
+      "canvases": {
+        "solar-system": {
+          "renders": 577,
+          "cpuRenderMs": 0.34,
+          "gpuMs": 0.25,
+          "calls": 10,
+          "triangles": 22290,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Voyager ambas",
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 576,
+      "fps": 179.99,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.57,
+      "longTasks": 0,
+      "heapMiB": 44.27,
+      "canvases": {
+        "solar-system": {
+          "renders": 577,
+          "cpuRenderMs": 0.38,
+          "gpuMs": 0.13,
+          "calls": 26,
+          "triangles": 40228,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Reloj histórico",
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 548,
+      "fps": 171.24,
+      "avgMs": 5.84,
+      "p95Ms": 11,
+      "p99Ms": 11.2,
+      "rafCpuMs": 0.98,
+      "longTasks": 0,
+      "heapMiB": 41.08,
+      "canvases": {
+        "solar-system": {
+          "renders": 549,
+          "cpuRenderMs": 0.65,
+          "gpuMs": 0.15,
+          "calls": 35,
+          "triangles": 63584,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Hangar Cassini (PERF-01)",
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 575,
+      "fps": 180,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.21,
+      "longTasks": 0,
+      "heapMiB": 54.77,
+      "canvases": {
+        "lab-canvas": {
+          "renders": 576,
+          "cpuRenderMs": 0.18,
+          "gpuMs": 0.07,
+          "calls": 11,
+          "triangles": 25724,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Planificación (PERF-01)",
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 574,
+      "fps": 179.38,
+      "avgMs": 5.57,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.01,
+      "longTasks": 0,
+      "heapMiB": 30.75,
+      "canvases": {}
+    },
+    {
+      "nombre": "Centro en reproducción (PERF-02)",
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 559,
+      "fps": 174.68,
+      "avgMs": 5.72,
+      "p95Ms": 5.7,
+      "p99Ms": 11.1,
+      "rafCpuMs": 3.55,
+      "longTasks": 0,
+      "heapMiB": 58.17,
+      "canvases": {
+        "solar-system": {
+          "renders": 560,
+          "cpuRenderMs": 0.64,
+          "gpuMs": 0.15,
+          "calls": 39.1,
+          "triangles": 60401,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Centro seguimiento y telemetría",
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 553,
+      "fps": 172.51,
+      "avgMs": 5.8,
+      "p95Ms": 5.7,
+      "p99Ms": 11.2,
+      "rafCpuMs": 3.71,
+      "longTasks": 0,
+      "heapMiB": 45.46,
+      "canvases": {
+        "solar-system": {
+          "renders": 554,
+          "cpuRenderMs": 0.51,
+          "gpuMs": 0.15,
+          "calls": 26.1,
+          "triangles": 38337,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Sistema Solar tras regresar del Lab",
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 575,
+      "fps": 180,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.7,
+      "longTasks": 0,
+      "heapMiB": 50.27,
+      "canvases": {
+        "solar-system": {
+          "renders": 576,
+          "cpuRenderMs": 0.52,
+          "gpuMs": 0.65,
+          "calls": 38,
+          "triangles": 73230,
+          "ratio": 1
+        }
+      }
+    }
+  ],
+  "calculoWorker": {
+    "wallA1Ms": 167,
+    "wallNBodyMs": null,
+    "longTasks": []
+  },
+  "lanzamiento": [
+    {
+      "nombre": "Lanz. plataforma (T-8s)",
+      "t": -8,
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 468,
+      "fps": 179.99,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.83,
+      "longTasks": 0,
+      "heapMiB": 53.06,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 469,
+          "cpuRenderMs": 0.73,
+          "gpuMs": 1.05,
+          "calls": 88,
+          "triangles": 41256,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. base (T-2s)",
+      "t": -2,
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 468,
+      "fps": 179.99,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.7,
+      "longTasks": 0,
+      "heapMiB": 45.96,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 469,
+          "cpuRenderMs": 0.64,
+          "gpuMs": 1.48,
+          "calls": 84,
+          "triangles": 35028,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. despegue (T+5s)",
+      "t": 5,
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 468,
+      "fps": 179.99,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.89,
+      "longTasks": 0,
+      "heapMiB": 58.08,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 469,
+          "cpuRenderMs": 0.73,
+          "gpuMs": 1.59,
+          "calls": 95,
+          "triangles": 47816,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. seguimiento (T+30s)",
+      "t": 30,
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 468,
+      "fps": 179.99,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.94,
+      "longTasks": 0,
+      "heapMiB": 37.74,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 469,
+          "cpuRenderMs": 0.61,
+          "gpuMs": 1.22,
+          "calls": 39,
+          "triangles": 21104,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. separación (T+130s)",
+      "t": 130,
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 468,
+      "fps": 180.01,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.61,
+      "longTasks": 0,
+      "heapMiB": 43.23,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 469,
+          "cpuRenderMs": 0.38,
+          "gpuMs": 0.48,
+          "calls": 42,
+          "triangles": 143198,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. órbita (T+1500s)",
+      "t": 1500,
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 463,
+      "fps": 178.07,
+      "avgMs": 5.62,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.57,
+      "longTasks": 0,
+      "heapMiB": 50.5,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 464,
+          "cpuRenderMs": 0.33,
+          "gpuMs": 1.31,
+          "calls": 24,
+          "triangles": 127004,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. Voyager NASA (T+4450s)",
+      "t": 4450,
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 467,
+      "fps": 180,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 0.84,
+      "longTasks": 0,
+      "heapMiB": 37.44,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 468,
+          "cpuRenderMs": 0.48,
+          "gpuMs": 0.37,
+          "calls": 16,
+          "triangles": 146886,
+          "ratio": 1
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. ascenso en movimiento (T+0..3,5s)",
+      "t": 0,
+      "hardware": "ANGLE (AMD, AMD Radeon RX 6650 XT (0x000073EF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "frames": 630,
+      "fps": 180,
+      "avgMs": 5.56,
+      "p95Ms": 5.6,
+      "p99Ms": 5.7,
+      "rafCpuMs": 1.2,
+      "longTasks": 0,
+      "heapMiB": 42.2,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 631,
+          "cpuRenderMs": 1.04,
+          "gpuMs": 2.97,
+          "calls": 95,
+          "triangles": 47590,
+          "ratio": 1
+        }
+      }
+    }
+  ]
+}

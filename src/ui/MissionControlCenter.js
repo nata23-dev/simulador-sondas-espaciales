@@ -4,13 +4,15 @@ import { createFiniteThrustExecution, deriveFiniteThrustTelemetry, sampleFiniteT
 import { createLaunchExecution, deriveLaunchTelemetry, sampleLaunchExecution } from '../lab/LaunchPlayback.js';
 import { createLandingExecution, deriveLandingTelemetry, sampleLandingExecution } from '../lab/BodyLandingPlayback.js';
 import { createInterplanetaryExecution, deriveInterplanetaryTelemetry, sampleInterplanetaryExecution, INTERPLANETARY_MAX_RATE } from '../lab/InterplanetaryPlayback.js';
-import { createIntegratedExecution, sampleIntegratedExecution, deriveIntegratedTelemetry, INTEGRATED_MAX_RATE, AUTO_RATE, CONTEXT_LABELS } from '../lab/IntegratedMissionPlayback.js';
+import { createIntegratedExecution, sampleIntegratedExecution, deriveIntegratedTelemetry, segmentAtTime, INTEGRATED_MAX_RATE, AUTO_RATE, CONTEXT_LABELS } from '../lab/IntegratedMissionPlayback.js';
 import { tdbToTimeScales } from '../science/AstrodynamicsTime.js';
 import { createMissionExecutionView, MISSION_CAMERA_MODES } from '../lab/MissionExecutionView.js';
 import { formatMissionTdb } from './MissionTimeDisplay.js';
 import { agruparMarcas, ventanaZoom, accionTeclaCentroMision, esquemaOrbita, instanteLineaTiempo, textoValorLineaTiempo, anuncioCambioFase } from './MissionPlaybackAids.js';
 import { compararConMisionReal, REAL_MISSION_SOURCES } from '../lab/RealMissionHistory.js';
 import { KM_PER_AU } from '../science/Units.js';
+import { mostrarVista3DNoDisponible } from './WebGLUnavailableNotice.js';
+import { getQualityState } from '../graphics/QualityProfile.js';
 
 // 26: un formateador por número de decimales; crear uno nuevo en cada llamada costaba CPU en cada fotograma de la reproducción.
 const formatosNumero = new Map();
@@ -214,7 +216,8 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
   }
   try { view = createMissionExecutionView($('#mc-canvas'), { onModel: info => { modelInfo = info; renderVehicle(); } }); }
   catch (error) {
-    $('#mc-canvas').textContent = 'No se pudo iniciar WebGL. La telemetría y la reproducción temporal siguen disponibles.';
+    mostrarVista3DNoDisponible($('#mc-canvas'), error, { vista: 'La vista 3D del Centro de Misión', sigue: 'La telemetría y la reproducción temporal siguen disponibles.' }); // STAB-01
+    console.error('Centro de Misión 3D no disponible:', error);
     view = { setExecution() {}, setSample() {}, setCameraMode() {}, setLookTarget() {}, setTouchInteraction() {}, setVisible() {}, dispose() {}, getCameraMode: () => 'overview' };
   }
   const coarse = window.matchMedia('(pointer: coarse)').matches;
@@ -680,14 +683,53 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     }
   }
   function stopFrame() { if (frame != null) cancelAnimationFrame(frame); frame = null; lastNow = null; }
+  // PERF-02: en reproducción continua, el estado 3D se actualiza en cada fotograma, pero el formateo y mutación DOM
+  // de telemetría se modera según el perfil de calidad (55 ms en detalle bajo/mínimo, 28 ms en medio); al pausar,
+  // saltar, cruzar una frontera o terminar se vuelca al instante.
+  let ultimoRefrescoDom = -Infinity, ultimaFaseDom = '';
+  function sincronizarEscenaSolo() {
+    if (!execution || !clock) return false;
+    const position = clock.snapshot();
+    if (!position.playing || position.finished) return false;
+    if (execution.kind === 'integrated') {
+      if (sceneActive) {
+        const idx = segmentAtTime(execution.mission.segments, position.elapsedSeconds);
+        const seg = execution.mission.segments[idx];
+        if ((seg?.label ?? '') !== ultimaFaseDom) return false;
+        sceneView.setTime(position.elapsedSeconds);
+        return true;
+      }
+      const sample = sampleIntegratedExecution(execution, position.elapsedSeconds, contextMode === 'auto' ? null : contextMode);
+      if (sample.context !== viewContext || sample.segment?.label !== ultimaFaseDom) return false;
+      view.setSample(sample.landingSample ?? sample, { beforeManeuver: sample.beforeContext });
+      return true;
+    }
+    if (execution.kind === 'interplanetary') {
+      if (sceneActive) sceneView.setTime(position.elapsedSeconds);
+      else view.setSample(sampleInterplanetaryExecution(execution, position.elapsedSeconds), { beforeManeuver: false });
+      return true;
+    }
+    return false;
+  }
   function tick(now) {
     if (!visible || !clock?.snapshot().playing) { stopFrame(); return; }
     const realDelta = lastNow == null ? 0 : Math.min(0.2, (now - lastNow) / 1000);
     lastNow = now;
     if (execution?.kind === 'integrated') advanceIntegrated(realDelta); else clock.advance(realDelta);
-    refresh();
+    const detalle = getQualityState().detalle;
+    const intervaloDomMs = (detalle === 'bajo' || detalle === 'minimo') ? 95 : detalle === 'medio' ? 40 : 0;
+    if (intervaloDomMs > 0 && now - ultimoRefrescoDom < intervaloDomMs && sincronizarEscenaSolo()) {
+      // Escena 3D actualizada; el DOM se refrescará en el siguiente pulso o al pausar/cruzar de fase.
+    } else {
+      ultimoRefrescoDom = now;
+      refresh();
+      if (execution?.kind === 'integrated') {
+        const idx = segmentAtTime(execution.mission.segments, clock.snapshot().elapsedSeconds);
+        ultimaFaseDom = execution.mission.segments[idx]?.label ?? '';
+      }
+    }
     if (clock?.snapshot().playing && !interrupted) frame = requestAnimationFrame(tick);
-    else stopFrame();
+    else { refresh(); stopFrame(); }
   }
   // 13: en modo automático el reloj adopta el ritmo sugerido para el tipo de tramo y se detiene un instante en cada frontera
   // de tramo (no salta encendidos de minutos a ritmos de días por segundo). En un ritmo manual avanza sin esas paradas.
@@ -1062,9 +1104,10 @@ export function createMissionControlCenter(host, onOpenPlanner, { onImmersive = 
     },
     setVisible(value) {
       visible = Boolean(value); view.setVisible(visible && !sceneActive); sceneView?.setVisible(visible && sceneActive); publishSceneMode();
-      if (!visible) { clock?.pause(); stopFrame(); if (execution) refresh(); setImmersive(false);
-        if (coarse) { view.setTouchInteraction(false); host.dataset.touch3d = 'off'; $('#mc-touch-toggle').setAttribute('aria-pressed', 'false'); $('#mc-touch-toggle').textContent = 'Activar control 3D'; } }
-      else if (execution) { refresh(); autoImmersive(); }
+      if (!visible) {
+      clock?.pause(); stopFrame(); if (execution) refresh(); setImmersive(false);
+      if (coarse) { view.setTouchInteraction(false); host.dataset.touch3d = 'off'; $('#mc-touch-toggle').setAttribute('aria-pressed', 'false'); $('#mc-touch-toggle').textContent = 'Activar control 3D'; }
+    } else if (execution) { refresh(); autoImmersive(); }
     },
     resetCamera() { activeView().setCameraMode('overview');
       for (const button of host.querySelectorAll('[data-camera]')) button.setAttribute('aria-pressed', String(button.dataset.camera === 'overview'));

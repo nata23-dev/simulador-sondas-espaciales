@@ -4,7 +4,7 @@
 // solicitado». Módulo puro: `loadJson` se inyecta (fetch en el navegador, lectura de disco en pruebas).
 import { createEphemerisProvider } from './EphemerisProvider.js';
 import { interpolateHermiteState } from './HermiteInterpolation.js';
-import { requireJdTdb } from './Time.js';
+import { requireJdTdb, secondsBetweenJdTdb } from './Time.js';
 
 export const UNAVAILABLE_MESSAGE = 'Efemérides no disponibles para el intervalo solicitado';
 export const INTERPLANETARY_FRAME = Object.freeze({
@@ -24,17 +24,172 @@ export const MEASURED_INTERPOLATION_ERROR = Object.freeze({
 
 const vec = v => [v.x, v.y, v.z];
 
+function crearMetadatosNodo(bodyId, entry, sourceState) {
+  const md = sourceState.provenance?.sourceMetadata ?? {};
+  return Object.freeze({
+    dataset: Object.freeze({ id: entry.id, file: entry.file, source: entry.source, apiVersion: entry.sourceVersion, solutionId: md.solutionId ?? null }),
+    coverage: Object.freeze({ ...(entry.bodyCoverage?.[bodyId] ?? entry.coverage) }),
+    quality: Object.freeze({ extrapolated: false, cadenceSeconds: entry.cadenceSeconds, measuredMaxError: MEASURED_INTERPOLATION_ERROR[bodyId] ?? null })
+  });
+}
+
 function describe(bodyId, jdTdb, state, entry, method, interval, nodes, sourceState = state) {
-  const md = sourceState.provenance.sourceMetadata ?? {};
+  const meta = crearMetadatosNodo(bodyId, entry, sourceState);
   return Object.freeze({
     status: 'available', bodyId, name: PLANET_NAMES[bodyId] ?? bodyId, epoch: Object.freeze({ jdTdb, scale: 'TDB' }),
     positionKm: vec(state.position), velocityKmS: vec(state.velocity), origin: INTERPLANETARY_FRAME.originLabel, frame: INTERPLANETARY_FRAME,
     units: INTERPLANETARY_FRAME.units, vectorType: INTERPLANETARY_FRAME.vectorType,
-    dataset: Object.freeze({ id: entry.id, file: entry.file, source: entry.source, apiVersion: entry.sourceVersion, solutionId: md.solutionId ?? null }),
-    coverage: Object.freeze({ ...(entry.bodyCoverage?.[bodyId] ?? entry.coverage) }),
+    dataset: meta.dataset,
+    coverage: meta.coverage,
     interpolation: Object.freeze({ method, intervalSeconds: interval, nodeJdTdb: nodes }),
-    quality: Object.freeze({ extrapolated: false, cadenceSeconds: entry.cadenceSeconds, measuredMaxError: MEASURED_INTERPOLATION_ERROR[bodyId] ?? null })
+    quality: meta.quality
   });
+}
+
+function interpolarVectoresHermite(p0, v0, t0, p1, v1, t1, jdTdb) {
+  const duration = secondsBetweenJdTdb(t0, t1);
+  const u = secondsBetweenJdTdb(t0, jdTdb) / duration;
+  const u2 = u * u;
+  const h01 = u2 * (3 - 2 * u);
+  const h10 = u * (1 - u) * (1 - u);
+  const h11 = -u2 * (1 - u);
+  const d00 = 6 * u * (u - 1);
+  const d10 = (1 - u) * (1 - 3 * u);
+  const d11 = u * (3 * u - 2);
+  const positionKm = [
+    p0[0] + h01 * (p1[0] - p0[0]) + duration * (h10 * v0[0] + h11 * v1[0]),
+    p0[1] + h01 * (p1[1] - p0[1]) + duration * (h10 * v0[1] + h11 * v1[1]),
+    p0[2] + h01 * (p1[2] - p0[2]) + duration * (h10 * v0[2] + h11 * v1[2])
+  ];
+  const velocityKmS = [
+    d00 * (p0[0] - p1[0]) / duration + d10 * v0[0] + d11 * v1[0],
+    d00 * (p0[1] - p1[1]) / duration + d10 * v0[1] + d11 * v1[1],
+    d00 * (p0[2] - p1[2]) / duration + d10 * v0[2] + d11 * v1[2]
+  ];
+  return { positionKm, velocityKmS };
+}
+
+function construirEvaluadorVentana(tables, startJdTdb, endJdTdb, bodyIds) {
+  function resolveSegmentIndex(table, jdTdb) {
+    const times = table.times;
+    const maxLo = times.length - 2;
+    const last = table.lastLo;
+    if (last >= 0 && last <= maxLo) {
+      if (times[last] <= jdTdb && jdTdb <= times[last + 1]) return last;
+      if (last < maxLo && times[last + 1] <= jdTdb && jdTdb <= times[last + 2]) {
+        table.lastLo = last + 1;
+        return last + 1;
+      }
+      if (last > 0 && times[last - 1] <= jdTdb && jdTdb <= times[last]) {
+        table.lastLo = last - 1;
+        return last - 1;
+      }
+    }
+    let lo = 0, hi = times.length - 1;
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1;
+      if (times[mid] <= jdTdb) lo = mid;
+      else hi = mid;
+    }
+    table.lastLo = lo;
+    return lo;
+  }
+
+  function stateAt(bodyId, jdTdb) {
+    if (bodyId === '10') return sunState(jdTdb);
+    const table = tables.get(bodyId);
+    if (!table) throw new RangeError(`Cuerpo ${bodyId} no cargado en la ventana.`);
+    if (!table.cov || jdTdb < table.cov.startJdTdb || jdTdb > table.cov.endJdTdb) return unavailable(bodyId, jdTdb, 'Fuera de la cobertura real; no se extrapola.', table.cov);
+    const nodes = table.nodes;
+    if (!nodes.length || jdTdb < table.times[0] || jdTdb > table.times[nodes.length - 1]) return unavailable(bodyId, jdTdb, 'Instante fuera de la ventana cargada.', table.cov);
+    if (jdTdb === table.lastJd && table.lastResult) return table.lastResult;
+    const lo = resolveSegmentIndex(table, jdTdb), hi = lo + 1;
+    const a = nodes[lo], b = nodes[hi];
+    let result;
+    if (a.jdTdb === jdTdb) {
+      result = Object.freeze({
+        status: 'available', bodyId, name: PLANET_NAMES[bodyId] ?? bodyId, epoch: Object.freeze({ jdTdb, scale: 'TDB' }),
+        positionKm: [...a.positionKm], velocityKmS: [...a.velocityKmS], origin: INTERPLANETARY_FRAME.originLabel, frame: INTERPLANETARY_FRAME,
+        units: INTERPLANETARY_FRAME.units, vectorType: INTERPLANETARY_FRAME.vectorType,
+        dataset: a.dataset, coverage: a.coverage, interpolation: a.exactInterpolation, quality: a.quality
+      });
+    } else if (b.jdTdb === jdTdb) {
+      result = Object.freeze({
+        status: 'available', bodyId, name: PLANET_NAMES[bodyId] ?? bodyId, epoch: Object.freeze({ jdTdb, scale: 'TDB' }),
+        positionKm: [...b.positionKm], velocityKmS: [...b.velocityKmS], origin: INTERPLANETARY_FRAME.originLabel, frame: INTERPLANETARY_FRAME,
+        units: INTERPLANETARY_FRAME.units, vectorType: INTERPLANETARY_FRAME.vectorType,
+        dataset: b.dataset, coverage: b.coverage, interpolation: b.exactInterpolation, quality: b.quality
+      });
+    } else {
+      const { positionKm, velocityKmS } = interpolarVectoresHermite(a.positionKm, a.velocityKmS, a.jdTdb, b.positionKm, b.velocityKmS, b.jdTdb, jdTdb);
+      result = Object.freeze({
+        status: 'available', bodyId, name: PLANET_NAMES[bodyId] ?? bodyId, epoch: Object.freeze({ jdTdb, scale: 'TDB' }),
+        positionKm, velocityKmS, origin: INTERPLANETARY_FRAME.originLabel, frame: INTERPLANETARY_FRAME,
+        units: INTERPLANETARY_FRAME.units, vectorType: INTERPLANETARY_FRAME.vectorType,
+        dataset: a.dataset, coverage: a.coverage, interpolation: table.pairInterpolation[lo], quality: a.quality
+      });
+    }
+    table.lastJd = jdTdb;
+    table.lastResult = result;
+    return result;
+  }
+
+  function serializeWindow() {
+    const serializedTables = {};
+    for (const [bodyId, table] of tables.entries()) {
+      serializedTables[bodyId] = {
+        cov: table.cov,
+        cadenceSeconds: table.cadenceSeconds,
+        nodes: table.nodes.map(n => ({
+          jdTdb: n.jdTdb,
+          positionKm: n.positionKm,
+          velocityKmS: n.velocityKmS,
+          dataset: n.dataset,
+          coverage: n.coverage,
+          quality: n.quality
+        }))
+      };
+    }
+    return { startJdTdb, endJdTdb, bodyIds: [...bodyIds], tables: serializedTables };
+  }
+
+  return Object.freeze({ startJdTdb, endJdTdb, stateAt, bodyIds: Object.freeze([...bodyIds]), serializeWindow });
+}
+
+/** Reconstruye un evaluador de ventana en un Web Worker a partir de `window.serializeWindow()`. */
+export function createInterplanetaryWindowFromSerialized(serialized) {
+  const tables = new Map();
+  for (const [bodyId, raw] of Object.entries(serialized.tables ?? {})) {
+    const nodes = (raw.nodes ?? []).map(n => ({
+      jdTdb: n.jdTdb,
+      positionKm: n.positionKm,
+      velocityKmS: n.velocityKmS,
+      dataset: Object.freeze({ ...n.dataset }),
+      coverage: Object.freeze({ ...n.coverage }),
+      quality: Object.freeze({ ...n.quality }),
+      exactInterpolation: Object.freeze({ method: 'exact-node', intervalSeconds: 0, nodeJdTdb: [n.jdTdb] })
+    }));
+    const times = Float64Array.from(nodes, n => n.jdTdb);
+    const pairInterpolation = [];
+    for (let i = 0; i < nodes.length - 1; i++) {
+      pairInterpolation.push(Object.freeze({
+        method: 'cubic-hermite',
+        intervalSeconds: (nodes[i + 1].jdTdb - nodes[i].jdTdb) * 86400,
+        nodeJdTdb: [nodes[i].jdTdb, nodes[i + 1].jdTdb]
+      }));
+    }
+    tables.set(bodyId, {
+      cov: raw.cov ? Object.freeze({ ...raw.cov }) : null,
+      nodes,
+      times,
+      pairInterpolation,
+      cadenceSeconds: raw.cadenceSeconds,
+      lastLo: -1,
+      lastJd: NaN,
+      lastResult: null
+    });
+  }
+  return construirEvaluadorVentana(tables, serialized.startJdTdb, serialized.endJdTdb, serialized.bodyIds ?? []);
 }
 
 function unavailable(bodyId, jdTdb, reason, coverage = null) {
@@ -83,37 +238,48 @@ export function createInterplanetaryEphemeris({ catalog, loadJson }) {
     const tables = new Map();
     for (const bodyId of bodyIds) {
       if (bodyId === '10') continue;
-      const cov = coverage(bodyId), cadence = cadenceFor(bodyId) / 86400;
-      if (!cov) { tables.set(bodyId, { cov: null, nodes: [] }); continue; }
+      const cov = coverage(bodyId), cadenceSec = cadenceFor(bodyId), cadence = cadenceSec / 86400;
+      if (!cov) { tables.set(bodyId, { cov: null, nodes: [], times: new Float64Array(0), pairInterpolation: [], cadenceSeconds: 0, lastLo: -1, lastJd: NaN, lastResult: null }); continue; }
       const from = Math.max(cov.startJdTdb, startJdTdb - cadence), to = Math.min(cov.endJdTdb, endJdTdb + cadence);
       const resolved = from <= to ? await provider.getRange(bodyId, from, to) : [];
       const nodes = [];
       for (const item of resolved) {
         if (item.status !== 'found') throw new RangeError(`Efemérides en conflicto para ${bodyId} en JD ${item.jdTdb}: no se mezclan.`);
-        nodes.push({ state: item.state, entry: entryById.get(item.datasetId) });
+        const entry = entryById.get(item.datasetId);
+        const meta = crearMetadatosNodo(bodyId, entry, item.state);
+        const jd = item.state.time.jdTdb;
+        nodes.push({
+          jdTdb: jd,
+          positionKm: vec(item.state.position),
+          velocityKmS: vec(item.state.velocity),
+          dataset: meta.dataset,
+          coverage: meta.coverage,
+          quality: meta.quality,
+          exactInterpolation: Object.freeze({ method: 'exact-node', intervalSeconds: 0, nodeJdTdb: [jd] })
+        });
       }
+      const pairInterpolation = [];
       for (let i = 1; i < nodes.length; i++) {
-        const step = (nodes[i].state.time.jdTdb - nodes[i - 1].state.time.jdTdb) * 86400;
-        if (step > cadenceFor(bodyId) + 1e-3) throw new RangeError(`Hueco en las efemérides de ${bodyId}: no se interpola a través de él.`);
+        const step = (nodes[i].jdTdb - nodes[i - 1].jdTdb) * 86400;
+        if (step > cadenceSec + 1e-3) throw new RangeError(`Hueco en las efemérides de ${bodyId}: no se interpola a través de él.`);
+        pairInterpolation.push(Object.freeze({
+          method: 'cubic-hermite',
+          intervalSeconds: step,
+          nodeJdTdb: [nodes[i - 1].jdTdb, nodes[i].jdTdb]
+        }));
       }
-      tables.set(bodyId, { cov, nodes, cadenceSeconds: cadenceFor(bodyId) });
+      tables.set(bodyId, {
+        cov,
+        nodes,
+        times: Float64Array.from(nodes, n => n.jdTdb),
+        pairInterpolation,
+        cadenceSeconds: cadenceSec,
+        lastLo: -1,
+        lastJd: NaN,
+        lastResult: null
+      });
     }
-    function stateAt(bodyId, jdTdb) {
-      if (bodyId === '10') return sunState(jdTdb);
-      const table = tables.get(bodyId);
-      if (!table) throw new RangeError(`Cuerpo ${bodyId} no cargado en la ventana.`);
-      if (!table.cov || jdTdb < table.cov.startJdTdb || jdTdb > table.cov.endJdTdb) return unavailable(bodyId, jdTdb, 'Fuera de la cobertura real; no se extrapola.', table.cov);
-      const nodes = table.nodes;
-      if (!nodes.length || jdTdb < nodes[0].state.time.jdTdb || jdTdb > nodes.at(-1).state.time.jdTdb) return unavailable(bodyId, jdTdb, 'Instante fuera de la ventana cargada.', table.cov);
-      let lo = 0, hi = nodes.length - 1;
-      while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (nodes[mid].state.time.jdTdb <= jdTdb) lo = mid; else hi = mid; }
-      const a = nodes[lo], b = nodes[hi];
-      if (a.state.time.jdTdb === jdTdb) return describe(bodyId, jdTdb, a.state, a.entry, 'exact-node', 0, [jdTdb]);
-      if (b.state.time.jdTdb === jdTdb) return describe(bodyId, jdTdb, b.state, b.entry, 'exact-node', 0, [jdTdb]);
-      const state = interpolateHermiteState(a.state, b.state, jdTdb, { maxIntervalSeconds: table.cadenceSeconds });
-      return describe(bodyId, jdTdb, state, a.entry, 'cubic-hermite', (b.state.time.jdTdb - a.state.time.jdTdb) * 86400, [a.state.time.jdTdb, b.state.time.jdTdb], a.state);
-    }
-    return Object.freeze({ startJdTdb, endJdTdb, stateAt, bodyIds: Object.freeze([...bodyIds]) });
+    return construirEvaluadorVentana(tables, startJdTdb, endJdTdb, bodyIds);
   }
 
   return Object.freeze({ getBodyState, loadWindow, coverage, listDatasets: () => entries, frame: INTERPLANETARY_FRAME });

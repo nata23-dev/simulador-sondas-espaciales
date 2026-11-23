@@ -110,6 +110,12 @@ function crearTexturaDestelloSolar() {
   return texture;
 }
 
+const geometriasSol = {
+  alto: new THREE.SphereGeometry(5, 64, 48),
+  medio: new THREE.SphereGeometry(5, 40, 28),
+  bajo: new THREE.SphereGeometry(5, 24, 16)
+};
+
 export function crearSol() {
   const grupo = new THREE.Group();
   const material = new THREE.ShaderMaterial({
@@ -117,7 +123,7 @@ export function crearSol() {
     vertexShader: superficieVertex,
     fragmentShader: superficieFragment
   });
-  const superficie = new THREE.Mesh(new THREE.SphereGeometry(5, 64, 48), material);
+  const superficie = new THREE.Mesh(geometriasSol.alto, material);
   grupo.add(superficie);
 
   // El resplandor usa una sola lámina aditiva, sin desenfocar planetas ni estrellas.
@@ -202,6 +208,11 @@ export function crearSol() {
         const tamanoDestello = THREE.MathUtils.clamp(distanciaSol * 0.028 * factorFov, 0.02, 160);
         destelloLejano.scale.setScalar(tamanoDestello);
       }
+    },
+    actualizarNivelDetalle({ detalle = 'alto', radioPx = Infinity } = {}) {
+      const nivel = detalle === 'alto' || radioPx >= 24 ? 'alto' : detalle === 'medio' || radioPx >= 8 ? 'medio' : 'bajo';
+      const geo = geometriasSol[nivel] ?? geometriasSol.alto;
+      if (superficie.geometry !== geo) superficie.geometry = geo;
     }
   };
 }

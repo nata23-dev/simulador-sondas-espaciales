@@ -19,7 +19,41 @@ const ASPECTO = {
   Neptuno: { textura: 'neptune.jpg', inclinacion: 28.3, horas: 16.1 }
 };
 
-const sphereGeometry = new THREE.SphereGeometry(1, 48, 32);
+export const GEOMETRIAS_ESFERA_LOD = Object.freeze({
+  alto: new THREE.SphereGeometry(1, 48, 32),
+  medio: new THREE.SphereGeometry(1, 32, 24),
+  bajo: new THREE.SphereGeometry(1, 16, 12)
+});
+const sphereGeometry = GEOMETRIAS_ESFERA_LOD.alto;
+
+/**
+ * PERF-02: selecciona el nivel geométrico ('alto' = 48×32, 'medio' = 32×24, 'bajo' = 16×12) y la visibilidad de capas secundarias
+ * (nubes y atmósfera de limbo) según el detalle activo del perfil de calidad, el radio aparente en píxeles y si el cuerpo está
+ * seleccionado o en inspección cercana. En perfil 'alto' (GPU dedicada) devuelve siempre 'alto' con todas las capas activas.
+ */
+export function resolverNivelLodEsfera({ detalle = 'alto', radioPx = Infinity, seleccionado = false } = {}) {
+  if (detalle === 'alto') return { nivel: 'alto', mostrarCapas: true };
+  if (seleccionado || radioPx >= 18) return { nivel: 'alto', mostrarCapas: true };
+  if (detalle === 'medio') {
+    return { nivel: radioPx >= 6 ? 'alto' : 'medio', mostrarCapas: radioPx >= 3 };
+  }
+  // detalle 'bajo' o 'minimo' (p. ej. renderizado por software o GPU modesta):
+  // cuando el disco mide < 5 px en pantalla es un punto lejano; 16×12 evita miles de triángulos subpíxel por cuerpo.
+  if (radioPx >= 7) return { nivel: 'medio', mostrarCapas: true };
+  return { nivel: 'bajo', mostrarCapas: false };
+}
+
+function crearGeometriaAnillos(interior, exterior, divisiones) {
+  const geometria = new THREE.RingGeometry(interior, exterior, divisiones, 1);
+  const posicion = geometria.getAttribute('position');
+  const uv = geometria.getAttribute('uv');
+  // La textura original es una tira radial, no una imagen de un disco.
+  for (let i = 0; i < posicion.count; i++) {
+    const r = Math.hypot(posicion.getX(i), posicion.getY(i));
+    uv.setXY(i, (r - interior) / (exterior - interior), 0.5);
+  }
+  return geometria;
+}
 
 function agregarCapaNubes(grupo, radio, nombre, opacidad, cargas) {
   const material = new THREE.MeshStandardMaterial({
@@ -34,6 +68,8 @@ function agregarCapaNubes(grupo, radio, nombre, opacidad, cargas) {
   const capa = new THREE.Mesh(sphereGeometry, material);
   capa.scale.setScalar(radio * 1.014);
   capa.visible = false;
+  capa.userData.texturaLista = false;
+  capa.userData.ocultaPorLod = false;
   grupo.add(capa);
 
   cargas.push(() => cargarTextura(nombre, texture => {
@@ -44,24 +80,22 @@ function agregarCapaNubes(grupo, radio, nombre, opacidad, cargas) {
       material.map = texture;
     }
     material.needsUpdate = true;
-    capa.visible = true;
+    capa.userData.texturaLista = true;
+    capa.visible = !capa.userData.ocultaPorLod;
   }, { color: nombre !== 'earth_clouds.jpg' }));
 
   return capa;
 }
 
-function agregarAnillos(grupo, radio, centroPlaneta, uniformeMapaSombra) {
+function agregarAnillos(grupo, radio, centroPlaneta, uniformeMapaSombra, cargas) {
   const interior = radio * 1.32;
   const exterior = radio * 2.02;
-  const geometria = new THREE.RingGeometry(interior, exterior, 128, 1);
-  const posicion = geometria.getAttribute('position');
-  const uv = geometria.getAttribute('uv');
-
-  // La textura original es una tira radial, no una imagen de un disco.
-  for (let i = 0; i < posicion.count; i++) {
-    const r = Math.hypot(posicion.getX(i), posicion.getY(i));
-    uv.setXY(i, (r - interior) / (exterior - interior), 0.5);
-  }
+  const geometriasAnillo = {
+    alto: crearGeometriaAnillos(interior, exterior, 128),
+    medio: crearGeometriaAnillos(interior, exterior, 64),
+    bajo: crearGeometriaAnillos(interior, exterior, 32)
+  };
+  const geometria = geometriasAnillo.alto;
 
   const material = new THREE.MeshStandardMaterial({
     color: 0xc4b08b,
@@ -95,14 +129,16 @@ function agregarAnillos(grupo, radio, centroPlaneta, uniformeMapaSombra) {
   material.customProgramCacheKey = () => 'sombra-anillos-v2';
   const anillos = new THREE.Mesh(geometria, material);
   anillos.rotation.x = -Math.PI / 2;
+  anillos.userData.geometriasLod = geometriasAnillo;
   grupo.add(anillos);
-  cargarTextura('saturn_ring_alpha.png', texture => {
+  cargas.push(() => cargarTextura('saturn_ring_alpha.png', texture => {
     material.map = texture;
     material.color.set(0xffffff);
     material.opacity = 1;
     material.needsUpdate = true;
     uniformeMapaSombra.value = texture;
-  });
+  }));
+  return anillos;
 }
 
 function agregarSombraAnillosSobreSaturno(material, centroPlaneta) {
@@ -184,6 +220,10 @@ export function crearPlaneta(planeta) {
   const cargas = [() => aplicarMapaColor(material, aspecto.textura,
     planeta.nombre === 'Mercurio' ? 0xaaaaaa : 0xffffff)];
 
+  let nubes = null;
+  let atmosfera = null;
+  let anillos = null;
+
   if (planeta.nombre === 'Tierra') {
     // 18: perfil ligero (calidad «Baja» guardada o ahorro de datos): sin mapas de relieve ni rugosidad; se decide al arrancar.
     if (!texturasLigeras()) cargas.push(() => cargarTextura('earth_normal_map.png', texture => {
@@ -196,22 +236,25 @@ export function crearPlaneta(planeta) {
       material.roughness = 1;
       material.needsUpdate = true;
     }, { color: false }));
-    const nubes = agregarCapaNubes(eje, planeta.radio, 'earth_clouds.jpg', 0.7, cargas);
-    eje.add(crearAtmosferaTierra(planeta.radio));
+    nubes = agregarCapaNubes(eje, planeta.radio, 'earth_clouds.jpg', 0.7, cargas);
+    atmosfera = crearAtmosferaTierra(planeta.radio);
+    eje.add(atmosfera);
     eje.userData.nubes = nubes;
   }
 
   if (planeta.nombre === 'Venus') {
-    agregarCapaNubes(eje, planeta.radio, 'venus_atmosphere.jpg', 0.88, cargas);
+    nubes = agregarCapaNubes(eje, planeta.radio, 'venus_atmosphere.jpg', 0.88, cargas);
+    eje.userData.nubes = nubes;
   }
 
   if (planeta.nombre === 'Saturno') {
     const ringMap = agregarSombraAnillosSobreSaturno(material, posicion.position);
-    agregarAnillos(eje, planeta.radio, posicion.position, ringMap);
+    anillos = agregarAnillos(eje, planeta.radio, posicion.position, ringMap, cargas);
   }
 
   if (planeta.nombre === 'Urano') {
-    eje.add(crearAtmosferaUrano(planeta.radio));
+    atmosfera = crearAtmosferaUrano(planeta.radio);
+    eje.add(atmosfera);
     material.onBeforeCompile = shader => {
       shader.vertexShader = `
         varying vec3 vNormalMundoUrano;
@@ -246,9 +289,30 @@ export function crearPlaneta(planeta) {
   // El eje > 90° ya representa el sentido retrógrado de Venus y Urano.
   // Un día terrestre se muestra en unos 140 s; la proporción entre planetas se conserva.
   const velocidad = 2 * Math.PI / 140 * (23.9 / Math.abs(aspecto.horas));
+  let nivelDetalleActual = 'alto';
   return {
     planeta,
     posicion,
+    obtenerNivelDetalle: () => nivelDetalleActual,
+    actualizarNivelDetalle({ detalle = 'alto', radioPx = Infinity, seleccionado = false } = {}) {
+      const { nivel, mostrarCapas } = resolverNivelLodEsfera({ detalle, radioPx, seleccionado });
+      nivelDetalleActual = nivel;
+      const geoEsfera = GEOMETRIAS_ESFERA_LOD[nivel] ?? GEOMETRIAS_ESFERA_LOD.alto;
+      if (superficie.geometry !== geoEsfera) superficie.geometry = geoEsfera;
+      if (nubes) {
+        if (nubes.geometry !== geoEsfera) nubes.geometry = geoEsfera;
+        nubes.userData.ocultaPorLod = !mostrarCapas;
+        nubes.visible = Boolean(nubes.userData.texturaLista) && mostrarCapas;
+      }
+      if (atmosfera) {
+        atmosfera.visible = mostrarCapas;
+        atmosfera.userData.establecerNivelDetalle?.(nivel);
+      }
+      if (anillos?.userData?.geometriasLod) {
+        const geoAnillo = anillos.userData.geometriasLod[nivel] ?? anillos.userData.geometriasLod.alto;
+        if (anillos.geometry !== geoAnillo) anillos.geometry = geoAnillo;
+      }
+    },
     actualizarGiro(segundos) {
       superficie.rotation.y += velocidad * segundos;
       if (eje.userData.nubes) {

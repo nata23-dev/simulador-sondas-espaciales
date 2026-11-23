@@ -816,6 +816,11 @@
 #app .welcome-card { width:min(490px,calc(100vw - 28px)); max-height:calc(100dvh - 40px); overflow:auto; }
 #app .welcome-intro { max-width:44ch; }
 #app .historical-welcome-overlay { backdrop-filter:blur(4px); }
+/* UX-02: con la bienvenida abierta la cabecera queda por encima de su fondo (z-index 40): la navegación global sigue al alcance y
+   usarla cierra la bienvenida (HistoricalWelcomeModal.js). La tarjeta se centra debajo de la cabecera (--welcome-cabecera). */
+#app:has(#historical-welcome-modal:not([hidden])) .app-header { z-index:41; }
+#app #historical-welcome-modal { padding-top:calc(var(--welcome-cabecera, 0px) + 16px); }
+#app #historical-welcome-modal .welcome-card { max-height:calc(100dvh - var(--welcome-cabecera, 0px) - 32px); }
 #app:has(:is(#historical-welcome-modal,#photo-lightbox-modal):not([hidden])) #context-inspector { visibility:hidden; }
 #app #context-inspector .historical-topbar .hist-toolbar-row > .hist-pill-bar:first-child { display:none; }
 #app #historical-time-options .hist-decade-bar { max-height:none; overflow:visible; }

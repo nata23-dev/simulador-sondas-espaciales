@@ -3,7 +3,7 @@
 // Reutiliza la tabla de segundos intercalares y la conversión de `HistoricalTime.js` (Fairhead & Bretagnon 1990,
 // dos términos, error < 30 µs en 1970–2100). Añade el algoritmo DELTET de NAIF/SPICE (time.req) como formulación
 // independiente para contrastar TDB − TT. Módulo puro: sin Date del navegador, sin DOM.
-import { IERS_LEAP_SECONDS_TABLE, J2000_JD, TT_MINUS_TAI_SECONDS, jdTdbToHistoricalLabels, taiMinusUtcAtPseudoJd, tdbMinusTtSeconds, utcTimestampToTdb } from './HistoricalTime.js';
+import { IERS_LEAP_SECONDS_TABLE, J2000_JD, TT_MINUS_TAI_SECONDS, jdTdbToHistoricalLabels, roundedUtcLabelFromJdTai, taiMinusUtcAtPseudoJd, tdbMinusTtSeconds, utcTimestampToTdb } from './HistoricalTime.js';
 import { jdToGregorianComponents, requireJdTdb } from './Time.js';
 import { SECONDS_PER_DAY, requireFiniteNumber } from './Units.js';
 
@@ -39,7 +39,10 @@ export function utcToTimeScales(utcText) {
     tdbMinusUtcSeconds: tdb.tdbMinusUtcSeconds, utcPredicted: isUtcPrediction(jdUtcPseudo) });
 }
 
-/** Inversa: a partir de un JD TDB devuelve las cuatro escalas y etiquetas legibles. */
+/**
+ * Inversa: a partir de un JD TDB devuelve las cuatro escalas y etiquetas legibles. Durante un segundo intercalar `labelUtc`
+ * muestra `23:59:60` (SCI-01); `jdUtcPseudo`, como todo pseudo-JD de días de 86 400 s, no lo distingue de las 00:00:00 siguientes.
+ */
 export function tdbToTimeScales(jdTdb) {
   requireJdTdb(jdTdb);
   const labels = jdTdbToHistoricalLabels(jdTdb);
@@ -48,7 +51,7 @@ export function tdbToTimeScales(jdTdb) {
   const jdTai = jdTt - TT_MINUS_TAI_SECONDS / SECONDS_PER_DAY;
   const jdUtcPseudo = jdTai - labels.taiMinusUtcSeconds / SECONDS_PER_DAY;
   return Object.freeze({ jdTdb, jdTt, jdTai, jdUtcPseudo, taiMinusUtcSeconds: labels.taiMinusUtcSeconds, tdbMinusTtSeconds: relSeconds,
-    tdbMinusUtcSeconds: labels.tdbMinusUtcSeconds, labelTdb: roundedLabel(jdTdb, 'TDB'), labelUtc: roundedLabel(jdUtcPseudo, 'UTC'),
+    tdbMinusUtcSeconds: labels.tdbMinusUtcSeconds, labelTdb: roundedLabel(jdTdb, 'TDB'), labelUtc: roundedUtcLabelFromJdTai(jdTai),
     labelTdbTruncated: labels.labelTdb, labelUtcTruncated: labels.labelUtc, utcPredicted: isUtcPrediction(jdUtcPseudo) });
 }
 

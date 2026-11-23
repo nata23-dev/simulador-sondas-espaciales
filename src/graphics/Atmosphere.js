@@ -37,9 +37,23 @@ const fragmentShader = `
   }
 `;
 
+const geometriasAtmosfera = {
+  alto: new THREE.SphereGeometry(1, 48, 32),
+  medio: new THREE.SphereGeometry(1, 32, 24),
+  bajo: new THREE.SphereGeometry(1, 20, 14)
+};
+
+function configurarLodAtmosfera(atmosfera) {
+  atmosfera.userData.establecerNivelDetalle = nivel => {
+    const sig = geometriasAtmosfera[nivel] ?? geometriasAtmosfera.alto;
+    if (atmosfera.geometry !== sig) atmosfera.geometry = sig;
+  };
+  return atmosfera;
+}
+
 export function crearAtmosferaTierra(radio) {
   const atmosfera = new THREE.Mesh(
-    new THREE.SphereGeometry(1, 48, 32),
+    geometriasAtmosfera.alto,
     new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader,
@@ -51,7 +65,7 @@ export function crearAtmosferaTierra(radio) {
     })
   );
   atmosfera.scale.setScalar(radio * 1.055);
-  return atmosfera;
+  return configurarLodAtmosfera(atmosfera);
 }
 
 // Atmósfera de Urano con dispersión hacia adelante (forward scattering)
@@ -79,7 +93,7 @@ const fragmentShaderUrano = `
 
 export function crearAtmosferaUrano(radio) {
   const atmosfera = new THREE.Mesh(
-    new THREE.SphereGeometry(1, 48, 32),
+    geometriasAtmosfera.alto,
     new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader: fragmentShaderUrano,
@@ -91,5 +105,5 @@ export function crearAtmosferaUrano(radio) {
     })
   );
   atmosfera.scale.setScalar(radio * 1.045);
-  return atmosfera;
+  return configurarLodAtmosfera(atmosfera);
 }

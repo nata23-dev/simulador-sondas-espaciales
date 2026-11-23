@@ -1,0 +1,411 @@
+{
+  "fecha": "2026-11-23T00:13:33.239Z",
+  "modo": "software",
+  "chrome": "157.0.8103.79",
+  "cpu": "AMD Ryzen 5 5600 6-Core Processor              ",
+  "errores": [],
+  "global": [
+    {
+      "nombre": "Solar general",
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 310,
+      "fps": 97.04,
+      "avgMs": 10.31,
+      "p95Ms": 11.2,
+      "p99Ms": 16.7,
+      "rafCpuMs": 1.11,
+      "longTasks": 0,
+      "heapMiB": 14.43,
+      "canvases": {
+        "solar-system": {
+          "renders": 311,
+          "cpuRenderMs": 0.77,
+          "gpuMs": 9.3,
+          "calls": 34,
+          "triangles": 8548,
+          "ratio": 0.7
+        }
+      }
+    },
+    {
+      "nombre": "Tierra cercana",
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 103,
+      "fps": 32.13,
+      "avgMs": 31.12,
+      "p95Ms": 44.4,
+      "p99Ms": 55.6,
+      "rafCpuMs": 1.6,
+      "longTasks": 1,
+      "heapMiB": 16.34,
+      "canvases": {
+        "solar-system": {
+          "renders": 104,
+          "cpuRenderMs": 0.61,
+          "gpuMs": 10.34,
+          "calls": 19.7,
+          "triangles": 13112,
+          "ratio": 0.5
+        }
+      }
+    },
+    {
+      "nombre": "Solar tiempo ×4",
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 110,
+      "fps": 34.49,
+      "avgMs": 28.99,
+      "p95Ms": 38.8,
+      "p99Ms": 50.1,
+      "rafCpuMs": 3.66,
+      "longTasks": 1,
+      "heapMiB": 17.46,
+      "canvases": {
+        "solar-system": {
+          "renders": 111,
+          "cpuRenderMs": 1.84,
+          "gpuMs": 15.37,
+          "calls": 9,
+          "triangles": 11350,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Voyager ambas",
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 128,
+      "fps": 40.35,
+      "avgMs": 24.78,
+      "p95Ms": 27.9,
+      "p99Ms": 27.9,
+      "rafCpuMs": 1.13,
+      "longTasks": 0,
+      "heapMiB": 57.52,
+      "canvases": {
+        "solar-system": {
+          "renders": 129,
+          "cpuRenderMs": 0.83,
+          "gpuMs": 15.96,
+          "calls": 23,
+          "triangles": 4628,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Reloj histórico",
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 98,
+      "fps": 31.28,
+      "avgMs": 31.97,
+      "p95Ms": 44.3,
+      "p99Ms": 72.3,
+      "rafCpuMs": 1.65,
+      "longTasks": 0,
+      "heapMiB": 29.3,
+      "canvases": {
+        "solar-system": {
+          "renders": 99,
+          "cpuRenderMs": 1.1,
+          "gpuMs": 7.92,
+          "calls": 32,
+          "triangles": 25360,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Hangar Cassini (PERF-01)",
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 199,
+      "fps": 62.51,
+      "avgMs": 16,
+      "p95Ms": 16.8,
+      "p99Ms": 22.3,
+      "rafCpuMs": 0.43,
+      "longTasks": 0,
+      "heapMiB": 38.07,
+      "canvases": {
+        "lab-canvas": {
+          "renders": 200,
+          "cpuRenderMs": 0.33,
+          "gpuMs": 3.34,
+          "calls": 11,
+          "triangles": 25724,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Planificación (PERF-01)",
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 569,
+      "fps": 177.81,
+      "avgMs": 5.62,
+      "p95Ms": 5.6,
+      "p99Ms": 11.1,
+      "rafCpuMs": 0.01,
+      "longTasks": 0,
+      "heapMiB": 38.77,
+      "canvases": {}
+    },
+    {
+      "nombre": "Centro en reproducción (PERF-02)",
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 105,
+      "fps": 33.87,
+      "avgMs": 29.52,
+      "p95Ms": 44.5,
+      "p99Ms": 61.1,
+      "rafCpuMs": 3.21,
+      "longTasks": 0,
+      "heapMiB": 60.41,
+      "canvases": {
+        "solar-system": {
+          "renders": 106,
+          "cpuRenderMs": 1.09,
+          "gpuMs": 8.32,
+          "calls": 36,
+          "triangles": 29660,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Centro seguimiento y telemetría",
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 109,
+      "fps": 34.12,
+      "avgMs": 29.31,
+      "p95Ms": 39,
+      "p99Ms": 55.6,
+      "rafCpuMs": 2.78,
+      "longTasks": 0,
+      "heapMiB": 51.96,
+      "canvases": {
+        "solar-system": {
+          "renders": 110,
+          "cpuRenderMs": 0.77,
+          "gpuMs": 13.65,
+          "calls": 25,
+          "triangles": 27694,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Sistema Solar tras regresar del Lab",
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 402,
+      "fps": 125.63,
+      "avgMs": 7.96,
+      "p95Ms": 11.2,
+      "p99Ms": 11.3,
+      "rafCpuMs": 0.77,
+      "longTasks": 0,
+      "heapMiB": 43.74,
+      "canvases": {
+        "solar-system": {
+          "renders": 403,
+          "cpuRenderMs": 0.59,
+          "gpuMs": 6.49,
+          "calls": 34,
+          "triangles": 8539,
+          "ratio": 0.3
+        }
+      }
+    }
+  ],
+  "calculoWorker": {
+    "wallA1Ms": 298,
+    "wallNBodyMs": null,
+    "longTasks": []
+  },
+  "lanzamiento": [
+    {
+      "nombre": "Lanz. plataforma (T-8s)",
+      "t": -8,
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 69,
+      "fps": 26.88,
+      "avgMs": 37.2,
+      "p95Ms": 44.5,
+      "p99Ms": 116.7,
+      "rafCpuMs": 3.43,
+      "longTasks": 1,
+      "heapMiB": 49.3,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 70,
+          "cpuRenderMs": 1.48,
+          "gpuMs": 30.57,
+          "calls": 53,
+          "triangles": 21864,
+          "ratio": 0.35
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. base (T-2s)",
+      "t": -2,
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 131,
+      "fps": 51.48,
+      "avgMs": 19.42,
+      "p95Ms": 22.3,
+      "p99Ms": 27.7,
+      "rafCpuMs": 2,
+      "longTasks": 1,
+      "heapMiB": 54.1,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 132,
+          "cpuRenderMs": 1.33,
+          "gpuMs": 15.13,
+          "calls": 49,
+          "triangles": 19092,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. despegue (T+5s)",
+      "t": 5,
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 164,
+      "fps": 63.76,
+      "avgMs": 15.68,
+      "p95Ms": 22.2,
+      "p99Ms": 33.4,
+      "rafCpuMs": 2.79,
+      "longTasks": 0,
+      "heapMiB": 37.18,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 165,
+          "cpuRenderMs": 2.24,
+          "gpuMs": 10.36,
+          "calls": 60,
+          "triangles": 28156,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. seguimiento (T+30s)",
+      "t": 30,
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 217,
+      "fps": 83.46,
+      "avgMs": 11.98,
+      "p95Ms": 16.7,
+      "p99Ms": 22.3,
+      "rafCpuMs": 2.88,
+      "longTasks": 0,
+      "heapMiB": 50.13,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 218,
+          "cpuRenderMs": 2.47,
+          "gpuMs": 7.53,
+          "calls": 39,
+          "triangles": 19656,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. separación (T+130s)",
+      "t": 130,
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 206,
+      "fps": 79.4,
+      "avgMs": 12.59,
+      "p95Ms": 16.7,
+      "p99Ms": 27.7,
+      "rafCpuMs": 2.25,
+      "longTasks": 0,
+      "heapMiB": 31.65,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 207,
+          "cpuRenderMs": 1.77,
+          "gpuMs": 7.31,
+          "calls": 41,
+          "triangles": 40982,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. órbita (T+1500s)",
+      "t": 1500,
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 171,
+      "fps": 66.19,
+      "avgMs": 15.11,
+      "p95Ms": 22.2,
+      "p99Ms": 22.3,
+      "rafCpuMs": 2.37,
+      "longTasks": 0,
+      "heapMiB": 32.2,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 172,
+          "cpuRenderMs": 1.69,
+          "gpuMs": 10.21,
+          "calls": 23,
+          "triangles": 28244,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. Voyager NASA (T+4450s)",
+      "t": 4450,
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 224,
+      "fps": 86.33,
+      "avgMs": 11.58,
+      "p95Ms": 16.7,
+      "p99Ms": 16.8,
+      "rafCpuMs": 1.12,
+      "longTasks": 0,
+      "heapMiB": 32.37,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 225,
+          "cpuRenderMs": 0.76,
+          "gpuMs": 6.72,
+          "calls": 15,
+          "triangles": 44670,
+          "ratio": 0.3
+        }
+      }
+    },
+    {
+      "nombre": "Lanz. ascenso en movimiento (T+0..3,5s)",
+      "t": 0,
+      "hardware": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "frames": 200,
+      "fps": 57.42,
+      "avgMs": 17.42,
+      "p95Ms": 22.2,
+      "p99Ms": 22.3,
+      "rafCpuMs": 2.28,
+      "longTasks": 0,
+      "heapMiB": 31.65,
+      "canvases": {
+        "launch3d-canvas is-visible": {
+          "renders": 201,
+          "cpuRenderMs": 1.99,
+          "gpuMs": 12.18,
+          "calls": 60,
+          "triangles": 28076,
+          "ratio": 0.3
+        }
+      }
+    }
+  ]
+}

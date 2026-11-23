@@ -696,3 +696,37 @@ button { transition:background var(--dur-fast) var(--ease),color var(--dur-fast)
   body:has(.launch-cinematic-overlay:not([hidden])) .fps-meter,
   body:has(#app[data-app-mode="experimental"]) .fps-meter { right:8px; top:50%; }
 }
+
+/* ---------- Auditoría final, fase 1 (STAB-01) · WebGL 2 no disponible ---------- */
+/* Solo aparece si el navegador no puede crear el contexto WebGL 2: con WebGL disponible no se dibuja nada de esto. El aviso de la
+   escena principal cubre la interfaz (que queda inerte) por encima de menús y diálogos; el de una vista del laboratorio ocupa
+   el lugar del lienzo. Mismos tokens que el resto: grafito, texto blanco y gris, aviso en ámbar y acción principal en azul. */
+.webgl-unavailable {
+  position:fixed; inset:0; z-index:1000; display:grid; place-items:center; padding:16px; overflow:auto;
+  background:rgba(0,0,0,.9); color:var(--text-1); font-family:var(--font-ui);
+}
+.webgl-unavailable__panel {
+  width:min(560px,100%); padding:24px; border:1px solid var(--line-strong); border-radius:var(--r-lg);
+  background:var(--panel-solid); box-shadow:var(--shadow-2);
+}
+.webgl-unavailable__eyebrow { display:block; color:var(--text-3); font-size:10px; font-weight:600; letter-spacing:.17em; }
+.webgl-unavailable__title { margin:8px 0 10px; color:var(--warn); font-size:22px; font-weight:500; line-height:1.25; }
+.webgl-unavailable__text { margin:0 0 12px; color:var(--text-1); font-size:14px; line-height:1.5; }
+.webgl-unavailable__hints { margin:0 0 12px; padding-left:18px; color:var(--text-2); font-size:13px; line-height:1.5; }
+.webgl-unavailable__hints li + li { margin-top:4px; }
+.webgl-unavailable__note { margin:0 0 8px; color:var(--text-2); font-size:12.5px; line-height:1.5; }
+.webgl-unavailable__detail { margin:0 0 16px; color:var(--text-4); font-size:11px; line-height:1.4; overflow-wrap:anywhere; }
+.webgl-unavailable__retry {
+  min-height:40px; padding:9px 18px; border:1px solid var(--action); border-radius:24px; background:var(--action);
+  color:#fff; font:600 13px/1 var(--font-ui); cursor:pointer;
+}
+.webgl-unavailable__retry:hover { background:var(--action-strong); border-color:var(--action-strong); }
+.webgl-view-unavailable {
+  display:grid; place-items:center; height:100%; min-height:120px; margin:0; padding:16px; box-sizing:border-box;
+  color:var(--text-2); font:400 12.5px/1.5 var(--font-ui); text-align:center;
+}
+/* Junto al botón que abre la vista (lanzamiento 3D): una línea de aviso, no un hueco del tamaño de la escena. */
+.webgl-view-unavailable.webgl-view-unavailable--inline {
+  display:block; height:auto; min-height:0; margin:8px 0 0; padding:0 0 0 10px; max-width:46ch;
+  border-left:2px solid var(--warn); text-align:left;
+}

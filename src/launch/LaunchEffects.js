@@ -6,6 +6,7 @@
 // hidrógeno y oxígeno líquidos de los RL10 (casi invisible, azulado) y el sólido del módulo de propulsión.
 // Humo: billboards instanciados, ordenados de atrás adelante, con luz solar envolvente y el resplandor de la llama cercana.
 import * as THREE from 'three';
+import { crearSpritePropio } from './LaunchSharedResources.js';
 
 export const TIPOS_PENACHO = Object.freeze({
   srm: { radioSalida: 1.25, largo: 46, nucleo: [1.0, 0.88, 0.64], borde: [1.0, 0.46, 0.12], intensidad: 2.8, ruido: 0.35, ensanche: 2.6 },
@@ -78,7 +79,9 @@ export function crearPenacho(tipo) {
   const capas = [materialPenacho(tipo), materialPenacho(tipo)];
   capas[1].uniforms.uSemilla.value += 3.7;
   const mallas = capas.map((m, i) => { const o = new THREE.Mesh(geo, m); o.frustumCulled = false; o.renderOrder = 5 + i; grupo.add(o); return o; });
-  const brillo = new THREE.Sprite(new THREE.SpriteMaterial({ map: resplandor(), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, color: new THREE.Color(...p.borde) }));
+  // LAN-02: textura propia sobre el lienzo común (misma imagen) y geometría propia: el renderizador del lanzamiento no deja sus
+  // oyentes en objetos que sobreviven al lanzamiento (la caché del módulo y la geometría global de los sprites de three).
+  const brillo = crearSpritePropio(new THREE.SpriteMaterial({ map: resplandor().clone(), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, color: new THREE.Color(...p.borde) }));
   brillo.renderOrder = 7; grupo.add(brillo);
   return {
     grupo,
@@ -96,7 +99,7 @@ export function crearPenacho(tipo) {
       brillo.scale.setScalar(p.radioSalida * (8 + 6 * presionRel) * (0.7 + 0.3 * encendido));
       brillo.position.y = -p.radioSalida * 0.6;
     },
-    destruir() { geo.dispose(); capas.forEach(m => m.dispose()); brillo.material.dispose(); }
+    destruir() { geo.dispose(); capas.forEach(m => m.dispose()); brillo.geometry.dispose(); brillo.material.map.dispose(); brillo.material.dispose(); }
   };
 }
 
@@ -201,7 +204,7 @@ export function crearSolEspacio() {
     g.fillStyle = l; g.fillRect(-128, -1.2, 256, 2.4); g.restore();
   }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: true, transparent: true, fog: false }));
+  const sprite = crearSpritePropio(new THREE.SpriteMaterial({ map: t, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: true, transparent: true, fog: false })); // LAN-02
   sprite.renderOrder = -5;
   return sprite;
 }

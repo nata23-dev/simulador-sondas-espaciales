@@ -67,7 +67,9 @@ export function crearWorkspaceLayout({ alBuscarDestino } = {}) {
     resizeButton.setAttribute('aria-expanded', String(value === 'expanded'));
     resizeButton.querySelector('use').setAttribute('href', value === 'expanded' ? '#icon-chevron' : '#icon-expand');
     document.querySelector('#inspector-toggle').setAttribute('aria-expanded', String(value !== 'closed'));
-    document.querySelector('#header-search')?.setAttribute('aria-expanded', String(value !== 'closed' && active === 'explore'));
+    // UX-01: si «Buscar» abre la paleta (aria-controls="command-palette"), su estado lo lleva la paleta, no este panel.
+    const search = document.querySelector('#header-search');
+    if (search?.getAttribute('aria-controls') === 'context-inspector') search.setAttribute('aria-expanded', String(value !== 'closed' && active === 'explore'));
     window.dispatchEvent(new Event('resize'));
   }
   function select(id, open = true) {

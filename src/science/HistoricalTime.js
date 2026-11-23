@@ -80,8 +80,28 @@ export function taiMinusUtcAtPseudoJd(jdUtcPseudo) {
 }
 
 /**
+ * Segundo intercalar positivo insertado al final del día UTC que empieza en `midnightPseudoJd` (`23:59:60`), o `null`.
+ * Es la entrada de la tabla que entra en vigor a la medianoche siguiente con TAI − UTC un segundo mayor que la anterior.
+ * La comparación es exacta: las medianoches son semienteros (x,5) representables en doble precisión.
+ */
+export function leapSecondEndingUtcDay(midnightPseudoJd) {
+  requireFiniteNumber(midnightPseudoJd, 'midnightPseudoJd');
+  const nextMidnight = midnightPseudoJd + 1;
+  for (let i = 1; i < IERS_LEAP_SECONDS_TABLE.length; i++) {
+    const entry = IERS_LEAP_SECONDS_TABLE[i];
+    if (entry.effectiveJdUtcPseudo !== nextMidnight) continue;
+    const previous = IERS_LEAP_SECONDS_TABLE[i - 1].taiMinusUtcSeconds;
+    return entry.taiMinusUtcSeconds === previous + 1
+      ? Object.freeze({ dateUtc: entry.effectiveDateUtc, taiMinusUtcBeforeSeconds: previous, taiMinusUtcAfterSeconds: entry.taiMinusUtcSeconds })
+      : null;
+  }
+  return null;
+}
+
+/**
  * Analiza una marca UTC ISO/astronómica (`YYYY-MM-DD`, `YYYY-MM-DD HH:MM[:SS]`,
  * `YYYY-MM-DDTHH:MM:SS[.sss]Z`) sin delegar en `Date` del navegador.
+ * El segundo `:60` solo existe como `23:59:60[.sss]` del último día UTC antes de un salto positivo de la tabla IERS.
  */
 export function parseUtcTimestamp(utcText) {
   if (typeof utcText !== 'string' || utcText.trim() === '') {
@@ -97,9 +117,13 @@ export function parseUtcTimestamp(utcText) {
   const hour = Number(hText);
   const minute = Number(mText);
   const second = Number(sText);
-  // Permite segundo intercalar :60 en fin de junio o diciembre si aparece en registros históricos
   if (hour > 23 || minute > 59 || second > 60) {
     throw new RangeError(`Campos horarios UTC fuera de rango: ${utcText}`);
+  }
+  // SCI-01: `:60` solo es válido en el segundo intercalar real (23:59:60 del día anterior a un salto positivo tabulado).
+  const leapSecond = second === 60;
+  if (leapSecond && !(hour === 23 && minute === 59 && leapSecondEndingUtcDay(midnightPseudoJd))) {
+    throw new RangeError(`Segundo intercalar inexistente en la tabla IERS: ${utcText} (solo 23:59:60 del día anterior a un salto de TAI − UTC).`);
   }
   const fraction = Number(`0.${fracText}`);
   const daySeconds = hour * 3600 + minute * 60 + second + fraction;
@@ -110,7 +134,8 @@ export function parseUtcTimestamp(utcText) {
     second,
     fraction,
     midnightPseudoJd,
-    daySeconds
+    daySeconds,
+    leapSecond
   });
 }
 
@@ -120,8 +145,11 @@ export function parseUtcTimestamp(utcText) {
  */
 export function utcTimestampToTdb(utcText) {
   const parsed = parseUtcTimestamp(utcText);
-  const pseudoJdUtc = parsed.midnightPseudoJd + Math.min(parsed.daySeconds, SECONDS_PER_DAY - 1e-6) / SECONDS_PER_DAY;
-  const taiMinusUtc = taiMinusUtcAtPseudoJd(pseudoJdUtc);
+  // SCI-01: los saltos de TAI − UTC ocurren solo a medianoche UTC, así que el valor de todo el día civil (incluido su
+  // 23:59:60) es el vigente en su medianoche inicial. Se consulta con ese semientero exacto: sumar una fracción casi igual
+  // a 1 a un JD de ~2,4·10⁶ redondeaba al día siguiente (ULP ≈ 40 µs) y daba el TAI − UTC posterior durante el segundo
+  // intercalar, de modo que 23:59:60 coincidía con las 00:00:00 siguientes. En fechas ordinarias el valor no cambia.
+  const taiMinusUtc = taiMinusUtcAtPseudoJd(parsed.midnightPseudoJd);
   const ttOffsetSeconds = taiMinusUtc + TT_MINUS_TAI_SECONDS;
   const jdTt = parsed.midnightPseudoJd + (parsed.daySeconds + ttOffsetSeconds) / SECONDS_PER_DAY;
   const relSeconds = tdbMinusTtSeconds(jdTt);
@@ -141,22 +169,69 @@ export function utcTimestampToJdTdb(utcText) {
 }
 
 /**
+ * SCI-01: UTC de un instante dado como JD en una escala atómica que va `scaleMinusTaiSeconds` por delante de TAI (0 para TAI,
+ * 32,184 s para TT), al milisegundo y con `23:59:60` dentro de los segundos intercalares.
+ * El segundo insertado antes de la entrada i ocupa, contado desde su medianoche UTC E_i, los segundos TAI
+ * [(TAI − UTC)_{i−1}, (TAI − UTC)_i). `jd − E_i` es exacta en doble precisión (lema de Sterbenz: ambos ≈ 2,4·10⁶), así que solo
+ * cuenta el error del propio `jd` (≈ 20 µs); el milisegundo se redondea igual que en las etiquetas.
+ * Fuera de un segundo intercalar se usa la misma aritmética que antes de SCI-01 (resultados idénticos bit a bit).
+ */
+function utcFromAtomicJd(jd, scaleMinusTaiSeconds) {
+  for (let i = 1; i < IERS_LEAP_SECONDS_TABLE.length; i++) {
+    const entry = IERS_LEAP_SECONDS_TABLE[i];
+    const before = IERS_LEAP_SECONDS_TABLE[i - 1].taiMinusUtcSeconds;
+    const offsetDays = jd - entry.effectiveJdUtcPseudo;
+    if (entry.taiMinusUtcSeconds !== before + 1 || offsetDays < -1 || offsetDays > 1) continue;
+    const millisecond = Math.round((offsetDays * SECONDS_PER_DAY - scaleMinusTaiSeconds - before) * 1000);
+    if (millisecond < 0 || millisecond >= 1000) continue;
+    const day = jdToGregorianComponents(entry.effectiveJdUtcPseudo - 1); // día civil que termina con el segundo insertado
+    const utc = Object.freeze({ year: day.year, month: day.month, day: day.day, hour: 23, minute: 59, second: 60, millisecond,
+      dateIso: day.dateIso, timeHm: '23:59', timeHms: '23:59:60' });
+    return Object.freeze({ utc, taiMinusUtcSeconds: before, jdUtcPseudo: jd - (before + scaleMinusTaiSeconds) / SECONDS_PER_DAY, leapSecond: true });
+  }
+  // Iteración de punto fijo (2 pasos bastan porque TAI − UTC solo cambia en escalones de 1 s).
+  let taiMinusUtc = taiMinusUtcAtPseudoJd(jd - (37 + scaleMinusTaiSeconds) / SECONDS_PER_DAY);
+  let jdUtcPseudo = jd - (taiMinusUtc + scaleMinusTaiSeconds) / SECONDS_PER_DAY;
+  taiMinusUtc = taiMinusUtcAtPseudoJd(jdUtcPseudo);
+  jdUtcPseudo = jd - (taiMinusUtc + scaleMinusTaiSeconds) / SECONDS_PER_DAY;
+  return Object.freeze({ utc: jdToGregorianComponents(jdUtcPseudo), taiMinusUtcSeconds: taiMinusUtc, jdUtcPseudo, leapSecond: false });
+}
+
+/**
+ * Componentes UTC (al milisegundo) de un instante dado como JD TAI, con `23:59:60` dentro de los segundos intercalares.
+ * Devuelve también TAI − UTC de ese instante y el pseudo-JD UTC (días de 86 400 s; como todo pseudo-JD, no distingue el
+ * segundo intercalar de las 00:00:00 siguientes: para eso están `utc` y `leapSecond`).
+ */
+export function utcComponentsFromJdTai(jdTai) {
+  requireFiniteNumber(jdTai, 'jdTai');
+  return utcFromAtomicJd(jdTai, 0);
+}
+
+/**
+ * Etiqueta `YYYY-MM-DD · HH:MM:SS UTC` redondeada al segundo más próximo, con `23:59:60` en los segundos intercalares.
+ * Desde 1972 UTC y TAI difieren en segundos enteros: redondear el instante TAI al segundo equivale a redondear el UTC, y el
+ * instante redondeado queda sin ambigüedad dentro o fuera de un segundo intercalar.
+ */
+export function roundedUtcLabelFromJdTai(jdTai) {
+  requireFiniteNumber(jdTai, 'jdTai');
+  const dayNumber = Math.floor(jdTai + 0.5);
+  const seconds = Math.round((jdTai + 0.5 - dayNumber) * SECONDS_PER_DAY);
+  const { utc } = utcComponentsFromJdTai(dayNumber - 0.5 + seconds / SECONDS_PER_DAY);
+  return `${utc.dateIso} · ${utc.timeHms} UTC`;
+}
+
+/**
  * Convierte un `jdTdb` científico a componentes y etiquetas tanto en TDB como en UTC,
- * resolviendo iterativamente el salto `TAI − UTC` sin usar `Date` local del navegador.
+ * resolviendo el salto `TAI − UTC` sin usar `Date` local del navegador. Durante un segundo intercalar la etiqueta UTC es
+ * `23:59:60` del día que termina y `taiMinusUtcSeconds` conserva el valor anterior al salto (SCI-01).
  */
 export function jdTdbToHistoricalLabels(jdTdb) {
   requireJdTdb(jdTdb);
   const relSeconds = tdbMinusTtSeconds(jdTdb);
   const jdTt = jdTdb - relSeconds / SECONDS_PER_DAY;
-
-  // Iteración de punto fijo (2 pasos bastan porque TAI-UTC solo cambia en escalones de 1 s)
-  let taiMinusUtc = taiMinusUtcAtPseudoJd(jdTt - (37 + TT_MINUS_TAI_SECONDS) / SECONDS_PER_DAY);
-  let pseudoJdUtc = jdTt - (taiMinusUtc + TT_MINUS_TAI_SECONDS) / SECONDS_PER_DAY;
-  taiMinusUtc = taiMinusUtcAtPseudoJd(pseudoJdUtc);
-  pseudoJdUtc = jdTt - (taiMinusUtc + TT_MINUS_TAI_SECONDS) / SECONDS_PER_DAY;
+  const { utc: utcParts, taiMinusUtcSeconds: taiMinusUtc, leapSecond } = utcFromAtomicJd(jdTt, TT_MINUS_TAI_SECONDS);
 
   const tdbParts = jdToGregorianComponents(jdTdb);
-  const utcParts = jdToGregorianComponents(pseudoJdUtc);
   const tdbMinusUtcSeconds = taiMinusUtc + TT_MINUS_TAI_SECONDS + relSeconds;
 
   return Object.freeze({
@@ -165,6 +240,7 @@ export function jdTdbToHistoricalLabels(jdTdb) {
     utc: utcParts,
     taiMinusUtcSeconds: taiMinusUtc,
     tdbMinusUtcSeconds,
+    leapSecond,
     labelTdb: `${tdbParts.dateIso} · ${tdbParts.timeHms} TDB`,
     shortLabelTdb: `${tdbParts.dateIso} · ${tdbParts.timeHm} TDB`,
     labelUtc: `${utcParts.dateIso} · ${utcParts.timeHms} UTC`,

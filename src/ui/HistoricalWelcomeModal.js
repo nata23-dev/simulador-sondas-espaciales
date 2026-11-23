@@ -2,6 +2,8 @@
  * Modal de bienvenida elegante y breve para el Modo Histórico Voyager 1 y 2.
  * Presenta las dos opciones principales: Recorrido Guiado o Exploración Libre.
  */
+import { destinoFocoAlCerrar, esVisible, moverFocoConTab } from './DialogFocus.js';
+
 export function crearModalBienvenidaHistorica({
   alIniciarRecorridoGuiado,
   alExplorarLibremente,
@@ -52,14 +54,34 @@ export function crearModalBienvenidaHistorica({
   const checkDontShow = modal.querySelector('#welcome-dont-show-again');
 
   const STORAGE_KEY = 'voyager_simulator_hide_welcome_v1';
+  let focoPrevio = null;
 
-  function cerrar() {
+  // UX-02: la cabecera queda por encima del fondo del modal (workspace-layout.css) para poder usar la navegación global; la tarjeta
+  // se centra en el espacio que queda debajo de ella.
+  function ajustarACabecera() {
+    const cabecera = document.querySelector('.app-header');
+    const fondo = esVisible(cabecera) ? Math.max(0, Math.round(cabecera.getBoundingClientRect().bottom)) : 0;
+    modal.style.setProperty('--welcome-cabecera', `${fondo}px`);
+  }
+
+  /**
+   * Cierra la bienvenida. `restaurarFoco: false` cuando el foco ya va a otro sitio (un control de la cabecera, otro modo).
+   */
+  function cerrar({ restaurarFoco = true } = {}) {
+    if (modal.hidden) return;
     modal.hidden = true;
+    window.removeEventListener('resize', ajustarACabecera);
     if (checkDontShow.checked) {
       try {
         localStorage.setItem(STORAGE_KEY, 'true');
       } catch {}
     }
+    // UX-02: el foco vuelve a donde estaba antes de abrirse (si sigue visible) en lugar de perderse en <body>.
+    const actual = document.activeElement;
+    const destino = restaurarFoco && (!actual || actual === document.body || modal.contains(actual)) ? destinoFocoAlCerrar(focoPrevio, modal) : null;
+    if (destino) destino.focus({ preventScroll: true });
+    else if (modal.contains(actual)) actual.blur();
+    focoPrevio = null;
   }
 
   btnGuided.addEventListener('click', () => {
@@ -72,15 +94,34 @@ export function crearModalBienvenidaHistorica({
     alExplorarLibremente?.();
   });
 
-  btnClose.addEventListener('click', cerrar);
+  btnClose.addEventListener('click', () => cerrar());
 
+  // Clic en el fondo (fuera de la tarjeta).
   modal.addEventListener('click', event => {
     if (event.target === modal) cerrar();
   });
 
+  // Escape cierra la bienvenida y nada más (no llega a los demás atajos de Escape, p. ej. cerrar el panel lateral). UX-02: Tab y
+  // Mayús+Tab recorren solo los controles de la tarjeta (diálogo modal), aunque el foco se haya quedado fuera tras un clic. La
+  // paleta «Buscar», si está abierta encima, atiende estas teclas antes (fase de captura) y las marca como atendidas.
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && !modal.hidden) cerrar();
+    if (modal.hidden || event.defaultPrevented) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      cerrar();
+    } else if (event.key === 'Tab') {
+      event.preventDefault();
+      moverFocoConTab(modal, event.shiftKey);
+    }
   });
+
+  // UX-02: activar un control de la cabecera (cambiar de sección, Buscar, Menú) cierra la bienvenida y el control actúa con el
+  // mismo clic. También cubre los cambios de sección pedidos desde la búsqueda o el menú (pulsan esos mismos botones).
+  document.addEventListener('click', event => {
+    if (modal.hidden || !event.target?.closest?.('.app-header :is(button, a[href], summary, input, select, [role="button"])')) return;
+    cerrar({ restaurarFoco: false });
+  }, true);
 
   return {
     modal,
@@ -90,7 +131,10 @@ export function crearModalBienvenidaHistorica({
           if (localStorage.getItem(STORAGE_KEY) === 'true') return;
         } catch {}
       }
+      if (modal.hidden) focoPrevio = document.activeElement;
       modal.hidden = false;
+      ajustarACabecera();
+      window.addEventListener('resize', ajustarACabecera);
       btnGuided.focus();
     },
     cerrar,

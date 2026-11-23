@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { getComponent, ILLUSTRATIVE_PROGRAM } from './ComponentCatalog.js';
 import { buildHeritageCore, buildHeritagePart, disposeHeritageMaterials, HERITAGE_MATERIALS } from './HeritageModels.js';
 import { registerRenderer, opcionesRenderizador } from '../graphics/QualityProfile.js';
+import { crearRenderizadorWebGL } from '../graphics/WebGLSupport.js';
 import { attachNasaModel, nasaModelForCore } from '../graphics/NasaProbeModels.js';
 
 const metal = new THREE.MeshStandardMaterial({ color: 0x9da8b5, metalness: 0.82, roughness: 0.3 });
@@ -267,7 +268,7 @@ export function createProbeAssemblyView(host, onSelect, { onModelState = null } 
   scene.fog = new THREE.FogExp2(0x080d16, 0.028);
   const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 100);
   camera.position.set(5.8, 3.3, 6.8);
-  const renderer = new THREE.WebGLRenderer(opcionesRenderizador({ antialias: true, alpha: false }));
+  const renderer = crearRenderizadorWebGL(opcionesRenderizador({ antialias: true, alpha: false }), 'modelo 3D de la sonda'); // STAB-01
   const unregisterQuality = registerRenderer(renderer);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.append(renderer.domElement);

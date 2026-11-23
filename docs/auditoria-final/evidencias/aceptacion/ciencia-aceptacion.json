@@ -1,0 +1,111 @@
+{
+  "fecha": "2026-11-23T00:16:54.042Z",
+  "comprobaciones": [
+    {
+      "id": "SCI-TIME",
+      "titulo": "UTC/TAI/TT/TDB y segundos intercalares (SCI-01)",
+      "ok": true,
+      "metricas": {
+        "dt59a60_s": 0.999995,
+        "dt60a00_s": 0.999995,
+        "taiMinusUtc_60": 36,
+        "taiMinusUtc_00": 37,
+        "inv60": "2016-12-31 · 23:59:60 UTC",
+        "invAstro": "2016-12-31 · 23:59:60 UTC",
+        "tdbMinusTt_ms": -1.6541,
+        "rechazaInvalido": true
+      }
+    },
+    {
+      "id": "SCI-DOPRI54-KEPLER",
+      "titulo": "DOPRI54: Kepler analítico (e=0,6, 5 órbitas), conservación y convergencia",
+      "ok": false,
+      "metricas": {
+        "r7": {
+          "relTol": 1e-7,
+          "acceptedSteps": 303,
+          "posErrKm": 0.11136195667248985,
+          "relEnergyErr": 0.0000015166988892798177,
+          "relAngMomErr": 1.6438126540176393e-7
+        },
+        "r10": {
+          "relTol": 1e-10,
+          "acceptedSteps": 1216,
+          "posErrKm": 0.0011749120741848158,
+          "relEnergyErr": 8.726232472749343e-10,
+          "relAngMomErr": 3.2242988253755926e-10
+        },
+        "r12": {
+          "relTol": 1e-12,
+          "acceptedSteps": 3085,
+          "posErrKm": 0.000010845689737147483,
+          "relEnergyErr": 1.0055969145822678e-11,
+          "relAngMomErr": 3.362903754772798e-12
+        }
+      }
+    },
+    {
+      "id": "SCI-RADIAL",
+      "titulo": "Caída radial libre frente a solución analítica cerrada",
+      "ok": true,
+      "metricas": {
+        "tAnalitico_s": 18872.4043,
+        "rFinal_km": 10000,
+        "errPosKm": 4.901448846794665e-8,
+        "errVelKmS": 1.9132251338760398e-11
+      }
+    },
+    {
+      "id": "SCI-TSIOLKOVSKY",
+      "titulo": "Empuje finito con masa variable frente a ecuación de Tsiolkovsky",
+      "ok": true,
+      "metricas": {
+        "mfAnalitico_kg": 2412.595753,
+        "mfNum_kg": 2412.595753,
+        "errMassKg": 4.547473508864641e-13,
+        "dvAnalitico_m_s": 109.933122,
+        "dvNum_m_s": 109.933122,
+        "errDvMS": 3.369393652974395e-11
+      }
+    },
+    {
+      "id": "SCI-LAMBERT",
+      "titulo": "Solucionador de Lambert verificado con RK4 independiente y referencia Hohmann",
+      "ok": true,
+      "metricas": {
+        "status": "converged",
+        "errLlegadaRK4_km": 0,
+        "errVelRK4_km_s": 4.169e-13,
+        "v1HohmannRef_km_s": 32.7294,
+        "v2HohmannRef_km_s": 21.4805,
+        "v1Lambert178_km_s": 32.7286
+      }
+    },
+    {
+      "id": "SCI-MISSIONS",
+      "titulo": "Efemérides sin extrapolación, cónicas parcheadas, captura apuntada, salida LC-41 (Etapa 28) y crucero N-cuerpos",
+      "ok": false,
+      "metricas": {
+        "rechazaFueraCobertura": true,
+        "estadoFuera": "unavailable",
+        "A1_verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+        "A1_c3": 8.993,
+        "A1_maxContPosKm": 0.000001109,
+        "A1_finalMassKg": 3209.06,
+        "A1_pad_verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+        "A1_pad_c3": 8.9315,
+        "A1_nbody_uncorrErrKm": 43257.7,
+        "A1_nbody_tcmDvMS": 0.88,
+        "A1_nbody_tcmResKm": 0,
+        "A1_pad_nbody_uncorrErrKm": 45028.9,
+        "C1_juno_verdict": "CADENA CALCULADA COMPLETA SEGÚN EL MODELO (cónicas parcheadas). Viabilidad operativa: no verificada.",
+        "C1_juno_finalMassKg": 2890.84
+      }
+    }
+  ],
+  "resumen": {
+    "total": 6,
+    "aprobadas": 4,
+    "fallidas": 2
+  }
+}

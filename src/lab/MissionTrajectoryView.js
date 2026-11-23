@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { registerRenderer, opcionesRenderizador } from '../graphics/QualityProfile.js';
+import { crearRenderizadorWebGL } from '../graphics/WebGLSupport.js';
 
 const SCALE = 1 / 10000;
 const toScene = position => new THREE.Vector3(position[0] * SCALE, position[2] * SCALE, -position[1] * SCALE);
@@ -10,7 +11,7 @@ export function createMissionTrajectoryView(host, onSelect) {
   scene.background = new THREE.Color('#070c17');
   const camera = new THREE.PerspectiveCamera(46, 1, 0.01, 300);
   camera.position.set(0, 21, 55);
-  const renderer = new THREE.WebGLRenderer(opcionesRenderizador({ antialias: true, alpha: false }));
+  const renderer = crearRenderizadorWebGL(opcionesRenderizador({ antialias: true, alpha: false }), 'trayectoria Tierra–Luna'); // STAB-01
   const unregisterQuality = registerRenderer(renderer);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.append(renderer.domElement);

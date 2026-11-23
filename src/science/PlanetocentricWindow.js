@@ -49,5 +49,6 @@ export function createPlanetocentricWindow(data) {
       measuredMaxError: MEASURED_MOON_INTERPOLATION_ERROR[key] ?? null });
   }
   const coverage = key => bodies[key] ? { startJdTdb: bodies[key].start, endJdTdb: bodies[key].end } : null;
-  return Object.freeze({ stateAt, coverage, keys: Object.keys(bodies), centerId: data.centerId, centerName: data.centerName });
+  const serializeWindow = () => data;
+  return Object.freeze({ stateAt, coverage, keys: Object.keys(bodies), centerId: data.centerId, centerName: data.centerName, serializeWindow });
 }
