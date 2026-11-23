@@ -1,9 +1,0 @@
-{
-  "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/a_older_versions/vgr1_sat261.bsp",
-  "httpStatus": 200,
-  "lastModifiedHttp": "Fri, 26 Jan 2007 23:34:00 GMT",
-  "contentTypeHttp": "model/vnd.valve.source.compiled-map",
-  "bytes": 479232,
-  "sha256": "2b7070c304e9e84eee06cc5a1bc96b29de71378e5750d2f550f1305c5d78fc47",
-  "acquiredAtUtc": "2026-11-05T18:07:05.386040+00:00"
-}

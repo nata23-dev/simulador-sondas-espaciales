@@ -1,11 +1,14 @@
-# Índice de evidencias
+# Evidencia científica de referencia
 
-Cada carpeta conserva manifiestos, registros y capturas de una etapa. Son **evidencia histórica**; no demuestran por sí solas aprobación vigente.
+Esta carpeta conserva únicamente las consultas originales de NASA/JPL Horizons, los kernels SPK de referencia y los manifiestos con sumas SHA-256 que verifican la integridad de los datos astronómicos utilizados por el simulador y por su batería de pruebas automatizadas (`npm test` y `npm run audit:voyager`).
 
-- **Voyager y datos:** `voyager-stage7`, `voyager-stage7b`, `voyager-stage8` (`audit.json`, navegador), `voyager-stage9`, `voyager-stage9b` (kernels y manifiesto), `voyager-stage10`, `voyager-stage11`, `voyager-stage11b`, `voyager-reference-reconciliation`, `voyager-encounter-context`, `backup-08-11b`.
-- **Adquisición y auditoría de efemérides:** `stage2-2`, `stage2-3`, `stage3`, `stage3-1`, `stage4`, `stage5`, `stage6`.
-- **Laboratorio:** `stage12a`, `stage12a1`, `stage12b`, `stage12c`, `stage12d`, `stage12e` (incluye `audit-scripts/` con rutas relativas). 12F no tiene capturas ni auditoría independiente.
+## Contenido conservado
 
-- **Plan de mejora y etapas posteriores:** `stage18` (carga rápida), `stage20`–`stage24` (verificaciones en Chrome con GPU real), `stage25` (lanzamiento 3D, con `auditoria/`), `stage26` (perfiles de rendimiento antes y después, contador de FPS y `regresion/`), `stage27` (perfiles por software antes y después y con la GPU real), `stage28` (cifras de la salida desde la plataforma, generadas con `scripts/stage28-departure-figures.mjs`) y `stage29` (menús en seis anchos y `regresion/` de las etapas 24–26 tras 27–29). La etapa 19 no tiene carpeta propia.
+- `stage2-2/ConsultasOriginales/`: consultas originales a NASA/JPL Horizons para los seis encuentros planetarios de Voyager 1 y Voyager 2 (Júpiter, Saturno, Urano y Neptuno) con sus archivos `.request.json` y hashes SHA-256.
+- `stage2-3/ConsultasOriginales/` y `stage2-3/Kernels/`: consultas originales y kernels SPK oficiales de NASA/NAIF que documentan los empalmes de trayectoria de Voyager 1 y 2.
+- `stage4/Horizons-original/` y `stage4/absolute-frame-audit.json`: consultas Horizons originales y auditoría de marco absoluto para Luna, Europa, Titán, Titania y Tritón.
+- `stage6/Horizons-original/`: consultas Horizons originales para Ío, Ganímedes, Calisto, Encélado y Miranda.
+- `voyager-reference-reconciliation/`: inventarios verificados (`input-inventory.json`, `global-continuity.json`, `encounters.json`, `spk-audit.json`) y kernels de referencia `vgr1.x2100.bsp` / `vgr2.x2100.bsp`.
+- `voyager-stage8/audit.json`: resultado reproducible de `npm run audit:voyager`.
 
-Los informes están en [docs/README.md](../docs/README.md). Los `.zip` de capturas de 12A–12B (duplican las carpetas) se mantienen solo en local.
+Los archivos de esta carpeta son evidencia científica de entrada para las pruebas automatizadas y no deben alterarse manualmente.

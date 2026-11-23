@@ -1,7 +1,0 @@
-This SPK file contains the same ephemeris data as does the NAIF file
-vg2_nep.bsp.  However, the id-codes for the Neptune satellites have been
-corrected so that they agree with the modern numbering scheme for
-Neptune's Satellites.
-
-Mon Feb  1 17:44:42 PST 1999
-Bill Taber

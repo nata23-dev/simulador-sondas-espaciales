@@ -1,9 +1,0 @@
-{
-  "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/a_older_versions/vgr1_saturn.bsp",
-  "httpStatus": 200,
-  "lastModifiedHttp": "Thu, 06 Feb 2003 20:56:37 GMT",
-  "contentTypeHttp": "model/vnd.valve.source.compiled-map",
-  "bytes": 486400,
-  "sha256": "0c3231da87abf65f100b8c39885875078f426a24cb675364e44f1c73bef0565e",
-  "acquiredAtUtc": "2026-11-05T18:07:04.416532+00:00"
-}

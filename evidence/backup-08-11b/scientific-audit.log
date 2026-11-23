@@ -1,3 +1,0 @@
-voyager-1 11 sources 1 catalog gaps 4 overlap intervals 106 same-time references max 0.537151 km / 3.000e-4 km/s
-voyager-2 14 sources 1 catalog gaps 7 overlap intervals 145 same-time references max 3.926287 km / 3.180e-4 km/s
-Verified 49 production dataset and 10 SPK SHA-256 hashes; wrote evidence/voyager-stage8/audit.json

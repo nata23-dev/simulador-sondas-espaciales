@@ -1,9 +1,0 @@
-{
-  "url": "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/spk/a_older_versions/vg2_nep.bsp",
-  "httpStatus": 200,
-  "lastModifiedHttp": "Tue, 02 Feb 1999 01:48:43 GMT",
-  "contentTypeHttp": "model/vnd.valve.source.compiled-map",
-  "bytes": 2001920,
-  "sha256": "235ce2311d68ea4ceb4ef91efffb4fda03eb3ca6ad4d93d5aa78225fa53ec273",
-  "acquiredAtUtc": "2026-11-05T18:01:20.116648+00:00"
-}
